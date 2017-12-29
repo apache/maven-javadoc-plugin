@@ -128,7 +128,10 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.apache.maven.plugins.javadoc.JavadocUtil.*;
+import static org.apache.maven.plugins.javadoc.JavadocUtil.toRelative;
+import static org.apache.maven.plugins.javadoc.JavadocUtil.toList;
+import static org.apache.maven.plugins.javadoc.JavadocUtil.isEmpty;
+import static org.apache.maven.plugins.javadoc.JavadocUtil.isNotEmpty;
 import static org.codehaus.plexus.util.IOUtil.close;
 
 /**
