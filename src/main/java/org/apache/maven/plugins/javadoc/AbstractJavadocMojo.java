@@ -19,44 +19,6 @@ package org.apache.maven.plugins.javadoc;
  * under the License.
  */
 
-import static org.apache.maven.plugins.javadoc.JavadocUtil.isEmpty;
-import static org.apache.maven.plugins.javadoc.JavadocUtil.isNotEmpty;
-import static org.apache.maven.plugins.javadoc.JavadocUtil.toList;
-import static org.apache.maven.plugins.javadoc.JavadocUtil.toRelative;
-import static org.codehaus.plexus.util.IOUtil.close;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.JavaVersion;
 import org.apache.commons.lang3.SystemUtils;
@@ -133,6 +95,41 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.apache.maven.plugins.javadoc.JavadocUtil.*;
+import static org.codehaus.plexus.util.IOUtil.close;
 
 /**
  * Base class with majority of Javadoc functionalities.
@@ -504,6 +501,15 @@ public abstract class AbstractJavadocMojo
      */
     @Parameter( property = "maven.javadoc.failOnError", defaultValue = "true" )
     protected boolean failOnError;
+
+
+    /**
+     * Specifies if the build will fail if there are warning during javadoc execution or not.
+     *
+     * @since 3.0.1
+     */
+    @Parameter( property = "maven.javadoc.failOnWarnings", defaultValue = "false" )
+    protected boolean failOnWarnings;
 
     /**
      * Specifies to use the
@@ -5224,6 +5230,11 @@ public abstract class AbstractJavadocMojo
 
                 getLog().warn( current );
             }
+        }
+
+        if ( StringUtils.isNotEmpty( err.getOutput() ) && failOnWarnings )
+        {
+            throw new MavenReportException( "Project contains Javadoc Warnings" );
         }
     }
 
