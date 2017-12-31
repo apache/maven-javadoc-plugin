@@ -19,11 +19,14 @@ package foo.bar;
  * under the License.
  */
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.*;
-public class ALotOfLinkTags
-{
 
+public class ALotOfLinkTags
+    implements Serializable
+{
+    public int field; // intentionally not marked @serial to cause a javadoc warning
 
     /**
      */
@@ -31,5 +34,4 @@ public class ALotOfLinkTags
     {
         return true;
     }
-
 }

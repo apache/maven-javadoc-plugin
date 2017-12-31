@@ -39,6 +39,7 @@
           <version>@pom.version@</version>
           <configuration>
             <failOnWarnings>true</failOnWarnings>
+            <serialwarn>true</serialwarn>
           </configuration>
         </plugin>
       </plugins>
