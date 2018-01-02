@@ -436,6 +436,9 @@ under the License.
               <filterProperties>
                 <mrm.3rdparty.url>${mrm.3rdparty.url}</mrm.3rdparty.url>
               </filterProperties>
+              <environmentVariables>
+                <JENKINS_MAVEN_AGENT_DISABLED>true</JENKINS_MAVEN_AGENT_DISABLED>
+              </environmentVariables>
             </configuration>
           </plugin>
           <plugin>
