@@ -408,6 +408,9 @@ under the License.
               <value>${maven.home}</value>
             </property>
           </systemProperties>
+          <environmentVariables>
+            <JENKINS_MAVEN_AGENT_DISABLED>true</JENKINS_MAVEN_AGENT_DISABLED>
+          </environmentVariables>
         </configuration>
       </plugin>
     </plugins>
