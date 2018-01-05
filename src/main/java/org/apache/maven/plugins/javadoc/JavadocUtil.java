@@ -1278,10 +1278,22 @@ public class JavadocUtil
     private static File getJavaHome( Log log )
     {
         File javaHome = null;
+        
+        String javaHomeValue = null;
+        try
+        {
+            javaHomeValue = CommandLineUtils.getSystemEnvVars().getProperty( "JAVA_HOME" );
+        }
+        catch ( IOException e )
+        {
+            if ( log != null && log.isDebugEnabled() )
+            {
+                log.debug( "IOException: " + e.getMessage() );
+            }
+        }
 
         // if maven.home is set, we can assume JAVA_HOME must be used for testing
-        
-        if ( System.getProperty( "maven.home" ) == null )
+        if ( System.getProperty( "maven.home" ) == null || javaHomeValue == null )
         {
             // JEP220 (Java9) restructured the JRE/JDK runtime image
             if ( ( SystemUtils.IS_OS_MAC_OSX
@@ -1297,17 +1309,7 @@ public class JavadocUtil
 
         if ( javaHome == null || !javaHome.exists() )
         {
-            try
-            {
-                javaHome = new File( CommandLineUtils.getSystemEnvVars().getProperty( "JAVA_HOME" ) );
-            }
-            catch ( IOException e )
-            {
-                if ( log != null && log.isDebugEnabled() )
-                {
-                    log.debug( "IOException: " + e.getMessage() );
-                }
-            }
+            javaHome = new File( javaHomeValue );
         }
 
         if ( javaHome == null || !javaHome.exists() )
