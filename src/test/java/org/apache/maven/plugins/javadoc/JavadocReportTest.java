@@ -27,6 +27,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -228,7 +230,15 @@ public class JavadocReportTest
 
         File generatedFile = new File( apidocs, "def/configuration/App.html" );
         assertTrue( generatedFile.exists() );
-        assertTrue( FileUtils.fileRead( generatedFile, "UTF-8" ).contains( "/docs/api/java/lang/Object.html" ) );
+
+        // only test when URL can be reached
+        String url = JavadocReport.DEFAULT_JAVA_API_LINKS.getProperty( "api_9" );
+        HttpURLConnection connection = (HttpURLConnection) new URL( url ).openConnection();
+        connection.setRequestMethod( "HEAD" );
+        if ( connection.getResponseCode() == 200 )
+        {
+            assertTrue( FileUtils.fileRead( generatedFile, "UTF-8" ).contains( "/docs/api/java/lang/Object.html" ) );
+        }
 
         assertTrue( new File( apidocs, "def/configuration/AppSample.html" ).exists() );
         assertTrue( new File( apidocs, "def/configuration/package-frame.html" ).exists() );
@@ -654,7 +664,8 @@ public class JavadocReportTest
         if( javadocVersion.compareTo( JavadocVersion.parse( "1.8" ) ) >= 0  && javadocVersion.compareTo( JavadocVersion.parse( "10" ) ) < 0)
         {
             // https://bugs.openjdk.java.net/browse/JDK-8032205
-            assertTrue( "This bug appeared in JDK8 and was planned to be fixed in JDK9, see JDK-8032205",
+            assertTrue( "Javadoc runtime version: " + javadocVersion
+                + "\nThis bug appeared in JDK8 and was planned to be fixed in JDK9, see JDK-8032205",
                         new File( apidocs, "resources/test/doc-files/maven-feather.png" ).exists() );
         }
         else
