@@ -525,8 +525,8 @@ public class JavadocUtil
         cmd.setWorkingDirectory( javadocExe.getParentFile() );
         cmd.createArg().setValue( "-J-version" );
 
-        CommandLineUtils.StringStreamConsumer out = new CommandLineUtils.StringStreamConsumer();
-        CommandLineUtils.StringStreamConsumer err = new CommandLineUtils.StringStreamConsumer();
+        CommandLineUtils.StringStreamConsumer out = new JavadocOutputStreamConsumer();
+        CommandLineUtils.StringStreamConsumer err = new JavadocOutputStreamConsumer();
 
         int exitCode = CommandLineUtils.executeCommandLine( cmd, out, err );
 
@@ -1510,6 +1510,24 @@ public class JavadocUtil
                 }
             }
             return token;
+        }
+    }
+
+    /**
+     * Ignores line like 'Picked up JAVA_TOOL_OPTIONS: ...' as can happen on CI servers.
+     * 
+     * @author Robert Scholte
+     * @since 3.0.1
+     */
+    private static class JavadocOutputStreamConsumer extends CommandLineUtils.StringStreamConsumer
+    {
+        @Override
+        public void consumeLine( String line )
+        {
+            if ( !line.startsWith( "Picked up " ) )
+            {
+                super.consumeLine( line );
+            }
         }
     }
     
