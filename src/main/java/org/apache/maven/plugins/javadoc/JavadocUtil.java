@@ -1389,7 +1389,7 @@ public class JavadocUtil
          *
          * @param path The path to tokenize. Must not be <code>null</code>.
          */
-        public PathTokenizer( String path )
+        PathTokenizer( String path )
         {
             if ( onNetWare )
             {

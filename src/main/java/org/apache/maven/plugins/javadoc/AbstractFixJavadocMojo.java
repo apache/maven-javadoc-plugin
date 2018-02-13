@@ -3681,7 +3681,7 @@ public abstract class AbstractFixJavadocMojo
          */
         private List<String> unknownsTags;
 
-        public JavaEntityTags( JavaAnnotatedElement entity, boolean isJavaMethod )
+        JavaEntityTags( JavaAnnotatedElement entity, boolean isJavaMethod )
         {
             this.entity = entity;
             this.isJavaMethod = isJavaMethod;
