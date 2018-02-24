@@ -29,6 +29,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
@@ -72,6 +73,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Modifier;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -1636,6 +1638,49 @@ public class JavadocUtil
     public static boolean isEmpty( final Collection<?> collection )
     {
         return collection == null || collection.isEmpty();
+    }
+
+    /**
+     * Execute an Http request at the given URL, follows redirects, and returns the last redirect locations. For URLs
+     * that aren't http/https, this does nothing and simply returns the given URL unchanged.
+     *
+     * @param url URL.
+     * @param settings Maven settings.
+     * @return Last redirect location.
+     * @throws IOException if there was an error during the Http request.
+     */
+    protected static URL getRedirectUrl( URL url, Settings settings )
+        throws IOException
+    {
+        String protocol = url.getProtocol();
+        if ( !"http".equals( protocol ) && !"https".equals( protocol ) )
+        {
+            return url;
+        }
+        HttpClient httpClient = null;
+        try
+        {
+            httpClient = createHttpClient( settings, url );
+            HttpClientContext httpContext = HttpClientContext.create();
+            HttpGet httpMethod = new HttpGet( url.toString() );
+            HttpResponse response = httpClient.execute( httpMethod, httpContext );
+            int status = response.getStatusLine().getStatusCode();
+            if ( status != HttpStatus.SC_OK )
+            {
+                throw new FileNotFoundException( "Unexpected HTTP status code " + status + " getting resource "
+                    + url.toExternalForm() + "." );
+            }
+
+            List<URI> redirects = httpContext.getRedirectLocations();
+            return redirects.isEmpty() ? url : redirects.get( redirects.size() - 1 ).toURL();
+        }
+        finally
+        {
+            if ( httpClient != null )
+            {
+                httpClient.getConnectionManager().shutdown();
+            }
+        }
     }
 
     /**

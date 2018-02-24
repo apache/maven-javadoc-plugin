@@ -22,7 +22,9 @@ package org.apache.maven.plugins.javadoc;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,6 +34,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.PatternSyntaxException;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.maven.plugins.javadoc.JavadocUtil;
 import org.apache.maven.plugins.javadoc.ProxyServer.AuthAsyncProxyServlet;
@@ -39,6 +45,10 @@ import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.handler.AbstractHandler;
+import org.mortbay.jetty.handler.MovedContextHandler;
+import org.mortbay.util.ByteArrayISO8859Writer;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
@@ -507,6 +517,65 @@ public class JavadocUtilTest
         }
     }
 
+    public void testGetRedirectUrlNotHttp()
+        throws Exception
+    {
+        URL url = new URI( "ftp://some.where" ).toURL();
+        assertEquals( url.toString(), JavadocUtil.getRedirectUrl( url, new Settings() ).toString() );
+
+        url = new URI( "file://some/where" ).toURL();
+        assertEquals( url.toString(), JavadocUtil.getRedirectUrl( url, new Settings() ).toString() );
+    }
+
+    /**
+     * Tests a redirect from localhost:port1 to localhost:port2
+     */
+    public void testGetRedirectUrl()
+        throws Exception
+    {
+        Server server = null, redirectServer = null;
+        try
+        {
+            redirectServer = new Server( 0 );
+            redirectServer.addHandler( new AbstractHandler()
+            {
+                @Override
+                public void handle( String target, HttpServletRequest request, HttpServletResponse response,
+                                    int dispatch )
+                    throws IOException, ServletException
+                {
+                    response.setStatus( HttpServletResponse.SC_OK );
+                    ByteArrayISO8859Writer writer = new ByteArrayISO8859Writer( 100 );
+                    writer.write( "<html>Hello world</html>" );
+                    writer.flush();
+                    response.setContentLength( writer.size() );
+                    OutputStream out = response.getOutputStream();
+                    writer.writeTo( out );
+                    out.close();
+                    writer.close();
+                }
+            } );
+            redirectServer.start();
+
+            server = new Server( 0 );
+            MovedContextHandler handler = new MovedContextHandler();
+            int redirectPort = redirectServer.getConnectors()[0].getLocalPort();
+            handler.setNewContextURL( "http://localhost:" + redirectPort );
+            server.addHandler( handler );
+            server.start();
+
+            URL url = new URI( "http://localhost:" + server.getConnectors()[0].getLocalPort() ).toURL();
+            URL redirectUrl = JavadocUtil.getRedirectUrl( url, new Settings() );
+
+            assertTrue( redirectUrl.toString().startsWith( "http://localhost:" + redirectPort ) );
+        }
+        finally
+        {
+            stopSilently( server );
+            stopSilently( redirectServer );
+        }
+    }
+
     /**
      * Method to test copyJavadocResources()
      *
@@ -625,5 +694,20 @@ public class JavadocUtilTest
         assertEquals( path1 + ps + path2, JavadocUtil.unifyPathSeparator( path1 + ":" + path2 ) );
         assertEquals( path1 + ps + path2 + ps + path1 + ps + path2, JavadocUtil.unifyPathSeparator( path1 + ";"
             + path2 + ":" + path1 + ":" + path2 ) );
+    }
+
+    private void stopSilently( Server server )
+    {
+        try
+        {
+            if ( server != null )
+            {
+                server.stop();
+            }
+        }
+        catch ( Exception e )
+        {
+            // ignored
+        }
     }
 }

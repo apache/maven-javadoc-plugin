@@ -3163,7 +3163,7 @@ public abstract class AbstractJavadocMojo
 
         links.addAll( getDependenciesLinks() );
 
-        return links;
+        return followLinks( links );
     }
 
     private Set<Group> collectGroups()
@@ -5836,6 +5836,31 @@ public abstract class AbstractJavadocMojo
         }
 
         return link;
+    }
+
+    /**
+     * Follows all of the given links, and returns their last redirect locations. Ordering is kept.
+     * This is necessary because javadoc tool doesn't follow links, see JDK-8190312 (MJAVADOC-427, MJAVADOC-487)
+     *
+     * @param links Links to follow.
+     * @return Last redirect location of all the links.
+     */
+    private Set<String> followLinks( Set<String> links )
+    {
+        Set<String> redirectLinks = new LinkedHashSet<>( links.size() );
+        for ( String link : links )
+        {
+            try
+            {
+                redirectLinks.add( JavadocUtil.getRedirectUrl( new URI( link ).toURL(), settings ).toString() );
+            }
+            catch ( Exception e )
+            {
+                // only print in debug, it should have been logged already in warn/error because link isn't valid
+                getLog().debug( "Could not follow " + link + ". Reason: " + e.getMessage() );
+            }
+        }
+        return redirectLinks;
     }
 
     /**
