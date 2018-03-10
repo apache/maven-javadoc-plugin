@@ -20,8 +20,6 @@ package org.apache.maven.plugins.javadoc;
  */
 
 import org.apache.commons.lang3.ClassUtils;
-import org.apache.commons.lang3.JavaVersion;
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.artifact.handler.ArtifactHandler;
@@ -86,6 +84,7 @@ import org.codehaus.plexus.components.io.fileselectors.IncludeExcludeFileSelecto
 import org.codehaus.plexus.languages.java.jpms.LocationManager;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsRequest;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
+import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
@@ -256,7 +255,7 @@ public abstract class AbstractJavadocMojo
      *
      * @since 2.1
      */
-    private static final JavadocVersion SINCE_JAVADOC_1_4 = JavadocVersion.parse( "1.4" );
+    private static final JavaVersion SINCE_JAVADOC_1_4 = JavaVersion.parse( "1.4" );
 
     /**
      * For Javadoc options appears since Java 1.4.2.
@@ -266,7 +265,7 @@ public abstract class AbstractJavadocMojo
      *
      * @since 2.1
      */
-    private static final JavadocVersion SINCE_JAVADOC_1_4_2 = JavadocVersion.parse( "1.4.2" );
+    private static final JavaVersion SINCE_JAVADOC_1_4_2 = JavaVersion.parse( "1.4.2" );
 
     /**
      * For Javadoc options appears since Java 5.0.
@@ -276,7 +275,7 @@ public abstract class AbstractJavadocMojo
      *
      * @since 2.1
      */
-    private static final JavadocVersion SINCE_JAVADOC_1_5 = JavadocVersion.parse( "1.5" );
+    private static final JavaVersion SINCE_JAVADOC_1_5 = JavaVersion.parse( "1.5" );
 
     /**
      * For Javadoc options appears since Java 6.0.
@@ -285,7 +284,7 @@ public abstract class AbstractJavadocMojo
      *
      * @since 2.4
      */
-    private static final JavadocVersion SINCE_JAVADOC_1_6 = JavadocVersion.parse( "1.6" );
+    private static final JavaVersion SINCE_JAVADOC_1_6 = JavaVersion.parse( "1.6" );
 
     /**
      * For Javadoc options appears since Java 8.0.
@@ -294,13 +293,12 @@ public abstract class AbstractJavadocMojo
      *
      * @since 3.0.0
      */
-    private static final JavadocVersion SINCE_JAVADOC_1_8 = JavadocVersion.parse( "1.8" );
+    private static final JavaVersion SINCE_JAVADOC_1_8 = JavaVersion.parse( "1.8" );
 
     /**
      * 
      */
-    // JAVA_VERSION can have -ea suffix, which is not supported (yet)
-    private static final JavadocVersion JAVA_VERSION = JavadocVersion.parse( SystemUtils.JAVA_SPECIFICATION_VERSION );
+    private static final JavaVersion JAVA_VERSION = JavaVersion.JAVA_SPECIFICATION_VERSION;
 
     // ----------------------------------------------------------------------
     // Mojo components
@@ -490,7 +488,7 @@ public abstract class AbstractJavadocMojo
     /**
      * Version of the Javadoc Tool executable to use.
      */
-    private JavadocVersion javadocRuntimeVersion;
+    private JavaVersion javadocRuntimeVersion;
 
     /**
      * Specifies whether the Javadoc generation should be skipped.
@@ -3689,7 +3687,7 @@ public abstract class AbstractJavadocMojo
         }
         // For Apple's JDK 1.6.x (and older?) on Mac OSX
         // CHECKSTYLE_OFF: MagicNumber
-        else if ( SystemUtils.IS_OS_MAC_OSX && !SystemUtils.isJavaVersionAtLeast( JavaVersion.JAVA_1_7 ) )
+        else if ( SystemUtils.IS_OS_MAC_OSX && !JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast( "1.7" ) )
         // CHECKSTYLE_ON: MagicNumber
         {
             javadocExe = new File( SystemUtils.getJavaHome() + File.separator + "bin", javadocCommand );
@@ -3740,7 +3738,7 @@ public abstract class AbstractJavadocMojo
     private void setFJavadocVersion( File jExecutable )
         throws MavenReportException
     {
-        JavadocVersion jVersion;
+        JavaVersion jVersion;
         try
         {
             jVersion = JavadocUtil.getJavadocVersion( jExecutable );
@@ -3777,7 +3775,7 @@ public abstract class AbstractJavadocMojo
         {
             try
             {
-                javadocRuntimeVersion = JavadocVersion.parse( javadocVersion );
+                javadocRuntimeVersion = JavaVersion.parse( javadocVersion );
             }
             catch ( NumberFormatException e )
             {
@@ -3802,7 +3800,7 @@ public abstract class AbstractJavadocMojo
      * @return <code>true</code> if the javadoc version is equal or greater than the
      *         required version
      */
-    private boolean isJavaDocVersionAtLeast( JavadocVersion requiredVersion )
+    private boolean isJavaDocVersionAtLeast( JavaVersion requiredVersion )
     {
         return JAVA_VERSION.compareTo( requiredVersion ) >= 0;
     }
@@ -3834,7 +3832,7 @@ public abstract class AbstractJavadocMojo
      * @see #addArgIf(java.util.List, boolean, String)
      * @see #isJavaDocVersionAtLeast(float)
      */
-    private void addArgIf( List<String> arguments, boolean b, String value, JavadocVersion requiredJavaVersion )
+    private void addArgIf( List<String> arguments, boolean b, String value, JavaVersion requiredJavaVersion )
     {
         if ( b )
         {
@@ -3885,7 +3883,7 @@ public abstract class AbstractJavadocMojo
      * @see #isJavaDocVersionAtLeast(float)
      */
     private void addArgIfNotEmpty( List<String> arguments, String key, String value, boolean repeatKey,
-                                   boolean splitValue, JavadocVersion requiredJavaVersion )
+                                   boolean splitValue, JavaVersion requiredJavaVersion )
     {
         if ( StringUtils.isNotEmpty( value ) )
         {
@@ -3978,7 +3976,7 @@ public abstract class AbstractJavadocMojo
      * @see #addArgIfNotEmpty(java.util.List, String, String, float, boolean)
      */
     private void addArgIfNotEmpty( List<String> arguments, String key, String value,
-                                   JavadocVersion requiredJavaVersion )
+                                   JavaVersion requiredJavaVersion )
     {
         addArgIfNotEmpty( arguments, key, value, requiredJavaVersion, false );
     }
@@ -3995,7 +3993,7 @@ public abstract class AbstractJavadocMojo
      * @see #addArgIfNotEmpty(java.util.List, String, String)
      * @see #isJavaDocVersionAtLeast(float)
      */
-    private void addArgIfNotEmpty( List<String> arguments, String key, String value, JavadocVersion requiredJavaVersion,
+    private void addArgIfNotEmpty( List<String> arguments, String key, String value, JavaVersion requiredJavaVersion,
                                    boolean repeatKey )
     {
         if ( StringUtils.isNotEmpty( value ) )
@@ -5753,13 +5751,13 @@ public abstract class AbstractJavadocMojo
         }
 
         final String pluginId = "org.apache.maven.plugins:maven-compiler-plugin";
-        JavadocVersion sourceVersion = javadocRuntimeVersion;
+        JavaVersion sourceVersion = javadocRuntimeVersion;
         String sourceConfigured = getPluginParameter( project, pluginId, "source" );
         if ( sourceConfigured != null )
         {
             try
             {
-                sourceVersion = JavadocVersion.parse( sourceConfigured );
+                sourceVersion = JavaVersion.parse( sourceConfigured );
             }
             catch ( NumberFormatException e )
             {

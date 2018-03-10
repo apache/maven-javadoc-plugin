@@ -33,10 +33,8 @@ import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
-import org.apache.maven.plugins.javadoc.AbstractJavadocMojo;
-import org.apache.maven.plugins.javadoc.JavadocJar;
-import org.apache.maven.plugins.javadoc.JavadocVersion;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
@@ -96,12 +94,12 @@ public class JavadocJarTest
         }
 
         assertTrue( set.contains( "stylesheet.css" ) );
-        JavadocVersion javadocVersion = (JavadocVersion) getVariableValueFromObject( mojo, "javadocRuntimeVersion" );
-        if ( javadocVersion.compareTo( JavadocVersion.parse( "1.7" ) ) < 0 )
+        JavaVersion javadocVersion = (JavaVersion) getVariableValueFromObject( mojo, "javadocRuntimeVersion" );
+        if ( javadocVersion.isBefore( "1.7" ) )
         {
             assertTrue( set.contains( "resources/inherit.gif" ) );
         }
-        else if ( javadocVersion.compareTo( JavadocVersion.parse( "1.8" ) ) < 0 )
+        else if ( javadocVersion.isBefore( "1.8" ) )
         {
             assertTrue( set.contains( "resources/background.gif" ) /* JDK7 */);
         }

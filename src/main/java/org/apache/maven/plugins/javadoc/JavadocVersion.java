@@ -30,7 +30,9 @@ import org.codehaus.plexus.util.StringUtils;
  * 
  * @author Robert Scholte
  * @since 3.0.0
+ * @deprecated Use {@link org.codehaus.plexus.languages.java.version.JavaVersion} instead
  */
+@Deprecated
 public class JavadocVersion implements Comparable<JavadocVersion>
 {
     private String rawVersion;

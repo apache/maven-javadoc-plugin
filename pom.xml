@@ -234,7 +234,7 @@ under the License.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-java</artifactId>
-      <version>0.9.5</version>
+      <version>0.9.6</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>

@@ -28,12 +28,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.plugins.javadoc.AbstractFixJavadocMojo.JavaEntityTags;
 import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.ReaderFactory;
@@ -150,7 +150,7 @@ public class FixJavadocMojoTest
     {
         // Should be an assumption, but not supported by TestCase
         // Java 5 not supported by Java9 anymore
-        if ( JavadocVersion.parse( SystemUtils.JAVA_SPECIFICATION_VERSION ).compareTo( JavadocVersion.parse( "9" ) ) >= 0 )
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast( "9" ) )
         {
             return;
         }
@@ -649,11 +649,9 @@ public class FixJavadocMojoTest
         invokerDir.mkdirs();
         File invokerLogFile = FileUtils.createTempFile( "FixJavadocMojoTest", ".txt", invokerDir );
         
-        JavadocVersion JAVA_9 = JavadocVersion.parse( SystemUtils.JAVA_SPECIFICATION_VERSION );
-        
         Properties properties = new Properties();
         
-        if( JavadocVersion.parse( SystemUtils.JAVA_SPECIFICATION_VERSION ).compareTo( JAVA_9 ) >= 0 )
+        if( JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast( "9" ) )
         {
             properties.put( "maven.compiler.source", "1.6" );
             properties.put( "maven.compiler.target", "1.6" );

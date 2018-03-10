@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.LegacySupport;
@@ -47,6 +46,7 @@ import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.internal.MavenRepositorySystemSession;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
+import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.ReaderFactory;
@@ -315,7 +315,7 @@ public class JavadocReportTest
     {
         // Should be an assumption, but not supported by TestCase
         // Seems like a bug in Javadoc 9
-        if ( JavadocVersion.parse( SystemUtils.JAVA_SPECIFICATION_VERSION ).compareTo( JavadocVersion.parse( "9" ) ) == 0 )
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.compareTo( JavaVersion.parse( "9" ) ) == 0 )
         {
             return;
         }
@@ -578,7 +578,7 @@ public class JavadocReportTest
     {
         // Should be an assumption, but not supported by TestCase
         // Java 5 not supported by Java9 anymore
-        if ( JavadocVersion.parse( SystemUtils.JAVA_SPECIFICATION_VERSION ).compareTo( JavadocVersion.parse( "9" ) ) >= 0 )
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast( "9" ) )
         {
             return;
         }
@@ -660,8 +660,8 @@ public class JavadocReportTest
         content = readFile( app );
         assertTrue( content.contains( "<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">" ) );
 
-        JavadocVersion javadocVersion = (JavadocVersion) getVariableValueFromObject( mojo, "javadocRuntimeVersion" );
-        if( javadocVersion.compareTo( JavadocVersion.parse( "1.8" ) ) >= 0  && javadocVersion.compareTo( JavadocVersion.parse( "10" ) ) < 0)
+        JavaVersion javadocVersion = (JavaVersion) getVariableValueFromObject( mojo, "javadocRuntimeVersion" );
+        if( javadocVersion.isAtLeast( "1.8" ) && javadocVersion.isBefore( "10" ) )
         {
             // https://bugs.openjdk.java.net/browse/JDK-8032205
             assertTrue( "Javadoc runtime version: " + javadocVersion

@@ -19,7 +19,6 @@ package org.apache.maven.plugins.javadoc;
  * under the License.
  */
 
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -49,6 +48,7 @@ import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.apache.maven.shared.invoker.PrintStreamHandler;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.proxy.ProxyUtils;
+import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
@@ -514,7 +514,7 @@ public class JavadocUtil
      * @throws PatternSyntaxException if the output contains a syntax error in the regular-expression pattern.
      * @see #extractJavadocVersion(String)
      */
-    protected static JavadocVersion getJavadocVersion( File javadocExe )
+    protected static JavaVersion getJavadocVersion( File javadocExe )
         throws IOException, CommandLineException, IllegalArgumentException
     {
         if ( ( javadocExe == null ) || ( !javadocExe.exists() ) || ( !javadocExe.isFile() ) )
@@ -542,11 +542,11 @@ public class JavadocUtil
 
         if ( StringUtils.isNotEmpty( err.getOutput() ) )
         {
-            return JavadocVersion.parse( extractJavadocVersion( err.getOutput() ) );
+            return JavaVersion.parse( extractJavadocVersion( err.getOutput() ) );
         }
         else if ( StringUtils.isNotEmpty( out.getOutput() ) )
         {
-            return JavadocVersion.parse( extractJavadocVersion( out.getOutput() ) );
+            return JavaVersion.parse( extractJavadocVersion( out.getOutput() ) );
         }
 
         throw new IllegalArgumentException( "No output found from the command line 'javadoc -J-version'" );
@@ -1298,8 +1298,7 @@ public class JavadocUtil
         if ( System.getProperty( "maven.home" ) == null || javaHomeValue == null )
         {
             // JEP220 (Java9) restructured the JRE/JDK runtime image
-            if ( ( SystemUtils.IS_OS_MAC_OSX
-                || JavadocVersion.parse( SystemUtils.JAVA_VERSION ).compareTo( JavadocVersion.parse( "9" ) ) >= 0 ) )
+            if ( SystemUtils.IS_OS_MAC_OSX || JavaVersion.JAVA_VERSION.isAtLeast( "9" ) )
             {
                 javaHome = SystemUtils.getJavaHome();
             }
