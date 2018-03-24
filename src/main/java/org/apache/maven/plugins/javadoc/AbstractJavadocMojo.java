@@ -3782,7 +3782,7 @@ public abstract class AbstractJavadocMojo
                 throw new MavenReportException( "Unable to parse javadoc version: " + e.getMessage(), e );
             }
 
-            if ( javadocRuntimeVersion != jVersion && getLog().isWarnEnabled() )
+            if ( javadocRuntimeVersion.compareTo( jVersion ) != 0 && getLog().isWarnEnabled() )
             {
                 getLog().warn( "Are you sure about the <javadocVersion/> parameter? It seems to be " + jVersion );
             }
