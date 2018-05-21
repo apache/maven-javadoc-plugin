@@ -168,12 +168,12 @@ under the License.
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-archiver</artifactId>
-      <version>3.1.1</version>
+      <version>3.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-invoker</artifactId>
-      <version>2.2</version>
+      <version>3.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
@@ -234,12 +234,12 @@ under the License.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-java</artifactId>
-      <version>0.9.7</version>
+      <version>0.9.8</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
-      <version>3.4</version>
+      <version>3.6.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -249,11 +249,15 @@ under the License.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-interactivity-api</artifactId>
-      <version>1.0-alpha-4</version>
+      <version>1.0-alpha-6</version>
       <exclusions>
         <exclusion>
           <groupId>plexus</groupId>
           <artifactId>plexus-utils</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.plexus</groupId>
+          <artifactId>plexus-component-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

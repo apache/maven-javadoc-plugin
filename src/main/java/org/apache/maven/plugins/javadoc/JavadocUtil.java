@@ -108,12 +108,11 @@ public class JavadocUtil
     /** Error message when VM could not be started using invoker. */
     protected static final String ERROR_INIT_VM =
         "Error occurred during initialization of VM, try to reduce the Java heap size for the MAVEN_OPTS "
-        + "environnement variable using -Xms:<size> and -Xmx:<size>.";
+            + "environnement variable using -Xms:<size> and -Xmx:<size>.";
 
     /**
-     * Method that removes the invalid directories in the specified directories.
-     * <b>Note</b>: All elements in <code>dirs</code> could be an absolute or relative against the project's base
-     * directory <code>String</code> path.
+     * Method that removes the invalid directories in the specified directories. <b>Note</b>: All elements in
+     * <code>dirs</code> could be an absolute or relative against the project's base directory <code>String</code> path.
      *
      * @param project the current Maven project not null
      * @param dirs the collection of <code>String</code> directories path that will be validated.
@@ -145,8 +144,8 @@ public class JavadocUtil
     }
 
     /**
-     * Method that removes the invalid files in the specified files.
-     * <b>Note</b>: All elements in <code>files</code> should be an absolute <code>String</code> path.
+     * Method that removes the invalid files in the specified files. <b>Note</b>: All elements in <code>files</code>
+     * should be an absolute <code>String</code> path.
      *
      * @param files the list of <code>String</code> files paths that will be validated.
      * @return a List of valid <code>File</code> objects.
@@ -161,13 +160,14 @@ public class JavadocUtil
                 pruned.add( f );
             }
         }
- 
+
         return pruned;
     }
 
     /**
-     * Determine whether a file should be excluded from the provided list of paths, based on whether
-     * it exists and is already present in the list.
+     * Determine whether a file should be excluded from the provided list of paths, based on whether it exists and is
+     * already present in the list.
+     * 
      * @param f The files.
      * @param pruned The list of pruned files..
      * @return true if the file could be pruned false otherwise.
@@ -182,16 +182,15 @@ public class JavadocUtil
                 return false;
             }
         }
-        
+
         return true;
     }
 
     /**
-     * Method that gets all the source files to be excluded from the javadoc on the given
-     * source paths.
+     * Method that gets all the source files to be excluded from the javadoc on the given source paths.
      *
-     * @param sourcePaths      the path to the source files
-     * @param subpackagesList  list of subpackages to be included in the javadoc
+     * @param sourcePaths the path to the source files
+     * @param subpackagesList list of subpackages to be included in the javadoc
      * @param excludedPackages the package names to be excluded in the javadoc
      * @return a List of the source files to be excluded in the generated javadoc
      */
@@ -212,9 +211,8 @@ public class JavadocUtil
     }
 
     /**
-     * Convenience method to wrap an argument value in single quotes (i.e. <code>'</code>). Intended for values
-     * which may contain whitespaces.
-     * <br/>
+     * Convenience method to wrap an argument value in single quotes (i.e. <code>'</code>). Intended for values which
+     * may contain whitespaces. <br/>
      * To prevent javadoc error, the line separator (i.e. <code>\n</code>) are skipped.
      *
      * @param value the argument value.
@@ -240,8 +238,8 @@ public class JavadocUtil
     }
 
     /**
-     * Convenience method to format a path argument so that it is properly interpreted by the javadoc tool. Intended
-     * for path values which may contain whitespaces.
+     * Convenience method to format a path argument so that it is properly interpreted by the javadoc tool. Intended for
+     * path values which may contain whitespaces.
      *
      * @param value the argument value.
      * @return path argument with quote
@@ -277,8 +275,8 @@ public class JavadocUtil
     }
 
     /**
-     * Convenience method that copy all <code>doc-files</code> directories from <code>javadocDir</code>
-     * to the <code>outputDirectory</code>.
+     * Convenience method that copy all <code>doc-files</code> directories from <code>javadocDir</code> to the
+     * <code>outputDirectory</code>.
      *
      * @param outputDirectory the output directory
      * @param javadocDir the javadoc directory
@@ -317,8 +315,8 @@ public class JavadocUtil
             FileUtils.mkdir( docFileOutput.getAbsolutePath() );
             FileUtils.copyDirectoryStructure( new File( javadocDir, docFile ), docFileOutput );
             List<String> files =
-                FileUtils.getFileAndDirectoryNames( docFileOutput, StringUtils.join( excludes.iterator(), "," ),
-                                                    null, true, true, true, true );
+                FileUtils.getFileAndDirectoryNames( docFileOutput, StringUtils.join( excludes.iterator(), "," ), null,
+                                                    true, true, true, true );
             for ( String filename : files )
             {
                 File file = new File( filename );
@@ -336,11 +334,10 @@ public class JavadocUtil
     }
 
     /**
-     * Method that gets the files or classes that would be included in the javadocs using the subpackages
-     * parameter.
+     * Method that gets the files or classes that would be included in the javadocs using the subpackages parameter.
      *
      * @param sourceDirectory the directory where the source files are located
-     * @param fileList        the list of all files found in the sourceDirectory
+     * @param fileList the list of all files found in the sourceDirectory
      * @param excludePackages package names to be excluded in the javadoc
      * @return a StringBuilder that contains the appended file names of the files to be included in the javadoc
      */
@@ -411,10 +408,10 @@ public class JavadocUtil
     }
 
     /**
-     * Method that gets the complete package names (including subpackages) of the packages that were defined
-     * in the excludePackageNames parameter.
+     * Method that gets the complete package names (including subpackages) of the packages that were defined in the
+     * excludePackageNames parameter.
      *
-     * @param sourceDirectory     the directory where the source files are located
+     * @param sourceDirectory the directory where the source files are located
      * @param excludePackagenames package names to be excluded in the javadoc
      * @return a List of the packagenames to be excluded
      */
@@ -467,10 +464,8 @@ public class JavadocUtil
      * @param sourceFileIncludes files to include.
      * @param sourceFileExcludes files to exclude.
      */
-    protected static void addFilesFromSource( List<String> files, File sourceDirectory,
-                                              List<String> sourceFileIncludes,
-                                              List<String> sourceFileExcludes,
-                                              String[] excludePackages )
+    protected static void addFilesFromSource( List<String> files, File sourceDirectory, List<String> sourceFileIncludes,
+                                              List<String> sourceFileExcludes, String[] excludePackages )
     {
         DirectoryScanner ds = new DirectoryScanner();
         if ( sourceFileIncludes == null )
@@ -492,8 +487,7 @@ public class JavadocUtil
             pathList[x] = new File( sourceDirectory, fileList[x] ).getAbsolutePath();
         }
 
-
-        if (  pathList.length != 0 )
+        if ( pathList.length != 0 )
         {
             List<String> tmpFiles = getIncludedFiles( sourceDirectory, pathList, excludePackages );
             files.addAll( tmpFiles );
@@ -502,8 +496,9 @@ public class JavadocUtil
 
     /**
      * Call the Javadoc tool and parse its output to find its version, i.e.:
+     * 
      * <pre>
-     * javadoc.exe(or .sh) -J-version
+     * javadoc.exe( or.sh ) - J - version
      * </pre>
      *
      * @param javadocExe not null file
@@ -553,44 +548,43 @@ public class JavadocUtil
     }
 
     /**
-     * Parse the output for 'javadoc -J-version' and return the javadoc version recognized.
-     * <br/>
+     * Parse the output for 'javadoc -J-version' and return the javadoc version recognized. <br/>
      * Here are some output for 'javadoc -J-version' depending the JDK used:
      * <table>
      * <tr>
-     *   <th>JDK</th>
-     *   <th>Output for 'javadoc -J-version'</th>
+     * <th>JDK</th>
+     * <th>Output for 'javadoc -J-version'</th>
      * </tr>
      * <tr>
-     *   <td>Sun 1.4</td>
-     *   <td>java full version "1.4.2_12-b03"</td>
+     * <td>Sun 1.4</td>
+     * <td>java full version "1.4.2_12-b03"</td>
      * </tr>
      * <tr>
-     *   <td>Sun 1.5</td>
-     *   <td>java full version "1.5.0_07-164"</td>
+     * <td>Sun 1.5</td>
+     * <td>java full version "1.5.0_07-164"</td>
      * </tr>
      * <tr>
-     *   <td>IBM 1.4</td>
-     *   <td>javadoc full version "J2RE 1.4.2 IBM Windows 32 build cn1420-20040626"</td>
+     * <td>IBM 1.4</td>
+     * <td>javadoc full version "J2RE 1.4.2 IBM Windows 32 build cn1420-20040626"</td>
      * </tr>
      * <tr>
-     *   <td>IBM 1.5 (French JVM)</td>
-     *   <td>javadoc version complète de "J2RE 1.5.0 IBM Windows 32 build pwi32pdev-20070426a"</td>
+     * <td>IBM 1.5 (French JVM)</td>
+     * <td>javadoc version complète de "J2RE 1.5.0 IBM Windows 32 build pwi32pdev-20070426a"</td>
      * </tr>
      * <tr>
-     *   <td>FreeBSD 1.5</td>
-     *   <td>java full version "diablo-1.5.0-b01"</td>
+     * <td>FreeBSD 1.5</td>
+     * <td>java full version "diablo-1.5.0-b01"</td>
      * </tr>
      * <tr>
-     *   <td>BEA jrockit 1.5</td>
-     *   <td>java full version "1.5.0_11-b03"</td>
+     * <td>BEA jrockit 1.5</td>
+     * <td>java full version "1.5.0_11-b03"</td>
      * </tr>
      * </table>
      *
      * @param output for 'javadoc -J-version'
      * @return the version of the javadoc for the output, only digits and dots
      * @throws PatternSyntaxException if the output doesn't match with the output pattern
-     * <tt>(?s).*?[^a-zA-Z]([0-9]+\\.?[0-9]*)(\\.([0-9]+))?.*</tt>.
+     *             <tt>(?s).*?[^a-zA-Z]([0-9]+\\.?[0-9]*)(\\.([0-9]+))?.*</tt>.
      * @throws IllegalArgumentException if the output is null
      */
     protected static String extractJavadocVersion( String output )
@@ -614,32 +608,31 @@ public class JavadocUtil
     }
 
     /**
-     * Parse a memory string which be used in the JVM arguments <code>-Xms</code> or <code>-Xmx</code>.
-     * <br/>
+     * Parse a memory string which be used in the JVM arguments <code>-Xms</code> or <code>-Xmx</code>. <br/>
      * Here are some supported memory string depending the JDK used:
      * <table>
      * <tr>
-     *   <th>JDK</th>
-     *   <th>Memory argument support for <code>-Xms</code> or <code>-Xmx</code></th>
+     * <th>JDK</th>
+     * <th>Memory argument support for <code>-Xms</code> or <code>-Xmx</code></th>
      * </tr>
      * <tr>
-     *   <td>SUN</td>
-     *   <td>1024k | 128m | 1g | 1t</td>
+     * <td>SUN</td>
+     * <td>1024k | 128m | 1g | 1t</td>
      * </tr>
      * <tr>
-     *   <td>IBM</td>
-     *   <td>1024k | 1024b | 128m | 128mb | 1g | 1gb</td>
+     * <td>IBM</td>
+     * <td>1024k | 1024b | 128m | 128mb | 1g | 1gb</td>
      * </tr>
      * <tr>
-     *   <td>BEA</td>
-     *   <td>1024k | 1024kb | 128m | 128mb | 1g | 1gb</td>
+     * <td>BEA</td>
+     * <td>1024k | 1024kb | 128m | 128mb | 1g | 1gb</td>
      * </tr>
      * </table>
      *
      * @param memory the memory to be parsed, not null.
-     * @return the memory parsed with a supported unit. If no unit specified in the <code>memory</code> parameter,
-     * the default unit is <code>m</code>. The units <code>g | gb</code> or <code>t | tb</code> will be converted
-     * in <code>m</code>.
+     * @return the memory parsed with a supported unit. If no unit specified in the <code>memory</code> parameter, the
+     *         default unit is <code>m</code>. The units <code>g | gb</code> or <code>t | tb</code> will be converted in
+     *         <code>m</code>.
      * @throws IllegalArgumentException if the <code>memory</code> parameter is null or doesn't match any pattern.
      */
     protected static String parseJavadocMemory( String memory )
@@ -722,8 +715,8 @@ public class JavadocUtil
     }
 
     /**
-     * For security reasons, if an active proxy is defined and needs an authentication by
-     * username/password, hide the proxy password in the command line.
+     * For security reasons, if an active proxy is defined and needs an authentication by username/password, hide the
+     * proxy password in the command line.
      *
      * @param cmdLine a command line, not null
      * @param settings the user settings
@@ -757,16 +750,15 @@ public class JavadocUtil
     }
 
     /**
-     * Auto-detect the class names of the implementation of <code>com.sun.tools.doclets.Taglet</code> class from a
-     * given jar file.
-     * <br/>
+     * Auto-detect the class names of the implementation of <code>com.sun.tools.doclets.Taglet</code> class from a given
+     * jar file. <br/>
      * <b>Note</b>: <code>JAVA_HOME/lib/tools.jar</code> is a requirement to find
      * <code>com.sun.tools.doclets.Taglet</code> class.
      *
      * @param jarFile not null
      * @return the list of <code>com.sun.tools.doclets.Taglet</code> class names from a given jarFile.
-     * @throws IOException if jarFile is invalid or not found, or if the <code>JAVA_HOME/lib/tools.jar</code>
-     * is not found.
+     * @throws IOException if jarFile is invalid or not found, or if the <code>JAVA_HOME/lib/tools.jar</code> is not
+     *             found.
      * @throws ClassNotFoundException if any
      * @throws NoClassDefFoundError if any
      */
@@ -790,8 +782,8 @@ public class JavadocUtil
         List<String> tagletClasses = new ArrayList<>();
 
         Class<?> tagletClass;
-        
-        try 
+
+        try
         {
             tagletClass = cl.loadClass( "com.sun.tools.doclets.Taglet" );
         }
@@ -799,7 +791,7 @@ public class JavadocUtil
         {
             tagletClass = cl.loadClass( "jdk.javadoc.doclet.Taglet" );
         }
-        
+
         for ( String s : classes )
         {
             Class<?> c = cl.loadClass( s );
@@ -866,9 +858,8 @@ public class JavadocUtil
     }
 
     /**
-     * Invoke Maven for the given project file with a list of goals and properties, the output will be in the
-     * invokerlog file.
-     * <br/>
+     * Invoke Maven for the given project file with a list of goals and properties, the output will be in the invokerlog
+     * file. <br/>
      * <b>Note</b>: the Maven Home should be defined in the <code>maven.home</code> Java system property or defined in
      * <code>M2_HOME</code> system env variables.
      *
@@ -906,9 +897,8 @@ public class JavadocUtil
         String mavenHome = getMavenHome( log );
         if ( StringUtils.isEmpty( mavenHome ) )
         {
-            String msg =
-                "Could NOT invoke Maven because no Maven Home is defined. You need to have set the M2_HOME "
-                    + "system env variable or a maven.home Java system properties.";
+            String msg = "Could NOT invoke Maven because no Maven Home is defined. You need to have set the M2_HOME "
+                + "system env variable or a maven.home Java system properties.";
             if ( log != null )
             {
                 log.error( msg );
@@ -958,9 +948,8 @@ public class JavadocUtil
             String invokerLogContent = readFile( invokerLog, "UTF-8" );
 
             // see DefaultMaven
-            if ( invokerLogContent != null
-                && ( !invokerLogContent.contains( "Scanning for projects..." )
-                                || invokerLogContent.contains( OutOfMemoryError.class.getName() ) ) )
+            if ( invokerLogContent != null && ( !invokerLogContent.contains( "Scanning for projects..." )
+                || invokerLogContent.contains( OutOfMemoryError.class.getName() ) ) )
             {
                 if ( log != null )
                 {
@@ -980,9 +969,8 @@ public class JavadocUtil
             String invokerLogContent = readFile( invokerLog, "UTF-8" );
 
             // see DefaultMaven
-            if ( invokerLogContent != null
-                && ( !invokerLogContent.contains( "Scanning for projects..." )
-                                || invokerLogContent.contains( OutOfMemoryError.class.getName() ) ) )
+            if ( invokerLogContent != null && ( !invokerLogContent.contains( "Scanning for projects..." )
+                || invokerLogContent.contains( OutOfMemoryError.class.getName() ) ) )
             {
                 throw new MavenInvocationException( ERROR_INIT_VM );
             }
@@ -1014,8 +1002,8 @@ public class JavadocUtil
     }
 
     /**
-     * Split the given path with colon and semi-colon, to support Solaris and Windows path.
-     * Examples:
+     * Split the given path with colon and semi-colon, to support Solaris and Windows path. Examples:
+     * 
      * <pre>
      * splitPath( "/home:/tmp" )     = ["/home", "/tmp"]
      * splitPath( "/home;/tmp" )     = ["/home", "/tmp"]
@@ -1023,8 +1011,8 @@ public class JavadocUtil
      * splitPath( "C:/home;C:/tmp" ) = ["C:/home", "C:/tmp"]
      * </pre>
      *
-     * @param path which can contain multiple paths separated with a colon (<code>:</code>) or a
-     * semi-colon (<code>;</code>), platform independent. Could be null.
+     * @param path which can contain multiple paths separated with a colon (<code>:</code>) or a semi-colon
+     *            (<code>;</code>), platform independent. Could be null.
      * @return the path splitted by colon or semi-colon or <code>null</code> if path was <code>null</code>.
      * @since 2.6.1
      */
@@ -1046,17 +1034,17 @@ public class JavadocUtil
     }
 
     /**
-     * Unify the given path with the current System path separator, to be platform independent.
-     * Examples:
+     * Unify the given path with the current System path separator, to be platform independent. Examples:
+     * 
      * <pre>
      * unifyPathSeparator( "/home:/tmp" ) = "/home:/tmp" (Solaris box)
      * unifyPathSeparator( "/home:/tmp" ) = "/home;/tmp" (Windows box)
      * </pre>
      *
-     * @param path which can contain multiple paths by separating them with a colon (<code>:</code>) or a
-     * semi-colon (<code>;</code>), platform independent. Could be null.
+     * @param path which can contain multiple paths by separating them with a colon (<code>:</code>) or a semi-colon
+     *            (<code>;</code>), platform independent. Could be null.
      * @return the same path but separated with the current System path separator or <code>null</code> if path was
-     * <code>null</code>.
+     *         <code>null</code>.
      * @since 2.6.1
      * @see #splitPath(String)
      * @see File#pathSeparator
@@ -1095,8 +1083,8 @@ public class JavadocUtil
         {
             jarStream = new JarInputStream( new FileInputStream( jarFile ) );
 
-            for ( JarEntry jarEntry = jarStream.getNextJarEntry(); jarEntry != null;
-                  jarEntry = jarStream.getNextJarEntry() )
+            for ( JarEntry jarEntry = jarStream.getNextJarEntry(); jarEntry != null; jarEntry =
+                jarStream.getNextJarEntry() )
             {
                 if ( jarEntry.getName().toLowerCase( Locale.ENGLISH ).endsWith( ".class" ) )
                 {
@@ -1148,7 +1136,7 @@ public class JavadocUtil
             {
                 if ( !invokerLog.exists() )
                 {
-                    //noinspection ResultOfMethodCallIgnored
+                    // noinspection ResultOfMethodCallIgnored
                     invokerLog.getParentFile().mkdirs();
                 }
                 os = new FileOutputStream( invokerLog );
@@ -1211,8 +1199,8 @@ public class JavadocUtil
 
     /**
      * @param log a logger could be null
-     * @return the Maven home defined in the <code>maven.home</code> system property or defined
-     * in <code>M2_HOME</code> system env variables or null if never set.
+     * @return the Maven home defined in the <code>maven.home</code> system property or defined in <code>M2_HOME</code>
+     *         system env variables or null if never set.
      * @since 2.6
      */
     private static String getMavenHome( Log log )
@@ -1238,9 +1226,8 @@ public class JavadocUtil
         {
             if ( log != null && log.isErrorEnabled() )
             {
-                log
-                   .error( "Cannot find Maven application directory. Either specify \'maven.home\' system property, or "
-                       + "M2_HOME environment variable." );
+                log.error( "Cannot find Maven application directory. Either specify \'maven.home\' system property, or "
+                    + "M2_HOME environment variable." );
             }
         }
 
@@ -1272,15 +1259,15 @@ public class JavadocUtil
 
     /**
      * @param log a logger could be null
-     * @return the <code>JAVA_HOME</code> from System.getProperty( "java.home" )
-     * By default, <code>System.getProperty( "java.home" ) = JRE_HOME</code> and <code>JRE_HOME</code>
-     * should be in the <code>JDK_HOME</code>
+     * @return the <code>JAVA_HOME</code> from System.getProperty( "java.home" ) By default,
+     *         <code>System.getProperty( "java.home" ) = JRE_HOME</code> and <code>JRE_HOME</code> should be in the
+     *         <code>JDK_HOME</code>
      * @since 2.6
      */
     private static File getJavaHome( Log log )
     {
         File javaHome = null;
-        
+
         String javaHomeValue = null;
         try
         {
@@ -1305,7 +1292,7 @@ public class JavadocUtil
             else
             {
                 javaHome = new File( SystemUtils.getJavaHome(), ".." );
-            }            
+            }
         }
 
         if ( javaHome == null || !javaHome.exists() )
@@ -1349,14 +1336,11 @@ public class JavadocUtil
     }
 
     /**
-     * A Path tokenizer takes a path and returns the components that make up
-     * that path.
+     * A Path tokenizer takes a path and returns the components that make up that path. The path can use path separators
+     * of either ':' or ';' and file separators of either '/' or '\'.
      *
-     * The path can use path separators of either ':' or ';' and file separators
-     * of either '/' or '\'.
-     *
-     * @version revision 439418 taken on 2009-09-12 from Ant Project
-     * (see http://svn.apache.org/repos/asf/ant/core/trunk/src/main/org/apache/tools/ant/PathTokenizer.java)
+     * @version revision 439418 taken on 2009-09-12 from Ant Project (see
+     *          http://svn.apache.org/repos/asf/ant/core/trunk/src/main/org/apache/tools/ant/PathTokenizer.java)
      */
     private static class PathTokenizer
     {
@@ -1366,21 +1350,18 @@ public class JavadocUtil
         private StringTokenizer tokenizer;
 
         /**
-         * A String which stores any path components which have been read ahead
-         * due to DOS filesystem compensation.
+         * A String which stores any path components which have been read ahead due to DOS filesystem compensation.
          */
         private String lookahead = null;
 
         /**
-         * A boolean that determines if we are running on Novell NetWare, which
-         * exhibits slightly different path name characteristics (multi-character
-         * volume / drive names)
+         * A boolean that determines if we are running on Novell NetWare, which exhibits slightly different path name
+         * characteristics (multi-character volume / drive names)
          */
         private boolean onNetWare = Os.isFamily( "netware" );
 
         /**
-         * Flag to indicate whether or not we are running on a platform with a
-         * DOS style filesystem
+         * Flag to indicate whether or not we are running on a platform with a DOS style filesystem
          */
         private boolean dosStyleFilesystem;
 
@@ -1407,12 +1388,11 @@ public class JavadocUtil
         }
 
         /**
-         * Tests if there are more path elements available from this tokenizer's
-         * path. If this method returns <code>true</code>, then a subsequent call
-         * to nextToken will successfully return a token.
+         * Tests if there are more path elements available from this tokenizer's path. If this method returns
+         * <code>true</code>, then a subsequent call to nextToken will successfully return a token.
          *
-         * @return <code>true</code> if and only if there is at least one token
-         * in the string after the current position; <code>false</code> otherwise.
+         * @return <code>true</code> if and only if there is at least one token in the string after the current
+         *         position; <code>false</code> otherwise.
          */
         public boolean hasMoreTokens()
         {
@@ -1424,9 +1404,7 @@ public class JavadocUtil
          * Returns the next path element from this tokenizer.
          *
          * @return the next path element from this tokenizer.
-         *
-         * @exception NoSuchElementException if there are no more elements in this
-         *            tokenizer's path.
+         * @exception NoSuchElementException if there are no more elements in this tokenizer's path.
          */
         public String nextToken()
             throws NoSuchElementException
@@ -1520,7 +1498,8 @@ public class JavadocUtil
      * @author Robert Scholte
      * @since 3.0.1
      */
-    private static class JavadocOutputStreamConsumer extends CommandLineUtils.StringStreamConsumer
+    private static class JavadocOutputStreamConsumer
+        extends CommandLineUtils.StringStreamConsumer
     {
         @Override
         public void consumeLine( String line )
@@ -1531,19 +1510,19 @@ public class JavadocUtil
             }
         }
     }
-    
+
     static List<String> toList( String src )
     {
         return toList( src, null, null );
     }
-    
+
     static List<String> toList( String src, String elementPrefix, String elementSuffix )
     {
         if ( StringUtils.isEmpty( src ) )
         {
             return null;
         }
-        
+
         List<String> result = new ArrayList<>();
 
         StringTokenizer st = new StringTokenizer( src, "[,:;]" );
@@ -1555,46 +1534,46 @@ public class JavadocUtil
             {
                 sb.append( elementPrefix );
             }
-            
+
             sb.append( st.nextToken() );
-            
+
             if ( StringUtils.isNotEmpty( elementSuffix ) )
             {
                 sb.append( elementSuffix );
             }
-            
+
             result.add( sb.toString() );
         }
-        
+
         return result;
     }
-    
+
     static <T> List<T> toList( T[] multiple )
     {
         return toList( null, multiple );
     }
-    
+
     static <T> List<T> toList( T single, T[] multiple )
     {
         if ( single == null && ( multiple == null || multiple.length < 1 ) )
         {
             return null;
         }
-        
+
         List<T> result = new ArrayList<>();
         if ( single != null )
         {
             result.add( single );
         }
-        
+
         if ( multiple != null && multiple.length > 0 )
         {
             result.addAll( Arrays.asList( multiple ) );
         }
-        
+
         return result;
     }
-    
+
     // TODO: move to plexus-utils or use something appropriate from there
     public static String toRelative( File basedir, String absolutePath )
     {
@@ -1622,7 +1601,7 @@ public class JavadocUtil
 
         return relative;
     }
-    
+
     /**
      * Convenience method to determine that a collection is not empty or null.
      */
@@ -1630,7 +1609,7 @@ public class JavadocUtil
     {
         return collection != null && !collection.isEmpty();
     }
-    
+
     /**
      * Convenience method to determine that a collection is empty or null.
      */
@@ -1688,15 +1667,11 @@ public class JavadocUtil
      * @param url The URL to validate.
      * @param settings The user settings used to configure the connection to the URL or {@code null}.
      * @param validateContent <code>true</code> to validate the content of the <code>package-list</code> resource;
-     * <code>false</code> to only check the existence of the <code>package-list</code> resource.
-     *
+     *            <code>false</code> to only check the existence of the <code>package-list</code> resource.
      * @return <code>true</code> if <code>url</code> points to a valid <code>package-list</code> resource;
-     * <code>false</code> else.
-     *
+     *         <code>false</code> else.
      * @throws IOException if reading the resource fails.
-     *
      * @see #createHttpClient(org.apache.maven.settings.Settings, java.net.URL)
-     *
      * @since 2.8
      */
     protected static boolean isValidPackageList( URL url, Settings settings, boolean validateContent )
@@ -1738,8 +1713,8 @@ public class JavadocUtil
                 int status = response.getStatusLine().getStatusCode();
                 if ( status != HttpStatus.SC_OK )
                 {
-                    throw new FileNotFoundException(
-                        "Unexpected HTTP status code " + status + " getting resource " + url.toExternalForm() + "." );
+                    throw new FileNotFoundException( "Unexpected HTTP status code " + status + " getting resource "
+                        + url.toExternalForm() + "." );
                 }
 
                 // Intentionally using the platform default encoding here since this is what Javadoc uses internally.
@@ -1822,9 +1797,7 @@ public class JavadocUtil
      *
      * @param settings The settings to use for setting up the client or {@code null}.
      * @param url The {@code URL} to use for setting up the client or {@code null}.
-     *
      * @return A new {@code HttpClient} instance.
-     *
      * @see #DEFAULT_TIMEOUT
      * @since 2.8
      */
@@ -1847,7 +1820,7 @@ public class JavadocUtil
             proxyInfo.setNonProxyHosts( activeProxy.getNonProxyHosts() );
 
             if ( StringUtils.isNotEmpty( activeProxy.getHost() )
-                 && ( url == null || !ProxyUtils.validateNonProxyHosts( proxyInfo, url.getHost() ) ) )
+                && ( url == null || !ProxyUtils.validateNonProxyHosts( proxyInfo, url.getHost() ) ) )
             {
                 HttpHost proxy = new HttpHost( activeProxy.getHost(), activeProxy.getPort() );
                 httpClient.getParams().setParameter( ConnRoutePNames.DEFAULT_PROXY, proxy );
