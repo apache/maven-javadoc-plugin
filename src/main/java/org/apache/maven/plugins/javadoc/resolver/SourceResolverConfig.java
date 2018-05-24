@@ -47,7 +47,7 @@ public class SourceResolverConfig
 
     /**
      * @param project {@link MavenProject}
-     * @param buoildingRequest {@link ProjectBuildingRequest}
+     * @param buildingRequest {@link ProjectBuildingRequest}
      * @param outputBasedir The output base directory.
      */
     public SourceResolverConfig( final MavenProject project, final ProjectBuildingRequest buildingRequest,
@@ -59,7 +59,7 @@ public class SourceResolverConfig
     }
 
     /**
-     * @param filter {@link ArtifactFilter}
+     * @param filter {@link AndFilter}
      * @return {@link SourceResolverConfig}
      */
     public SourceResolverConfig withFilter( final AndFilter filter )
@@ -131,7 +131,7 @@ public class SourceResolverConfig
     }
 
     /**
-     * @return {@link TransformableFilter}
+     * @return {@link AndFilter}
      */
     public AndFilter filter()
     {

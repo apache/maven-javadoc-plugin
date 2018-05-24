@@ -464,9 +464,6 @@ public class FixJavadocMojoTest
         assertTrue( withoutEmptyJavadocLines.endsWith( "any" ) );
     }
 
-    /**
-     * @throws Throwable if any
-     */
     public void testJavadocCommentJdk5()
         throws Exception
     {

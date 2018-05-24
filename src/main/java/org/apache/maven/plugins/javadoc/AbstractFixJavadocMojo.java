@@ -86,7 +86,7 @@ import java.util.regex.Pattern;
 
 /**
  * Abstract class to fix Javadoc documentation and tags in source files.
- * <br/>
+ * <br>
  * See <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#wheretags">Where Tags
  * Can Be Used</a>.
  *

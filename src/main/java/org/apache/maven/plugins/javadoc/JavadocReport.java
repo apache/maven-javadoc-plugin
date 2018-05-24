@@ -168,9 +168,9 @@ public class JavadocReport
     /**
      * {@inheritDoc}
      *
-     * <br/>
+     * <br>
      * The logic is the following:
-     * <table>
+     * <table summary="Can-generate-report Matrix">
      *   <tbody>
      *     <tr>
      *       <th> isAggregator </th>

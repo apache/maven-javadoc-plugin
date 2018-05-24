@@ -519,7 +519,7 @@ public abstract class AbstractJavadocMojo
      * Specifies to use the
      * <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#standard">
      * options provided by the Standard Doclet</a> for a custom doclet.
-     * <br/>
+     * <br>
      * Example:
      * <pre>
      * &lt;docletArtifacts&gt;
@@ -1128,7 +1128,7 @@ public abstract class AbstractJavadocMojo
 
     /**
      * Creates links to existing javadoc-generated documentation of external referenced classes.
-     * <br/>
+     * <br>
      * <b>Notes</b>:
      * <ol>
      * <li>only used if {@link #isOffline} is set to <code>false</code>.</li>
@@ -1288,9 +1288,8 @@ public abstract class AbstractJavadocMojo
 
     /**
      * Omits the class/interface hierarchy pages from the generated docs.
-     * <br/>
-     * See <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#notree">notree</a>.
-     * <br/>
+     * <br>
+     * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#notree">notree</a> option
      */
     @Parameter( property = "notree", defaultValue = "false" )
     private boolean notree;
@@ -1314,18 +1313,16 @@ public abstract class AbstractJavadocMojo
      * <br/>
      * <b>Note</b>: if {@link #detectOfflineLinks} is defined, the offline links between the project modules are
      * automatically added if the goal is calling in a non-aggregator way.
-     * <br/>
-     * See <a href="./apidocs/org/apache/maven/plugin/javadoc/options/OfflineLink.html">Javadoc</a>.
-     * <br/>
+     * <br>
+     * @see <a href="./apidocs/org/apache/maven/plugin/javadoc/options/OfflineLink.html">Javadoc</a>.
      */
     @Parameter( property = "offlineLinks" )
     private OfflineLink[] offlineLinks;
 
     /**
      * Specifies the destination directory where javadoc saves the generated HTML files.
-     * <br/>
-     * See <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#d">d</a>.
-     * <br/>
+     * <br>
+     * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#d">d</a> option
      */
     @Parameter( property = "destDir", alias = "destDir", defaultValue = "${project.build.directory}/apidocs",
                     required = true )
@@ -1346,8 +1343,7 @@ public abstract class AbstractJavadocMojo
     /**
      * Generates compile-time warnings for missing serial tags.
      * <br/>
-     * See <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#serialwarn">serialwarn</a>
-     * <br/>
+     * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#serialwarn">serialwarn</a> option 
      */
     @Parameter( property = "serialwarn", defaultValue = "false" )
     private boolean serialwarn;
@@ -2230,7 +2226,7 @@ public abstract class AbstractJavadocMojo
      *
      * @return a Collection of the project absolute source paths as <code>String</code>
      * @throws MavenReportException {@link MavenReportException}
-     * @see JavadocUtil#pruneDirs(MavenProject, List)
+     * @see JavadocUtil#pruneDirs(MavenProject, Collection)
      */
     protected Map<String, Collection<String>> getSourcePaths()
         throws MavenReportException
@@ -2332,7 +2328,7 @@ public abstract class AbstractJavadocMojo
     /**
      * Override this method to customize the configuration for resolving dependency sources. The default
      * behavior enables the resolution of -sources jar files.
-     * @param config {@linke SourceResolverConfig}
+     * @param config {@link SourceResolverConfig}
      * @return {@link SourceResolverConfig}
      */
     protected SourceResolverConfig configureDependencySourceResolution( final SourceResolverConfig config )
@@ -2692,7 +2688,7 @@ public abstract class AbstractJavadocMojo
     /**
      * @param dependency {@link Dependency}
      * @return {@link Artifact}
-     * @throws MavenReportException
+     * @throws MavenReportException when artifact could not be resolved
      */
     public Artifact resolveDependency( Dependency dependency )
         throws MavenReportException

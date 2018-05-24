@@ -212,7 +212,7 @@ public class JavadocUtil
 
     /**
      * Convenience method to wrap an argument value in single quotes (i.e. <code>'</code>). Intended for values which
-     * may contain whitespaces. <br/>
+     * may contain whitespaces. <br>
      * To prevent javadoc error, the line separator (i.e. <code>\n</code>) are skipped.
      *
      * @param value the argument value.
@@ -548,9 +548,9 @@ public class JavadocUtil
     }
 
     /**
-     * Parse the output for 'javadoc -J-version' and return the javadoc version recognized. <br/>
+     * Parse the output for 'javadoc -J-version' and return the javadoc version recognized. <br>
      * Here are some output for 'javadoc -J-version' depending the JDK used:
-     * <table>
+     * <table summary="Output for 'javadoc -J-version' per JDK">
      * <tr>
      * <th>JDK</th>
      * <th>Output for 'javadoc -J-version'</th>
@@ -608,9 +608,9 @@ public class JavadocUtil
     }
 
     /**
-     * Parse a memory string which be used in the JVM arguments <code>-Xms</code> or <code>-Xmx</code>. <br/>
+     * Parse a memory string which be used in the JVM arguments <code>-Xms</code> or <code>-Xmx</code>. <br>
      * Here are some supported memory string depending the JDK used:
-     * <table>
+     * <table summary="Memory argument support per JDK">
      * <tr>
      * <th>JDK</th>
      * <th>Memory argument support for <code>-Xms</code> or <code>-Xmx</code></th>
@@ -751,7 +751,7 @@ public class JavadocUtil
 
     /**
      * Auto-detect the class names of the implementation of <code>com.sun.tools.doclets.Taglet</code> class from a given
-     * jar file. <br/>
+     * jar file. <br>
      * <b>Note</b>: <code>JAVA_HOME/lib/tools.jar</code> is a requirement to find
      * <code>com.sun.tools.doclets.Taglet</code> class.
      *
@@ -859,7 +859,7 @@ public class JavadocUtil
 
     /**
      * Invoke Maven for the given project file with a list of goals and properties, the output will be in the invokerlog
-     * file. <br/>
+     * file. <br>
      * <b>Note</b>: the Maven Home should be defined in the <code>maven.home</code> Java system property or defined in
      * <code>M2_HOME</code> system env variables.
      *
@@ -1604,6 +1604,8 @@ public class JavadocUtil
 
     /**
      * Convenience method to determine that a collection is not empty or null.
+     * @param collection the collection to verify
+     * @return {@code true} if not {@code null} and not empty, otherwise {@code false}
      */
     public static boolean isNotEmpty( final Collection<?> collection )
     {
@@ -1612,6 +1614,8 @@ public class JavadocUtil
 
     /**
      * Convenience method to determine that a collection is empty or null.
+     * @param collection the collection to verify
+     * @return {@code true} if {@code null} or empty, otherwise {@code false}
      */
     public static boolean isEmpty( final Collection<?> collection )
     {
