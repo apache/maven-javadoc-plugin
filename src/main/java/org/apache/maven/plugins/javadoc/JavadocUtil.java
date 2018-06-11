@@ -1726,15 +1726,15 @@ public class JavadocUtil
                 }
                 else
                 {
-                    int pos = url.getPath().lastIndexOf('/');
+                    int pos = url.getPath().lastIndexOf( '/' );
                     RedirectLocations redirects = (RedirectLocations)
-                            context.getAttribute("http.protocol.redirect-locations");
-                    if (pos >= 0 && redirects != null)
+                            context.getAttribute( "http.protocol.redirect-locations" );
+                    if ( pos >= 0 && redirects != null )
                     {
-                        URI location = redirects.get(redirects.size() - 1);
-                        String suffix = url.getPath().substring(pos);
+                        URI location = redirects.get( redirects.size() - 1 );
+                        String suffix = url.getPath().substring( pos );
                         // Redirections shall point to the same file, e.g. /package-list
-                        if (!location.toURL().getPath().endsWith(suffix))
+                        if ( !location.toURL().getPath().endsWith( suffix ) )
                         {
                             throw new FileNotFoundException( url.toExternalForm() + " redirects to "
                                     + location.toURL().toExternalForm() + "." );
