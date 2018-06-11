@@ -127,7 +127,7 @@ public class JavadocUtil
     public static Collection<Path> pruneDirs( MavenProject project, Collection<String> dirs )
     {
         final Path projectBasedir = project.getBasedir().toPath();
-        
+
         Set<Path> pruned = new LinkedHashSet<>( dirs.size() );
         for ( String dir : dirs )
         {
@@ -171,7 +171,7 @@ public class JavadocUtil
     /**
      * Determine whether a file should be excluded from the provided list of paths, based on whether it exists and is
      * already present in the list.
-     * 
+     *
      * @param f The files.
      * @param pruned The list of pruned files..
      * @return true if the file could be pruned false otherwise.
@@ -343,7 +343,7 @@ public class JavadocUtil
                                                     Collection<String> excludePackages )
     {
         List<String> files = new ArrayList<>();
-        
+
         List<Pattern> excludePackagePatterns = new ArrayList<>( excludePackages.size() );
         for ( String excludePackage :  excludePackages )
         {
@@ -365,7 +365,7 @@ public class JavadocUtil
                     break;
                 }
             }
-            
+
             if ( !excluded )
             {
                 files.add( file );
@@ -387,9 +387,9 @@ public class JavadocUtil
                                                              Collection<String> excludePackagenames )
     {
         final String regexFileSeparator = File.separator.replace( "\\", "\\\\" );
-        
+
         final Collection<String> fileList = new ArrayList<>();
-        
+
         try
         {
             Files.walkFileTree( sourceDirectory, new SimpleFileVisitor<Path>()
@@ -414,15 +414,15 @@ public class JavadocUtil
         List<String> files = new ArrayList<>();
         for ( String excludePackagename : excludePackagenames )
         {
-            // Usage of wildcard was bad specified and bad implemented, i.e. using String.contains() 
+            // Usage of wildcard was bad specified and bad implemented, i.e. using String.contains()
             //   without respecting surrounding context
-            // Following implementation should match requirements as defined in the examples:  
+            // Following implementation should match requirements as defined in the examples:
             // - A wildcard at the beginning should match 1 or more folders
             // - Any other wildcard must match exactly one folder
             Pattern p = Pattern.compile( excludePackagename.replace( ".", regexFileSeparator )
                                                            .replaceFirst( "^\\*", ".+" )
                                                            .replace( "*", "[^" + regexFileSeparator + "]+" ) );
-            
+
             for ( String aFileList : fileList )
             {
                 if ( p.matcher( aFileList ).matches() )
@@ -476,7 +476,7 @@ public class JavadocUtil
 
     /**
      * Call the Javadoc tool and parse its output to find its version, i.e.:
-     * 
+     *
      * <pre>
      * javadoc.exe( or.sh ) - J - version
      * </pre>
@@ -945,7 +945,7 @@ public class JavadocUtil
 
     /**
      * Split the given path with colon and semi-colon, to support Solaris and Windows path. Examples:
-     * 
+     *
      * <pre>
      * splitPath( "/home:/tmp" )     = ["/home", "/tmp"]
      * splitPath( "/home;/tmp" )     = ["/home", "/tmp"]
@@ -977,7 +977,7 @@ public class JavadocUtil
 
     /**
      * Unify the given path with the current System path separator, to be platform independent. Examples:
-     * 
+     *
      * <pre>
      * unifyPathSeparator( "/home:/tmp" ) = "/home:/tmp" (Solaris box)
      * unifyPathSeparator( "/home:/tmp" ) = "/home;/tmp" (Windows box)
@@ -1425,7 +1425,7 @@ public class JavadocUtil
 
     /**
      * Ignores line like 'Picked up JAVA_TOOL_OPTIONS: ...' as can happen on CI servers.
-     * 
+     *
      * @author Robert Scholte
      * @since 3.0.1
      */
@@ -1632,7 +1632,7 @@ public class JavadocUtil
             return true;
         }
     }
-    
+
     protected static boolean isValidElementList( URL url, Settings settings, boolean validateContent )
                     throws IOException
     {
@@ -1651,7 +1651,7 @@ public class JavadocUtil
                     {
                         continue;
                     }
-                        
+
                     if ( !isValidPackageName( line ) )
                     {
                         return false;
@@ -1661,11 +1661,11 @@ public class JavadocUtil
             return true;
         }
     }
-    
+
     private static BufferedReader getReader( URL url, Settings settings ) throws IOException
     {
         BufferedReader reader = null;
-        
+
         if ( "file".equals( url.getProtocol() ) )
         {
             // Intentionally using the platform default encoding here since this is what Javadoc uses internally.
@@ -1677,16 +1677,17 @@ public class JavadocUtil
             final HttpClient httpClient = createHttpClient( settings, url );
 
             final HttpGet httpMethod = new HttpGet( url.toString() );
-            
+
             HttpResponse response;
+            HttpClientContext httpContext = HttpClientContext.create();
             try
             {
-                response = httpClient.execute( httpMethod );
+                response = httpClient.execute( httpMethod, httpContext );
             }
             catch ( SocketTimeoutException e )
             {
                 // could be a sporadic failure, one more retry before we give up
-                response = httpClient.execute( httpMethod );
+                response = httpClient.execute( httpMethod, httpContext );
             }
 
             int status = response.getStatusLine().getStatusCode();
@@ -1695,16 +1696,32 @@ public class JavadocUtil
                 throw new FileNotFoundException( "Unexpected HTTP status code " + status + " getting resource "
                     + url.toExternalForm() + "." );
             }
+            else
+            {
+                int pos = url.getPath().lastIndexOf( '/' );
+                List<URI> redirects = httpContext.getRedirectLocations();
+                if ( pos >= 0 && isNotEmpty( redirects ) )
+                {
+                    URI location = redirects.get( redirects.size() - 1 );
+                    String suffix = url.getPath().substring( pos );
+                    // Redirections shall point to the same file, e.g. /package-list
+                    if ( !location.getPath().endsWith( suffix ) )
+                    {
+                        throw new FileNotFoundException( url.toExternalForm() + " redirects to "
+                                + location.toURL().toExternalForm() + "." );
+                    }
+                }
+            }
 
             // Intentionally using the platform default encoding here since this is what Javadoc uses internally.
-            reader = new BufferedReader( new InputStreamReader( response.getEntity().getContent() ) ) 
+            reader = new BufferedReader( new InputStreamReader( response.getEntity().getContent() ) )
             {
                 @Override
                 public void close()
                     throws IOException
                 {
                     super.close();
-                    
+
                     if ( httpMethod != null )
                     {
                         httpMethod.releaseConnection();
@@ -1716,7 +1733,7 @@ public class JavadocUtil
                 }
             };
         }
-        
+
         return reader;
     }
 
