@@ -33,10 +33,13 @@ import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.RedirectLocations;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Proxy;
@@ -1679,14 +1682,15 @@ public class JavadocUtil
             final HttpGet httpMethod = new HttpGet( url.toString() );
             
             HttpResponse response;
+            HttpContext context = new BasicHttpContext();
             try
             {
-                response = httpClient.execute( httpMethod );
+                response = httpClient.execute( httpMethod, context );
             }
             catch ( SocketTimeoutException e )
             {
                 // could be a sporadic failure, one more retry before we give up
-                response = httpClient.execute( httpMethod );
+                response = httpClient.execute( httpMethod, context );
             }
 
             int status = response.getStatusLine().getStatusCode();
@@ -1694,6 +1698,23 @@ public class JavadocUtil
             {
                 throw new FileNotFoundException( "Unexpected HTTP status code " + status + " getting resource "
                     + url.toExternalForm() + "." );
+            }
+            else
+            {
+                int pos = url.getPath().lastIndexOf( '/' );
+                RedirectLocations redirects = (RedirectLocations)
+                        context.getAttribute( "http.protocol.redirect-locations" );
+                if ( pos >= 0 && redirects != null )
+                {
+                    URI location = redirects.get( redirects.size() - 1 );
+                    String suffix = url.getPath().substring( pos );
+                    // Redirections shall point to the same file, e.g. /package-list
+                    if ( !location.toURL().getPath().endsWith( suffix ) )
+                    {
+                        throw new FileNotFoundException( url.toExternalForm() + " redirects to "
+                                + location.toURL().toExternalForm() + "." );
+                    }
+                }
             }
 
             // Intentionally using the platform default encoding here since this is what Javadoc uses internally.
