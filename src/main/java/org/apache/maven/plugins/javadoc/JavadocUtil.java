@@ -28,6 +28,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -1815,6 +1816,7 @@ public class JavadocUtil
         // Some web servers don't allow the default user-agent sent by httpClient
         httpClient.getParams().setParameter( CoreProtocolPNames.USER_AGENT,
                                              "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)" );
+        httpClient.getParams().setParameter( ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY );
 
         if ( settings != null && settings.getActiveProxy() != null )
         {
