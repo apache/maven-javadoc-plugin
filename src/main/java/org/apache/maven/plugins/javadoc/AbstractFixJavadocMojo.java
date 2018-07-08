@@ -52,6 +52,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.codehaus.plexus.components.interactivity.InputHandler;
+import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.ReaderFactory;
@@ -683,6 +684,11 @@ public abstract class AbstractFixJavadocMojo
         properties.put( "textOutputFile", clirrTextOutputFile.getAbsolutePath() );
         properties.put( "comparisonVersion", comparisonVersion );
         properties.put( "failOnError", "false" );
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "8" ) )
+        {
+            // ensure that Java7 picks up TLSv1.2 when connecting with Central
+            properties.put( "https.protocols", "TLSv1.2" );
+        }
 
         File invokerDir = new File( project.getBuild().getDirectory(), "invoker" );
         invokerDir.mkdirs();

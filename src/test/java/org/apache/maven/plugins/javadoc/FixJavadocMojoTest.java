@@ -654,6 +654,13 @@ public class FixJavadocMojoTest
             properties.put( "maven.compiler.target", "1.6" );
         }
         
+        // @todo unittests shouldn't need to go remote
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "8" ) )
+        {
+            // ensure that Java7 picks up TLSv1.2 when connecting with Central
+            properties.put( "https.protocols", "TLSv1.2" );
+        }
+        
         JavadocUtil.invokeMaven( log, new File( getBasedir(), "target/local-repo" ), testPom, goals, properties,
                                  invokerLogFile );
     }
