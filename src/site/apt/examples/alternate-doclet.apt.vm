@@ -55,8 +55,9 @@ Using Alternate Doclet
             <artifactId>doclet</artifactId>
             <version>5.1</version>
           </docletArtifact>
-          <additionalparam>-views</additionalparam>
-          <useStandardDocletOptions>true</useStandardDocletOptions>
+          <additionalOptions>
+            <additionalOption>-views</additionalOption>
+          </additionalOptions>
         </configuration>
       </plugin>
     ...
@@ -68,7 +69,7 @@ Using Alternate Doclet
 
  <<Note>>:
 
-   * {{{../javadoc-mojo.html#additionalparam}\<additionalparam/\>}} parameter could be used to set additional
+   * {{{../javadoc-mojo.html#additionalOptions}\<additionalOptions/\>}} parameter could be used to set additional
    parameters on the command line, specifically for doclet options.
 
    * {{{../javadoc-mojo.html#useStandardDocletOptions}\<useStandardDocletOptions/\>}} parameter could be used to specify
@@ -119,9 +120,10 @@ Using Alternate Doclet In Addition To The Javadoc Doclet
                 <artifactId>doccheck</artifactId>
                 <version>1.2b2</version>
               </docletArtifact>
-              <additionalparam>
-                    -d \${project.build.directory}/site/doccheck
-              </additionalparam>
+              <additionalOptions>
+                <additionalOption>-d</additionalOption>
+                <additionalOption>\${project.build.directory}/site/doccheck</additionalOption>
+              </additionalOptions>
 
               <!-- Other dir than apidocs -->
               <destDir>doccheck</destDir>
