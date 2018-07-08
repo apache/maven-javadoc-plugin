@@ -97,7 +97,7 @@ javadoc.exe(or .sh) @options @packages | @argfile]]></source>
           You could need to add more Javadoc parameters to be process by the Javadoc Tool (i.e. for doclet).
         </p>
         <p>
-          For this, you should use the <i>&lt;additionalparam/&gt;</i> parameter in your Javadoc Plugin configuration.
+          For this, you should use the <i>&lt;additionalOptions/&gt;</i> parameter in your Javadoc Plugin configuration.
         </p>
       </answer>
     </faq>
