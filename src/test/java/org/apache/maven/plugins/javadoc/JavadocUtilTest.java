@@ -577,6 +577,47 @@ public class JavadocUtilTest
     }
 
     /**
+     * Tests that getRedirectUrl returns the same URL when there are no redirects.
+     */
+    public void testGetRedirectUrlWithNoRedirects()
+        throws Exception
+    {
+        Server server = null;
+        try
+        {
+            server = new Server( 0 );
+            server.addHandler( new AbstractHandler()
+            {
+                @Override
+                public void handle( String target, HttpServletRequest request, HttpServletResponse response,
+                                    int dispatch )
+                    throws IOException, ServletException
+                {
+                    response.setStatus( HttpServletResponse.SC_OK );
+                    ByteArrayISO8859Writer writer = new ByteArrayISO8859Writer( 100 );
+                    writer.write( "<html>Hello world</html>" );
+                    writer.flush();
+                    response.setContentLength( writer.size() );
+                    OutputStream out = response.getOutputStream();
+                    writer.writeTo( out );
+                    out.close();
+                    writer.close();
+                }
+            } );
+            server.start();
+
+            URL url = new URI( "http://localhost:" + server.getConnectors()[0].getLocalPort() ).toURL();
+            URL redirectUrl = JavadocUtil.getRedirectUrl( url, new Settings() );
+
+            assertEquals( url.toURI(), redirectUrl.toURI() );
+        }
+        finally
+        {
+            stopSilently( server );
+        }
+    }
+
+    /**
      * Method to test copyJavadocResources()
      *
      * @throws Exception if any

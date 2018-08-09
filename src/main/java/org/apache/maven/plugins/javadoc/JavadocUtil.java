@@ -1654,7 +1654,7 @@ public class JavadocUtil
             }
 
             List<URI> redirects = httpContext.getRedirectLocations();
-            return redirects.isEmpty() ? url : redirects.get( redirects.size() - 1 ).toURL();
+            return isEmpty( redirects ) ? url : redirects.get( redirects.size() - 1 ).toURL();
         }
         finally
         {
