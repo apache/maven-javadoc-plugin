@@ -618,6 +618,46 @@ public class JavadocUtilTest
     }
 
     /**
+     * Tests that getRedirectUrl adds an Accept header in HTTP requests. Necessary because some sites like Cloudflare
+     * reject requests without an Accept header.
+     */
+    public void testGetRedirectUrlVerifyHeaders()
+        throws Exception
+    {
+        Server server = null;
+        try
+        {
+            server = new Server( 0 );
+            server.addHandler( new AbstractHandler()
+            {
+                @Override
+                public void handle( String target, HttpServletRequest request, HttpServletResponse response,
+                                    int dispatch )
+                    throws IOException, ServletException
+                {
+                    if ( request.getHeader( "Accept" ) == null )
+                    {
+                        response.setStatus( HttpServletResponse.SC_FORBIDDEN );
+                    }
+                    else
+                    {
+                        response.setStatus( HttpServletResponse.SC_OK );
+                    }
+                    response.getOutputStream().close();
+                }
+            } );
+            server.start();
+
+            URL url = new URI( "http://localhost:" + server.getConnectors()[0].getLocalPort() ).toURL();
+            JavadocUtil.getRedirectUrl( url, new Settings() );
+        }
+        finally
+        {
+            stopSilently( server );
+        }
+    }
+
+    /**
      * Method to test copyJavadocResources()
      *
      * @throws Exception if any

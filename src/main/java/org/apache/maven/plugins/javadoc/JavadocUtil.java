@@ -19,6 +19,7 @@ package org.apache.maven.plugins.javadoc;
  * under the License.
  */
 
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -32,6 +33,7 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.maven.plugin.logging.Log;
@@ -1815,6 +1817,10 @@ public class JavadocUtil
         // Some web servers don't allow the default user-agent sent by httpClient
         httpClient.getParams().setParameter( CoreProtocolPNames.USER_AGENT,
                                              "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)" );
+
+        // Some server reject requests that do not have an Accept header
+        httpClient.getParams().setParameter( ClientPNames.DEFAULT_HEADERS,
+                                             Arrays.asList( new BasicHeader( HttpHeaders.ACCEPT, "*/*" ) ) );
 
         if ( settings != null && settings.getActiveProxy() != null )
         {
