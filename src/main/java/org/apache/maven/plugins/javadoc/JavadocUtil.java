@@ -29,6 +29,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -1821,6 +1822,8 @@ public class JavadocUtil
         // Some server reject requests that do not have an Accept header
         httpClient.getParams().setParameter( ClientPNames.DEFAULT_HEADERS,
                                              Arrays.asList( new BasicHeader( HttpHeaders.ACCEPT, "*/*" ) ) );
+
+        httpClient.getParams().setParameter( ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY );
 
         if ( settings != null && settings.getActiveProxy() != null )
         {
