@@ -97,9 +97,9 @@ try
         System.err.println( "module2 -linkoffline module1 not added: " + options2 );
         return false;
     }
-    if ( !contentOptions2.substring( linkoffline2 ).contains( apidocs1.getAbsolutePath().replaceAll( "\\\\", "/" ) ) )
+    if ( !contentOptions2.substring( linkoffline2 ).contains( apidocs1.getCanonicalPath().replaceAll( "\\\\", "/" ) ) )
     {
-        System.err.println( apidocs1.getAbsolutePath().replaceAll( "\\\\", "/" ) + " not added: " + options2 );
+        System.err.println( apidocs1.getCanonicalPath().replaceAll( "\\\\", "/" ) + " not added: " + options2 );
         return false;
     }
     int link2 = contentOptions2.indexOf( "-link" );
