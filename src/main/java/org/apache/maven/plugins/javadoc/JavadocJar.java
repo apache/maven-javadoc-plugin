@@ -269,14 +269,13 @@ public class JavadocJar
         archiver.setArchiver( jarArchiver );
         archiver.setOutputFile( javadocJar );
 
-        File contentDirectory = javadocFiles;
-        if ( !contentDirectory.exists() )
+        if ( !javadocFiles.exists() )
         {
             getLog().warn( "JAR will be empty - no content was marked for inclusion!" );
         }
         else
         {
-            archiver.getArchiver().addDirectory( contentDirectory, DEFAULT_INCLUDES, DEFAULT_EXCLUDES );
+            archiver.getArchiver().addDirectory( javadocFiles, DEFAULT_INCLUDES, DEFAULT_EXCLUDES );
         }
 
         List<Resource> resources = project.getBuild().getResources();

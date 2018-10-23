@@ -19,13 +19,12 @@ package org.apache.maven.plugins.javadoc;
  * under the License.
  */
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.maven.plugins.javadoc.JavadocVersion;
 import org.junit.Test;
 
 public class JavadocVersionTest
@@ -42,9 +41,9 @@ public class JavadocVersionTest
         assertTrue( JavadocVersion.parse( "1.4" ).compareTo( JavadocVersion.parse( "1.5" ) ) < 0 );
         assertTrue( JavadocVersion.parse( "1.8" ).compareTo( JavadocVersion.parse( "9" ) ) < 0 );
 
-        assertTrue( JavadocVersion.parse( "1.4" ).compareTo( JavadocVersion.parse( "1.4" ) ) == 0 );
-        assertTrue( JavadocVersion.parse( "1.4.2" ).compareTo( JavadocVersion.parse( "1.4.2" ) ) == 0 );
-        assertTrue( JavadocVersion.parse( "9" ).compareTo( JavadocVersion.parse( "9" ) ) == 0 );
+        assertEquals( 0, JavadocVersion.parse( "1.4" ).compareTo( JavadocVersion.parse( "1.4" ) ) );
+        assertEquals( 0, JavadocVersion.parse( "1.4.2" ).compareTo( JavadocVersion.parse( "1.4.2" ) ) );
+        assertEquals( 0, JavadocVersion.parse( "9" ).compareTo( JavadocVersion.parse( "9" ) ) );
 
         assertTrue( JavadocVersion.parse( "1.4.2" ).compareTo( JavadocVersion.parse( "1.4" ) ) > 0 );
         assertTrue( JavadocVersion.parse( "1.5" ).compareTo( JavadocVersion.parse( "1.4" ) ) > 0 );

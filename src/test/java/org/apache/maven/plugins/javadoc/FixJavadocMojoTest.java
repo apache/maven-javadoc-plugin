@@ -721,18 +721,7 @@ public class FixJavadocMojoTest
     private static String readFile( File file )
         throws Exception
     {
-        Reader fileReader = null;
-        try
-        {
-            fileReader = ReaderFactory.newReader( file, "UTF-8" );
-            final String content = IOUtil.toString( fileReader );
-            fileReader.close();
-            fileReader = null;
-            return content;
-        }
-        finally
-        {
-            IOUtil.close( fileReader );
-        }
+        String content = FileUtils.fileRead( file, "UTF-8" );
+        return content;
     }
 }

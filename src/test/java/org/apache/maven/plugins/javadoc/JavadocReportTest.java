@@ -26,7 +26,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
@@ -48,8 +47,6 @@ import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.StringUtils;
 import org.sonatype.aether.impl.internal.SimpleLocalRepositoryManager;
 
@@ -393,21 +390,10 @@ public class JavadocReportTest
 
         File options = new File( apidocs, "options" );
         assertTrue( options.isFile() );
-        String contentOptions = null;
-        Reader reader = null;
-        try
-        {
-            reader = ReaderFactory.newPlatformReader( options );
-            contentOptions = IOUtil.toString( reader );
-            reader.close();
-            reader = null;
-        }
-        finally
-        {
-            IOUtil.close( reader );
-        }
 
-        assertTrue( contentOptions != null );
+        String contentOptions = FileUtils.fileRead( options );
+
+        assertNotNull( contentOptions );
         assertTrue( contentOptions.contains( "-link" ) );
         assertTrue( contentOptions.contains( "http://java.sun.com/j2se/" ) );
     }
@@ -734,7 +720,7 @@ public class JavadocReportTest
         }
         catch ( MojoExecutionException e )
         {
-            assertTrue( "Doesnt handle correctly newline for header or footer parameter", false );
+            fail( "Doesnt handle correctly newline for header or footer parameter" );
         }
 
         assertTrue( true );
@@ -952,7 +938,7 @@ public class JavadocReportTest
         try
         {
             mojo.execute();
-            assertTrue( "No wrong encoding catch", false );
+            fail( "No wrong encoding catch" );
         }
         catch ( MojoExecutionException e )
         {
@@ -963,7 +949,7 @@ public class JavadocReportTest
         try
         {
             mojo.execute();
-            assertTrue( "No wrong docencoding catch", false );
+            fail( "No wrong docencoding catch" );
         }
         catch ( MojoExecutionException e )
         {
@@ -974,7 +960,7 @@ public class JavadocReportTest
         try
         {
             mojo.execute();
-            assertTrue( "No wrong charset catch", false );
+            fail( "No wrong charset catch" );
         }
         catch ( MojoExecutionException e )
         {
@@ -987,7 +973,7 @@ public class JavadocReportTest
         try
         {
             mojo.execute();
-            assertTrue( "No wrong locale catch", false );
+            fail( "No wrong locale catch" );
         }
         catch ( MojoExecutionException e )
         {
@@ -1004,7 +990,7 @@ public class JavadocReportTest
         try
         {
             mojo.execute();
-            assertTrue( "No conflict catch", false );
+            fail( "No conflict catch" );
         }
         catch ( MojoExecutionException e )
         {
@@ -1100,7 +1086,7 @@ public class JavadocReportTest
         try
         {
             mojo.execute();
-            assertTrue( false );
+            fail();
         }
         catch ( Exception e )
         {

@@ -227,9 +227,7 @@ public final class ResourceResolver extends AbstractLogEnabled
             {
                 IOException error =
                     new IOException( "Failed to read javadoc options from: " + optionsFile + "\nReason: "
-                        + e.getMessage() );
-                error.initCause( e );
-                
+                        + e.getMessage(), e );
                 throw error;
             }
             finally
@@ -279,21 +277,14 @@ public final class ResourceResolver extends AbstractLogEnabled
                 dirs.add( entry.getValue() );
             }
         }
-        catch ( ArtifactResolutionException e )
+        catch ( ArtifactResolutionException | ArtifactNotFoundException e )
         {
             if ( getLogger().isDebugEnabled() )
             {
                 getLogger().debug( e.getMessage(), e );
             }
         }
-        catch ( ArtifactNotFoundException e )
-        {
-            if ( getLogger().isDebugEnabled() )
-            {
-                getLogger().debug( e.getMessage(), e );
-            }
-        }
-        
+
         List<JavadocBundle> result = new ArrayList<>();
 
         for ( String d : dirs )
@@ -311,9 +302,7 @@ public final class ResourceResolver extends AbstractLogEnabled
                 }
                 catch ( XmlPullParserException e )
                 {
-                    IOException error = new IOException( "Failed to parse javadoc options: " + e.getMessage() );
-                    error.initCause( e );
-                    
+                    IOException error = new IOException( "Failed to parse javadoc options: " + e.getMessage(), e );
                     throw error;
                 }
             }
@@ -432,8 +421,7 @@ public final class ResourceResolver extends AbstractLogEnabled
 
                 unArchiver.extract();
 
-                result.add( new AbstractMap.SimpleEntry<String, String>( a.getDependencyConflictId(),
-                                                                         d.getAbsolutePath() ) );
+                result.add( new AbstractMap.SimpleEntry<>( a.getDependencyConflictId(), d.getAbsolutePath() ) );
             }
             catch ( final NoSuchArchiverException e )
             {
@@ -466,19 +454,13 @@ public final class ResourceResolver extends AbstractLogEnabled
             if ( config.includeCompileSources() )
             {
                 final List<String> srcRoots = reactorProject.getCompileSourceRoots();
-                for ( final String root : srcRoots )
-                {
-                    dirs.add( root );
-                }
+                dirs.addAll( srcRoots );
             }
 
             if ( config.includeTestSources() )
             {
                 final List<String> srcRoots = reactorProject.getTestCompileSourceRoots();
-                for ( final String root : srcRoots )
-                {
-                    dirs.add( root );
-                }
+                dirs.addAll( srcRoots );
             }
         }
 
