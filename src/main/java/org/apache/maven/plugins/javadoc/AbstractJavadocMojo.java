@@ -1920,11 +1920,9 @@ public abstract class AbstractJavadocMojo
 
     protected final void verifyRemovedParameter( String paramName )
     {
-        Object pluginConfiguration = mojo.getConfiguration();
-        if ( pluginConfiguration instanceof Xpp3Dom )
+        Xpp3Dom configDom = mojo.getConfiguration();
+        if (configDom != null)
         {
-            Xpp3Dom configDom = (Xpp3Dom) pluginConfiguration;
-
             if ( configDom.getChild( paramName ) != null )
             {
                 throw new IllegalArgumentException( "parameter '" + paramName
@@ -1935,11 +1933,9 @@ public abstract class AbstractJavadocMojo
 
     private void verifyReplacedParameter( String oldParamName, String newParamNew )
     {
-        Object pluginConfiguration = mojo.getConfiguration();
-        if ( pluginConfiguration instanceof Xpp3Dom )
+        Xpp3Dom configDom = mojo.getConfiguration();
+        if (configDom != null)
         {
-            Xpp3Dom configDom = (Xpp3Dom) pluginConfiguration;
-
             if ( configDom.getChild( oldParamName ) != null )
             {
                 throw new IllegalArgumentException( "parameter '" + oldParamName
@@ -2395,12 +2391,7 @@ public abstract class AbstractJavadocMojo
         {
             return resourceResolver.resolveDependencySourcePaths( config );
         }
-        catch ( final ArtifactResolutionException e )
-        {
-            throw new MavenReportException(
-                "Failed to resolve one or more javadoc source/resource artifacts:\n\n" + e.getMessage(), e );
-        }
-        catch ( final ArtifactNotFoundException e )
+        catch ( final ArtifactResolutionException | ArtifactNotFoundException e )
         {
             throw new MavenReportException(
                 "Failed to resolve one or more javadoc source/resource artifacts:\n\n" + e.getMessage(), e );
@@ -2480,7 +2471,7 @@ public abstract class AbstractJavadocMojo
             String[] excludedPackages = getExcludedPackages();
             String[] subpackagesList = subpackages.split( "[:]" );
 
-            excludedNames = JavadocUtil.getExcludedNames( sourcePaths, subpackagesList, excludedPackages );
+            excludedNames = JavadocUtil.getExcludedNames( sourcePaths, excludedPackages );
         }
 
         String excludeArg = "";
@@ -2740,23 +2731,7 @@ public abstract class AbstractJavadocMojo
                     tc = tcs.get( 0 );
                 }
             }
-            catch ( NoSuchMethodException e )
-            {
-                // ignore
-            }
-            catch ( SecurityException e )
-            {
-                // ignore
-            }
-            catch ( IllegalAccessException e )
-            {
-                // ignore
-            }
-            catch ( IllegalArgumentException e )
-            {
-                // ignore
-            }
-            catch ( InvocationTargetException e )
+            catch ( SecurityException | ReflectiveOperationException e )
             {
                 // ignore
             }
@@ -3743,25 +3718,7 @@ public abstract class AbstractJavadocMojo
         {
             jVersion = JavadocUtil.getJavadocVersion( jExecutable );
         }
-        catch ( IOException e )
-        {
-            if ( getLog().isWarnEnabled() )
-            {
-                getLog().warn( "Unable to find the javadoc version: " + e.getMessage() );
-                getLog().warn( "Using the Java version instead of, i.e. " + JAVA_VERSION );
-            }
-            jVersion = JAVA_VERSION;
-        }
-        catch ( CommandLineException e )
-        {
-            if ( getLog().isWarnEnabled() )
-            {
-                getLog().warn( "Unable to find the javadoc version: " + e.getMessage() );
-                getLog().warn( "Using the Java version instead of, i.e. " + JAVA_VERSION );
-            }
-            jVersion = JAVA_VERSION;
-        }
-        catch ( IllegalArgumentException e )
+        catch ( IOException | CommandLineException | IllegalArgumentException e )
         {
             if ( getLog().isWarnEnabled() )
             {
@@ -3829,8 +3786,8 @@ public abstract class AbstractJavadocMojo
      * @param b                   the flag which controls if the argument is added or not.
      * @param value               the argument value to be added.
      * @param requiredJavaVersion the required Java version, for example 1.31f or 1.4f
-     * @see #addArgIf(java.util.List, boolean, String)
-     * @see #isJavaDocVersionAtLeast(float)
+     * @see #addArgIf(List, boolean, String)
+     * @see #isJavaDocVersionAtLeast(JavaVersion)
      */
     private void addArgIf( List<String> arguments, boolean b, String value, JavaVersion requiredJavaVersion )
     {
@@ -3860,7 +3817,7 @@ public abstract class AbstractJavadocMojo
      * @param arguments a list of arguments, not null
      * @param key       the argument name.
      * @param value     the argument value to be added.
-     * @see #addArgIfNotEmpty(java.util.List, String, String, boolean)
+     * @see #addArgIfNotEmpty(List, String, String, boolean)
      */
     private void addArgIfNotEmpty( List<String> arguments, String key, String value )
     {
@@ -3880,7 +3837,7 @@ public abstract class AbstractJavadocMojo
      * @param splitValue          if <code>true</code> given value will be tokenized by comma
      * @param requiredJavaVersion the required Java version, for example 1.31f or 1.4f
      * @see #addArgIfNotEmpty(List, String, String, boolean, boolean)
-     * @see #isJavaDocVersionAtLeast(float)
+     * @see #isJavaDocVersionAtLeast(JavaVersion)
      */
     private void addArgIfNotEmpty( List<String> arguments, String key, String value, boolean repeatKey,
                                    boolean splitValue, JavaVersion requiredJavaVersion )
@@ -3973,7 +3930,7 @@ public abstract class AbstractJavadocMojo
      * @param key                 the argument name.
      * @param value               the argument value to be added.
      * @param requiredJavaVersion the required Java version, for example 1.31f or 1.4f
-     * @see #addArgIfNotEmpty(java.util.List, String, String, float, boolean)
+     * @see #addArgIfNotEmpty(List, String, String, JavaVersion, boolean)
      */
     private void addArgIfNotEmpty( List<String> arguments, String key, String value,
                                    JavaVersion requiredJavaVersion )
@@ -3990,8 +3947,8 @@ public abstract class AbstractJavadocMojo
      * @param value               the argument value to be added.
      * @param requiredJavaVersion the required Java version, for example 1.31f or 1.4f
      * @param repeatKey           repeat or not the key in the command line
-     * @see #addArgIfNotEmpty(java.util.List, String, String)
-     * @see #isJavaDocVersionAtLeast(float)
+     * @see #addArgIfNotEmpty(List, String, String)
+     * @see #isJavaDocVersionAtLeast
      */
     private void addArgIfNotEmpty( List<String> arguments, String key, String value, JavaVersion requiredJavaVersion,
                                    boolean repeatKey )
@@ -4319,7 +4276,7 @@ public abstract class AbstractJavadocMojo
     /**
      * @param sourcePaths could be null
      * @param files       not null
-     * @return a list files with unnamed package names for files in the sourecPaths
+     * @return a list files with unnamed package names for files in the sourcePaths
      */
     private List<String> getFilesWithUnnamedPackages( Collection<String> sourcePaths, List<String> files )
     {
@@ -4331,7 +4288,7 @@ public abstract class AbstractJavadocMojo
      * @param files           not null, containing list of quoted files
      * @param onlyPackageName boolean for only package name
      * @return a list of package names or files with unnamed package names, depending the value of the unnamed flag
-     * @see #getFiles(List)
+     * @see #getFiles
      * @see #getSourcePaths()
      */
     private List<String> getPackageNamesOrFilesWithUnnamedPackages( Collection<String> sourcePaths, List<String> files,
@@ -4409,7 +4366,7 @@ public abstract class AbstractJavadocMojo
         File optionsFile = new File( javadocOutputDirectory, OPTIONS_FILE_NAME );
 
         StringBuilder options = new StringBuilder();
-        options.append( StringUtils.join( arguments.toArray( new String[arguments.size()] ),
+        options.append( StringUtils.join( arguments.iterator(),
                                           SystemUtils.LINE_SEPARATOR ) );
 
         try
@@ -4439,7 +4396,7 @@ public abstract class AbstractJavadocMojo
      * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/whatsnew-1.4.html#runningjavadoc">
      *      What s New in Javadoc 1.4
      *      </a>
-     * @see #isJavaDocVersionAtLeast(float)
+     * @see #isJavaDocVersionAtLeast(JavaVersion)
      * @see #ARGFILE_FILE_NAME
      * @see #FILES_FILE_NAME
      */
@@ -4647,8 +4604,8 @@ public abstract class AbstractJavadocMojo
      * Standard Javadoc Options wrapped by this Plugin.
      *
      * @param javadocOutputDirectory not null
-     * @param arguments   not null
-     * @param sourcePaths not null
+     * @param arguments              not null
+     * @param allSourcePaths         not null
      * @throws MavenReportException if any
      * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#javadocoptions">http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#javadocoptions</a>
      */
@@ -4861,10 +4818,7 @@ public abstract class AbstractJavadocMojo
 
         if ( additionalOptions != null && additionalOptions.length > 0 )
         {
-            for ( String option : additionalOptions )
-            {
-                arguments.add( option );
-            }
+            Collections.addAll( arguments, additionalOptions );
         }
     }
 
@@ -5706,7 +5660,7 @@ public abstract class AbstractJavadocMojo
      * @return the detected Javadoc links using the Maven conventions for all dependencies defined in the current
      *         project or an empty list.
      * @see #detectLinks
-     * @see #isValidJavadocLink(String)
+     * @see #isValidJavadocLink
      * @since 2.6
      */
     private List<String> getDependenciesLinks()

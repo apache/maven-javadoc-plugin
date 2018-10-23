@@ -62,16 +62,13 @@ import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Modifier;
@@ -79,6 +76,8 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -111,7 +110,7 @@ public class JavadocUtil
     /** Error message when VM could not be started using invoker. */
     protected static final String ERROR_INIT_VM =
         "Error occurred during initialization of VM, try to reduce the Java heap size for the MAVEN_OPTS "
-            + "environnement variable using -Xms:<size> and -Xmx:<size>.";
+            + "environment variable using -Xms:<size> and -Xmx:<size>.";
 
     /**
      * Method that removes the invalid directories in the specified directories. <b>Note</b>: All elements in
@@ -193,21 +192,16 @@ public class JavadocUtil
      * Method that gets all the source files to be excluded from the javadoc on the given source paths.
      *
      * @param sourcePaths the path to the source files
-     * @param subpackagesList list of subpackages to be included in the javadoc
      * @param excludedPackages the package names to be excluded in the javadoc
      * @return a List of the source files to be excluded in the generated javadoc
      */
-    protected static List<String> getExcludedNames( Collection<String> sourcePaths, String[] subpackagesList,
-                                                    String[] excludedPackages )
+    protected static List<String> getExcludedNames( Collection<String> sourcePaths, String[] excludedPackages )
     {
         List<String> excludedNames = new ArrayList<>();
         for ( String path : sourcePaths )
         {
-            for ( String aSubpackagesList : subpackagesList )
-            {
-                List<String> excludes = getExcludedPackages( path, excludedPackages );
-                excludedNames.addAll( excludes );
-            }
+            List<String> excludes = getExcludedPackages( path, excludedPackages );
+            excludedNames.addAll( excludes );
         }
 
         return excludedNames;
@@ -295,8 +289,7 @@ public class JavadocUtil
             return;
         }
 
-        List<String> excludes = new ArrayList<>();
-        excludes.addAll( Arrays.asList( FileUtils.getDefaultExcludes() ) );
+        List<String> excludes = new ArrayList<>( Arrays.asList( FileUtils.getDefaultExcludes() ) );
 
         if ( StringUtils.isNotEmpty( excludedocfilessubdir ) )
         {
@@ -697,24 +690,14 @@ public class JavadocUtil
             return false;
         }
 
-        OutputStream ost = new ByteArrayOutputStream();
-        OutputStreamWriter osw = null;
         try
         {
-            osw = new OutputStreamWriter( ost, charsetName );
-            osw.close();
-            osw = null;
+            return Charset.isSupported( charsetName );
         }
-        catch ( IOException exc )
+        catch ( IllegalCharsetNameException e )
         {
             return false;
         }
-        finally
-        {
-            IOUtil.close( osw );
-        }
-
-        return true;
     }
 
     /**
@@ -828,36 +811,7 @@ public class JavadocUtil
             throw new IOException( "The url could not be null." );
         }
 
-        if ( !file.getParentFile().exists() )
-        {
-            file.getParentFile().mkdirs();
-        }
-
-        InputStream in = null;
-        OutputStream out = null;
-        try
-        {
-            in = url.openStream();
-
-            if ( in == null )
-            {
-                throw new IOException( "The resource " + url + " doesn't exists." );
-            }
-
-            out = new FileOutputStream( file );
-
-            IOUtil.copy( in, out );
-
-            out.close();
-            out = null;
-            in.close();
-            in = null;
-        }
-        finally
-        {
-            IOUtil.close( in );
-            IOUtil.close( out );
-        }
+        FileUtils.copyURLToFile( url, file );
     }
 
     /**
@@ -1080,12 +1034,8 @@ public class JavadocUtil
         }
 
         List<String> classes = new ArrayList<>();
-        JarInputStream jarStream = null;
-
-        try
+        try ( JarInputStream jarStream = new JarInputStream( new FileInputStream( jarFile ) ) )
         {
-            jarStream = new JarInputStream( new FileInputStream( jarFile ) );
-
             for ( JarEntry jarEntry = jarStream.getNextJarEntry(); jarEntry != null; jarEntry =
                 jarStream.getNextJarEntry() )
             {
@@ -1098,13 +1048,6 @@ public class JavadocUtil
 
                 jarStream.closeEntry();
             }
-
-            jarStream.close();
-            jarStream = null;
-        }
-        finally
-        {
-            IOUtil.close( jarStream );
         }
 
         return classes;

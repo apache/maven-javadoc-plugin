@@ -130,12 +130,7 @@ extends AbstractJavadocMojo
             archiver.setDestFile( bundleFile );
             archiver.createArchive();
         }
-        catch ( ArchiverException e )
-        {
-            throw new MojoExecutionException( "Failed to assemble javadoc-resources bundle archive. Reason: "
-                + e.getMessage(), e );
-        }
-        catch ( IOException e )
+        catch ( ArchiverException | IOException e )
         {
             throw new MojoExecutionException( "Failed to assemble javadoc-resources bundle archive. Reason: "
                 + e.getMessage(), e );

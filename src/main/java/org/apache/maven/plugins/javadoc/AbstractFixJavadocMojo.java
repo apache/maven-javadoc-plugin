@@ -392,7 +392,7 @@ public abstract class AbstractFixJavadocMojo
     /**
      * Split {@link #fixTags} by comma.
      *
-     * @see {@link #init()}
+     * @see #init()
      */
     private String[] fixTagsSplitted;
 
@@ -1145,10 +1145,8 @@ public abstract class AbstractFixJavadocMojo
      * @param stringWriter    not null
      * @param originalContent not null
      * @param entity          not null
-     * @param changeDetected
-     * @return the updated changeDetected flag
      * @throws IOException if any
-     * @see #extractOriginalJavadoc(String, AbstractJavaEntity)
+     * @see #extractOriginalJavadoc
      */
     private void takeCareSingleComment( final StringWriter stringWriter, final String originalContent,
                                         final JavaAnnotatedElement entity )
@@ -1262,9 +1260,9 @@ public abstract class AbstractFixJavadocMojo
      * <font color="#000000">DummyClass&nbsp;</font><font color="#000000">{}</font></code>
      * </code>
      *
-     * @param buffer    not null
-     * @param javaClass not null
-     * @param indent    not null
+     * @param stringWriter not null
+     * @param javaClass    not null
+     * @param indent       not null
      * @see #getDefaultClassJavadocComment(JavaClass)
      * @see #appendDefaultAuthorTag(StringBuilder, String)
      * @see #appendDefaultSinceTag(StringBuilder, String)
@@ -1417,7 +1415,7 @@ public abstract class AbstractFixJavadocMojo
                 }
                 else
                 {
-                    sb.append( value.toString().substring( 0, 39 ) ).append( "\"{trunked}" );
+                    sb.append( value.toString(), 0, 39 ).append( "\"{trunked}" );
                 }
                 // CHECKSTYLE_ON: MagicNumber
             }
@@ -1496,11 +1494,11 @@ public abstract class AbstractFixJavadocMojo
      * <font color="#000000">){}</font>
      * </code>
      *
-     * @param buffer     not null
+     * @param stringWriter   not null
      * @param javaExecutable not null
-     * @param indent     not null
+     * @param indent         not null
      * @throws MojoExecutionException if any
-     * @see #getDefaultMethodJavadocComment(JavaMethod)
+     * @see #getDefaultMethodJavadocComment
      * @see #appendDefaultSinceTag(StringBuilder, String)
      */
     private void addDefaultMethodComment( final StringWriter stringWriter, final JavaExecutable javaExecutable,
@@ -1576,7 +1574,6 @@ public abstract class AbstractFixJavadocMojo
      * @param originalContent not null
      * @param entity          not null
      * @param indent          not null
-     * @param changeDetected
      * @return the updated changeDetected flag
      * @throws MojoExecutionException if any
      * @throws IOException            if any
@@ -1805,7 +1802,7 @@ public abstract class AbstractFixJavadocMojo
         while ( linktagMatcher.find() )
         {
             int startName = linktagMatcher.end();
-            resolvedComment.append( comment.substring( startIndex, startName ) );
+            resolvedComment.append( comment, startIndex, startName );
             int endName = comment.indexOf( "}", startName );
             if ( endName >= 0 )
             {
@@ -1949,21 +1946,19 @@ public abstract class AbstractFixJavadocMojo
                 }
 
                 String paramName = params.get( 0 );
-                if ( docletTag.getName().equals( PARAM_TAG ) )
-                {
-                    javaEntityTags.putJavadocParamTag( paramName, originalJavadocTag );
-                }
-                else if ( docletTag.getName().equals( RETURN_TAG ) )
-                {
-                    javaEntityTags.setJavadocReturnTag( originalJavadocTag );
-                }
-                else if ( docletTag.getName().equals( THROWS_TAG ) )
-                {
-                    javaEntityTags.putJavadocThrowsTag( paramName, originalJavadocTag );
-                }
-                else
-                {
-                    javaEntityTags.getUnknownTags().add( originalJavadocTag );
+                switch ( docletTag.getName() ) {
+                    case PARAM_TAG:
+                        javaEntityTags.putJavadocParamTag( paramName, originalJavadocTag );
+                        break;
+                    case RETURN_TAG:
+                        javaEntityTags.setJavadocReturnTag( originalJavadocTag );
+                        break;
+                    case THROWS_TAG:
+                        javaEntityTags.putJavadocThrowsTag( paramName, originalJavadocTag );
+                        break;
+                    default:
+                        javaEntityTags.getUnknownTags().add( originalJavadocTag );
+                        break;
                 }
             }
             else
@@ -2789,7 +2784,7 @@ public abstract class AbstractFixJavadocMojo
      * @param javaMethod the QDox JavaMethod object not null
      * @return <code>true</code> if <code>javaMethod</code> exists in the given <code>clazz</code>,
      *         <code>false</code> otherwise.
-     * @see #isInherited(JavaMethod)
+     * @see #isInherited(JavaExecutable)
      */
     private boolean isInherited( Class<?> clazz, JavaExecutable javaMethod )
     {
@@ -2945,8 +2940,8 @@ public abstract class AbstractFixJavadocMojo
      * @param className not null
      * @return the Class corresponding to the given class name using the project classloader.
      * @throws MojoExecutionException if class not found
-     * @see {@link ClassUtils#getClass(ClassLoader, String, boolean)}
-     * @see {@link #getProjectClassLoader()}
+     * @see ClassUtils#getClass(ClassLoader, String, boolean)
+     * @see #getProjectClassLoader()
      */
     private Class<?> getClass( String className )
         throws MojoExecutionException
@@ -3036,18 +3031,8 @@ public abstract class AbstractFixJavadocMojo
     private static void writeFile( final File javaFile, final String encoding, final String content )
         throws IOException
     {
-        Writer writer = null;
-        try
-        {
-            writer = WriterFactory.newWriter( javaFile, encoding );
-            writer.write( StringUtils.unifyLineSeparators( content ) );
-            writer.close();
-            writer = null;
-        }
-        finally
-        {
-            IOUtil.close( writer );
-        }
+        String unified = StringUtils.unifyLineSeparators( content );
+        FileUtils.fileWrite( javaFile, encoding, unified );
     }
 
     /**
@@ -3625,7 +3610,7 @@ public abstract class AbstractFixJavadocMojo
         }
 
         String textTrimmed = text.trim();
-        return text.substring( text.indexOf( textTrimmed ), text.length() );
+        return text.substring( text.indexOf( textTrimmed ) );
     }
 
     /**
