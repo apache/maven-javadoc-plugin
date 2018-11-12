@@ -117,7 +117,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -2596,7 +2595,18 @@ public abstract class AbstractJavadocMojo
         throws MavenReportException
     {
         List<File> classpathElements = new ArrayList<>();
-        Map<String, Artifact> compileArtifactMap = new HashMap<>();
+        // keep the insertion order
+        Map<String, Artifact> compileArtifactMap = new LinkedHashMap<>();
+
+        if ( additionalDependencies != null )
+        {
+            for ( Dependency dependency : additionalDependencies )
+            {
+                Artifact artifact = resolveDependency( dependency );
+                getLog().debug( "add additional artifact with path " + artifact.getFile() );
+                classpathElements.add( artifact.getFile() );
+            }
+        }
 
         if ( isTest() )
         {
@@ -2665,16 +2675,6 @@ public abstract class AbstractJavadocMojo
         for ( Artifact a : compileArtifactMap.values() )
         {
             classpathElements.add( a.getFile() );
-        }
-
-        if ( additionalDependencies != null )
-        {
-            for ( Dependency dependency : additionalDependencies )
-            {
-                Artifact artifact = resolveDependency( dependency );
-                getLog().debug( "add additional artifact with path " + artifact.getFile() );
-                classpathElements.add( artifact.getFile() );
-            }
         }
 
         return classpathElements;
