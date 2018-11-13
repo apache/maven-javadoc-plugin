@@ -1501,7 +1501,7 @@ public class JavadocUtil
      * @author Robert Scholte
      * @since 3.0.1
      */
-    private static class JavadocOutputStreamConsumer
+    protected static class JavadocOutputStreamConsumer
         extends CommandLineUtils.StringStreamConsumer
     {
         @Override
