@@ -113,6 +113,9 @@ under the License.
     <contributor>
       <name>Anton Klarén</name>
     </contributor>
+    <contributor>
+      <name>Kevin Risden</name>
+    </contributor>
   </contributors>
 
   <dependencies>
@@ -441,6 +444,8 @@ under the License.
               </filterProperties>
               <environmentVariables>
                 <JENKINS_MAVEN_AGENT_DISABLED>true</JENKINS_MAVEN_AGENT_DISABLED>
+                <!-- required for MJAVADOC-538 -->
+                <_JAVA_OPTIONS>-Dabc=def</_JAVA_OPTIONS>
               </environmentVariables>
             </configuration>
           </plugin>

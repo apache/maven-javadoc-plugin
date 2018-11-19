@@ -5251,8 +5251,8 @@ public abstract class AbstractJavadocMojo
             writeDebugJavadocScript( cmdLine, javadocOutputDirectory );
         }
 
-        CommandLineUtils.StringStreamConsumer err = new CommandLineUtils.StringStreamConsumer();
-        CommandLineUtils.StringStreamConsumer out = new CommandLineUtils.StringStreamConsumer();
+        CommandLineUtils.StringStreamConsumer err = new JavadocUtil.JavadocOutputStreamConsumer();
+        CommandLineUtils.StringStreamConsumer out = new JavadocUtil.JavadocOutputStreamConsumer();
         try
         {
             int exitCode = CommandLineUtils.executeCommandLine( cmd, out, err );
