@@ -22,13 +22,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -193,21 +193,12 @@ public class JavadocReportTest
     private static String readFile( File file )
         throws IOException
     {
-        String strTmp;
         StringBuilder str = new StringBuilder( (int) file.length() );
-        BufferedReader in = new BufferedReader( new FileReader( file ) );
 
-        try
+        for ( String strTmp : Files.readAllLines( file.toPath(), StandardCharsets.UTF_8 ) )
         {
-            while ( ( strTmp = in.readLine() ) != null )
-            {
-                str.append( LINE_SEPARATOR );
-                str.append( strTmp );
-            }
-        }
-        finally
-        {
-            in.close();
+            str.append( LINE_SEPARATOR);
+            str.append( strTmp );
         }
 
         return str.toString();
@@ -241,26 +232,39 @@ public class JavadocReportTest
         }
 
         assertTrue( new File( apidocs, "def/configuration/AppSample.html" ).exists() );
-        assertTrue( new File( apidocs, "def/configuration/package-frame.html" ).exists() );
         assertTrue( new File( apidocs, "def/configuration/package-summary.html" ).exists() );
         assertTrue( new File( apidocs, "def/configuration/package-tree.html" ).exists() );
         assertTrue( new File( apidocs, "def/configuration/package-use.html" ).exists() );
 
+        // package-frame and allclasses-(no)frame not generated anymore since Java 11
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "11" ) )
+        {
+            assertTrue( new File( apidocs, "def/configuration/package-frame.html" ).exists() );
+            assertTrue( new File( apidocs, "allclasses-frame.html" ).exists() );
+            assertTrue( new File( apidocs, "allclasses-noframe.html" ).exists() );
+        }
+        
         // class level generated javadoc files
         assertTrue( new File( apidocs, "def/configuration/class-use/App.html" ).exists() );
         assertTrue( new File( apidocs, "def/configuration/class-use/AppSample.html" ).exists() );
 
         // project level generated javadoc files
-        assertTrue( new File( apidocs, "allclasses-frame.html" ).exists() );
-        assertTrue( new File( apidocs, "allclasses-noframe.html" ).exists() );
         assertTrue( new File( apidocs, "constant-values.html" ).exists() );
         assertTrue( new File( apidocs, "deprecated-list.html" ).exists() );
         assertTrue( new File( apidocs, "help-doc.html" ).exists() );
         assertTrue( new File( apidocs, "index-all.html" ).exists() );
         assertTrue( new File( apidocs, "index.html" ).exists() );
         assertTrue( new File( apidocs, "overview-tree.html" ).exists() );
-        assertTrue( new File( apidocs, "package-list" ).exists() );
         assertTrue( new File( apidocs, "stylesheet.css" ).exists() );
+
+        if ( JavaVersion.JAVA_VERSION.isAtLeast( "10" ) )
+        {
+            assertTrue( new File( apidocs, "element-list" ).exists() );
+        }
+        else 
+        {
+            assertTrue( new File( apidocs, "package-list" ).exists() );
+        }
     }
 
     /**
@@ -314,8 +318,8 @@ public class JavadocReportTest
         throws Exception
     {
         // Should be an assumption, but not supported by TestCase
-        // Seems like a bug in Javadoc 9
-        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.compareTo( JavaVersion.parse( "9" ) ) == 0 )
+        // Seems like a bug in Javadoc 9 and above
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast( "9" ) )
         {
             return;
         }
@@ -495,8 +499,16 @@ public class JavadocReportTest
         assertTrue( new File( apidocs, "index-all.html" ).exists() );
         assertTrue( new File( apidocs, "index.html" ).exists() );
         assertTrue( new File( apidocs, "overview-tree.html" ).exists() );
-        assertTrue( new File( apidocs, "package-list" ).exists() );
         assertTrue( new File( apidocs, "stylesheet.css" ).exists() );
+
+        if ( JavaVersion.JAVA_VERSION.isBefore( "10" ) )
+        {
+            assertTrue( new File( apidocs, "package-list" ).exists() );
+        }
+        else
+        {
+            assertTrue( new File( apidocs, "element-list" ).exists() );
+        }
     }
 
     /**
@@ -539,7 +551,15 @@ public class JavadocReportTest
         // ----------------------------------------------------------------------
         // taglet-test: check if a taglet is used
         // ----------------------------------------------------------------------
-
+        
+        // Should be an assumption, but not supported by TestCase
+        // com.sun.tools.doclets.Taglet not supported by Java9 anymore
+        // Should be refactored with jdk.javadoc.doclet.Taglet
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast( "10" ) )
+        {
+            return;
+        }
+        
         File testPom = new File( unit, "taglet-test/taglet-test-plugin-config.xml" );
         JavadocReport mojo = lookupMojo( testPom );
         
@@ -661,7 +681,7 @@ public class JavadocReportTest
         assertTrue( content.contains( "<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">" ) );
 
         JavaVersion javadocVersion = (JavaVersion) getVariableValueFromObject( mojo, "javadocRuntimeVersion" );
-        if( javadocVersion.isAtLeast( "1.8" ) && javadocVersion.isBefore( "10" ) )
+        if( javadocVersion.isAtLeast( "1.8" ) && javadocVersion.isBefore( "12" ) )
         {
             // https://bugs.openjdk.java.net/browse/JDK-8032205
             assertTrue( "Javadoc runtime version: " + javadocVersion
@@ -713,9 +733,15 @@ public class JavadocReportTest
         String readed = readFile( app );
         assertTrue( readed.contains( ">To do something:</" ) );
         assertTrue( readed.contains( ">Generator Class:</" ) );
-        assertTrue( readed.contains( ">Version:</" ) );
-        assertTrue( readed.toLowerCase().contains( "</dt>" + LINE_SEPARATOR + "  <dd>1.0</dd>" )
-            || readed.toLowerCase().contains( "</dt>" + LINE_SEPARATOR + "<dd>1.0</dd>" /* JDK 8 */) );
+        
+        // In javadoc-options-javadoc-resources.xml tag 'version' has only a name, 
+        // which is not enough for Java 11 anymore
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "11" ) )
+        {
+            assertTrue( readed.contains( ">Version:</" ) );
+            assertTrue( readed.toLowerCase().contains( "</dt>" + LINE_SEPARATOR + "  <dd>1.0</dd>" )
+                || readed.toLowerCase().contains( "</dt>" + LINE_SEPARATOR + "<dd>1.0</dd>" /* JDK 8 */) );
+        }
     }
 
     /**
@@ -775,12 +801,20 @@ public class JavadocReportTest
         mojo.execute();
 
         File apidocs = new File( getBasedir(), "target/test/unit/jdk6-test/target/site/apidocs" );
-
         assertTrue( new File( apidocs, "index.html" ).exists() );
 
-        File overviewSummary = new File( apidocs, "overview-summary.html" );
-        assertTrue( overviewSummary.exists() );
-        String content = readFile( overviewSummary );
+        File overview;
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "11" ) )
+        {
+            overview = new File( apidocs, "overview-summary.html" );    
+        }
+        else
+        {
+            overview = new File( apidocs, "index.html" );
+        }
+        
+        assertTrue( overview.exists() );
+        String content = readFile( overview );
         assertTrue( content.contains( "Top - Copyright &#169; All rights reserved." ) );
         assertTrue( content.contains( "Header - Copyright &#169; All rights reserved." ) );
         assertTrue( content.contains( "Footer - Copyright &#169; All rights reserved." ) );
@@ -1020,6 +1054,13 @@ public class JavadocReportTest
     public void testTagletArtifacts()
         throws Exception
     {
+        // Should be an assumption, but not supported by TestCase
+        // com.sun.tools.doclets.Taglet not supported by Java 10 anymore
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast( "10" ) )
+        {
+            return;
+        }
+        
         File testPom = new File( unit, "tagletArtifacts-test/tagletArtifacts-test-plugin-config.xml" );
         JavadocReport mojo = lookupMojo( testPom );
 
@@ -1112,7 +1153,16 @@ public class JavadocReportTest
         mojo.execute();
 
         String content = readFile( stylesheetfile );
-        assertTrue( content.contains( "/* Javadoc style sheet */" ) );
+        if ( JavaVersion.JAVA_VERSION.isAtLeast( "10" ) )
+        {
+            assertTrue( content.contains( "/* " + LINE_SEPARATOR
+                                        + " * Javadoc style sheet" + LINE_SEPARATOR
+                                        + " */" ) );
+        }
+        else
+        {
+            assertTrue( content.contains( "/* Javadoc style sheet */" ) );
+        }
 
         String optionsContent = readFile( options );
         assertFalse( optionsContent.contains( "-stylesheetfile" ) );

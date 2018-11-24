@@ -112,7 +112,11 @@ public class JavadocJarTest
         assertTrue( set.contains( "javadocjar/def/package-use.html" ) );
         assertTrue( set.contains( "javadocjar/def/package-tree.html" ) );
         assertTrue( set.contains( "javadocjar/def/package-summary.html" ) );
-        assertTrue( set.contains( "javadocjar/def/package-frame.html" ) );
+        // package frame not generated anymore since Java 11
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "11" ) )
+        {
+            assertTrue( set.contains( "javadocjar/def/package-frame.html" ) );
+        }
         assertTrue( set.contains( "javadocjar/def/class-use/AppSample.html" ) );
         assertTrue( set.contains( "index.html" ) );
         assertTrue( set.contains( "javadocjar/def/App.html" ) );

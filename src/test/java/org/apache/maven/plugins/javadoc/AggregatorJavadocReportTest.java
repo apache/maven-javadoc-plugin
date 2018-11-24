@@ -31,6 +31,7 @@ import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.FileUtils;
 import org.sonatype.aether.impl.internal.SimpleLocalRepositoryManager;
 import org.sonatype.aether.util.DefaultRepositorySystemSession;
@@ -231,7 +232,16 @@ public class AggregatorJavadocReportTest
         File apidocs = new File( getBasedir(), "target/test/unit/aggregate-resources-test/target/site/apidocs" );
 
         // Test overview
-        File overviewSummary = new File( apidocs, "overview-summary.html" );
+        File overviewSummary;
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "11" ) )
+        {
+            overviewSummary = new File( apidocs, "overview-summary.html" );
+        }
+        else
+        {
+            overviewSummary = new File( apidocs, "index.html" );
+        }
+        
         assertTrue( overviewSummary.exists() );
         String overview = readFile( overviewSummary ).toLowerCase();
         assertTrue( overview.contains( "<a href=\"resources/test/package-summary.html\">resources.test</a>" ) );

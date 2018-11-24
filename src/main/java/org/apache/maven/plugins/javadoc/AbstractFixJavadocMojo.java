@@ -2190,14 +2190,14 @@ public abstract class AbstractFixJavadocMojo
         
         if ( clazz != null )
         {
-            if ( ClassUtils.isAssignable( clazz, RuntimeException.class ) )
+            if ( RuntimeException.class.isAssignableFrom( clazz ) )
             {
                 sb.append( StringUtils.replace( originalJavadocTag, exceptionClassName, clazz.getName() ) );
 
                 // added qualified name
                 javaEntityTags.putJavadocThrowsTag( clazz.getName(), originalJavadocTag );
             }
-            else if ( ClassUtils.isAssignable( clazz, Throwable.class ) )
+            else if ( Throwable.class.isAssignableFrom( clazz ) )
             {
                 getLog().debug( "Removing '" + originalJavadocTag + "'; Throwable not specified by "
                     + getJavaMethodAsString( javaExecutable ) + " and it is not a RuntimeException." );

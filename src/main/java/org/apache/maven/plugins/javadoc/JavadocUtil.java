@@ -1689,45 +1689,8 @@ public class JavadocUtil
             throw new IllegalArgumentException( "The url is null" );
         }
 
-        BufferedReader reader = null;
-        HttpGet httpMethod = null;
-        HttpClient httpClient = null;
-
-        try
+        try ( BufferedReader reader = getReader( url, settings ) )
         {
-            if ( "file".equals( url.getProtocol() ) )
-            {
-                // Intentionally using the platform default encoding here since this is what Javadoc uses internally.
-                reader = new BufferedReader( new InputStreamReader( url.openStream() ) );
-            }
-            else
-            {
-                // http, https...
-                httpClient = createHttpClient( settings, url );
-
-                httpMethod = new HttpGet( url.toString() );
-                HttpResponse response;
-                try
-                {
-                    response = httpClient.execute( httpMethod );
-                }
-                catch ( SocketTimeoutException e )
-                {
-                    // could be a sporadic failure, one more retry before we give up
-                    response = httpClient.execute( httpMethod );
-                }
-
-                int status = response.getStatusLine().getStatusCode();
-                if ( status != HttpStatus.SC_OK )
-                {
-                    throw new FileNotFoundException( "Unexpected HTTP status code " + status + " getting resource "
-                        + url.toExternalForm() + "." );
-                }
-
-                // Intentionally using the platform default encoding here since this is what Javadoc uses internally.
-                reader = new BufferedReader( new InputStreamReader( response.getEntity().getContent() ) );
-            }
-
             if ( validateContent )
             {
                 for ( String line = reader.readLine(); line != null; line = reader.readLine() )
@@ -1738,25 +1701,95 @@ public class JavadocUtil
                     }
                 }
             }
-
-            reader.close();
-            reader = null;
-
             return true;
         }
-        finally
+    }
+    
+    protected static boolean isValidElementList( URL url, Settings settings, boolean validateContent )
+                    throws IOException
+    {
+        if ( url == null )
         {
-            IOUtil.close( reader );
-
-            if ( httpMethod != null )
-            {
-                httpMethod.releaseConnection();
-            }
-            if ( httpClient != null )
-            {
-                httpClient.getConnectionManager().shutdown();
-            }
+            throw new IllegalArgumentException( "The url is null" );
         }
+
+        try ( BufferedReader reader = getReader( url, settings ) )
+        {
+            if ( validateContent )
+            {
+                for ( String line = reader.readLine(); line != null; line = reader.readLine() )
+                {
+                    if ( line.startsWith( "module:" ) )
+                    {
+                        continue;
+                    }
+                        
+                    if ( !isValidPackageName( line ) )
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+    }
+    
+    private static BufferedReader getReader( URL url, Settings settings ) throws IOException
+    {
+        BufferedReader reader = null;
+        
+        if ( "file".equals( url.getProtocol() ) )
+        {
+            // Intentionally using the platform default encoding here since this is what Javadoc uses internally.
+            reader = new BufferedReader( new InputStreamReader( url.openStream() ) );
+        }
+        else
+        {
+            // http, https...
+            final HttpClient httpClient = createHttpClient( settings, url );
+
+            final HttpGet httpMethod = new HttpGet( url.toString() );
+            
+            HttpResponse response;
+            try
+            {
+                response = httpClient.execute( httpMethod );
+            }
+            catch ( SocketTimeoutException e )
+            {
+                // could be a sporadic failure, one more retry before we give up
+                response = httpClient.execute( httpMethod );
+            }
+
+            int status = response.getStatusLine().getStatusCode();
+            if ( status != HttpStatus.SC_OK )
+            {
+                throw new FileNotFoundException( "Unexpected HTTP status code " + status + " getting resource "
+                    + url.toExternalForm() + "." );
+            }
+
+            // Intentionally using the platform default encoding here since this is what Javadoc uses internally.
+            reader = new BufferedReader( new InputStreamReader( response.getEntity().getContent() ) ) 
+            {
+                @Override
+                public void close()
+                    throws IOException
+                {
+                    super.close();
+                    
+                    if ( httpMethod != null )
+                    {
+                        httpMethod.releaseConnection();
+                    }
+                    if ( httpClient != null )
+                    {
+                        httpClient.getConnectionManager().shutdown();
+                    }
+                }
+            };
+        }
+        
+        return reader;
     }
 
     private static boolean isValidPackageName( String str )

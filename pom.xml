@@ -299,7 +299,7 @@ under the License.
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>2.12.0</version>
+      <version>2.23.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -329,6 +329,7 @@ under the License.
               <!-- Checksum files cannot contain a license header -->
               <exclude>**/*.sha1</exclude>
               <!-- Javadoc package list files cannot contain a license header -->
+              <exclude>**/*element-list*</exclude>
               <exclude>**/*package-list*</exclude>
               <!-- This file is used to patch the generated Javadoc html files -->
               <exclude>src/main/resources/org/apache/maven/plugins/javadoc/frame-injection-fix.txt</exclude>
@@ -342,31 +343,6 @@ under the License.
       </plugins>
     </pluginManagement>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>enforce-bytecode-version</id>
-            <configuration>
-              <rules>
-                <enforceBytecodeVersion>
-                  <ignoreClasses>
-                    <ignoreClass>module-info</ignoreClass>
-                  </ignoreClasses>
-                </enforceBytecodeVersion>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>extra-enforcer-rules</artifactId>
-            <version>1.0-beta-6</version>
-          </dependency>
-        </dependencies>
-      </plugin>
       <plugin>
         <groupId>org.codehaus.modello</groupId>
         <artifactId>modello-maven-plugin</artifactId>

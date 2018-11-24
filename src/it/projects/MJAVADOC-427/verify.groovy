@@ -23,4 +23,4 @@ assert file.exists()
 
 // assert that javadoc of class correctly contains link, just like method details
 assert file.text =~ /Link to slf4j <a href=".*?".*?><code>LoggerFactory<\/code><\/a>/
-assert file.text =~ /<pre>public.*?<a href=".*?".*?>LoggerFactory<\/a>.*?getLoggerFactory.*?\(\)<\/pre>/
+assert file.text =~ /<pre[^<]*>public.*?<a href=".*?".*?>LoggerFactory<\/a>.*?getLoggerFactory.*?\(\)<\/pre>/

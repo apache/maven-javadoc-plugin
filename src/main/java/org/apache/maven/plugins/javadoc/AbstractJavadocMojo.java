@@ -98,10 +98,8 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -247,6 +245,10 @@ public abstract class AbstractJavadocMojo
      * Default location for css
      */
     private static final String RESOURCE_CSS_DIR = RESOURCE_DIR + "/css";
+    
+    private static final String PACKAGE_LIST = "package-list";
+    private static final String ELEMENT_LIST = "element-list";
+
 
     /**
      * For Javadoc options appears since Java 1.4.
@@ -1748,6 +1750,8 @@ public abstract class AbstractJavadocMojo
         DEFAULT_JAVA_API_LINKS.put( "api_1.7", "https://docs.oracle.com/javase/7/docs/api/" );
         DEFAULT_JAVA_API_LINKS.put( "api_1.8", "https://docs.oracle.com/javase/8/docs/api/" );
         DEFAULT_JAVA_API_LINKS.put( "api_9",   "https://docs.oracle.com/javase/9/docs/api/" );
+        DEFAULT_JAVA_API_LINKS.put( "api_10",  "https://docs.oracle.com/javase/10/docs/api/" );
+        DEFAULT_JAVA_API_LINKS.put( "api_11",  "https://docs.oracle.com/en/java/javase/11/docs/api" );
     }
 
     // ----------------------------------------------------------------------
@@ -5800,33 +5804,31 @@ public abstract class AbstractJavadocMojo
             return null;
         }
 
-        File javaApiPackageListFile = new File( getJavadocOptionsFile().getParentFile(), "package-list" );
+        final Path javaApiListFile;
+        final String resourceName;
+        if ( JavaVersion.parse( apiVersion ).isAtLeast( "10" ) )
+        {
+            javaApiListFile = getJavadocOptionsFile().getParentFile().toPath().resolve( "element-list" );
+            resourceName = "java-api-element-list-" + apiVersion;
+        }
+        else
+        {
+            javaApiListFile = getJavadocOptionsFile().getParentFile().toPath().resolve( "package-list" );
+            resourceName = "java-api-package-list-" + apiVersion;
+        }
 
         OfflineLink link = new OfflineLink();
-        link.setLocation( javaApiPackageListFile.getParentFile().getAbsolutePath() );
+        link.setLocation( javaApiListFile.getParent().toAbsolutePath().toString() );
         link.setUrl( javaApiLink );
 
-        InputStream in = null;
-        OutputStream out = null;
-        try
+        try ( InputStream in = this.getClass().getResourceAsStream( resourceName ) )
         {
-            in = this.getClass().getResourceAsStream( "java-api-package-list-" + apiVersion );
-            out = new FileOutputStream( javaApiPackageListFile );
-            IOUtil.copy( in, out );
-            out.close();
-            out = null;
-            in.close();
-            in = null;
+            Files.copy( in, javaApiListFile );
         }
         catch ( IOException ioe )
         {
             logError( "Can't get java-api-package-list-" + apiVersion + ": " + ioe.getMessage(), ioe );
             return null;
-        }
-        finally
-        {
-            IOUtil.close( in );
-            IOUtil.close( out );
         }
 
         return link;
@@ -5870,12 +5872,15 @@ public abstract class AbstractJavadocMojo
     {
         try
         {
-            URI linkUri;
+            final URI packageListUri;
+            final URI elementListUri;
+            
             if ( link.trim().toLowerCase( Locale.ENGLISH ).startsWith( "http:" ) || link.trim().toLowerCase(
                 Locale.ENGLISH ).startsWith( "https:" ) || link.trim().toLowerCase( Locale.ENGLISH ).startsWith(
                 "ftp:" ) || link.trim().toLowerCase( Locale.ENGLISH ).startsWith( "file:" ) )
             {
-                linkUri = new URI( link + "/package-list" );
+                packageListUri = new URI( link + '/' + PACKAGE_LIST );
+                elementListUri = new URI( link + '/' + ELEMENT_LIST );
             }
             else
             {
@@ -5896,27 +5901,44 @@ public abstract class AbstractJavadocMojo
                         getLog().error( "The given File link: " + dir + " is not a dir." );
                     }
                 }
-                linkUri = new File( dir, "package-list" ).toURI();
+                packageListUri = new File( dir, PACKAGE_LIST ).toURI();
+                elementListUri = new File( dir, ELEMENT_LIST ).toURI();
             }
 
-            if ( !JavadocUtil.isValidPackageList( linkUri.toURL(), settings, validateLinks ) )
+            
+            IOException elementListIOException = null;
+            try 
             {
-                if ( getLog().isErrorEnabled() )
+                if ( JavadocUtil.isValidElementList( elementListUri.toURL(), settings, validateLinks ) )
                 {
-                    if ( detecting )
-                    {
-                        getLog().warn( "Invalid link: " + link + "/package-list. Ignored it." );
-                    }
-                    else
-                    {
-                        getLog().error( "Invalid link: " + link + "/package-list. Ignored it." );
-                    }
+                    return true;
                 }
-
-                return false;
+            }
+            catch ( IOException e ) 
+            {
+                elementListIOException = e;
+            }
+            
+            if ( JavadocUtil.isValidPackageList( packageListUri.toURL(), settings, validateLinks ) )
+            {
+                return true;
             }
 
-            return true;
+            if ( getLog().isErrorEnabled() )
+            {
+                if ( detecting )
+                {
+                    getLog().warn( "Invalid links: "
+                                    + link + " with /" + PACKAGE_LIST + " or / " + ELEMENT_LIST + ". Ignored it." );
+                }
+                else
+                {
+                    getLog().error( "Invalid links: " 
+                                    + link + " with /" + PACKAGE_LIST + " or / " + ELEMENT_LIST + ". Ignored it." );
+                }
+            }
+
+            return false;
         }
         catch ( URISyntaxException e )
         {
@@ -5924,11 +5946,11 @@ public abstract class AbstractJavadocMojo
             {
                 if ( detecting )
                 {
-                    getLog().warn( "Malformed link: " + link + "/package-list. Ignored it." );
+                    getLog().warn( "Malformed link: " + e.getInput() + ". Ignored it." );
                 }
                 else
                 {
-                    getLog().error( "Malformed link: " + link + "/package-list. Ignored it." );
+                    getLog().error( "Malformed link: " + e.getInput() + ". Ignored it." );
                 }
             }
             return false;
@@ -5939,11 +5961,11 @@ public abstract class AbstractJavadocMojo
             {
                 if ( detecting )
                 {
-                    getLog().warn( "Error fetching link: " + link + "/package-list. Ignored it." );
+                    getLog().warn( "Error fetching link: " + link + ". Ignored it." );
                 }
                 else
                 {
-                    getLog().error( "Error fetching link: " + link + "/package-list. Ignored it." );
+                    getLog().error( "Error fetching link: " + link + ". Ignored it." );
                 }
             }
             return false;
