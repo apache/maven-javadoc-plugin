@@ -4684,52 +4684,17 @@ public abstract class AbstractJavadocMojo
         {
             addArgIf( arguments, breakiterator, "-breakiterator", SINCE_JAVADOC_1_5 );
         }
-
-        List<String> roots = getProjectSourceRoots( getProject() );
         
-        File mainDescriptor = findMainDescriptor( roots );
-
-        final LocationManager locationManager = new LocationManager();
-
-        if ( mainDescriptor != null && !isTest() )
-        {
-            ResolvePathsRequest<File> request =
-                ResolvePathsRequest.withFiles( getPathElements() ).setMainModuleDescriptor( mainDescriptor );
-            try
-            {
-                ResolvePathsResult<File> result = locationManager.resolvePaths( request );
-
-                String classpath = StringUtils.join( result.getClasspathElements().iterator(), File.pathSeparator );
-                addArgIfNotEmpty( arguments, "--class-path", JavadocUtil.quotedPathArgument( classpath ) );
-
-                Set<File> modulePathElements = new HashSet<>( result.getModulepathElements().keySet() )  ;
-                if ( allSourcePaths.size() > 1 )
-                {
-                    // Probably required due to bug in javadoc (Java 9+)   
-                    modulePathElements.addAll( getProjectBuildOutputDirs( getProject() ) );
-                }
-                
-                String modulepath =
-                    StringUtils.join( modulePathElements.iterator(), File.pathSeparator );
-                addArgIfNotEmpty( arguments, "--module-path", JavadocUtil.quotedPathArgument( modulepath ) );
-            }
-            catch ( IOException e )
-            {
-                throw new MavenReportException( e.getMessage(), e );
-            }
-        }
-        else
-        {
-            String classpath = StringUtils.join( getPathElements().iterator(), File.pathSeparator );
-            addArgIfNotEmpty( arguments, "-classpath", JavadocUtil.quotedPathArgument( classpath ) );
-        }
-
         Collection<String> reactorKeys = new HashSet<>( session.getProjects().size() );
         for ( MavenProject reactorProject : session.getProjects() )
         {
             reactorKeys.add( ArtifactUtils.versionlessKey( reactorProject.getGroupId(),
                                                            reactorProject.getArtifactId() ) );
         }
+        
+        final LocationManager locationManager = new LocationManager();
+        
+        Collection<String> additionalModules = new ArrayList<>();
         
         Path moduleSourceDir = null;
         if ( allSourcePaths.size() > 1 )
@@ -4751,6 +4716,8 @@ public abstract class AbstractJavadocMojo
                             
                             String moduleName =
                                 locationManager.resolvePaths( request ).getMainModuleDescriptor().name();
+                            
+                            additionalModules.add( moduleName );
                             
                             addArgIfNotEmpty( arguments, "--patch-module", moduleName + '='
                                 + JavadocUtil.quotedPathArgument( getSourcePath( projectSourcepaths.getValue() ) ) );
@@ -4775,6 +4742,62 @@ public abstract class AbstractJavadocMojo
 
                 }
             }
+        }
+
+        List<String> roots = getProjectSourceRoots( getProject() );
+        
+        File mainDescriptor = findMainDescriptor( roots );
+
+        if ( javadocRuntimeVersion.isAtLeast( "9" ) && ( isAggregator() || mainDescriptor != null ) && !isTest() )
+        {
+            ResolvePathsRequest<File> request =
+                ResolvePathsRequest.withFiles( getPathElements() ).setAdditionalModules( additionalModules );
+            
+            if ( mainDescriptor != null )
+            {
+                request.setMainModuleDescriptor( mainDescriptor );
+            }
+            
+            try
+            {
+                ResolvePathsResult<File> result = locationManager.resolvePaths( request );
+                
+                Set<File> modulePathElements = new HashSet<>( result.getModulepathElements().keySet() )  ;
+                if ( allSourcePaths.size() > 1 )
+                {
+                    // Probably required due to bug in javadoc (Java 9+)   
+                    modulePathElements.addAll( getProjectBuildOutputDirs( getProject() ) );
+                }
+
+                Collection<File> classPathElements = new ArrayList<>( result.getClasspathElements().size() );
+                for ( File file : result.getClasspathElements() )
+                {
+                    if ( file.isDirectory() && new File( file, "module-info.class" ).exists() )
+                    {
+                        modulePathElements.add( file );
+                    }
+                    else
+                    {
+                        classPathElements.add( file );
+                    }
+                }
+                
+                String classpath = StringUtils.join( classPathElements.iterator(), File.pathSeparator );
+                addArgIfNotEmpty( arguments, "--class-path", JavadocUtil.quotedPathArgument( classpath ) );
+                
+                String modulepath =
+                    StringUtils.join( modulePathElements.iterator(), File.pathSeparator );
+                addArgIfNotEmpty( arguments, "--module-path", JavadocUtil.quotedPathArgument( modulepath ) );
+            }
+            catch ( IOException e )
+            {
+                throw new MavenReportException( e.getMessage(), e );
+            }
+        }
+        else
+        {
+            String classpath = StringUtils.join( getPathElements().iterator(), File.pathSeparator );
+            addArgIfNotEmpty( arguments, "-classpath", JavadocUtil.quotedPathArgument( classpath ) );
         }
         
         if ( StringUtils.isNotEmpty( doclet ) )
