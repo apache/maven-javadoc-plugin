@@ -57,7 +57,6 @@ import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.plexus.util.WriterFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -65,7 +64,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -1946,7 +1944,8 @@ public abstract class AbstractFixJavadocMojo
                 }
 
                 String paramName = params.get( 0 );
-                switch ( docletTag.getName() ) {
+                switch ( docletTag.getName() ) 
+                {
                     case PARAM_TAG:
                         javaEntityTags.putJavadocParamTag( paramName, originalJavadocTag );
                         break;

@@ -101,7 +101,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -1921,7 +1920,7 @@ public abstract class AbstractJavadocMojo
     protected final void verifyRemovedParameter( String paramName )
     {
         Xpp3Dom configDom = mojo.getConfiguration();
-        if (configDom != null)
+        if ( configDom != null )
         {
             if ( configDom.getChild( paramName ) != null )
             {
@@ -1934,7 +1933,7 @@ public abstract class AbstractJavadocMojo
     private void verifyReplacedParameter( String oldParamName, String newParamNew )
     {
         Xpp3Dom configDom = mojo.getConfiguration();
-        if (configDom != null)
+        if ( configDom != null )
         {
             if ( configDom.getChild( oldParamName ) != null )
             {
