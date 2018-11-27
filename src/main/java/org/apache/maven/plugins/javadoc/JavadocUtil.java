@@ -874,6 +874,7 @@ public class JavadocUtil
         InvocationRequest request = new DefaultInvocationRequest();
         request.setBaseDirectory( projectFile.getParentFile() );
         request.setPomFile( projectFile );
+        request.setBatchMode( true );
         if ( log != null )
         {
             request.setDebug( log.isDebugEnabled() );
