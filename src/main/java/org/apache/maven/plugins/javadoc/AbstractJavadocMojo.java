@@ -98,12 +98,9 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -247,6 +244,10 @@ public abstract class AbstractJavadocMojo
      * Default location for css
      */
     private static final String RESOURCE_CSS_DIR = RESOURCE_DIR + "/css";
+    
+    private static final String PACKAGE_LIST = "package-list";
+    private static final String ELEMENT_LIST = "element-list";
+
 
     /**
      * For Javadoc options appears since Java 1.4.
@@ -1748,6 +1749,8 @@ public abstract class AbstractJavadocMojo
         DEFAULT_JAVA_API_LINKS.put( "api_1.7", "https://docs.oracle.com/javase/7/docs/api/" );
         DEFAULT_JAVA_API_LINKS.put( "api_1.8", "https://docs.oracle.com/javase/8/docs/api/" );
         DEFAULT_JAVA_API_LINKS.put( "api_9",   "https://docs.oracle.com/javase/9/docs/api/" );
+        DEFAULT_JAVA_API_LINKS.put( "api_10",  "https://docs.oracle.com/javase/10/docs/api/" );
+        DEFAULT_JAVA_API_LINKS.put( "api_11",  "https://docs.oracle.com/en/java/javase/11/docs/api" );
     }
 
     // ----------------------------------------------------------------------
@@ -1916,11 +1919,9 @@ public abstract class AbstractJavadocMojo
 
     protected final void verifyRemovedParameter( String paramName )
     {
-        Object pluginConfiguration = mojo.getConfiguration();
-        if ( pluginConfiguration instanceof Xpp3Dom )
+        Xpp3Dom configDom = mojo.getConfiguration();
+        if ( configDom != null )
         {
-            Xpp3Dom configDom = (Xpp3Dom) pluginConfiguration;
-
             if ( configDom.getChild( paramName ) != null )
             {
                 throw new IllegalArgumentException( "parameter '" + paramName
@@ -1931,11 +1932,9 @@ public abstract class AbstractJavadocMojo
 
     private void verifyReplacedParameter( String oldParamName, String newParamNew )
     {
-        Object pluginConfiguration = mojo.getConfiguration();
-        if ( pluginConfiguration instanceof Xpp3Dom )
+        Xpp3Dom configDom = mojo.getConfiguration();
+        if ( configDom != null )
         {
-            Xpp3Dom configDom = (Xpp3Dom) pluginConfiguration;
-
             if ( configDom.getChild( oldParamName ) != null )
             {
                 throw new IllegalArgumentException( "parameter '" + oldParamName
@@ -2391,12 +2390,7 @@ public abstract class AbstractJavadocMojo
         {
             return resourceResolver.resolveDependencySourcePaths( config );
         }
-        catch ( final ArtifactResolutionException e )
-        {
-            throw new MavenReportException(
-                "Failed to resolve one or more javadoc source/resource artifacts:\n\n" + e.getMessage(), e );
-        }
-        catch ( final ArtifactNotFoundException e )
+        catch ( final ArtifactResolutionException | ArtifactNotFoundException e )
         {
             throw new MavenReportException(
                 "Failed to resolve one or more javadoc source/resource artifacts:\n\n" + e.getMessage(), e );
@@ -2476,7 +2470,7 @@ public abstract class AbstractJavadocMojo
             String[] excludedPackages = getExcludedPackages();
             String[] subpackagesList = subpackages.split( "[:]" );
 
-            excludedNames = JavadocUtil.getExcludedNames( sourcePaths, subpackagesList, excludedPackages );
+            excludedNames = JavadocUtil.getExcludedNames( sourcePaths, excludedPackages );
         }
 
         String excludeArg = "";
@@ -2736,23 +2730,7 @@ public abstract class AbstractJavadocMojo
                     tc = tcs.get( 0 );
                 }
             }
-            catch ( NoSuchMethodException e )
-            {
-                // ignore
-            }
-            catch ( SecurityException e )
-            {
-                // ignore
-            }
-            catch ( IllegalAccessException e )
-            {
-                // ignore
-            }
-            catch ( IllegalArgumentException e )
-            {
-                // ignore
-            }
-            catch ( InvocationTargetException e )
+            catch ( SecurityException | ReflectiveOperationException e )
             {
                 // ignore
             }
@@ -3739,25 +3717,7 @@ public abstract class AbstractJavadocMojo
         {
             jVersion = JavadocUtil.getJavadocVersion( jExecutable );
         }
-        catch ( IOException e )
-        {
-            if ( getLog().isWarnEnabled() )
-            {
-                getLog().warn( "Unable to find the javadoc version: " + e.getMessage() );
-                getLog().warn( "Using the Java version instead of, i.e. " + JAVA_VERSION );
-            }
-            jVersion = JAVA_VERSION;
-        }
-        catch ( CommandLineException e )
-        {
-            if ( getLog().isWarnEnabled() )
-            {
-                getLog().warn( "Unable to find the javadoc version: " + e.getMessage() );
-                getLog().warn( "Using the Java version instead of, i.e. " + JAVA_VERSION );
-            }
-            jVersion = JAVA_VERSION;
-        }
-        catch ( IllegalArgumentException e )
+        catch ( IOException | CommandLineException | IllegalArgumentException e )
         {
             if ( getLog().isWarnEnabled() )
             {
@@ -3825,8 +3785,8 @@ public abstract class AbstractJavadocMojo
      * @param b                   the flag which controls if the argument is added or not.
      * @param value               the argument value to be added.
      * @param requiredJavaVersion the required Java version, for example 1.31f or 1.4f
-     * @see #addArgIf(java.util.List, boolean, String)
-     * @see #isJavaDocVersionAtLeast(float)
+     * @see #addArgIf(List, boolean, String)
+     * @see #isJavaDocVersionAtLeast(JavaVersion)
      */
     private void addArgIf( List<String> arguments, boolean b, String value, JavaVersion requiredJavaVersion )
     {
@@ -3856,7 +3816,7 @@ public abstract class AbstractJavadocMojo
      * @param arguments a list of arguments, not null
      * @param key       the argument name.
      * @param value     the argument value to be added.
-     * @see #addArgIfNotEmpty(java.util.List, String, String, boolean)
+     * @see #addArgIfNotEmpty(List, String, String, boolean)
      */
     private void addArgIfNotEmpty( List<String> arguments, String key, String value )
     {
@@ -3876,7 +3836,7 @@ public abstract class AbstractJavadocMojo
      * @param splitValue          if <code>true</code> given value will be tokenized by comma
      * @param requiredJavaVersion the required Java version, for example 1.31f or 1.4f
      * @see #addArgIfNotEmpty(List, String, String, boolean, boolean)
-     * @see #isJavaDocVersionAtLeast(float)
+     * @see #isJavaDocVersionAtLeast(JavaVersion)
      */
     private void addArgIfNotEmpty( List<String> arguments, String key, String value, boolean repeatKey,
                                    boolean splitValue, JavaVersion requiredJavaVersion )
@@ -3969,7 +3929,7 @@ public abstract class AbstractJavadocMojo
      * @param key                 the argument name.
      * @param value               the argument value to be added.
      * @param requiredJavaVersion the required Java version, for example 1.31f or 1.4f
-     * @see #addArgIfNotEmpty(java.util.List, String, String, float, boolean)
+     * @see #addArgIfNotEmpty(List, String, String, JavaVersion, boolean)
      */
     private void addArgIfNotEmpty( List<String> arguments, String key, String value,
                                    JavaVersion requiredJavaVersion )
@@ -3986,8 +3946,8 @@ public abstract class AbstractJavadocMojo
      * @param value               the argument value to be added.
      * @param requiredJavaVersion the required Java version, for example 1.31f or 1.4f
      * @param repeatKey           repeat or not the key in the command line
-     * @see #addArgIfNotEmpty(java.util.List, String, String)
-     * @see #isJavaDocVersionAtLeast(float)
+     * @see #addArgIfNotEmpty(List, String, String)
+     * @see #isJavaDocVersionAtLeast
      */
     private void addArgIfNotEmpty( List<String> arguments, String key, String value, JavaVersion requiredJavaVersion,
                                    boolean repeatKey )
@@ -4315,7 +4275,7 @@ public abstract class AbstractJavadocMojo
     /**
      * @param sourcePaths could be null
      * @param files       not null
-     * @return a list files with unnamed package names for files in the sourecPaths
+     * @return a list files with unnamed package names for files in the sourcePaths
      */
     private List<String> getFilesWithUnnamedPackages( Collection<String> sourcePaths, List<String> files )
     {
@@ -4327,7 +4287,7 @@ public abstract class AbstractJavadocMojo
      * @param files           not null, containing list of quoted files
      * @param onlyPackageName boolean for only package name
      * @return a list of package names or files with unnamed package names, depending the value of the unnamed flag
-     * @see #getFiles(List)
+     * @see #getFiles
      * @see #getSourcePaths()
      */
     private List<String> getPackageNamesOrFilesWithUnnamedPackages( Collection<String> sourcePaths, List<String> files,
@@ -4405,7 +4365,7 @@ public abstract class AbstractJavadocMojo
         File optionsFile = new File( javadocOutputDirectory, OPTIONS_FILE_NAME );
 
         StringBuilder options = new StringBuilder();
-        options.append( StringUtils.join( arguments.toArray( new String[arguments.size()] ),
+        options.append( StringUtils.join( arguments.iterator(),
                                           SystemUtils.LINE_SEPARATOR ) );
 
         try
@@ -4435,7 +4395,7 @@ public abstract class AbstractJavadocMojo
      * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/whatsnew-1.4.html#runningjavadoc">
      *      What s New in Javadoc 1.4
      *      </a>
-     * @see #isJavaDocVersionAtLeast(float)
+     * @see #isJavaDocVersionAtLeast(JavaVersion)
      * @see #ARGFILE_FILE_NAME
      * @see #FILES_FILE_NAME
      */
@@ -4643,8 +4603,8 @@ public abstract class AbstractJavadocMojo
      * Standard Javadoc Options wrapped by this Plugin.
      *
      * @param javadocOutputDirectory not null
-     * @param arguments   not null
-     * @param sourcePaths not null
+     * @param arguments              not null
+     * @param allSourcePaths         not null
      * @throws MavenReportException if any
      * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#javadocoptions">http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#javadocoptions</a>
      */
@@ -4680,52 +4640,17 @@ public abstract class AbstractJavadocMojo
         {
             addArgIf( arguments, breakiterator, "-breakiterator", SINCE_JAVADOC_1_5 );
         }
-
-        List<String> roots = getProjectSourceRoots( getProject() );
         
-        File mainDescriptor = findMainDescriptor( roots );
-
-        final LocationManager locationManager = new LocationManager();
-
-        if ( mainDescriptor != null && !isTest() )
-        {
-            ResolvePathsRequest<File> request =
-                ResolvePathsRequest.withFiles( getPathElements() ).setMainModuleDescriptor( mainDescriptor );
-            try
-            {
-                ResolvePathsResult<File> result = locationManager.resolvePaths( request );
-
-                String classpath = StringUtils.join( result.getClasspathElements().iterator(), File.pathSeparator );
-                addArgIfNotEmpty( arguments, "--class-path", JavadocUtil.quotedPathArgument( classpath ) );
-
-                Set<File> modulePathElements = new HashSet<>( result.getModulepathElements().keySet() )  ;
-                if ( allSourcePaths.size() > 1 )
-                {
-                    // Probably required due to bug in javadoc (Java 9+)   
-                    modulePathElements.addAll( getProjectBuildOutputDirs( getProject() ) );
-                }
-                
-                String modulepath =
-                    StringUtils.join( modulePathElements.iterator(), File.pathSeparator );
-                addArgIfNotEmpty( arguments, "--module-path", JavadocUtil.quotedPathArgument( modulepath ) );
-            }
-            catch ( IOException e )
-            {
-                throw new MavenReportException( e.getMessage(), e );
-            }
-        }
-        else
-        {
-            String classpath = StringUtils.join( getPathElements().iterator(), File.pathSeparator );
-            addArgIfNotEmpty( arguments, "-classpath", JavadocUtil.quotedPathArgument( classpath ) );
-        }
-
         Collection<String> reactorKeys = new HashSet<>( session.getProjects().size() );
         for ( MavenProject reactorProject : session.getProjects() )
         {
             reactorKeys.add( ArtifactUtils.versionlessKey( reactorProject.getGroupId(),
                                                            reactorProject.getArtifactId() ) );
         }
+        
+        final LocationManager locationManager = new LocationManager();
+        
+        Collection<String> additionalModules = new ArrayList<>();
         
         Path moduleSourceDir = null;
         if ( allSourcePaths.size() > 1 )
@@ -4747,6 +4672,8 @@ public abstract class AbstractJavadocMojo
                             
                             String moduleName =
                                 locationManager.resolvePaths( request ).getMainModuleDescriptor().name();
+                            
+                            additionalModules.add( moduleName );
                             
                             addArgIfNotEmpty( arguments, "--patch-module", moduleName + '='
                                 + JavadocUtil.quotedPathArgument( getSourcePath( projectSourcepaths.getValue() ) ) );
@@ -4771,6 +4698,62 @@ public abstract class AbstractJavadocMojo
 
                 }
             }
+        }
+
+        List<String> roots = getProjectSourceRoots( getProject() );
+        
+        File mainDescriptor = findMainDescriptor( roots );
+
+        if ( javadocRuntimeVersion.isAtLeast( "9" ) && ( isAggregator() || mainDescriptor != null ) && !isTest() )
+        {
+            ResolvePathsRequest<File> request =
+                ResolvePathsRequest.withFiles( getPathElements() ).setAdditionalModules( additionalModules );
+            
+            if ( mainDescriptor != null )
+            {
+                request.setMainModuleDescriptor( mainDescriptor );
+            }
+            
+            try
+            {
+                ResolvePathsResult<File> result = locationManager.resolvePaths( request );
+                
+                Set<File> modulePathElements = new HashSet<>( result.getModulepathElements().keySet() )  ;
+                if ( allSourcePaths.size() > 1 )
+                {
+                    // Probably required due to bug in javadoc (Java 9+)   
+                    modulePathElements.addAll( getProjectBuildOutputDirs( getProject() ) );
+                }
+
+                Collection<File> classPathElements = new ArrayList<>( result.getClasspathElements().size() );
+                for ( File file : result.getClasspathElements() )
+                {
+                    if ( file.isDirectory() && new File( file, "module-info.class" ).exists() )
+                    {
+                        modulePathElements.add( file );
+                    }
+                    else
+                    {
+                        classPathElements.add( file );
+                    }
+                }
+                
+                String classpath = StringUtils.join( classPathElements.iterator(), File.pathSeparator );
+                addArgIfNotEmpty( arguments, "--class-path", JavadocUtil.quotedPathArgument( classpath ) );
+                
+                String modulepath =
+                    StringUtils.join( modulePathElements.iterator(), File.pathSeparator );
+                addArgIfNotEmpty( arguments, "--module-path", JavadocUtil.quotedPathArgument( modulepath ) );
+            }
+            catch ( IOException e )
+            {
+                throw new MavenReportException( e.getMessage(), e );
+            }
+        }
+        else
+        {
+            String classpath = StringUtils.join( getPathElements().iterator(), File.pathSeparator );
+            addArgIfNotEmpty( arguments, "-classpath", JavadocUtil.quotedPathArgument( classpath ) );
         }
         
         if ( StringUtils.isNotEmpty( doclet ) )
@@ -4834,10 +4817,7 @@ public abstract class AbstractJavadocMojo
 
         if ( additionalOptions != null && additionalOptions.length > 0 )
         {
-            for ( String option : additionalOptions )
-            {
-                arguments.add( option );
-            }
+            Collections.addAll( arguments, additionalOptions );
         }
     }
 
@@ -5251,8 +5231,8 @@ public abstract class AbstractJavadocMojo
             writeDebugJavadocScript( cmdLine, javadocOutputDirectory );
         }
 
-        CommandLineUtils.StringStreamConsumer err = new CommandLineUtils.StringStreamConsumer();
-        CommandLineUtils.StringStreamConsumer out = new CommandLineUtils.StringStreamConsumer();
+        CommandLineUtils.StringStreamConsumer err = new JavadocUtil.JavadocOutputStreamConsumer();
+        CommandLineUtils.StringStreamConsumer out = new JavadocUtil.JavadocOutputStreamConsumer();
         try
         {
             int exitCode = CommandLineUtils.executeCommandLine( cmd, out, err );
@@ -5679,7 +5659,7 @@ public abstract class AbstractJavadocMojo
      * @return the detected Javadoc links using the Maven conventions for all dependencies defined in the current
      *         project or an empty list.
      * @see #detectLinks
-     * @see #isValidJavadocLink(String)
+     * @see #isValidJavadocLink
      * @since 2.6
      */
     private List<String> getDependenciesLinks()
@@ -5800,33 +5780,31 @@ public abstract class AbstractJavadocMojo
             return null;
         }
 
-        File javaApiPackageListFile = new File( getJavadocOptionsFile().getParentFile(), "package-list" );
+        final Path javaApiListFile;
+        final String resourceName;
+        if ( JavaVersion.parse( apiVersion ).isAtLeast( "10" ) )
+        {
+            javaApiListFile = getJavadocOptionsFile().getParentFile().toPath().resolve( "element-list" );
+            resourceName = "java-api-element-list-" + apiVersion;
+        }
+        else
+        {
+            javaApiListFile = getJavadocOptionsFile().getParentFile().toPath().resolve( "package-list" );
+            resourceName = "java-api-package-list-" + apiVersion;
+        }
 
         OfflineLink link = new OfflineLink();
-        link.setLocation( javaApiPackageListFile.getParentFile().getAbsolutePath() );
+        link.setLocation( javaApiListFile.getParent().toAbsolutePath().toString() );
         link.setUrl( javaApiLink );
 
-        InputStream in = null;
-        OutputStream out = null;
-        try
+        try ( InputStream in = this.getClass().getResourceAsStream( resourceName ) )
         {
-            in = this.getClass().getResourceAsStream( "java-api-package-list-" + apiVersion );
-            out = new FileOutputStream( javaApiPackageListFile );
-            IOUtil.copy( in, out );
-            out.close();
-            out = null;
-            in.close();
-            in = null;
+            Files.copy( in, javaApiListFile );
         }
         catch ( IOException ioe )
         {
             logError( "Can't get java-api-package-list-" + apiVersion + ": " + ioe.getMessage(), ioe );
             return null;
-        }
-        finally
-        {
-            IOUtil.close( in );
-            IOUtil.close( out );
         }
 
         return link;
@@ -5870,12 +5848,15 @@ public abstract class AbstractJavadocMojo
     {
         try
         {
-            URI linkUri;
+            final URI packageListUri;
+            final URI elementListUri;
+            
             if ( link.trim().toLowerCase( Locale.ENGLISH ).startsWith( "http:" ) || link.trim().toLowerCase(
                 Locale.ENGLISH ).startsWith( "https:" ) || link.trim().toLowerCase( Locale.ENGLISH ).startsWith(
                 "ftp:" ) || link.trim().toLowerCase( Locale.ENGLISH ).startsWith( "file:" ) )
             {
-                linkUri = new URI( link + "/package-list" );
+                packageListUri = new URI( link + '/' + PACKAGE_LIST );
+                elementListUri = new URI( link + '/' + ELEMENT_LIST );
             }
             else
             {
@@ -5896,27 +5877,44 @@ public abstract class AbstractJavadocMojo
                         getLog().error( "The given File link: " + dir + " is not a dir." );
                     }
                 }
-                linkUri = new File( dir, "package-list" ).toURI();
+                packageListUri = new File( dir, PACKAGE_LIST ).toURI();
+                elementListUri = new File( dir, ELEMENT_LIST ).toURI();
             }
 
-            if ( !JavadocUtil.isValidPackageList( linkUri.toURL(), settings, validateLinks ) )
+            
+            IOException elementListIOException = null;
+            try 
             {
-                if ( getLog().isErrorEnabled() )
+                if ( JavadocUtil.isValidElementList( elementListUri.toURL(), settings, validateLinks ) )
                 {
-                    if ( detecting )
-                    {
-                        getLog().warn( "Invalid link: " + link + "/package-list. Ignored it." );
-                    }
-                    else
-                    {
-                        getLog().error( "Invalid link: " + link + "/package-list. Ignored it." );
-                    }
+                    return true;
                 }
-
-                return false;
+            }
+            catch ( IOException e ) 
+            {
+                elementListIOException = e;
+            }
+            
+            if ( JavadocUtil.isValidPackageList( packageListUri.toURL(), settings, validateLinks ) )
+            {
+                return true;
             }
 
-            return true;
+            if ( getLog().isErrorEnabled() )
+            {
+                if ( detecting )
+                {
+                    getLog().warn( "Invalid links: "
+                                    + link + " with /" + PACKAGE_LIST + " or / " + ELEMENT_LIST + ". Ignored it." );
+                }
+                else
+                {
+                    getLog().error( "Invalid links: " 
+                                    + link + " with /" + PACKAGE_LIST + " or / " + ELEMENT_LIST + ". Ignored it." );
+                }
+            }
+
+            return false;
         }
         catch ( URISyntaxException e )
         {
@@ -5924,11 +5922,11 @@ public abstract class AbstractJavadocMojo
             {
                 if ( detecting )
                 {
-                    getLog().warn( "Malformed link: " + link + "/package-list. Ignored it." );
+                    getLog().warn( "Malformed link: " + e.getInput() + ". Ignored it." );
                 }
                 else
                 {
-                    getLog().error( "Malformed link: " + link + "/package-list. Ignored it." );
+                    getLog().error( "Malformed link: " + e.getInput() + ". Ignored it." );
                 }
             }
             return false;
@@ -5939,11 +5937,11 @@ public abstract class AbstractJavadocMojo
             {
                 if ( detecting )
                 {
-                    getLog().warn( "Error fetching link: " + link + "/package-list. Ignored it." );
+                    getLog().warn( "Error fetching link: " + link + ". Ignored it." );
                 }
                 else
                 {
-                    getLog().error( "Error fetching link: " + link + "/package-list. Ignored it." );
+                    getLog().error( "Error fetching link: " + link + ". Ignored it." );
                 }
             }
             return false;

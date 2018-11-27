@@ -39,7 +39,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.maven.plugins.javadoc.JavadocUtil;
 import org.apache.maven.plugins.javadoc.ProxyServer.AuthAsyncProxyServlet;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
@@ -69,7 +68,7 @@ public class JavadocUtilTest
         try
         {
             JavadocUtil.extractJavadocVersion( version );
-            assertTrue( "Not catch null", false );
+            fail( "Not catch null" );
         }
         catch ( IllegalArgumentException e )
         {
@@ -179,7 +178,7 @@ public class JavadocUtilTest
         try
         {
             JavadocUtil.parseJavadocMemory( memory );
-            assertTrue( "Not catch null", false );
+            fail( "Not catch null" );
         }
         catch ( IllegalArgumentException e )
         {
@@ -223,7 +222,7 @@ public class JavadocUtilTest
         try
         {
             JavadocUtil.parseJavadocMemory( memory );
-            assertTrue( "Not catch wrong pattern", false );
+            fail( "Not catch wrong pattern" );
         }
         catch ( IllegalArgumentException e )
         {
@@ -233,7 +232,7 @@ public class JavadocUtilTest
         try
         {
             JavadocUtil.parseJavadocMemory( memory );
-            assertTrue( "Not catch wrong pattern", false );
+            fail( "Not catch wrong pattern" );
         }
         catch ( IllegalArgumentException e )
         {
@@ -577,6 +576,87 @@ public class JavadocUtilTest
     }
 
     /**
+     * Tests that getRedirectUrl returns the same URL when there are no redirects.
+     */
+    public void testGetRedirectUrlWithNoRedirects()
+        throws Exception
+    {
+        Server server = null;
+        try
+        {
+            server = new Server( 0 );
+            server.addHandler( new AbstractHandler()
+            {
+                @Override
+                public void handle( String target, HttpServletRequest request, HttpServletResponse response,
+                                    int dispatch )
+                    throws IOException, ServletException
+                {
+                    response.setStatus( HttpServletResponse.SC_OK );
+                    ByteArrayISO8859Writer writer = new ByteArrayISO8859Writer( 100 );
+                    writer.write( "<html>Hello world</html>" );
+                    writer.flush();
+                    response.setContentLength( writer.size() );
+                    OutputStream out = response.getOutputStream();
+                    writer.writeTo( out );
+                    out.close();
+                    writer.close();
+                }
+            } );
+            server.start();
+
+            URL url = new URI( "http://localhost:" + server.getConnectors()[0].getLocalPort() ).toURL();
+            URL redirectUrl = JavadocUtil.getRedirectUrl( url, new Settings() );
+
+            assertEquals( url.toURI(), redirectUrl.toURI() );
+        }
+        finally
+        {
+            stopSilently( server );
+        }
+    }
+
+    /**
+     * Tests that getRedirectUrl adds an Accept header in HTTP requests. Necessary because some sites like Cloudflare
+     * reject requests without an Accept header.
+     */
+    public void testGetRedirectUrlVerifyHeaders()
+        throws Exception
+    {
+        Server server = null;
+        try
+        {
+            server = new Server( 0 );
+            server.addHandler( new AbstractHandler()
+            {
+                @Override
+                public void handle( String target, HttpServletRequest request, HttpServletResponse response,
+                                    int dispatch )
+                    throws IOException, ServletException
+                {
+                    if ( request.getHeader( "Accept" ) == null )
+                    {
+                        response.setStatus( HttpServletResponse.SC_FORBIDDEN );
+                    }
+                    else
+                    {
+                        response.setStatus( HttpServletResponse.SC_OK );
+                    }
+                    response.getOutputStream().close();
+                }
+            } );
+            server.start();
+
+            URL url = new URI( "http://localhost:" + server.getConnectors()[0].getLocalPort() ).toURL();
+            JavadocUtil.getRedirectUrl( url, new Settings() );
+        }
+        finally
+        {
+            stopSilently( server );
+        }
+    }
+
+    /**
      * Method to test copyJavadocResources()
      *
      * @throws Exception if any
@@ -670,7 +750,7 @@ public class JavadocUtilTest
     public void testUnifyPathSeparator()
         throws Exception
     {
-        assertEquals( null, JavadocUtil.unifyPathSeparator( null ) );
+        assertNull( JavadocUtil.unifyPathSeparator( null ) );
 
         final String ps = File.pathSeparator;
 

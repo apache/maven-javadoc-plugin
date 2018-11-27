@@ -19,6 +19,7 @@ package org.apache.maven.plugins.javadoc;
  * under the License.
  */
 
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -28,11 +29,13 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.RedirectLocations;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.BasicHttpContext;
@@ -62,16 +65,13 @@ import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Modifier;
@@ -79,6 +79,8 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -111,7 +113,7 @@ public class JavadocUtil
     /** Error message when VM could not be started using invoker. */
     protected static final String ERROR_INIT_VM =
         "Error occurred during initialization of VM, try to reduce the Java heap size for the MAVEN_OPTS "
-            + "environnement variable using -Xms:<size> and -Xmx:<size>.";
+            + "environment variable using -Xms:<size> and -Xmx:<size>.";
 
     /**
      * Method that removes the invalid directories in the specified directories. <b>Note</b>: All elements in
@@ -193,21 +195,16 @@ public class JavadocUtil
      * Method that gets all the source files to be excluded from the javadoc on the given source paths.
      *
      * @param sourcePaths the path to the source files
-     * @param subpackagesList list of subpackages to be included in the javadoc
      * @param excludedPackages the package names to be excluded in the javadoc
      * @return a List of the source files to be excluded in the generated javadoc
      */
-    protected static List<String> getExcludedNames( Collection<String> sourcePaths, String[] subpackagesList,
-                                                    String[] excludedPackages )
+    protected static List<String> getExcludedNames( Collection<String> sourcePaths, String[] excludedPackages )
     {
         List<String> excludedNames = new ArrayList<>();
         for ( String path : sourcePaths )
         {
-            for ( String aSubpackagesList : subpackagesList )
-            {
-                List<String> excludes = getExcludedPackages( path, excludedPackages );
-                excludedNames.addAll( excludes );
-            }
+            List<String> excludes = getExcludedPackages( path, excludedPackages );
+            excludedNames.addAll( excludes );
         }
 
         return excludedNames;
@@ -295,8 +292,7 @@ public class JavadocUtil
             return;
         }
 
-        List<String> excludes = new ArrayList<>();
-        excludes.addAll( Arrays.asList( FileUtils.getDefaultExcludes() ) );
+        List<String> excludes = new ArrayList<>( Arrays.asList( FileUtils.getDefaultExcludes() ) );
 
         if ( StringUtils.isNotEmpty( excludedocfilessubdir ) )
         {
@@ -697,24 +693,14 @@ public class JavadocUtil
             return false;
         }
 
-        OutputStream ost = new ByteArrayOutputStream();
-        OutputStreamWriter osw = null;
         try
         {
-            osw = new OutputStreamWriter( ost, charsetName );
-            osw.close();
-            osw = null;
+            return Charset.isSupported( charsetName );
         }
-        catch ( IOException exc )
+        catch ( IllegalCharsetNameException e )
         {
             return false;
         }
-        finally
-        {
-            IOUtil.close( osw );
-        }
-
-        return true;
     }
 
     /**
@@ -828,36 +814,7 @@ public class JavadocUtil
             throw new IOException( "The url could not be null." );
         }
 
-        if ( !file.getParentFile().exists() )
-        {
-            file.getParentFile().mkdirs();
-        }
-
-        InputStream in = null;
-        OutputStream out = null;
-        try
-        {
-            in = url.openStream();
-
-            if ( in == null )
-            {
-                throw new IOException( "The resource " + url + " doesn't exists." );
-            }
-
-            out = new FileOutputStream( file );
-
-            IOUtil.copy( in, out );
-
-            out.close();
-            out = null;
-            in.close();
-            in = null;
-        }
-        finally
-        {
-            IOUtil.close( in );
-            IOUtil.close( out );
-        }
+        FileUtils.copyURLToFile( url, file );
     }
 
     /**
@@ -1080,12 +1037,8 @@ public class JavadocUtil
         }
 
         List<String> classes = new ArrayList<>();
-        JarInputStream jarStream = null;
-
-        try
+        try ( JarInputStream jarStream = new JarInputStream( new FileInputStream( jarFile ) ) )
         {
-            jarStream = new JarInputStream( new FileInputStream( jarFile ) );
-
             for ( JarEntry jarEntry = jarStream.getNextJarEntry(); jarEntry != null; jarEntry =
                 jarStream.getNextJarEntry() )
             {
@@ -1098,13 +1051,6 @@ public class JavadocUtil
 
                 jarStream.closeEntry();
             }
-
-            jarStream.close();
-            jarStream = null;
-        }
-        finally
-        {
-            IOUtil.close( jarStream );
         }
 
         return classes;
@@ -1501,7 +1447,7 @@ public class JavadocUtil
      * @author Robert Scholte
      * @since 3.0.1
      */
-    private static class JavadocOutputStreamConsumer
+    protected static class JavadocOutputStreamConsumer
         extends CommandLineUtils.StringStreamConsumer
     {
         @Override
@@ -1657,7 +1603,7 @@ public class JavadocUtil
             }
 
             List<URI> redirects = httpContext.getRedirectLocations();
-            return redirects.isEmpty() ? url : redirects.get( redirects.size() - 1 ).toURL();
+            return isEmpty( redirects ) ? url : redirects.get( redirects.size() - 1 ).toURL();
         }
         finally
         {
@@ -1689,63 +1635,8 @@ public class JavadocUtil
             throw new IllegalArgumentException( "The url is null" );
         }
 
-        BufferedReader reader = null;
-        HttpGet httpMethod = null;
-        HttpClient httpClient = null;
-
-        try
+        try ( BufferedReader reader = getReader( url, settings ) )
         {
-            if ( "file".equals( url.getProtocol() ) )
-            {
-                // Intentionally using the platform default encoding here since this is what Javadoc uses internally.
-                reader = new BufferedReader( new InputStreamReader( url.openStream() ) );
-            }
-            else
-            {
-                // http, https...
-                httpClient = createHttpClient( settings, url );
-
-                httpMethod = new HttpGet( url.toString() );
-                HttpResponse response;
-                HttpContext context = new BasicHttpContext();
-                try
-                {
-                    response = httpClient.execute( httpMethod, context );
-                }
-                catch ( SocketTimeoutException e )
-                {
-                    // could be a sporadic failure, one more retry before we give up
-                    response = httpClient.execute( httpMethod, context );
-                }
-
-                int status = response.getStatusLine().getStatusCode();
-                if ( status != HttpStatus.SC_OK )
-                {
-                    throw new FileNotFoundException( "Unexpected HTTP status code " + status + " getting resource "
-                        + url.toExternalForm() + "." );
-                }
-                else
-                {
-                    int pos = url.getPath().lastIndexOf( '/' );
-                    RedirectLocations redirects = (RedirectLocations)
-                            context.getAttribute( "http.protocol.redirect-locations" );
-                    if ( pos >= 0 && redirects != null )
-                    {
-                        URI location = redirects.get( redirects.size() - 1 );
-                        String suffix = url.getPath().substring( pos );
-                        // Redirections shall point to the same file, e.g. /package-list
-                        if ( !location.toURL().getPath().endsWith( suffix ) )
-                        {
-                            throw new FileNotFoundException( url.toExternalForm() + " redirects to "
-                                    + location.toURL().toExternalForm() + "." );
-                        }
-                    }
-                }
-
-                // Intentionally using the platform default encoding here since this is what Javadoc uses internally.
-                reader = new BufferedReader( new InputStreamReader( response.getEntity().getContent() ) );
-            }
-
             if ( validateContent )
             {
                 for ( String line = reader.readLine(); line != null; line = reader.readLine() )
@@ -1756,25 +1647,113 @@ public class JavadocUtil
                     }
                 }
             }
-
-            reader.close();
-            reader = null;
-
             return true;
         }
-        finally
+    }
+    
+    protected static boolean isValidElementList( URL url, Settings settings, boolean validateContent )
+                    throws IOException
+    {
+        if ( url == null )
         {
-            IOUtil.close( reader );
-
-            if ( httpMethod != null )
-            {
-                httpMethod.releaseConnection();
-            }
-            if ( httpClient != null )
-            {
-                httpClient.getConnectionManager().shutdown();
-            }
+            throw new IllegalArgumentException( "The url is null" );
         }
+
+        try ( BufferedReader reader = getReader( url, settings ) )
+        {
+            if ( validateContent )
+            {
+                for ( String line = reader.readLine(); line != null; line = reader.readLine() )
+                {
+                    if ( line.startsWith( "module:" ) )
+                    {
+                        continue;
+                    }
+                        
+                    if ( !isValidPackageName( line ) )
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+    }
+    
+    private static BufferedReader getReader( URL url, Settings settings ) throws IOException
+    {
+        BufferedReader reader = null;
+        
+        if ( "file".equals( url.getProtocol() ) )
+        {
+            // Intentionally using the platform default encoding here since this is what Javadoc uses internally.
+            reader = new BufferedReader( new InputStreamReader( url.openStream() ) );
+        }
+        else
+        {
+            // http, https...
+            final HttpClient httpClient = createHttpClient( settings, url );
+
+            final HttpGet httpMethod = new HttpGet( url.toString() );
+            
+            HttpResponse response;
+            HttpContext context = new BasicHttpContext();
+            try
+            {
+                response = httpClient.execute( httpMethod, context );
+            }
+            catch ( SocketTimeoutException e )
+            {
+                // could be a sporadic failure, one more retry before we give up
+                response = httpClient.execute( httpMethod, context );
+            }
+
+            int status = response.getStatusLine().getStatusCode();
+            if ( status != HttpStatus.SC_OK )
+            {
+                throw new FileNotFoundException( "Unexpected HTTP status code " + status + " getting resource "
+                    + url.toExternalForm() + "." );
+            }
+            else
+            {
+                int pos = url.getPath().lastIndexOf( '/' );
+                RedirectLocations redirects = (RedirectLocations)
+                        context.getAttribute( "http.protocol.redirect-locations" );
+                if ( pos >= 0 && redirects != null )
+                {
+                    URI location = redirects.get( redirects.size() - 1 );
+                    String suffix = url.getPath().substring( pos );
+                    // Redirections shall point to the same file, e.g. /package-list
+                    if ( !location.toURL().getPath().endsWith( suffix ) )
+                    {
+                        throw new FileNotFoundException( url.toExternalForm() + " redirects to "
+                                + location.toURL().toExternalForm() + "." );
+                    }
+                }
+            }
+
+            // Intentionally using the platform default encoding here since this is what Javadoc uses internally.
+            reader = new BufferedReader( new InputStreamReader( response.getEntity().getContent() ) ) 
+            {
+                @Override
+                public void close()
+                    throws IOException
+                {
+                    super.close();
+                    
+                    if ( httpMethod != null )
+                    {
+                        httpMethod.releaseConnection();
+                    }
+                    if ( httpClient != null )
+                    {
+                        httpClient.getConnectionManager().shutdown();
+                    }
+                }
+            };
+        }
+        
+        return reader;
     }
 
     private static boolean isValidPackageName( String str )
@@ -1836,6 +1815,12 @@ public class JavadocUtil
         // Some web servers don't allow the default user-agent sent by httpClient
         httpClient.getParams().setParameter( CoreProtocolPNames.USER_AGENT,
                                              "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)" );
+
+        // Some server reject requests that do not have an Accept header
+        httpClient.getParams().setParameter( ClientPNames.DEFAULT_HEADERS,
+                                             Arrays.asList( new BasicHeader( HttpHeaders.ACCEPT, "*/*" ) ) );
+
+        httpClient.getParams().setParameter( ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY );
 
         if ( settings != null && settings.getActiveProxy() != null )
         {

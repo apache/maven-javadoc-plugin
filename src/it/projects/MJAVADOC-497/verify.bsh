@@ -21,14 +21,25 @@ import java.io.*;
 
 try
 {
-    File packageList = new File( basedir, "target/site/apidocs/package-list" );
-    if ( !packageList.exists() )
+	File list;
+	 
+	String javaVersion = System.getProperty( "java.specification.version" );
+	if ( javaVersion.startsWith( "1." ) || javaVersion.equals( "9" ) )
+	{
+	    list = new File( basedir, "target/site/apidocs/package-list" );
+	}
+	else
+	{
+		list = new File( basedir, "target/site/apidocs/element-list" );
+	}
+	
+    if ( !list.exists() )
     {
         System.err.println( packageList + " is missing" );
         return false;
     }
 
-    FileReader fr = new FileReader( packageList );
+    FileReader fr = new FileReader( list );
     BufferedReader br = new BufferedReader( fr );
     String line = br.readLine();
     if ( !"com.example.foo".equals( line ) || br.readLine() != null )

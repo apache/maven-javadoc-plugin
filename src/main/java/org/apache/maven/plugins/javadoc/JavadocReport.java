@@ -133,15 +133,7 @@ public class JavadocReport
         {
             executeReport( locale );
         }
-        catch ( MavenReportException e )
-        {
-            if ( failOnError )
-            {
-                throw e;
-            }
-            getLog().error( "Error while creating javadoc report: " + e.getMessage(), e );
-        }
-        catch ( RuntimeException e )
+        catch ( MavenReportException | RuntimeException e )
         {
             if ( failOnError )
             {
@@ -234,7 +226,7 @@ public class JavadocReport
     {
         boolean canGenerate = false;
 
-        if ( !this.isAggregator() || ( this.isAggregator() && this.project.isExecutionRoot() ) )
+        if ( !this.isAggregator() || this.project.isExecutionRoot() )
         {
             Collection<String> sourcePaths;
             List<String> files;
@@ -289,7 +281,7 @@ public class JavadocReport
     }
 
     /**
-     * @param theDestDir The destiation directory.
+     * @param theDestDir The destination directory.
      */
     public void setDestDir( String theDestDir )
     {
@@ -328,11 +320,7 @@ public class JavadocReport
             Locale locale = Locale.getDefault();
             generate( sink, locale );
         }
-        catch ( MavenReportException e )
-        {
-            failOnError( "An error has occurred in " + getName( Locale.ENGLISH ) + " report generation", e );
-        }
-        catch ( RuntimeException e )
+        catch ( MavenReportException | RuntimeException e )
         {
             failOnError( "An error has occurred in " + getName( Locale.ENGLISH ) + " report generation", e );
         }
