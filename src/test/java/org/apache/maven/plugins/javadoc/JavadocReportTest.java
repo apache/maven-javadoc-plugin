@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -190,9 +191,25 @@ public class JavadocReportTest
     private static String readFile( File file )
         throws IOException
     {
+        return readFile( file, StandardCharsets.UTF_8 );
+    }
+
+    /**
+     * Convenience method that reads the contents of the specified file object into a string with a
+     * <code>space</code> as line separator.
+     *
+     * @see #LINE_SEPARATOR
+     * @param file the file to be read
+     * @param cs charset to use
+     * @return a String object that contains the contents of the file
+     * @throws IOException if any
+     */
+    private static String readFile( File file, Charset cs )
+            throws IOException
+    {
         StringBuilder str = new StringBuilder( (int) file.length() );
 
-        for ( String strTmp : Files.readAllLines( file.toPath(), StandardCharsets.UTF_8 ) )
+        for ( String strTmp : Files.readAllLines( file.toPath(), cs ) )
         {
             str.append( LINE_SEPARATOR);
             str.append( strTmp );
@@ -480,6 +497,55 @@ public class JavadocReportTest
         // package level generated javadoc files
         assertTrue( new File( apidocs, "quotedpath/test/App.html" ).exists() );
         assertTrue( new File( apidocs, "quotedpath/test/AppSample.html" ).exists() );
+
+        // project level generated javadoc files
+        assertTrue( new File( apidocs, "index-all.html" ).exists() );
+        assertTrue( new File( apidocs, "index.html" ).exists() );
+        assertTrue( new File( apidocs, "overview-tree.html" ).exists() );
+        assertTrue( new File( apidocs, "stylesheet.css" ).exists() );
+
+        if ( JavaVersion.JAVA_VERSION.isBefore( "10" ) )
+        {
+            assertTrue( new File( apidocs, "package-list" ).exists() );
+        }
+        else
+        {
+            assertTrue( new File( apidocs, "element-list" ).exists() );
+        }
+    }
+
+    /**
+     * Method to test when the options file has umlauts.
+     *
+     * @throws Exception if any
+     */
+    public void testOptionsUmlautEncoding()
+            throws Exception
+    {
+        File testPom = new File(unit, "optionsumlautencoding-test/optionsumlautencoding-test-plugin-config.xml" );
+        JavadocReport mojo = lookupMojo( testPom );
+        mojo.execute();
+
+        File optionsFile = new File( mojo.getOutputDirectory(), "options" );
+        assertTrue( optionsFile.exists() );
+
+        // check for a part of the window title
+        String content;
+        if ( JavaVersion.JAVA_VERSION.isAtLeast( "9" ) )
+        {
+            content = readFile( optionsFile, StandardCharsets.UTF_8 );
+        }
+        else
+        {
+            content = readFile( optionsFile, Charset.defaultCharset() );
+        }
+        assertTrue( content.contains( "Options Umlaut Encoding ö ä ü ß" ) );
+
+        File apidocs = new File( getBasedir(), "target/test/unit/optionsumlautencoding-test/target/site/apidocs" );
+
+        // package level generated javadoc files
+        assertTrue( new File( apidocs, "optionsumlautencoding/test/App.html" ).exists() );
+        assertTrue( new File( apidocs, "optionsumlautencoding/test/AppSample.html" ).exists() );
 
         // project level generated javadoc files
         assertTrue( new File( apidocs, "index-all.html" ).exists() );
