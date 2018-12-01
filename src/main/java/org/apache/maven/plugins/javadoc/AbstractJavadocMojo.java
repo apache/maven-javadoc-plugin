@@ -53,6 +53,7 @@ import org.apache.maven.plugins.javadoc.options.io.xpp3.JavadocOptionsXpp3Writer
 import org.apache.maven.plugins.javadoc.resolver.JavadocBundle;
 import org.apache.maven.plugins.javadoc.resolver.ResourceResolver;
 import org.apache.maven.plugins.javadoc.resolver.SourceResolverConfig;
+import org.apache.maven.project.DefaultProjectBuildingRequest;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
@@ -109,6 +110,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -3485,7 +3487,7 @@ public abstract class AbstractJavadocMojo
             coordinate.setGroupId( javadocArtifact.getGroupId() );
             coordinate.setArtifactId( javadocArtifact.getArtifactId() );
             coordinate.setVersion( javadocArtifact.getVersion() );
-
+            
             Iterable<ArtifactResult> deps =
                 dependencyResolver.resolveDependencies( session.getProjectBuildingRequest(), coordinate,
                                                         ScopeFilter.including( "compile", "provided" ) );
@@ -3521,7 +3523,11 @@ public abstract class AbstractJavadocMojo
         coordinate.setArtifactId( javadocArtifact.getArtifactId() );
         coordinate.setVersion( javadocArtifact.getVersion() );
 
-        return artifactResolver.resolveArtifact( session.getProjectBuildingRequest(), coordinate ).getArtifact();
+        DefaultProjectBuildingRequest buildingRequest =
+            new DefaultProjectBuildingRequest( session.getProjectBuildingRequest() );
+        buildingRequest.setRemoteRepositories( project.getRemoteArtifactRepositories() );
+        
+        return artifactResolver.resolveArtifact( buildingRequest, coordinate ).getArtifact();
     }
 
     /**
@@ -5799,7 +5805,8 @@ public abstract class AbstractJavadocMojo
 
         try ( InputStream in = this.getClass().getResourceAsStream( resourceName ) )
         {
-            Files.copy( in, javaApiListFile );
+            // TODO only copy when changed
+            Files.copy( in, javaApiListFile, StandardCopyOption.REPLACE_EXISTING );
         }
         catch ( IOException ioe )
         {
