@@ -207,24 +207,18 @@ under the License.
           <type>String</type>
           <identifier>true</identifier>
         </field>
+        <field java.setter='false'>
+          <name>placement</name>
+          <description>Placement of the tag.</description>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <identifier>true</identifier>
+        </field>
       </fields>
       <codeSegments>
         <codeSegment>
           <version>1.0.0+</version>
             <code><![CDATA[
-    /**
-     * Field placement
-     */
-    private String placement;
-
-    /**
-     * Get the placement.
-     */
-    public String getPlacement()
-    {
-        return this.placement;
-    }
-
     /**
      * Set a Placement. Should be a combinaison of the letters:
      * <ul>
@@ -259,7 +253,7 @@ under the License.
                 case 'f':
                     break;
                 default:
-                    throw new IllegalArgumentException( "Placement should be a combinaison of the letters 'Xaoptcmf'." );
+                    throw new IllegalArgumentException( "Placement should be a combination of the letters 'Xaoptcmf'." );
             }
         }
         this.placement = placement;
