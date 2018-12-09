@@ -1,5 +1,7 @@
 package org.apache.maven.plugins.javadoc;
 
+import static org.junit.Assert.assertArrayEquals;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -27,6 +29,7 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -774,6 +777,18 @@ public class JavadocUtilTest
         assertEquals( path1 + ps + path2, JavadocUtil.unifyPathSeparator( path1 + ":" + path2 ) );
         assertEquals( path1 + ps + path2 + ps + path1 + ps + path2, JavadocUtil.unifyPathSeparator( path1 + ";"
             + path2 + ":" + path1 + ":" + path2 ) );
+    }
+    
+    
+    public void testGetIncludedFiles() throws Exception
+    {
+        File sourceDirectory = new File("target/it").getAbsoluteFile();
+        String[] fileList = new String[] { "Main.java" };
+        Collection<String> excludePackages = Collections.singleton( "*.it" );
+        
+        List<String> includedFiles = JavadocUtil.getIncludedFiles( sourceDirectory, fileList, excludePackages );
+        
+        assertArrayEquals( fileList, includedFiles.toArray( new String[0] ) );
     }
 
     private void stopSilently( Server server )

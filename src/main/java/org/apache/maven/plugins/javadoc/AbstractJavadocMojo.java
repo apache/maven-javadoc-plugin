@@ -111,6 +111,7 @@ import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -765,7 +766,14 @@ public abstract class AbstractJavadocMojo
      * Unconditionally excludes the specified packages and their subpackages from the list formed by
      * <code>-subpackages</code>. Multiple packages can be separated by commas (<code>,</code>), colons (<code>:</code>)
      * or semicolons (<code>;</code>).
-     * <br/>
+     * <p>
+     * Wildcards work as followed:
+     * <ul>
+     *   <li>a wildcard at the beginning should match 1 or more folders</li>
+     *   <li>any other wildcard must match exactly one folder</li>
+     * </ul>
+     * </p>
+     * <p>
      * Example:
      * <pre>
      * &lt;excludePackageNames&gt;*.internal:org.acme.exclude1.*:org.acme.exclude2&lt;/excludePackageNames&gt;
@@ -775,6 +783,7 @@ public abstract class AbstractJavadocMojo
      * <br/>
      * Since <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/whatsnew-1.4.html#summary">Java
      * 1.4</a>.
+     * </p>
      */
     @Parameter( property = "excludePackageNames" )
     private String excludePackageNames;
@@ -2209,13 +2218,13 @@ public abstract class AbstractJavadocMojo
         List<String> files = new ArrayList<>();
         if ( StringUtils.isEmpty( subpackages ) )
         {
-            String[] excludedPackages = getExcludedPackages();
-
+            Collection<String> excludedPackages = getExcludedPackages();
+            
             for ( String sourcePath : sourcePaths )
             {
                 File sourceDirectory = new File( sourcePath );
-                JavadocUtil.addFilesFromSource( files, sourceDirectory, sourceFileIncludes, sourceFileExcludes,
-                                                excludedPackages );
+                files.addAll( JavadocUtil.getFilesFromSource( sourceDirectory, sourceFileIncludes, sourceFileExcludes,
+                                                              excludedPackages ) );
             }
         }
 
@@ -2463,17 +2472,22 @@ public abstract class AbstractJavadocMojo
      * @return a String that contains the exclude argument that will be used by javadoc
      * @throws MavenReportException
      */
-    private String getExcludedPackages( Collection<String> sourcePaths )
+    private String getExcludedPackages( Collection<String> sourceFolders )
         throws MavenReportException
     {
         List<String> excludedNames = null;
+        
+        Collection<Path> sourcePaths = new ArrayList<>( sourceFolders.size() );
+        for ( String folder : sourceFolders )
+        {
+            sourcePaths.add( Paths.get( folder ) );
+        }
 
         if ( StringUtils.isNotEmpty( sourcepath ) && StringUtils.isNotEmpty( subpackages ) )
         {
-            String[] excludedPackages = getExcludedPackages();
-            String[] subpackagesList = subpackages.split( "[:]" );
-
-            excludedNames = JavadocUtil.getExcludedNames( sourcePaths, excludedPackages );
+            Collection<String> excludedPackages = getExcludedPackages();
+            
+            excludedNames = JavadocUtil.getExcludedPackages( sourcePaths, excludedPackages );
         }
 
         String excludeArg = "";
@@ -2513,7 +2527,7 @@ public abstract class AbstractJavadocMojo
      * @return an array of String objects that contain the package names
      * @throws MavenReportException
      */
-    private String[] getExcludedPackages()
+    private Collection<String> getExcludedPackages()
         throws MavenReportException
     {
         Set<String> excluded = new LinkedHashSet<>();
@@ -2550,18 +2564,7 @@ public abstract class AbstractJavadocMojo
             excluded.addAll( trimValues( packageNames ) );
         }
 
-        String[] result = new String[excluded.size()];
-        if ( isNotEmpty( excluded ) )
-        {
-            int idx = 0;
-            for ( String exclude : excluded )
-            {
-                result[idx] = exclude.replace( '.', File.separatorChar );
-                idx++;
-            }
-        }
-
-        return result;
+        return excluded;
     }
 
     private static List<String> trimValues( List<String> items )

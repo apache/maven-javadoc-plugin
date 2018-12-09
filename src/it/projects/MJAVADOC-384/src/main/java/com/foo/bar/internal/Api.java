@@ -19,7 +19,7 @@ package com.foo.bar.internal;
  * under the License.
  */
 
-/** Not API */
-public class NotApi {
+/** API */
+public class Api {
 
 }

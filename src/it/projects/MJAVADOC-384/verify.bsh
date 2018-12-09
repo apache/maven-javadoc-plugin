@@ -36,11 +36,19 @@ for ( File javadocFile : nonExistingJavadocFiles )
     }
 }
 
-File javadocFile = new File ( basedir, "target/site/apidocs/com/foo/bar/Api.html" );
-if ( !javadocFile.exists() ) 
+File[] existingJavadocFiles = new File[] {
+    new File( basedir, "target/site/apidocs/com/foo/bar/Api.html" ),
+    new File( basedir, "target/site/apidocs/com/foo/bar/internal/Api.html" ),
+};
+
+for ( File javadocFile : existingJavadocFiles )
 {
-    System.err.println( javadocFile.getAbsolutePath() + " is missing." );
-    return false;
+    if ( !javadocFile.exists() ) 
+    {
+        System.err.println( javadocFile.getAbsolutePath() + " is missing." );
+        return false;
+    }
 }
+
 
 return true;

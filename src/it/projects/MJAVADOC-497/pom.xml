@@ -46,7 +46,7 @@
           <version>@pom.version@</version>
           <configuration>
             <subpackages>com.example.foo</subpackages>
-            <excludePackageNames>*.impl.*</excludePackageNames>
+            <excludePackageNames>**.impl</excludePackageNames>
           </configuration>
         </plugin>
       </plugins>
