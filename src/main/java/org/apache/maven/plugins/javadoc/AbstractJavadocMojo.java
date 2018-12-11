@@ -4051,6 +4051,11 @@ public abstract class AbstractJavadocMojo
             {
                 continue;
             }
+            
+            if ( isOffline && !link.startsWith( "file:" ) )
+            {
+                continue;
+            }
 
             while ( link.endsWith( "/" ) )
             {
@@ -4907,10 +4912,7 @@ public abstract class AbstractJavadocMojo
 
         addArgIf( arguments, keywords, "-keywords", SINCE_JAVADOC_1_4_2 );
 
-        if ( !isOffline )
-        {
-            addLinkArguments( arguments );
-        }
+        addLinkArguments( arguments );
 
         addLinkofflineArguments( arguments );
 
