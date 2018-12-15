@@ -3301,8 +3301,10 @@ public abstract class AbstractFixJavadocMojo
         while ( ( line = lr.readLine() ) != null )
         {
             String l = StringUtils.removeDuplicateWhitespace( line.trim() );
-            if ( l.startsWith( "* @" + docletTag.getName() + " " + paramValue ) || l.startsWith(
-                "*@" + docletTag.getName() + " " + paramValue ) )
+            if ( l.startsWith( "* @" + docletTag.getName() + " " + paramValue + " " )
+                || l.startsWith( "*@" + docletTag.getName() + " " + paramValue + " " )
+                || l.equals( "* @" + docletTag.getName() + " " + paramValue )
+                || l.equals( "*@" + docletTag.getName() + " " + paramValue ) )
             {
                 if ( fixTag( LINK_TAG ) )
                 {
