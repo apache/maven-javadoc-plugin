@@ -118,7 +118,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -2596,7 +2595,7 @@ public abstract class AbstractJavadocMojo
         throws MavenReportException
     {
         List<File> classpathElements = new ArrayList<>();
-        Map<String, Artifact> compileArtifactMap = new HashMap<>();
+        Map<String, Artifact> compileArtifactMap = new LinkedHashMap<>();
 
         if ( isTest() )
         {
