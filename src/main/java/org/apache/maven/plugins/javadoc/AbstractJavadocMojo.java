@@ -118,6 +118,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -1970,11 +1971,6 @@ public abstract class AbstractJavadocMojo
             return;
         }
 
-        if ( isAggregator() && !project.isExecutionRoot() )
-        {
-            return;
-        }
-
         if ( getLog().isDebugEnabled() )
         {
             this.debug = true;
@@ -2277,9 +2273,9 @@ public abstract class AbstractJavadocMojo
                 mappedSourcePaths.putAll( getDependencySourcePaths() );
             }
 
-            if ( isAggregator() && project.isExecutionRoot() )
+            if ( isAggregator() )
             {
-                for ( MavenProject subProject : reactorProjects )
+                for ( MavenProject subProject : getAggregatedProjects() )
                 {
                     if ( subProject != project )
                     {
@@ -2333,6 +2329,57 @@ public abstract class AbstractJavadocMojo
         }
 
         return mappedSourcePaths;
+    }
+
+    private Collection<MavenProject> getAggregatedProjects()
+    {
+        Map<Path, MavenProject> reactorProjectsMap = new HashMap<>();
+        for ( MavenProject reactorProject : this.reactorProjects )
+        {
+            reactorProjectsMap.put( reactorProject.getBasedir().toPath(), reactorProject );
+        }
+        
+        return modulesForAggregatedProject( project, reactorProjectsMap );
+    }
+
+    /**
+     * Recursively add the modules of the aggregatedProject to the set of aggregatedModules.
+     * 
+     * @param aggregatedProject the project being aggregated
+     * @param reactorProjectsMap map of (still) available reactor projects 
+     * @throws MavenReportException if any
+     */
+    private Set<MavenProject> modulesForAggregatedProject( MavenProject aggregatedProject,
+                                                           Map<Path, MavenProject> reactorProjectsMap )
+    {
+        // Maven does not supply an easy way to get the projects representing
+        // the modules of a project. So we will get the paths to the base
+        // directories of the modules from the project and compare with the
+        // base directories of the projects in the reactor.
+
+        if ( aggregatedProject.getModules().isEmpty() )
+        {
+            return Collections.singleton( aggregatedProject );
+        }
+
+        List<Path> modulePaths = new LinkedList<Path>();
+        for ( String module :  aggregatedProject.getModules() )
+        {
+            modulePaths.add( new File( aggregatedProject.getBasedir(), module ).toPath() );
+        }
+
+        Set<MavenProject> aggregatedModules = new LinkedHashSet<>();
+        
+        for ( Path modulePath : modulePaths )
+        {
+            MavenProject module = reactorProjectsMap.remove( modulePath );
+            if ( module != null )
+            {
+                aggregatedModules.addAll( modulesForAggregatedProject( module, reactorProjectsMap ) );
+            }
+        }
+        
+        return aggregatedModules;
     }
 
     /**
@@ -2604,10 +2651,13 @@ public abstract class AbstractJavadocMojo
         
         populateCompileArtifactMap( compileArtifactMap, project.getArtifacts() );
 
-        if ( isAggregator() && project.isExecutionRoot() )
+        
+        if ( isAggregator() )
         {
+            Collection<MavenProject> aggregatorProjects = getAggregatedProjects();
+
             List<String> reactorArtifacts = new ArrayList<>();
-            for ( MavenProject p : reactorProjects )
+            for ( MavenProject p : aggregatorProjects )
             {
                 reactorArtifacts.add( p.getGroupId() + ':' + p.getArtifactId() );
             }
@@ -2616,7 +2666,7 @@ public abstract class AbstractJavadocMojo
                                                                      new PatternExclusionsFilter( reactorArtifacts ),
                                                                      getDependencyScopeFilter() ) );
 
-            for ( MavenProject subProject : reactorProjects )
+            for ( MavenProject subProject : aggregatorProjects )
             {
                 if ( subProject != project )
                 {
@@ -4187,9 +4237,9 @@ public abstract class AbstractJavadocMojo
             JavadocUtil.copyJavadocResources( anOutputDirectory, getJavadocDirectory(), excludedocfilessubdir );
         }
 
-        if ( isAggregator() && project.isExecutionRoot() )
+        if ( isAggregator() )
         {
-            for ( MavenProject subProject : reactorProjects )
+            for ( MavenProject subProject : getAggregatedProjects()  )
             {
                 if ( subProject != project && getJavadocDirectory() != null )
                 {

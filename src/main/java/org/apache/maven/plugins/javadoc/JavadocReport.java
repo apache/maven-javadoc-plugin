@@ -226,7 +226,7 @@ public class JavadocReport
     {
         boolean canGenerate = false;
 
-        if ( !this.isAggregator() || this.project.isExecutionRoot() )
+        if ( this.isAggregator() || !"pom".equals( this.project.getPackaging() ) )
         {
             Collection<String> sourcePaths;
             List<String> files;

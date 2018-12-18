@@ -175,7 +175,7 @@ public class JavadocJar
             innerDestDir = new File( getOutputDirectory() );
         }
 
-        if ( !( "pom".equalsIgnoreCase( project.getPackaging() ) && isAggregator() ) )
+        if ( isAggregator() || !"pom".equalsIgnoreCase( project.getPackaging() ) )
         {
             ArtifactHandler artifactHandler = project.getArtifact().getArtifactHandler();
             if ( !"java".equals( artifactHandler.getLanguage() ) )
