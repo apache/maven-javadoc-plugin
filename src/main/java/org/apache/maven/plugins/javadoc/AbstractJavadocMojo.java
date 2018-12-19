@@ -61,18 +61,18 @@ import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
-import org.apache.maven.shared.artifact.DefaultArtifactCoordinate;
+import org.apache.maven.shared.transfer.artifact.DefaultArtifactCoordinate;
 import org.apache.maven.shared.artifact.filter.resolve.AndFilter;
 import org.apache.maven.shared.artifact.filter.resolve.PatternExclusionsFilter;
 import org.apache.maven.shared.artifact.filter.resolve.PatternInclusionsFilter;
 import org.apache.maven.shared.artifact.filter.resolve.ScopeFilter;
 import org.apache.maven.shared.artifact.filter.resolve.TransformableFilter;
-import org.apache.maven.shared.artifact.resolve.ArtifactResolver;
-import org.apache.maven.shared.artifact.resolve.ArtifactResolverException;
-import org.apache.maven.shared.artifact.resolve.ArtifactResult;
-import org.apache.maven.shared.dependencies.DefaultDependableCoordinate;
-import org.apache.maven.shared.dependencies.resolve.DependencyResolver;
-import org.apache.maven.shared.dependencies.resolve.DependencyResolverException;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolverException;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResult;
+import org.apache.maven.shared.transfer.dependencies.DefaultDependableCoordinate;
+import org.apache.maven.shared.transfer.dependencies.resolve.DependencyResolver;
+import org.apache.maven.shared.transfer.dependencies.resolve.DependencyResolverException;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.ToolchainManager;
@@ -2685,10 +2685,16 @@ public abstract class AbstractJavadocMojo
                         buildingRequest =
                             buildingRequest.setRemoteRepositories( subProject.getRemoteArtifactRepositories() );
                         
+                        List<Dependency> managedDependencies = null;
+                        if ( subProject.getDependencyManagement() != null )
+                        {
+                            managedDependencies = subProject.getDependencyManagement().getDependencies();
+                        }
+                        
                         for ( ArtifactResult artifactResult
                                     : dependencyResolver.resolveDependencies( buildingRequest,
                                                                               subProject.getDependencies(),
-                                                                              null,
+                                                                              managedDependencies,
                                                                               dependencyFilter ) )
                         {
                             populateCompileArtifactMap( compileArtifactMap,
