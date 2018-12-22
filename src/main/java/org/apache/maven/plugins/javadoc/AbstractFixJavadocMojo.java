@@ -66,8 +66,10 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -990,7 +992,16 @@ public abstract class AbstractFixJavadocMojo
             return;
         }
 
-        File javaFile = new File( javaClass.getSource().getURL().getFile() );
+        File javaFile;
+        try
+        {
+            javaFile = Paths.get( javaClass.getSource().getURL().toURI() ).toFile();
+        }
+        catch ( URISyntaxException e )
+        {
+            throw new MojoExecutionException( e.getMessage() );
+        }
+        
         // the original java content in memory
         final String originalContent = StringUtils.unifyLineSeparators( FileUtils.fileRead( javaFile, encoding ) );
 
