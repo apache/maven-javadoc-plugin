@@ -4754,11 +4754,11 @@ public abstract class AbstractJavadocMojo
                             addArgIfNotEmpty( arguments, "--patch-module", moduleName + '='
                                 + JavadocUtil.quotedPathArgument( getSourcePath( projectSourcepaths.getValue() ) ) );
                             
-                            Files.createDirectory( moduleSourceDir.resolve( moduleName ) );
+                            Files.createDirectories( moduleSourceDir.resolve( moduleName ) );
                         }
                         catch ( IOException e )
                         {
-                            throw new MavenReportException( e.getMessage() );
+                            throw new MavenReportException( e.getMessage(), e );
                         }
                     }
                     else
