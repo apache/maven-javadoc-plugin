@@ -82,6 +82,7 @@ import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.codehaus.plexus.components.io.fileselectors.IncludeExcludeFileSelector;
+import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 import org.codehaus.plexus.languages.java.jpms.LocationManager;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsRequest;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
@@ -1997,9 +1998,6 @@ public abstract class AbstractJavadocMojo
             return;
         }
 
-        List<String> packageNames = getPackageNames( collectedSourcePaths, files );
-        List<String> filesWithUnnamedPackages = getFilesWithUnnamedPackages( collectedSourcePaths, files );
-
         // ----------------------------------------------------------------------
         // Find the javadoc executable and version
         // ----------------------------------------------------------------------
@@ -2014,6 +2012,17 @@ public abstract class AbstractJavadocMojo
             throw new MavenReportException( "Unable to find javadoc command: " + e.getMessage(), e );
         }
         setFJavadocVersion( new File( jExecutable ) );
+
+        List<String> packageNames;
+        if ( javadocRuntimeVersion.isAtLeast( "9" ) )
+        {
+            packageNames = getPackageNamesRespectingJavaModules( sourcePaths );
+        }
+        else
+        {
+            packageNames = getPackageNames( collectedSourcePaths, files );
+        }
+        List<String> filesWithUnnamedPackages = getFilesWithUnnamedPackages( collectedSourcePaths, files );
 
         // ----------------------------------------------------------------------
         // Javadoc output directory as File
@@ -2514,7 +2523,7 @@ public abstract class AbstractJavadocMojo
      * Method to get the excluded source files from the javadoc and create the argument string
      * that will be included in the javadoc commandline execution.
      *
-     * @param sourcePaths the collection of paths to the source files
+     * @param sourceFolders the collection of paths to the source files
      * @return a String that contains the exclude argument that will be used by javadoc
      * @throws MavenReportException
      */
@@ -4340,6 +4349,102 @@ public abstract class AbstractJavadocMojo
     private List<String> getPackageNames( Collection<String> sourcePaths, List<String> files )
     {
         return getPackageNamesOrFilesWithUnnamedPackages( sourcePaths, files, true );
+    }
+
+    /**
+     * @param allSourcePaths     not null, containing absolute and relative paths
+     * @return a list of exported package names for files in allSourcePaths
+     * @throws MavenReportException if any
+     * @see #getFiles
+     * @see #getSourcePaths()
+     */
+    private List<String> getPackageNamesRespectingJavaModules( Map<String, Collection<String>> allSourcePaths )
+            throws MavenReportException
+    {
+        List<String> returnList = new ArrayList<>();
+
+        if ( !StringUtils.isEmpty( sourcepath ) )
+        {
+            return returnList;
+        }
+        // Avoid checking non-exported packages multiple times
+        Set<String> packagesChecked = new HashSet<>();
+        LocationManager locationManager = new LocationManager();
+
+        for ( Collection<String> artifactSourcePaths: allSourcePaths.values() )
+        {
+            for ( String currentFile : getFiles( artifactSourcePaths ) )
+            {
+                currentFile = currentFile.replace( '\\', '/' );
+
+                for ( String currentSourcePath : artifactSourcePaths )
+                {
+                    currentSourcePath = currentSourcePath.replace( '\\', '/' );
+
+                    if ( currentFile.contains( currentSourcePath ) )
+                    {
+                        if ( !currentSourcePath.endsWith( "/" ) )
+                        {
+                            currentSourcePath += "/";
+                        }
+                        String packagename = currentFile.substring( currentSourcePath.length() + 1 );
+
+                        /*
+                         * Remove the miscellaneous files
+                         * http://docs.oracle.com/javase/1.4.2/docs/tooldocs/solaris/javadoc.html#unprocessed
+                         */
+                        if ( packagename.contains( "doc-files" ) )
+                        {
+                            continue;
+                        }
+
+                        if ( packagename.lastIndexOf( "/" ) != -1 )
+                        {
+                            packagename = packagename.substring( 0, packagename.lastIndexOf( "/" ) );
+                            packagename = packagename.replace( '/', '.' );
+
+                            if ( !packagesChecked.contains( packagename ) )
+                            {
+                                packagesChecked.add( packagename );
+                                File mainDescriptor = findMainDescriptor( artifactSourcePaths );
+                                if ( mainDescriptor != null && !isTest() )
+                                {
+                                    ResolvePathsRequest<File> request =
+                                            ResolvePathsRequest.withFiles( Collections.<File>emptyList() ).
+                                                    setMainModuleDescriptor( mainDescriptor );
+
+                                    try
+                                    {
+                                        boolean packageExported = false;
+                                        for ( JavaModuleDescriptor.JavaExports export : locationManager.
+                                                resolvePaths( request ).getMainModuleDescriptor().exports() )
+                                        {
+                                            if ( export.source().equals( packagename ) )
+                                            {
+                                                // Only add exported packages
+                                                packageExported = true;
+                                                break;
+                                            }
+                                        }
+                                        if ( !packageExported )
+                                        {
+                                            continue;
+                                        }
+                                    }
+                                    catch ( IOException e )
+                                    {
+                                        throw new MavenReportException( e.getMessage(), e );
+                                    }
+                                }
+                                returnList.add( packagename );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return returnList;
     }
 
     /**
