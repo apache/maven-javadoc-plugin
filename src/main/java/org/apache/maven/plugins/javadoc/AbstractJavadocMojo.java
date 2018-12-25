@@ -4755,10 +4755,10 @@ public abstract class AbstractJavadocMojo
                                 + JavadocUtil.quotedPathArgument( getSourcePath( projectSourcepaths.getValue() ) ) );
                             
                             Path modulePath = moduleSourceDir.resolve( moduleName );
-//                            if ( !Files.isDirectory( modulePath ) )
-//                            {
-                            Files.createDirectory( modulePath );
-//                            }
+                            if ( !Files.isDirectory( modulePath ) )
+                            {
+                                Files.createDirectory( modulePath );
+                            }
                         }
                         catch ( IOException e )
                         {
