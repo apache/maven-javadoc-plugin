@@ -4367,12 +4367,43 @@ public abstract class AbstractJavadocMojo
         {
             return returnList;
         }
-        // Avoid checking non-exported packages multiple times
-        Set<String> packagesChecked = new HashSet<>();
         LocationManager locationManager = new LocationManager();
 
         for ( Collection<String> artifactSourcePaths: allSourcePaths.values() )
         {
+            Set<String> exportedPackages = new HashSet<>();
+            boolean exportAllPackages;
+            File mainDescriptor = findMainDescriptor( artifactSourcePaths );
+            if ( mainDescriptor != null && !isTest() )
+            {
+                ResolvePathsRequest<File> request =
+                        ResolvePathsRequest.withFiles( Collections.<File>emptyList() ).
+                                setMainModuleDescriptor( mainDescriptor );
+    
+                try
+                {
+                    Set<JavaModuleDescriptor.JavaExports> exports = locationManager.resolvePaths( request ).
+                            getMainModuleDescriptor().exports();
+                    if ( exports.isEmpty() )
+                    {
+                        continue;
+                    }
+                    for ( JavaModuleDescriptor.JavaExports export : exports )
+                    {
+                        exportedPackages.add( export.source() );
+                    }
+                }
+                catch ( IOException e )
+                {
+                    throw new MavenReportException( e.getMessage(), e );
+                }
+                exportAllPackages = false;
+            }
+            else
+            {
+                exportAllPackages = true;
+            }
+            
             for ( String currentFile : getFiles( artifactSourcePaths ) )
             {
                 currentFile = currentFile.replace( '\\', '/' );
@@ -4403,39 +4434,8 @@ public abstract class AbstractJavadocMojo
                             packagename = packagename.substring( 0, packagename.lastIndexOf( "/" ) );
                             packagename = packagename.replace( '/', '.' );
 
-                            if ( !packagesChecked.contains( packagename ) )
+                            if ( exportAllPackages || exportedPackages.contains( packagename ) )
                             {
-                                packagesChecked.add( packagename );
-                                File mainDescriptor = findMainDescriptor( artifactSourcePaths );
-                                if ( mainDescriptor != null && !isTest() )
-                                {
-                                    ResolvePathsRequest<File> request =
-                                            ResolvePathsRequest.withFiles( Collections.<File>emptyList() ).
-                                                    setMainModuleDescriptor( mainDescriptor );
-
-                                    try
-                                    {
-                                        boolean packageExported = false;
-                                        for ( JavaModuleDescriptor.JavaExports export : locationManager.
-                                                resolvePaths( request ).getMainModuleDescriptor().exports() )
-                                        {
-                                            if ( export.source().equals( packagename ) )
-                                            {
-                                                // Only add exported packages
-                                                packageExported = true;
-                                                break;
-                                            }
-                                        }
-                                        if ( !packageExported )
-                                        {
-                                            continue;
-                                        }
-                                    }
-                                    catch ( IOException e )
-                                    {
-                                        throw new MavenReportException( e.getMessage(), e );
-                                    }
-                                }
                                 returnList.add( packagename );
                             }
                         }

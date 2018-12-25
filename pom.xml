@@ -536,7 +536,7 @@ under the License.
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <excludes>
-                <exlude>**/*Test*.java</exlude>
+                <exclude>**/*Test*.java</exclude>
               </excludes>
             </configuration>
           </plugin>
