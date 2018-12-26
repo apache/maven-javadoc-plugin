@@ -4754,7 +4754,11 @@ public abstract class AbstractJavadocMojo
                             addArgIfNotEmpty( arguments, "--patch-module", moduleName + '='
                                 + JavadocUtil.quotedPathArgument( getSourcePath( projectSourcepaths.getValue() ) ) );
                             
-                            Files.createDirectories( moduleSourceDir.resolve( moduleName ) );
+                            Path modulePath = moduleSourceDir.resolve( moduleName );
+                            if ( !Files.isDirectory( modulePath ) )
+                            {
+                                Files.createDirectory( modulePath );
+                            }
                         }
                         catch ( IOException e )
                         {
