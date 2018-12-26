@@ -212,7 +212,7 @@ public abstract class AbstractJavadocMojo
      * Default location for css
      */
     private static final String RESOURCE_CSS_DIR = RESOURCE_DIR + "/css";
-    
+
     private static final String PACKAGE_LIST = "package-list";
     private static final String ELEMENT_LIST = "element-list";
 
@@ -265,7 +265,7 @@ public abstract class AbstractJavadocMojo
     private static final JavaVersion SINCE_JAVADOC_1_8 = JavaVersion.parse( "1.8" );
 
     /**
-     * 
+     *
      */
     private static final JavaVersion JAVA_VERSION = JavaVersion.JAVA_SPECIFICATION_VERSION;
 
@@ -571,9 +571,9 @@ public abstract class AbstractJavadocMojo
 
     /**
      * Use this parameter <b>only</b> if if you want to override the default URLs.
-     * 
-     * The key should match {@code api_x}, where {@code x} matches the Java version.  
-     * 
+     *
+     * The key should match {@code api_x}, where {@code x} matches the Java version.
+     *
      *  For example:
      *  <dl>
      *   <dt>api_1.5</dt>
@@ -861,10 +861,10 @@ public abstract class AbstractJavadocMojo
      */
     @Parameter( property = "source" )
     private String source;
-    
+
     /**
      * Provide source compatibility with specified release
-     * 
+     *
      * @since JDK 9
      * @since 3.1.0
      */
@@ -1335,7 +1335,7 @@ public abstract class AbstractJavadocMojo
     /**
      * Generates compile-time warnings for missing serial tags.
      * <br/>
-     * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#serialwarn">serialwarn</a> option 
+     * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#serialwarn">serialwarn</a> option
      */
     @Parameter( property = "serialwarn", defaultValue = "false" )
     private boolean serialwarn;
@@ -1719,14 +1719,14 @@ public abstract class AbstractJavadocMojo
      */
     @Parameter( defaultValue = "true", property = "maven.javadoc.applyJavadocSecurityFix" )
     private boolean applyJavadocSecurityFix = true;
-    
+
     /**
      * <p>
      * Specify the requirements for this jdk toolchain.
      * This overrules the toolchain selected by the maven-toolchain-plugin.
      * </p>
      * <strong>note:</strong> requires at least Maven 3.3.1
-     * 
+     *
      * @since 3.0.0
      */
     @Parameter
@@ -1785,7 +1785,7 @@ public abstract class AbstractJavadocMojo
 
         return Collections.singletonList( new File( p.getBuild().getOutputDirectory() ) );
     }
-    
+
     protected File getArtifactFile( MavenProject project )
     {
         if ( !isAggregator() && isTest() )
@@ -1968,9 +1968,9 @@ public abstract class AbstractJavadocMojo
         }
 
         Map<String, Collection<Path>> sourcePaths = getSourcePaths();
-        
+
         Collection<Path> collectedSourcePaths = collect( sourcePaths.values() );
-        
+
         Map<Path, Collection<String>> files = getFiles( collectedSourcePaths );
         if ( !canGenerateReport( files ) )
         {
@@ -2125,7 +2125,7 @@ public abstract class AbstractJavadocMojo
             // ----------------------------------------------------------------------
             // Write argfile file and include it in the command line
             // ----------------------------------------------------------------------
-            
+
             List<String> allFiles = new ArrayList<>();
             for ( Map.Entry<Path, Collection<String>> filesEntry : files.entrySet() )
             {
@@ -2222,14 +2222,14 @@ public abstract class AbstractJavadocMojo
         if ( StringUtils.isEmpty( subpackages ) )
         {
             Collection<String> excludedPackages = getExcludedPackages();
-            
+
             for ( Path sourcePath : sourcePaths )
             {
                 List<String> files = new ArrayList<>();
                 File sourceDirectory = sourcePath.toFile();
                 files.addAll( JavadocUtil.getFilesFromSource( sourceDirectory, sourceFileIncludes, sourceFileExcludes,
                                                               excludedPackages ) );
-                
+
                 if ( source != null && JavaVersion.parse( source ).isBefore( "9" )
                     && files.remove( "module-info.java" ) )
                 {
@@ -2290,7 +2290,7 @@ public abstract class AbstractJavadocMojo
                                            sourcePaths );
                 }
             }
-            
+
             if ( includeDependencySources )
             {
                 mappedSourcePaths.putAll( getDependencySourcePaths() );
@@ -2362,15 +2362,15 @@ public abstract class AbstractJavadocMojo
         {
             reactorProjectsMap.put( reactorProject.getBasedir().toPath(), reactorProject );
         }
-        
+
         return modulesForAggregatedProject( project, reactorProjectsMap );
     }
 
     /**
      * Recursively add the modules of the aggregatedProject to the set of aggregatedModules.
-     * 
+     *
      * @param aggregatedProject the project being aggregated
-     * @param reactorProjectsMap map of (still) available reactor projects 
+     * @param reactorProjectsMap map of (still) available reactor projects
      * @throws MavenReportException if any
      */
     private Set<MavenProject> modulesForAggregatedProject( MavenProject aggregatedProject,
@@ -2393,7 +2393,7 @@ public abstract class AbstractJavadocMojo
         }
 
         Set<MavenProject> aggregatedModules = new LinkedHashSet<>();
-        
+
         for ( Path modulePath : modulePaths )
         {
             MavenProject module = reactorProjectsMap.remove( modulePath );
@@ -2402,7 +2402,7 @@ public abstract class AbstractJavadocMojo
                 aggregatedModules.addAll( modulesForAggregatedProject( module, reactorProjectsMap ) );
             }
         }
-        
+
         return aggregatedModules;
     }
 
@@ -2547,11 +2547,11 @@ public abstract class AbstractJavadocMojo
         throws MavenReportException
     {
         List<String> excludedNames = null;
-        
+
         if ( StringUtils.isNotEmpty( sourcepath ) && StringUtils.isNotEmpty( subpackages ) )
         {
             Collection<String> excludedPackages = getExcludedPackages();
-            
+
             excludedNames = JavadocUtil.getExcludedPackages( sourcePaths, excludedPackages );
         }
 
@@ -2649,7 +2649,7 @@ public abstract class AbstractJavadocMojo
 
     /**
      * Method that gets the classpath and modulepath elements that will be specified in the javadoc
-     * <code>-classpath</code> and <code>--module-path</code> parameter. 
+     * <code>-classpath</code> and <code>--module-path</code> parameter.
      * Since we have all the sources of the current reactor, it is sufficient to consider the
      * dependencies of the reactor modules, excluding the module artifacts which may not yet be available
      * when the reactor project is built for the first time.
@@ -2667,9 +2667,9 @@ public abstract class AbstractJavadocMojo
         {
             classpathElements.addAll( getProjectBuildOutputDirs( project ) );
         }
-        
+
         populateCompileArtifactMap( compileArtifactMap, project.getArtifacts() );
-        
+
         if ( isAggregator() )
         {
             Collection<MavenProject> aggregatorProjects = getAggregatedProjects();
@@ -2679,8 +2679,8 @@ public abstract class AbstractJavadocMojo
             {
                 reactorArtifacts.add( p.getGroupId() + ':' + p.getArtifactId() );
             }
-            
-            TransformableFilter dependencyFilter = new AndFilter( Arrays.asList( 
+
+            TransformableFilter dependencyFilter = new AndFilter( Arrays.asList(
                                                                      new PatternExclusionsFilter( reactorArtifacts ),
                                                                      getDependencyScopeFilter() ) );
 
@@ -2710,13 +2710,13 @@ public abstract class AbstractJavadocMojo
                         ProjectBuildingRequest buildingRequest = session.getProjectBuildingRequest();
                         buildingRequest =
                             buildingRequest.setRemoteRepositories( subProject.getRemoteArtifactRepositories() );
-                        
+
                         List<Dependency> managedDependencies = null;
                         if ( subProject.getDependencyManagement() != null )
                         {
                             managedDependencies = subProject.getDependencyManagement().getDependencies();
                         }
-                        
+
                         for ( ArtifactResult artifactResult
                                     : dependencyResolver.resolveDependencies( buildingRequest,
                                                                               subProject.getDependencies(),
@@ -2725,10 +2725,10 @@ public abstract class AbstractJavadocMojo
                         {
                             populateCompileArtifactMap( compileArtifactMap,
                                                         Collections.singletonList( artifactResult.getArtifact() ) );
-                            
+
                             sb.append( artifactResult.getArtifact().getFile() ).append( '\n' );
                         }
-                        
+
                         if ( getLog().isDebugEnabled() )
                         {
                             getLog().debug( sb.toString() );
@@ -2797,7 +2797,7 @@ public abstract class AbstractJavadocMojo
     protected final Toolchain getToolchain()
     {
         Toolchain tc = null;
-        
+
         if ( jdkToolchain != null )
         {
             // Maven 3.3.1 has plugin execution scoped Toolchain Support
@@ -2822,12 +2822,12 @@ public abstract class AbstractJavadocMojo
                 // ignore
             }
         }
-        
+
         if ( tc == null )
         {
             tc = toolchainManager.getToolchainFromBuildContext( "jdk", session );
         }
-        
+
         return tc;
     }
 
@@ -3571,7 +3571,7 @@ public abstract class AbstractJavadocMojo
             coordinate.setGroupId( javadocArtifact.getGroupId() );
             coordinate.setArtifactId( javadocArtifact.getArtifactId() );
             coordinate.setVersion( javadocArtifact.getVersion() );
-            
+
             Iterable<ArtifactResult> deps =
                 dependencyResolver.resolveDependencies( session.getProjectBuildingRequest(), coordinate,
                                                         ScopeFilter.including( "compile", "provided" ) );
@@ -3610,7 +3610,7 @@ public abstract class AbstractJavadocMojo
         DefaultProjectBuildingRequest buildingRequest =
             new DefaultProjectBuildingRequest( session.getProjectBuildingRequest() );
         buildingRequest.setRemoteRepositories( project.getRemoteArtifactRepositories() );
-        
+
         return artifactResolver.resolveArtifact( buildingRequest, coordinate ).getArtifact();
     }
 
@@ -4136,7 +4136,7 @@ public abstract class AbstractJavadocMojo
             {
                 continue;
             }
-            
+
             if ( isOffline && !link.startsWith( "file:" ) )
             {
                 continue;
@@ -4370,12 +4370,12 @@ public abstract class AbstractJavadocMojo
     private List<String> getPackageNames( Map<Path, Collection<String>> sourcePaths )
     {
         List<String> returnList = new ArrayList<>();
-        
+
         if ( !StringUtils.isEmpty( sourcepath ) )
         {
             return returnList;
         }
-        
+
         for ( Entry<Path, Collection<String>> currentPathEntry : sourcePaths.entrySet() )
         {
             for ( String currentFile : currentPathEntry.getValue() )
@@ -4388,12 +4388,12 @@ public abstract class AbstractJavadocMojo
                 {
                     continue;
                 }
-        
+
                 int lastIndexOfSeparator = currentFile.lastIndexOf( "/" );
                 if ( lastIndexOfSeparator != -1 )
                 {
                     String packagename = currentFile.substring( 0, lastIndexOfSeparator ).replace( '/', '.' );
-        
+
                     if ( !returnList.contains( packagename ) )
                     {
                         returnList.add( packagename );
@@ -4401,7 +4401,7 @@ public abstract class AbstractJavadocMojo
                 }
             }
         }
-        
+
         return returnList;
     }
 
@@ -4432,7 +4432,7 @@ public abstract class AbstractJavadocMojo
                 ResolvePathsRequest<File> request =
                         ResolvePathsRequest.ofFiles( Collections.<File>emptyList() ).
                                 setMainModuleDescriptor( mainDescriptor );
-    
+
                 try
                 {
                     Set<JavaModuleDescriptor.JavaExports> exports = locationManager.resolvePaths( request ).
@@ -4456,7 +4456,7 @@ public abstract class AbstractJavadocMojo
             {
                 exportAllPackages = true;
             }
-            
+
             for ( Map.Entry<Path, Collection<String>> currentPathEntry : getFiles( artifactSourcePaths ).entrySet() )
             {
                 for ( String currentFile : currentPathEntry.getValue() )
@@ -4496,16 +4496,16 @@ public abstract class AbstractJavadocMojo
     private List<String> getFilesWithUnnamedPackages( Map<Path, Collection<String>> sourcePaths )
     {
         List<String> returnList = new ArrayList<>();
-        
+
         if ( !StringUtils.isEmpty( sourcepath ) )
         {
             return returnList;
         }
-        
+
         for ( Entry<Path, Collection<String>> currentPathEntry : sourcePaths.entrySet() )
         {
             Path currentSourcePath = currentPathEntry.getKey();
-        
+
             for ( String currentFile : currentPathEntry.getValue() )
             {
                 /*
@@ -4516,17 +4516,17 @@ public abstract class AbstractJavadocMojo
                 {
                     continue;
                 }
-        
+
                 if ( currentFile.indexOf( File.separatorChar ) == -1 )
                 {
                     returnList.add( currentSourcePath.resolve( currentFile ).toAbsolutePath().toString() );
                 }
             }
         }
-        
+
         return returnList;
     }
-    
+
     /**
      * Either return only the module descriptor or all sourcefiles per sourcepath
      * @param sourcePaths could be null
@@ -4539,7 +4539,7 @@ public abstract class AbstractJavadocMojo
         {
             return new ArrayList<>();
         }
-        
+
         boolean containsModuleDescriptor = false;
         for ( Collection<String> sourcepathFiles : sourcePaths.values() )
         {
@@ -4549,7 +4549,7 @@ public abstract class AbstractJavadocMojo
                 break;
             }
         }
-        
+
         if ( containsModuleDescriptor )
         {
             return getModuleSourcePathFiles( sourcePaths );
@@ -4563,7 +4563,7 @@ public abstract class AbstractJavadocMojo
     private List<String> getModuleSourcePathFiles( Map<Path, Collection<String>> sourcePaths )
     {
         List<String> returnList = new ArrayList<>();
-        
+
         for ( Entry<Path, Collection<String>> currentPathEntry : sourcePaths.entrySet() )
         {
             Path currentSourcePath = currentPathEntry.getKey();
@@ -4583,7 +4583,7 @@ public abstract class AbstractJavadocMojo
                     {
                         continue;
                     }
-            
+
                     returnList.add( currentSourcePath.resolve( currentFile ).toAbsolutePath().toString() );
                 }
             }
@@ -4669,7 +4669,7 @@ public abstract class AbstractJavadocMojo
         {
             quotedFiles.add( JavadocUtil.quotedPathArgument( file ) );
         }
-        
+
         try
         {
             FileUtils.fileWrite( argfileFile.getAbsolutePath(), null /* platform encoding */,
@@ -4865,7 +4865,7 @@ public abstract class AbstractJavadocMojo
         throws MavenReportException
     {
         Collection<Path> sourcePaths = collect( allSourcePaths.values() );
-        
+
         validateJavadocOptions();
 
         // see com.sun.tools.javadoc.Start#parseAndExecute(String argv[])
@@ -4891,25 +4891,25 @@ public abstract class AbstractJavadocMojo
         {
             addArgIf( arguments, breakiterator, "-breakiterator", SINCE_JAVADOC_1_5 );
         }
-        
+
         Map<String, MavenProject> reactorKeys = new HashMap<>( reactorProjects.size() );
         for ( MavenProject reactorProject : reactorProjects )
         {
             reactorKeys.put( ArtifactUtils.versionlessKey( reactorProject.getGroupId(),
                                                            reactorProject.getArtifactId() ), reactorProject );
         }
-        
+
         Map<String, JavaModuleDescriptor> allModuleDescriptors = new HashMap<>();
-        
+
         boolean supportModulePath = javadocRuntimeVersion.isAtLeast( "9" )
             && ( source == null || JavaVersion.parse( source ).isAtLeast( "9" ) );
-        
+
         if ( supportModulePath )
         {
             for ( Map.Entry<String, Collection<Path>> entry : allSourcePaths.entrySet() )
             {
                 MavenProject entryProject = reactorKeys.get( entry.getKey() );
-                
+
                 File artifactFile;
                 if ( entryProject != null )
                 {
@@ -4920,11 +4920,11 @@ public abstract class AbstractJavadocMojo
                     artifactFile = project.getArtifactMap().get( entry.getKey() ).getFile();
                 }
                 ResolvePathResult resolvePathResult = getResolvePathResult( artifactFile );
-                
+
                 if ( resolvePathResult == null || resolvePathResult.getModuleNameSource() == ModuleNameSource.FILENAME )
                 {
                     File moduleDescriptor = findMainDescriptor( entry.getValue() );
-                    
+
                     if ( moduleDescriptor != null )
                     {
                         try
@@ -4948,9 +4948,9 @@ public abstract class AbstractJavadocMojo
         Collection<String> additionalModules = new ArrayList<>();
 
         ResolvePathResult mainResolvePathResult = null;
-        
+
         Map<String, Collection<Path>> patchModules = new HashMap<>();
-        
+
         Path moduleSourceDir = null;
         if ( supportModulePath && !allModuleDescriptors.isEmpty() )
         {
@@ -4961,10 +4961,10 @@ public abstract class AbstractJavadocMojo
                 if ( aggregatedProject != null )
                 {
                     ResolvePathResult result = null;
-                    
+
                     // Prefer jar over outputDirectory, since it may may contain an automatic module name
                     File artifactFile = getArtifactFile( aggregatedProject );
-                    if ( artifactFile != null ) 
+                    if ( artifactFile != null )
                     {
                         ResolvePathRequest<File> request = ResolvePathRequest.ofFile( artifactFile );
                         try
@@ -4987,7 +4987,7 @@ public abstract class AbstractJavadocMojo
                     else
                     {
                         File moduleDescriptor = findMainDescriptor( projectSourcepaths.getValue() );
-                        
+
                         if ( moduleDescriptor != null )
                         {
                             try
@@ -5011,7 +5011,7 @@ public abstract class AbstractJavadocMojo
                             additionalModules.add( result.getModuleDescriptor().name() );
 
                             patchModules.put( result.getModuleDescriptor().name(), projectSourcepaths.getValue() );
-                            
+
                             Path modulePath = moduleSourceDir.resolve( result.getModuleDescriptor().name() );
                             if ( !Files.isDirectory( modulePath ) )
                             {
@@ -5023,12 +5023,12 @@ public abstract class AbstractJavadocMojo
                             throw new MavenReportException( e.getMessage(), e );
                         }
                     }
-                    else 
+                    else
                     {
                         unnamedProjects.add( projectSourcepaths.getKey() );
                     }
-                    
-                    if ( aggregatedProject.equals( getProject() ) ) 
+
+                    if ( aggregatedProject.equals( getProject() ) )
                     {
                         mainResolvePathResult = result;
                     }
@@ -5039,7 +5039,7 @@ public abstract class AbstractJavadocMojo
                     getLog().error( "no reactor project: " + projectSourcepaths.getKey() );
                 }
             }
-            
+
             if ( !unnamedProjects.isEmpty() )
             {
                 getLog().error( "Creating an aggregated report for both named and unnamed modules is not possible." );
@@ -5052,7 +5052,7 @@ public abstract class AbstractJavadocMojo
                 }
                 throw new MavenReportException( "Aggregator report contains named and unnamed modules" );
             }
-            
+
             if ( mainResolvePathResult != null
                 && ModuleNameSource.MANIFEST.equals( mainResolvePathResult.getModuleNameSource() ) )
             {
@@ -5060,7 +5060,7 @@ public abstract class AbstractJavadocMojo
                 arguments.add( "ALL-MODULE-PATH" );
             }
         }
-        
+
         // MJAVADOC-506
         boolean moduleDescriptorSource = false;
         for ( Path sourcepath : sourcePaths )
@@ -5071,7 +5071,7 @@ public abstract class AbstractJavadocMojo
                 break;
             }
         }
-        
+
         final ModuleNameSource mainModuleNameSource;
         if ( mainResolvePathResult != null )
         {
@@ -5081,7 +5081,7 @@ public abstract class AbstractJavadocMojo
         {
             mainModuleNameSource = null;
         }
-        
+
         if ( supportModulePath
              && !isTest()
              && ( isAggregator()
@@ -5094,7 +5094,7 @@ public abstract class AbstractJavadocMojo
             {
                 pathElements.add( 0, artifactFile );
             }
-            
+
             ResolvePathsRequest<File> request =
                 ResolvePathsRequest.ofFiles( pathElements );
 
@@ -5104,15 +5104,15 @@ public abstract class AbstractJavadocMojo
                 request.setModuleDescriptor( mainResolvePathResult.getModuleDescriptor() );
                 mainModuleName = mainResolvePathResult.getModuleDescriptor().name();
             }
-            
+
             request.setAdditionalModules( additionalModules );
 
             try
             {
                 ResolvePathsResult<File> result = locationManager.resolvePaths( request );
-                
+
                 Set<File> modulePathElements = new HashSet<>( result.getModulepathElements().keySet() )  ;
-                
+
                 Collection<File> classPathElements = new ArrayList<>( result.getClasspathElements().size() );
 
                 for ( File file : result.getClasspathElements() )
@@ -5144,7 +5144,7 @@ public abstract class AbstractJavadocMojo
                 String classpath = StringUtils.join( classPathElements.iterator(), File.pathSeparator );
                 addArgIfNotEmpty( arguments, "--class-path", JavadocUtil.quotedPathArgument( classpath ), false,
                                   false );
-                
+
                 String modulepath =
                     StringUtils.join( modulePathElements.iterator(), File.pathSeparator );
                 addArgIfNotEmpty( arguments, "--module-path", JavadocUtil.quotedPathArgument( modulepath ), false,
@@ -5217,7 +5217,7 @@ public abstract class AbstractJavadocMojo
         {
             sourcepath = StringUtils.join( sourcePaths.iterator(), File.pathSeparator );
         }
-        
+
         if ( moduleSourceDir == null )
         {
             addArgIfNotEmpty( arguments, "-sourcepath",
@@ -5235,7 +5235,7 @@ public abstract class AbstractJavadocMojo
         {
             addArgIfNotEmpty( arguments, "-subpackages", subpackages, SINCE_JAVADOC_1_5 );
         }
-        
+
         // [MJAVADOC-497] must be after sourcepath is recalculated, since getExcludedPackages() depends on it
         addArgIfNotEmpty( arguments, "-exclude", getExcludedPackages( sourcePaths ), SINCE_JAVADOC_1_4 );
 
@@ -5243,7 +5243,10 @@ public abstract class AbstractJavadocMojo
 
         if ( additionalOptions != null && additionalOptions.length > 0 )
         {
-            Collections.addAll( arguments, additionalOptions );
+            for ( String additionalOption : additionalOptions )
+            {
+                arguments.add( additionalOption.replaceAll( "(?<!\\\\)\\\\(?!\\\\|:)", "\\\\" ) );
+            }
         }
     }
 
@@ -5259,7 +5262,7 @@ public abstract class AbstractJavadocMojo
         try
         {
             resolvePathResult = locationManager.resolvePath( resolvePathRequest );
-            
+
             // happens when artifactFile is a directory without module descriptor
             if ( resolvePathResult.getModuleDescriptor() == null )
             {
@@ -5302,7 +5305,7 @@ public abstract class AbstractJavadocMojo
      * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#standard">
      *      http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#standard</a>
      */
-    private void addStandardDocletOptions( File javadocOutputDirectory, 
+    private void addStandardDocletOptions( File javadocOutputDirectory,
                                            List<String> arguments,
                                            Set<OfflineLink> offlineLinks )
         throws MavenReportException
@@ -6199,11 +6202,11 @@ public abstract class AbstractJavadocMojo
                                     + "${project.build.pluginManagement} for the " + project.getId()
                                     + ". Added Javadoc API link according the javadoc executable version i.e.: "
                                     + javadocRuntimeVersion );
-                
+
                 javaApiversion = javadocRuntimeVersion;
             }
         }
-        
+
         final String javaApiKey;
         if ( javaApiversion.asMajor().isAtLeast( "9" ) )
         {
@@ -6213,11 +6216,11 @@ public abstract class AbstractJavadocMojo
         {
             javaApiKey = "api_1." + javaApiversion.asMajor().toString().charAt( 0 );
         }
-        
+
         final String javaApiLink;
         if ( javaApiLinks != null && javaApiLinks.containsKey( javaApiKey ) )
         {
-            javaApiLink = javaApiLinks.getProperty( javaApiKey );  
+            javaApiLink = javaApiLinks.getProperty( javaApiKey );
         }
         else if ( javaApiversion.isAtLeast( "11" ) )
         {
@@ -6235,7 +6238,7 @@ public abstract class AbstractJavadocMojo
         {
             javaApiLink = null;
         }
-        
+
         if ( getLog().isDebugEnabled() )
         {
             if ( javaApiLink != null )
@@ -6274,7 +6277,7 @@ public abstract class AbstractJavadocMojo
         OfflineLink link = new OfflineLink();
         link.setLocation( javaApiListFile.getParent().toAbsolutePath().toString() );
         link.setUrl( javaApiLink );
-        
+
         InputStream in = this.getClass().getResourceAsStream( resourceName );
         if ( in != null )
         {
@@ -6333,7 +6336,7 @@ public abstract class AbstractJavadocMojo
         {
             final URI packageListUri;
             final URI elementListUri;
-            
+
             if ( link.trim().toLowerCase( Locale.ENGLISH ).startsWith( "http:" ) || link.trim().toLowerCase(
                 Locale.ENGLISH ).startsWith( "https:" ) || link.trim().toLowerCase( Locale.ENGLISH ).startsWith(
                 "ftp:" ) || link.trim().toLowerCase( Locale.ENGLISH ).startsWith( "file:" ) )
@@ -6364,20 +6367,20 @@ public abstract class AbstractJavadocMojo
                 elementListUri = new File( dir, ELEMENT_LIST ).toURI();
             }
 
-            
+
             IOException elementListIOException = null;
-            try 
+            try
             {
                 if ( JavadocUtil.isValidElementList( elementListUri.toURL(), settings, validateLinks ) )
                 {
                     return true;
                 }
             }
-            catch ( IOException e ) 
+            catch ( IOException e )
             {
                 elementListIOException = e;
             }
-            
+
             if ( JavadocUtil.isValidPackageList( packageListUri.toURL(), settings, validateLinks ) )
             {
                 return true;
@@ -6392,7 +6395,7 @@ public abstract class AbstractJavadocMojo
                 }
                 else
                 {
-                    getLog().error( "Invalid links: " 
+                    getLog().error( "Invalid links: "
                                     + link + " with /" + PACKAGE_LIST + " or / " + ELEMENT_LIST + ". Ignored it." );
                 }
             }
@@ -6629,7 +6632,7 @@ public abstract class AbstractJavadocMojo
         }
 
         File optionsFile = getJavadocOptionsFile();
-        
+
         try ( Writer writer = WriterFactory.newXmlWriter( optionsFile ) )
         {
             new JavadocOptionsXpp3Writer().write( writer, options );
