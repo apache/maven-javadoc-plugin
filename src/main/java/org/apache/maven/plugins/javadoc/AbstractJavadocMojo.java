@@ -391,9 +391,9 @@ public abstract class AbstractJavadocMojo
     private File javadocDirectory;
 
     /**
-     * Set an additional option(s) on the command line. This value should include quotes as necessary for
-     * parameters that include spaces. Useful for a custom doclet.
-     * 
+     * Set an additional option(s) on the command line. All input will be passed as-is to the
+     * {@code @options} file. You must take care of quoting and escaping. Useful for a custom doclet.
+     *
      * @since 3.0.0
      */
     @Parameter
