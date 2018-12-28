@@ -28,6 +28,8 @@ import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,7 +44,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.plugins.javadoc.ProxyServer.AuthAsyncProxyServlet;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.PlexusTestCase;
@@ -739,10 +743,12 @@ public class JavadocUtilTest
         list.add( getBasedir() + "/target/classes" );
         list.add( getBasedir() + "/target/classes" );
 
-        String FS = System.getProperty( "file.separator" );
-        Set<String> expected = Collections.singleton( getBasedir() + FS +"target" + FS + "classes" );
+        Set<Path> expected = Collections.singleton( Paths.get( getBasedir(), "target/classes" ) );
+        
+        MavenProjectStub project = new MavenProjectStub();
+        project.setFile( new File( getBasedir(), "pom.xml" ) );
 
-        assertEquals( expected, JavadocUtil.pruneDirs( null, list ) );
+        assertEquals( expected, JavadocUtil.pruneDirs( project, list ) );
     }
 
     /**

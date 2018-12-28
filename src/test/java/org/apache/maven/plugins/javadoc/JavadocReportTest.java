@@ -345,11 +345,11 @@ public class JavadocReportTest
         File apidocs = new File( getBasedir(), "target/test/unit/docfiles-test/target/site/apidocs/" );
 
         // check if the doc-files subdirectories were copied
-        assertTrue( new File( apidocs, "doc-files" ).exists() );
-        assertTrue( new File( apidocs, "doc-files/included-dir1/sample-included1.gif" ).exists() );
-        assertTrue( new File( apidocs, "doc-files/included-dir2/sample-included2.gif" ).exists() );
-        assertFalse( new File( apidocs, "doc-files/excluded-dir1" ).exists() );
-        assertFalse( new File( apidocs, "doc-files/excluded-dir2" ).exists() );
+        assertTrue( new File( apidocs, "docfiles/test/doc-files" ).exists() );
+        assertTrue( new File( apidocs, "docfiles/test/doc-files/included-dir1/sample-included1.gif" ).exists() );
+        assertTrue( new File( apidocs, "docfiles/test/doc-files/included-dir2/sample-included2.gif" ).exists() );
+        assertFalse( new File( apidocs, "docfiles/test/doc-files/excluded-dir1" ).exists() );
+        assertFalse( new File( apidocs, "docfiles/test/doc-files/excluded-dir2" ).exists() );
 
         testPom = new File( unit, "docfiles-with-java-test/docfiles-with-java-test-plugin-config.xml" );
         mojo = lookupMojo( testPom );

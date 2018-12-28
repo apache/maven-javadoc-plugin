@@ -125,9 +125,11 @@ public class JavadocUtil
      * @param dirs the collection of <code>String</code> directories path that will be validated.
      * @return a List of valid <code>String</code> directories absolute paths.
      */
-    public static Collection<String> pruneDirs( MavenProject project, Collection<String> dirs )
+    public static Collection<Path> pruneDirs( MavenProject project, Collection<String> dirs )
     {
-        Set<String> pruned = new LinkedHashSet<>( dirs.size() );
+        final Path projectBasedir = project.getBasedir().toPath();
+        
+        Set<Path> pruned = new LinkedHashSet<>( dirs.size() );
         for ( String dir : dirs )
         {
             if ( dir == null )
@@ -135,15 +137,11 @@ public class JavadocUtil
                 continue;
             }
 
-            File directory = new File( dir );
-            if ( !directory.isAbsolute() )
-            {
-                directory = new File( project.getBasedir(), directory.getPath() );
-            }
+            Path directory = projectBasedir.resolve( dir );
 
-            if ( directory.isDirectory() )
+            if ( Files.isDirectory( directory ) )
             {
-                pruned.add( directory.getAbsolutePath() );
+                pruned.add( directory.toAbsolutePath() );
             }
         }
 
@@ -470,7 +468,7 @@ public class JavadocUtil
         {
             for ( String includedFile : getIncludedFiles( sourceDirectory, fileList, excludePackages ) )
             {
-                files.add( quotedPathArgument( new File( sourceDirectory, includedFile ).getAbsolutePath() ) );
+                files.add( includedFile );
             }
         }
 

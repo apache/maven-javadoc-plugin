@@ -20,9 +20,10 @@ package org.apache.maven.plugins.javadoc;
  */
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.apache.maven.doxia.siterenderer.RenderingContext;
@@ -228,8 +229,8 @@ public class JavadocReport
 
         if ( this.isAggregator() || !"pom".equals( this.project.getPackaging() ) )
         {
-            Collection<String> sourcePaths;
-            List<String> files;
+            Collection<Path> sourcePaths;
+            Map<Path, Collection<String>> files;
             try
             {
                 sourcePaths = collect( getSourcePaths().values() );

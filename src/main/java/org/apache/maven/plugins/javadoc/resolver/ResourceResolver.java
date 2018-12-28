@@ -24,6 +24,7 @@ import static org.codehaus.plexus.util.IOUtil.close;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -148,10 +149,10 @@ public final class ResourceResolver extends AbstractLogEnabled
      * @throws ArtifactResolutionException {@link ArtifactResolutionException}
      * @throws ArtifactNotFoundException {@link ArtifactNotFoundException}
      */
-    public Map<String, Collection<String>> resolveDependencySourcePaths( final SourceResolverConfig config )
+    public Map<String, Collection<Path>> resolveDependencySourcePaths( final SourceResolverConfig config )
         throws ArtifactResolutionException, ArtifactNotFoundException
     {
-        final Map<String, Collection<String>> mappedDirs = new LinkedHashMap<>();
+        final Map<String, Collection<Path>> mappedDirs = new LinkedHashMap<>();
         
         final Map<String, MavenProject> projectMap = new HashMap<>();
         if ( config.reactorProjects() != null )
@@ -179,7 +180,7 @@ public final class ResourceResolver extends AbstractLogEnabled
             }
         }
 
-        for ( Map.Entry<String, String> entry : resolveFromArtifacts( config, forResourceResolution ) )
+        for ( Map.Entry<String, Path> entry : resolveFromArtifacts( config, forResourceResolution ) )
         {
             mappedDirs.put( entry.getKey(), Collections.singletonList( entry.getValue() ) );
         }
@@ -271,10 +272,10 @@ public final class ResourceResolver extends AbstractLogEnabled
         List<String> dirs = new ArrayList<>( toResolve.size() );
         try
         {
-            for ( Map.Entry<String, String> entry : resolveAndUnpack( toResolve, config, RESOURCE_VALID_CLASSIFIERS,
+            for ( Map.Entry<String, Path> entry : resolveAndUnpack( toResolve, config, RESOURCE_VALID_CLASSIFIERS,
                                                                       false ) )
             {
-                dirs.add( entry.getValue() );
+                dirs.add( entry.getValue().toString() );
             }
         }
         catch ( ArtifactResolutionException | ArtifactNotFoundException e )
@@ -313,7 +314,7 @@ public final class ResourceResolver extends AbstractLogEnabled
         return result;
     }
 
-    private Collection<Entry<String, String>> resolveFromArtifacts( final SourceResolverConfig config,
+    private Collection<Entry<String, Path>> resolveFromArtifacts( final SourceResolverConfig config,
                                                       final List<Artifact> artifacts )
         throws ArtifactResolutionException, ArtifactNotFoundException
     {
@@ -365,7 +366,7 @@ public final class ResourceResolver extends AbstractLogEnabled
      * @throws ArtifactResolutionException if an exception occurs
      * @throws ArtifactNotFoundException if an exception occurs
      */
-    private Collection<Map.Entry<String, String>> resolveAndUnpack( final List<Artifact> artifacts,
+    private Collection<Map.Entry<String, Path>> resolveAndUnpack( final List<Artifact> artifacts,
                                                                     final SourceResolverConfig config,
                                                                     final List<String> validClassifiers,
                                                                     final boolean propagateErrors )
@@ -386,7 +387,7 @@ public final class ResourceResolver extends AbstractLogEnabled
             filter = null;
         }
         
-        final List<Map.Entry<String, String>> result = new ArrayList<>( artifacts.size() );
+        final List<Map.Entry<String, Path>> result = new ArrayList<>( artifacts.size() );
         for ( final Artifact a : artifactSet )
         {
             if ( !validClassifiers.contains( a.getClassifier() ) || ( filter != null && !filter.include( a ) ) )
@@ -421,7 +422,7 @@ public final class ResourceResolver extends AbstractLogEnabled
 
                 unArchiver.extract();
 
-                result.add( new AbstractMap.SimpleEntry<>( a.getDependencyConflictId(), d.getAbsolutePath() ) );
+                result.add( new AbstractMap.SimpleEntry<>( a.getDependencyConflictId(), d.toPath().toAbsolutePath() ) );
             }
             catch ( final NoSuchArchiverException e )
             {
@@ -443,7 +444,7 @@ public final class ResourceResolver extends AbstractLogEnabled
         return result;
     }
 
-    private static Collection<String> resolveFromProject( final SourceResolverConfig config,
+    private static Collection<Path> resolveFromProject( final SourceResolverConfig config,
                                                     final MavenProject reactorProject, final Artifact artifact )
     {
         final List<String> dirs = new ArrayList<>();

@@ -54,7 +54,7 @@ public class AggregateProject1TestMavenProjectStub
 
         String basedir = getBasedir().getAbsolutePath();
         List<String> compileSourceRoots = new ArrayList<>();
-        compileSourceRoots.add( basedir + "/aggregate/test/project1" );
+        compileSourceRoots.add( basedir );
         setCompileSourceRoots( compileSourceRoots );
     }
 

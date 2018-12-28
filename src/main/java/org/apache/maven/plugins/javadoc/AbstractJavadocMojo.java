@@ -127,6 +127,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -1988,11 +1989,11 @@ public abstract class AbstractJavadocMojo
             throw new MavenReportException( "Failed to generate javadoc options file: " + e.getMessage(), e );
         }
 
-        Map<String, Collection<String>> sourcePaths = getSourcePaths();
+        Map<String, Collection<Path>> sourcePaths = getSourcePaths();
         
-        Collection<String> collectedSourcePaths = collect( sourcePaths.values() );
+        Collection<Path> collectedSourcePaths = collect( sourcePaths.values() );
         
-        List<String> files = getFiles( collectedSourcePaths );
+        Map<Path, Collection<String>> files = getFiles( collectedSourcePaths );
         if ( !canGenerateReport( files ) )
         {
             return;
@@ -2020,9 +2021,9 @@ public abstract class AbstractJavadocMojo
         }
         else
         {
-            packageNames = getPackageNames( collectedSourcePaths, files );
+            packageNames = getPackageNames( files );
         }
-        List<String> filesWithUnnamedPackages = getFilesWithUnnamedPackages( collectedSourcePaths, files );
+        List<String> filesWithUnnamedPackages = getFilesWithUnnamedPackages( files );
 
         // ----------------------------------------------------------------------
         // Javadoc output directory as File
@@ -2135,10 +2136,19 @@ public abstract class AbstractJavadocMojo
             // ----------------------------------------------------------------------
             // Write argfile file and include it in the command line
             // ----------------------------------------------------------------------
+            
+            List<String> allFiles = new ArrayList<>();
+            for ( Map.Entry<Path, Collection<String>> filesEntry : files.entrySet() )
+            {
+                for ( String file : filesEntry.getValue() )
+                {
+                    allFiles.add( filesEntry.getKey().resolve( file ).toString() );
+                }
+            }
 
             if ( !files.isEmpty() )
             {
-                addCommandLineArgFile( cmd, javadocOutputDirectory, files );
+                addCommandLineArgFile( cmd, javadocOutputDirectory, allFiles );
             }
         }
 
@@ -2199,10 +2209,10 @@ public abstract class AbstractJavadocMojo
         }
     }
 
-    protected final Collection<String> collect( Collection<Collection<String>> sourcePaths )
+    protected final <T> Collection<T> collect( Collection<Collection<T>> sourcePaths )
     {
-        Collection<String> collectedSourcePaths = new LinkedHashSet<>();
-        for ( Collection<String> sp : sourcePaths )
+        Collection<T> collectedSourcePaths = new LinkedHashSet<>();
+        for ( Collection<T> sp : sourcePaths )
         {
             collectedSourcePaths.addAll( sp );
         }
@@ -2216,23 +2226,25 @@ public abstract class AbstractJavadocMojo
      * @return a List that contains the specific path for every source file
      * @throws MavenReportException {@link MavenReportException}
      */
-    protected List<String> getFiles( Collection<String> sourcePaths )
+    protected Map<Path, Collection<String>> getFiles( Collection<Path> sourcePaths )
         throws MavenReportException
     {
-        List<String> files = new ArrayList<>();
+        Map<Path, Collection<String>> mappedFiles = new LinkedHashMap<>( sourcePaths.size() );
         if ( StringUtils.isEmpty( subpackages ) )
         {
             Collection<String> excludedPackages = getExcludedPackages();
             
-            for ( String sourcePath : sourcePaths )
+            for ( Path sourcePath : sourcePaths )
             {
-                File sourceDirectory = new File( sourcePath );
+                List<String> files = new ArrayList<>();
+                File sourceDirectory = sourcePath.toFile();
                 files.addAll( JavadocUtil.getFilesFromSource( sourceDirectory, sourceFileIncludes, sourceFileExcludes,
                                                               excludedPackages ) );
+                mappedFiles.put( sourcePath, files );
             }
         }
 
-        return files;
+        return mappedFiles;
     }
 
     /**
@@ -2243,15 +2255,15 @@ public abstract class AbstractJavadocMojo
      * @throws MavenReportException {@link MavenReportException}
      * @see JavadocUtil#pruneDirs(MavenProject, Collection)
      */
-    protected Map<String, Collection<String>> getSourcePaths()
+    protected Map<String, Collection<Path>> getSourcePaths()
         throws MavenReportException
     {
-        Map<String, Collection<String>> mappedSourcePaths = new LinkedHashMap<>();
+        Map<String, Collection<Path>> mappedSourcePaths = new LinkedHashMap<>();
 
         if ( StringUtils.isEmpty( sourcepath ) )
         {
             
-            Set<String> sourcePaths =
+            Set<Path> sourcePaths =
                 new LinkedHashSet<>( JavadocUtil.pruneDirs( project, getProjectSourceRoots( project ) ) );
 
             if ( project.getExecutionProject() != null )
@@ -2269,7 +2281,7 @@ public abstract class AbstractJavadocMojo
                 File javadocDir = getJavadocDirectory();
                 if ( javadocDir.exists() && javadocDir.isDirectory() )
                 {
-                    Collection<String> l = JavadocUtil.pruneDirs( project, Collections.singletonList(
+                    Collection<Path> l = JavadocUtil.pruneDirs( project, Collections.singletonList(
                         getJavadocDirectory().getAbsolutePath() ) );
                     sourcePaths.addAll( l );
                 }
@@ -2288,7 +2300,7 @@ public abstract class AbstractJavadocMojo
                 {
                     if ( subProject != project )
                     {
-                        Collection<String> additionalSourcePaths = new ArrayList<>();
+                        Collection<Path> additionalSourcePaths = new ArrayList<>();
 
                         List<String> sourceRoots = getProjectSourceRoots( subProject );
 
@@ -2311,7 +2323,7 @@ public abstract class AbstractJavadocMojo
                             File javadocDir = new File( subProject.getBasedir(), javadocDirRelative );
                             if ( javadocDir.exists() && javadocDir.isDirectory() )
                             {
-                                Collection<String> l = JavadocUtil.pruneDirs( subProject, Collections.singletonList(
+                                Collection<Path> l = JavadocUtil.pruneDirs( subProject, Collections.singletonList(
                                         javadocDir.getAbsolutePath() ) );
                                 additionalSourcePaths.addAll( l );
                             }
@@ -2325,11 +2337,12 @@ public abstract class AbstractJavadocMojo
         }
         else
         {
-            Collection<String> sourcePaths = new ArrayList<>( Arrays.asList( JavadocUtil.splitPath( sourcepath ) ) );
-            sourcePaths = JavadocUtil.pruneDirs( project, sourcePaths );
+            Collection<Path> sourcePaths =
+                JavadocUtil.pruneDirs( project,
+                                       new ArrayList<>( Arrays.asList( JavadocUtil.splitPath( sourcepath ) ) ) );
             if ( getJavadocDirectory() != null )
             {
-                Collection<String> l = JavadocUtil.pruneDirs( project, Collections.singletonList(
+                Collection<Path> l = JavadocUtil.pruneDirs( project, Collections.singletonList(
                     getJavadocDirectory().getAbsolutePath() ) );
                 sourcePaths.addAll( l );
             }
@@ -2408,7 +2421,7 @@ public abstract class AbstractJavadocMojo
      * @return List of source paths.
      * @throws MavenReportException {@link MavenReportException}
      */
-    protected final Map<String, Collection<String>> getDependencySourcePaths()
+    protected final Map<String, Collection<Path>> getDependencySourcePaths()
         throws MavenReportException
     {
         try
@@ -2503,16 +2516,17 @@ public abstract class AbstractJavadocMojo
      * @param files the project files
      * @return a boolean that indicates whether javadoc report can be generated or not
      */
-    protected boolean canGenerateReport( List<String> files )
+    protected boolean canGenerateReport( Map<Path, Collection<String>> files )
     {
-        boolean canGenerate = true;
-
-        if ( files.isEmpty() && StringUtils.isEmpty( subpackages ) )
+        for ( Collection<String> filesValues : files.values() )
         {
-            canGenerate = false;
+            if ( !filesValues.isEmpty() )
+            {
+                return true;
+            }
         }
 
-        return canGenerate;
+        return !StringUtils.isEmpty( subpackages );
     }
 
     // ----------------------------------------------------------------------
@@ -2527,17 +2541,11 @@ public abstract class AbstractJavadocMojo
      * @return a String that contains the exclude argument that will be used by javadoc
      * @throws MavenReportException
      */
-    private String getExcludedPackages( Collection<String> sourceFolders )
+    private String getExcludedPackages( Collection<Path> sourcePaths )
         throws MavenReportException
     {
         List<String> excludedNames = null;
         
-        Collection<Path> sourcePaths = new ArrayList<>( sourceFolders.size() );
-        for ( String folder : sourceFolders )
-        {
-            sourcePaths.add( Paths.get( folder ) );
-        }
-
         if ( StringUtils.isNotEmpty( sourcepath ) && StringUtils.isNotEmpty( subpackages ) )
         {
             Collection<String> excludedPackages = getExcludedPackages();
@@ -2563,7 +2571,7 @@ public abstract class AbstractJavadocMojo
      *         string (colon (<code>:</code>) on Solaris or semi-colon (<code>;</code>) on Windows).
      * @see File#pathSeparator
      */
-    private String getSourcePath( Collection<String> sourcePaths )
+    private String getSourcePath( Collection<Path> sourcePaths )
     {
         String sourcePath = null;
 
@@ -3145,15 +3153,14 @@ public abstract class AbstractJavadocMojo
                 taglet.getTagletArtifact().getArtifactId() ) ) && ( StringUtils.isNotEmpty(
                 taglet.getTagletArtifact().getVersion() ) ) )
             {
-                pathParts.addAll( getArtifactsAbsolutePath( taglet.getTagletArtifact() ) );
-
-                pathParts = JavadocUtil.pruneFiles( pathParts );
+                pathParts.addAll( JavadocUtil.pruneFiles( getArtifactsAbsolutePath( taglet.getTagletArtifact() ) ) );
             }
             else if ( StringUtils.isNotEmpty( taglet.getTagletpath() ) )
             {
-                pathParts.add( taglet.getTagletpath() );
-
-                pathParts = JavadocUtil.pruneDirs( project, pathParts );
+                for ( Path dir : JavadocUtil.pruneDirs( project, Collections.singletonList( taglet.getTagletpath() ) ) )
+                {
+                    pathParts.add( dir.toString()  );
+                }
             }
         }
 
@@ -4346,9 +4353,42 @@ public abstract class AbstractJavadocMojo
      * @param files       not null
      * @return the list of package names for files in the sourcePaths
      */
-    private List<String> getPackageNames( Collection<String> sourcePaths, List<String> files )
+    private List<String> getPackageNames( Map<Path, Collection<String>> sourcePaths )
     {
-        return getPackageNamesOrFilesWithUnnamedPackages( sourcePaths, files, true );
+        List<String> returnList = new ArrayList<>();
+        
+        if ( !StringUtils.isEmpty( sourcepath ) )
+        {
+            return returnList;
+        }
+        
+        for ( Entry<Path, Collection<String>> currentPathEntry : sourcePaths.entrySet() )
+        {
+            for ( String currentFile : currentPathEntry.getValue() )
+            {
+                /*
+                 * Remove the miscellaneous files
+                 * http://docs.oracle.com/javase/1.4.2/docs/tooldocs/solaris/javadoc.html#unprocessed
+                 */
+                if ( currentFile.contains( "doc-files" ) )
+                {
+                    continue;
+                }
+        
+                int lastIndexOfSeparator = currentFile.lastIndexOf( "/" );
+                if ( lastIndexOfSeparator != -1 )
+                {
+                    String packagename = currentFile.substring( 0, lastIndexOfSeparator ).replace( '/', '.' );
+        
+                    if ( !returnList.contains( packagename ) )
+                    {
+                        returnList.add( packagename );
+                    }
+                }
+            }
+        }
+        
+        return returnList;
     }
 
     /**
@@ -4358,7 +4398,7 @@ public abstract class AbstractJavadocMojo
      * @see #getFiles
      * @see #getSourcePaths()
      */
-    private List<String> getPackageNamesRespectingJavaModules( Map<String, Collection<String>> allSourcePaths )
+    private List<String> getPackageNamesRespectingJavaModules( Map<String, Collection<Path>> allSourcePaths )
             throws MavenReportException
     {
         List<String> returnList = new ArrayList<>();
@@ -4369,7 +4409,7 @@ public abstract class AbstractJavadocMojo
         }
         LocationManager locationManager = new LocationManager();
 
-        for ( Collection<String> artifactSourcePaths: allSourcePaths.values() )
+        for ( Collection<Path> artifactSourcePaths: allSourcePaths.values() )
         {
             Set<String> exportedPackages = new HashSet<>();
             boolean exportAllPackages;
@@ -4404,40 +4444,28 @@ public abstract class AbstractJavadocMojo
                 exportAllPackages = true;
             }
             
-            for ( String currentFile : getFiles( artifactSourcePaths ) )
+            for ( Map.Entry<Path, Collection<String>> currentPathEntry : getFiles( artifactSourcePaths ).entrySet() )
             {
-                currentFile = currentFile.replace( '\\', '/' );
-
-                for ( String currentSourcePath : artifactSourcePaths )
+                for ( String currentFile : currentPathEntry.getValue() )
                 {
-                    currentSourcePath = currentSourcePath.replace( '\\', '/' );
-
-                    if ( currentFile.contains( currentSourcePath ) )
+                    /*
+                     * Remove the miscellaneous files
+                     * http://docs.oracle.com/javase/1.4.2/docs/tooldocs/solaris/javadoc.html#unprocessed
+                     */
+                    if ( currentFile.contains( "doc-files" ) )
                     {
-                        if ( !currentSourcePath.endsWith( "/" ) )
-                        {
-                            currentSourcePath += "/";
-                        }
-                        String packagename = currentFile.substring( currentSourcePath.length() + 1 );
+                        continue;
+                    }
 
-                        /*
-                         * Remove the miscellaneous files
-                         * http://docs.oracle.com/javase/1.4.2/docs/tooldocs/solaris/javadoc.html#unprocessed
-                         */
-                        if ( packagename.contains( "doc-files" ) )
-                        {
-                            continue;
-                        }
+                    int lastIndexOfSeparator = currentFile.lastIndexOf( File.separatorChar );
+                    if ( lastIndexOfSeparator != -1 )
+                    {
+                        String packagename =
+                            currentFile.substring( 0, lastIndexOfSeparator ).replace( File.separatorChar, '.' );
 
-                        if ( packagename.lastIndexOf( "/" ) != -1 )
+                        if ( exportAllPackages || exportedPackages.contains( packagename ) )
                         {
-                            packagename = packagename.substring( 0, packagename.lastIndexOf( "/" ) );
-                            packagename = packagename.replace( '/', '.' );
-
-                            if ( exportAllPackages || exportedPackages.contains( packagename ) )
-                            {
-                                returnList.add( packagename );
-                            }
+                            returnList.add( packagename );
                         }
                     }
                 }
@@ -4452,73 +4480,37 @@ public abstract class AbstractJavadocMojo
      * @param files       not null
      * @return a list files with unnamed package names for files in the sourcePaths
      */
-    private List<String> getFilesWithUnnamedPackages( Collection<String> sourcePaths, List<String> files )
-    {
-        return getPackageNamesOrFilesWithUnnamedPackages( sourcePaths, files, false );
-    }
-
-    /**
-     * @param sourcePaths     not null, containing absolute and relative paths
-     * @param files           not null, containing list of quoted files
-     * @param onlyPackageName boolean for only package name
-     * @return a list of package names or files with unnamed package names, depending the value of the unnamed flag
-     * @see #getFiles
-     * @see #getSourcePaths()
-     */
-    private List<String> getPackageNamesOrFilesWithUnnamedPackages( Collection<String> sourcePaths, List<String> files,
-                                                                    boolean onlyPackageName )
+    private List<String> getFilesWithUnnamedPackages( Map<Path, Collection<String>> sourcePaths )
     {
         List<String> returnList = new ArrayList<>();
-
+        
         if ( !StringUtils.isEmpty( sourcepath ) )
         {
             return returnList;
         }
-
-        for ( String currentFile : files )
+        
+        for ( Entry<Path, Collection<String>> currentPathEntry : sourcePaths.entrySet() )
         {
-            currentFile = currentFile.replace( '\\', '/' );
-
-            for ( String currentSourcePath : sourcePaths )
+            Path currentSourcePath = currentPathEntry.getKey();
+        
+            for ( String currentFile : currentPathEntry.getValue() )
             {
-                currentSourcePath = currentSourcePath.replace( '\\', '/' );
-
-                if ( !currentSourcePath.endsWith( "/" ) )
+                /*
+                 * Remove the miscellaneous files
+                 * http://docs.oracle.com/javase/1.4.2/docs/tooldocs/solaris/javadoc.html#unprocessed
+                 */
+                if ( currentFile.contains( "doc-files" ) )
                 {
-                    currentSourcePath += "/";
+                    continue;
                 }
-
-                if ( currentFile.contains( currentSourcePath ) )
+        
+                if ( currentFile.indexOf( File.separatorChar ) == -1 )
                 {
-                    String packagename = currentFile.substring( currentSourcePath.length() + 1 );
-
-                    /*
-                     * Remove the miscellaneous files
-                     * http://docs.oracle.com/javase/1.4.2/docs/tooldocs/solaris/javadoc.html#unprocessed
-                     */
-                    if ( packagename.contains( "doc-files" ) )
-                    {
-                        continue;
-                    }
-
-                    if ( onlyPackageName && packagename.lastIndexOf( "/" ) != -1 )
-                    {
-                        packagename = packagename.substring( 0, packagename.lastIndexOf( "/" ) );
-                        packagename = packagename.replace( '/', '.' );
-
-                        if ( !returnList.contains( packagename ) )
-                        {
-                            returnList.add( packagename );
-                        }
-                    }
-                    if ( !onlyPackageName && packagename.lastIndexOf( "/" ) == -1 )
-                    {
-                        returnList.add( currentFile );
-                    }
+                    returnList.add( currentSourcePath.resolve( currentFile ).toAbsolutePath().toString() );
                 }
             }
         }
-
+        
         return returnList;
     }
 
@@ -4595,10 +4587,16 @@ public abstract class AbstractJavadocMojo
             cmd.createArg().setValue( "@" + FILES_FILE_NAME );
         }
 
+        List<String> quotedFiles = new ArrayList<>( files.size() );
+        for ( String file : files )
+        {
+            quotedFiles.add( JavadocUtil.quotedPathArgument( file ) );
+        }
+        
         try
         {
             FileUtils.fileWrite( argfileFile.getAbsolutePath(), null /* platform encoding */,
-                                 StringUtils.join( files.iterator(), SystemUtils.LINE_SEPARATOR ) );
+                                 StringUtils.join( quotedFiles.iterator(), SystemUtils.LINE_SEPARATOR ) );
         }
         catch ( IOException e )
         {
@@ -4791,10 +4789,10 @@ public abstract class AbstractJavadocMojo
      */
     private void addJavadocOptions( File javadocOutputDirectory,
                                     List<String> arguments,
-                                    Map<String, Collection<String>> allSourcePaths )
+                                    Map<String, Collection<Path>> allSourcePaths )
         throws MavenReportException
     {
-        Collection<String> sourcePaths = collect( allSourcePaths.values() );
+        Collection<Path> sourcePaths = collect( allSourcePaths.values() );
         
         validateJavadocOptions();
 
@@ -4836,7 +4834,7 @@ public abstract class AbstractJavadocMojo
         Path moduleSourceDir = null;
         if ( allSourcePaths.size() > 1 )
         {
-            for ( Map.Entry<String, Collection<String>> projectSourcepaths : allSourcePaths.entrySet() )
+            for ( Map.Entry<String, Collection<Path>> projectSourcepaths : allSourcePaths.entrySet() )
             {
                 if ( reactorKeys.contains( projectSourcepaths.getKey() ) )
                 {
@@ -4885,7 +4883,11 @@ public abstract class AbstractJavadocMojo
             }
         }
 
-        List<String> roots = getProjectSourceRoots( getProject() );
+        Collection<Path> roots = new ArrayList<>();
+        for ( String path : getProjectSourceRoots( getProject() ) )
+        {
+            roots.add( Paths.get( path ) );
+        }
         
         File mainDescriptor = findMainDescriptor( roots );
 
@@ -5006,11 +5008,11 @@ public abstract class AbstractJavadocMojo
         }
     }
 
-    private File findMainDescriptor( Collection<String> roots )
+    private File findMainDescriptor( Collection<Path> roots )
     {
-        for ( String root : roots )
+        for ( Path root : roots )
         {
-            File descriptorFile = new File( root, "module-info.java" ).getAbsoluteFile();
+            File descriptorFile = root.resolve( "module-info.java" ).toAbsolutePath().toFile();
             if ( descriptorFile.exists() )
             {
                 return descriptorFile;

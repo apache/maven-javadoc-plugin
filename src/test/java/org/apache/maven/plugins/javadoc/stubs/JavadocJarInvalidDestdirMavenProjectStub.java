@@ -63,8 +63,7 @@ public class JavadocJarInvalidDestdirMavenProjectStub
         setBuild( build );
 
         List<String> compileSourceRoots = new ArrayList<>();
-        compileSourceRoots.add(
-            getBasedir() + "/javadocjar/invalid/destdir" );
+        compileSourceRoots.add( getBasedir().getAbsolutePath() );
         setCompileSourceRoots( compileSourceRoots );
     }
 
