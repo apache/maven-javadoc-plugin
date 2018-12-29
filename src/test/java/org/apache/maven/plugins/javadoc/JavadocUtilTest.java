@@ -46,7 +46,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.plugins.javadoc.ProxyServer.AuthAsyncProxyServlet;
-import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.PlexusTestCase;
@@ -58,7 +57,6 @@ import org.mortbay.util.ByteArrayISO8859Writer;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: JavadocUtilTest.java 1801354 2017-07-09 08:49:46Z rfscholte $
  */
 public class JavadocUtilTest
     extends PlexusTestCase

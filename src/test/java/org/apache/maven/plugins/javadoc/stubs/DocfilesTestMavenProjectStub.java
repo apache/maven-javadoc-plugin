@@ -29,7 +29,6 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @version $Id: DocfilesTestMavenProjectStub.java 985765 2010-08-15 21:37:47Z hboutemy $
  */
 public class DocfilesTestMavenProjectStub
     extends MavenProjectStub

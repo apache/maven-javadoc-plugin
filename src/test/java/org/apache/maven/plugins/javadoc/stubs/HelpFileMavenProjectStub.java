@@ -33,7 +33,6 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: HelpFileMavenProjectStub.java 1385163 2012-09-15 20:29:11Z hboutemy $
  */
 public class HelpFileMavenProjectStub extends MavenProjectStub
 {

@@ -104,7 +104,6 @@ import java.util.regex.PatternSyntaxException;
  * Set of utilities methods for Javadoc.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: JavadocUtil.java 1801354 2017-07-09 08:49:46Z rfscholte $
  * @since 2.4
  */
 public class JavadocUtil

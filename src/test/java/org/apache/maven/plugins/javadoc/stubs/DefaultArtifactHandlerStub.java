@@ -23,7 +23,6 @@ import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @version $Id: DefaultArtifactHandlerStub.java 791101 2009-07-04 10:58:24Z vsiveton $
  */
 public class DefaultArtifactHandlerStub
     extends DefaultArtifactHandler

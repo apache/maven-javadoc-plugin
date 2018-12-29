@@ -30,7 +30,6 @@ import org.apache.maven.project.MavenProject;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @version $Id: AggregateTestMavenProjectStub.java 985765 2010-08-15 21:37:47Z hboutemy $
  */
 public class AggregateTestMavenProjectStub
     extends MavenProjectStub

@@ -30,7 +30,6 @@ import org.apache.maven.project.MavenProject;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: AggregateResourcesTestMavenProjectStub.java 985765 2010-08-15 21:37:47Z hboutemy $
  */
 public class AggregateResourcesTestMavenProjectStub
     extends MavenProjectStub

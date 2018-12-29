@@ -38,7 +38,6 @@ import java.util.List;
  * Be Used</a>.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: TestFixJavadocMojo.java 1642248 2014-11-28 00:10:50Z hboutemy $
  * @since 2.6
  */
 @Mojo( name = "test-fix", requiresDependencyResolution = ResolutionScope.TEST, threadSafe = true )

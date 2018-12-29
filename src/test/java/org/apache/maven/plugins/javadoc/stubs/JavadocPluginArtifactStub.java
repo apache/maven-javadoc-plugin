@@ -25,7 +25,6 @@ import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @version $Id: JavadocPluginArtifactStub.java 791101 2009-07-04 10:58:24Z vsiveton $
  */
 public class JavadocPluginArtifactStub
     extends ArtifactStub

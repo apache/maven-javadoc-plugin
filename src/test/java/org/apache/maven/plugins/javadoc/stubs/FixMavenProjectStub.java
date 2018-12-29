@@ -26,7 +26,6 @@ import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: FixMavenProjectStub.java 797039 2009-07-23 12:30:42Z vsiveton $
  */
 public class FixMavenProjectStub
     extends MavenProjectStub

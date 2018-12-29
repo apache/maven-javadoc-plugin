@@ -30,7 +30,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  * 
  * <p>Since version 3.1.0 an aggregated jar is created for every module of a Maven multimodule project.</p>
  * 
- * @version $Id: AggregatorTestJavadocJar.java 1749408 2016-06-20 22:54:15Z schulte $
  * @since 2.6
  */
 @Mojo( name = "test-aggregate-jar", defaultPhase = LifecyclePhase.PACKAGE, aggregator = true,

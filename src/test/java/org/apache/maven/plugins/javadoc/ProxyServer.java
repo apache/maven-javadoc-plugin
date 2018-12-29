@@ -42,7 +42,6 @@ import org.mortbay.proxy.AsyncProxyServlet;
  * A Proxy server.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: ProxyServer.java 1517906 2013-08-27 18:25:03Z krosenvold $
  * @since 2.6
  */
 class ProxyServer

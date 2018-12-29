@@ -27,7 +27,6 @@ import org.apache.maven.settings.Settings;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: SettingsStub.java 985765 2010-08-15 21:37:47Z hboutemy $
  */
 public class SettingsStub
     extends Settings

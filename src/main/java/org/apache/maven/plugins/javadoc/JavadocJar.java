@@ -46,7 +46,6 @@ import java.util.Locale;
  * Bundles the Javadoc documentation for <code>main Java code</code> in an <b>NON aggregator</b> project into
  * a jar using the standard <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/">Javadoc Tool</a>.
  *
- * @version $Id: JavadocJar.java 1752018 2016-07-09 16:35:25Z rfscholte $
  * @since 2.0
  */
 @Mojo( name = "jar", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE,

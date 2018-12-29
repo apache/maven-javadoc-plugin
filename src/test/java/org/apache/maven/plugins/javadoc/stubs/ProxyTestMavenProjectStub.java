@@ -34,7 +34,6 @@ import java.util.Set;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: ProxyTestMavenProjectStub.java 1747937 2016-06-11 21:26:59Z rfscholte $
  */
 public class ProxyTestMavenProjectStub
     extends MavenProjectStub

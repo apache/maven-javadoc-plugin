@@ -31,7 +31,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  * <p>Since version 3.1.0 an aggregated report is created for every module of a Maven multimodule project.</p> 
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: AggregatorJavadocReport.java 1749408 2016-06-20 22:54:15Z schulte $
  * @since 2.5
  */
 @Mojo( name = "aggregate", aggregator = true, requiresDependencyResolution = ResolutionScope.COMPILE )

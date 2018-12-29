@@ -144,7 +144,6 @@ import static org.apache.maven.plugins.javadoc.JavadocUtil.isNotEmpty;
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: AbstractJavadocMojo.java 1801354 2017-07-09 08:49:46Z rfscholte $
  * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html">
  *      The Java API Documentation Generator, 7</a>
  * @since 2.0

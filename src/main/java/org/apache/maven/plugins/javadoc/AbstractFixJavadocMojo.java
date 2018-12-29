@@ -94,7 +94,6 @@ import java.util.regex.Pattern;
  * Can Be Used</a>.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: AbstractFixJavadocMojo.java 1801354 2017-07-09 08:49:46Z rfscholte $
  * @since 2.6
  */
 public abstract class AbstractFixJavadocMojo
