@@ -315,9 +315,11 @@ public abstract class AbstractFixJavadocMojo
     private boolean fixMethodComment;
 
     /**
-     * Flag to remove throws tags from unknown classes.
+     * <p>Flag to remove throws tags from unknown classes.</p>
+     * <p><strong>NOTE:</strong>Since 3.1.0 the default value has been changed to {@code true}, 
+     * due to JavaDoc 8 strictness. 
      */
-    @Parameter ( property = "removeUnknownThrows", defaultValue = "false" )
+    @Parameter ( property = "removeUnknownThrows", defaultValue = "true" )
     private boolean removeUnknownThrows;
 
     /**
