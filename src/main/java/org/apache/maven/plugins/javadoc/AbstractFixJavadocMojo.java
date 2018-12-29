@@ -74,6 +74,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -81,6 +82,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1958,7 +1960,7 @@ public abstract class AbstractFixJavadocMojo
                 switch ( docletTag.getName() ) 
                 {
                     case PARAM_TAG:
-                        javaEntityTags.putJavadocParamTag( paramName, originalJavadocTag );
+                        javaEntityTags.putJavadocParamTag( paramName, docletTag.getValue(), originalJavadocTag );
                         break;
                     case RETURN_TAG:
                         javaEntityTags.setJavadocReturnTag( originalJavadocTag );
@@ -2005,7 +2007,7 @@ public abstract class AbstractFixJavadocMojo
 
                 if ( docletTag.getName().equals( PARAM_TAG ) )
                 {
-                    writeParamTag( sb, javaExecutable, javaEntityTags, params );
+                    writeParamTag( sb, javaExecutable, javaEntityTags, params.get( 0 ), docletTag.getValue() );
                 }
                 else if ( docletTag.getName().equals( RETURN_TAG ) && javaExecutable instanceof JavaMethod )
                 {
@@ -2058,14 +2060,12 @@ public abstract class AbstractFixJavadocMojo
     }
 
     private void writeParamTag( final StringBuilder sb, final JavaExecutable javaExecutable,
-                                final JavaEntityTags javaEntityTags, List<String> params )
+                                final JavaEntityTags javaEntityTags, String paramName, String paramValue )
     {
-        String paramName = params.get( 0 );
-
         if ( !fixTag( PARAM_TAG ) )
         {
             // write original param tag if found
-            String originalJavadocTag = javaEntityTags.getJavadocParamTag( paramName );
+            String originalJavadocTag = javaEntityTags.getJavadocParamTag( paramValue );
             if ( originalJavadocTag != null )
             {
                 sb.append( originalJavadocTag );
@@ -2107,7 +2107,7 @@ public abstract class AbstractFixJavadocMojo
         }
         else
         {
-            String originalJavadocTag = javaEntityTags.getJavadocParamTag( paramName );
+            String originalJavadocTag = javaEntityTags.getJavadocParamTag( paramValue );
             if ( originalJavadocTag != null )
             {
                 sb.append( originalJavadocTag );
@@ -2258,7 +2258,7 @@ public abstract class AbstractFixJavadocMojo
                 {
                     for ( JavaParameter javaParameter : javaExecutable.getParameters() )
                     {
-                        if ( javaEntityTags.getJavadocParamTag( javaParameter.getName(), true ) == null )
+                        if ( !javaEntityTags.hasJavadocParamTag( javaParameter.getName() ) )
                         {
                             appendDefaultParamTag( sb, indent, javaParameter );
                         }
@@ -2269,7 +2269,7 @@ public abstract class AbstractFixJavadocMojo
                 {
                     for ( JavaTypeVariable<JavaGenericDeclaration> typeParam : javaExecutable.getTypeParameters() )
                     {
-                        if ( javaEntityTags.getJavadocParamTag( "<" + typeParam.getName() + ">", true ) == null )
+                        if ( !javaEntityTags.hasJavadocParamTag( "<" + typeParam.getName() + ">" ) )
                         {
                             appendDefaultParamTag( sb, indent, typeParam );
                         }
@@ -3302,20 +3302,19 @@ public abstract class AbstractFixJavadocMojo
 
         String originalJavadoc = extractOriginalJavadocContent( javaClassContent, entity );
 
-        List<String> params = docletTag.getParameters();
-        String paramValue = params.get( 0 );
-
         StringBuilder sb = new StringBuilder();
         BufferedReader lr = new BufferedReader( new StringReader( originalJavadoc ) );
         String line;
         boolean found = false;
+        
+        // matching first line of doclettag
+        Pattern p = Pattern.compile( "(\\s*\\*\\s?@" + docletTag.getName() + ")\\s+"
+            + "(\\Q" + docletTag.getValue().split( "\r\n|\r|\n" )[0] + "\\E)" );
+        
         while ( ( line = lr.readLine() ) != null )
         {
-            String l = StringUtils.removeDuplicateWhitespace( line.trim() );
-            if ( l.startsWith( "* @" + docletTag.getName() + " " + paramValue + " " )
-                || l.startsWith( "*@" + docletTag.getName() + " " + paramValue + " " )
-                || l.equals( "* @" + docletTag.getName() + " " + paramValue )
-                || l.equals( "*@" + docletTag.getName() + " " + paramValue ) )
+            Matcher m = p.matcher( line );
+            if ( m.matches() )
             {
                 if ( fixTag( LINK_TAG ) )
                 {
@@ -3326,7 +3325,7 @@ public abstract class AbstractFixJavadocMojo
             }
             else
             {
-                if ( l.startsWith( "* @" ) || l.startsWith( "*@" ) )
+                if ( line.trim().startsWith( "* @" ) || line.trim().startsWith( "*@" ) )
                 {
                     found = false;
                 }
@@ -3668,6 +3667,8 @@ public abstract class AbstractFixJavadocMojo
          * Map with java parameter as key and original Javadoc lines as values.
          */
         private Map<String, String> tagParams;
+        
+        private Set<String> documentedParams = new HashSet<>();
 
         /**
          * Original javadoc lines.
@@ -3714,25 +3715,25 @@ public abstract class AbstractFixJavadocMojo
             return unknownsTags;
         }
 
-        public void putJavadocParamTag( String paramName, String originalJavadocTag )
+        public void putJavadocParamTag( String paramName, String paramValue, String originalJavadocTag )
         {
-            tagParams.put( paramName, originalJavadocTag );
+            documentedParams.add( paramName );
+            tagParams.put( paramValue, originalJavadocTag );
         }
 
-        public String getJavadocParamTag( String paramName )
+        public String getJavadocParamTag( String paramValue )
         {
-            return getJavadocParamTag( paramName, false );
-        }
-
-        public String getJavadocParamTag( String paramName, boolean nullable )
-        {
-            String originalJavadocTag = tagParams.get( paramName );
-            if ( !nullable && originalJavadocTag == null && getLog().isWarnEnabled() )
+            String originalJavadocTag = tagParams.get( paramValue );
+            if ( originalJavadocTag == null && getLog().isWarnEnabled() )
             {
-                getLog().warn( getMessage( paramName, "javaEntityTags.tagParams" ) );
+                getLog().warn( getMessage( paramValue, "javaEntityTags.tagParams" ) );
             }
-
             return originalJavadocTag;
+        }
+
+        public boolean hasJavadocParamTag( String paramName )
+        {
+            return documentedParams.contains( paramName );
         }
 
         public void putJavadocThrowsTag( String paramName, String originalJavadocTag )
