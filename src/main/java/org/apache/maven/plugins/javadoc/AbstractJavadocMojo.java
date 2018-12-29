@@ -1656,13 +1656,16 @@ public abstract class AbstractJavadocMojo
     private File sourceDependencyCacheDir;
 
     /**
-     * Whether to include transitive dependencies in the list of dependency -sources jars to include
-     * in this javadoc run.
+     * Whether to include transitive dependencies in the list of dependency -sources jars to include in this javadoc
+     * run.
      *
      * @see #includeDependencySources
      * @since 2.7
+     * @deprecated if these sources depend on transitive dependencies, those dependencies should be added to the pom as
+     *             direct dependencies
      */
     @Parameter( defaultValue = "false" )
+    @Deprecated
     private boolean includeTransitiveDependencySources;
 
     /**
