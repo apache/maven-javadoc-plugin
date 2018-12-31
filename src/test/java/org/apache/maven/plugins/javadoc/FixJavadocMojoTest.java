@@ -21,7 +21,6 @@ package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,8 +34,6 @@ import org.apache.maven.plugins.javadoc.AbstractFixJavadocMojo.JavaEntityTags;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.StringUtils;
 
 import com.thoughtworks.qdox.JavaProjectBuilder;
@@ -48,7 +45,6 @@ import junitx.util.PrivateAccessor;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: FixJavadocMojoTest.java 1752069 2016-07-10 09:58:59Z rfscholte $
  */
 public class FixJavadocMojoTest
     extends AbstractMojoTestCase

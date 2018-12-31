@@ -25,10 +25,11 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
- * Bundles the Javadoc documentation for main <code>Java code</code> in an <b>aggregator</b> project into a jar
- * using the standard <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/">Javadoc Tool</a>.
+ * <p>Bundles the Javadoc documentation for main <code>Java code</code> in an <b>aggregator</b> project into a jar
+ * using the standard <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/">Javadoc Tool</a>.</p>
  *
- * @version $Id: AggregatorJavadocJar.java 1749408 2016-06-20 22:54:15Z schulte $
+ * <p>Since version 3.1.0 an aggregated jar is created for every module of a Maven multimodule project.</p>
+ * 
  * @since 2.6
  */
 @Mojo( name = "aggregate-jar", defaultPhase = LifecyclePhase.PACKAGE, aggregator = true,

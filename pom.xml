@@ -26,11 +26,11 @@ under the License.
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-plugins</artifactId>
     <version>33</version>
-    <relativePath>../../pom/maven/maven-plugins/pom.xml</relativePath>
+    <relativePath/>
   </parent>
 
   <artifactId>maven-javadoc-plugin</artifactId>
-  <version>3.0.2-SNAPSHOT</version>
+  <version>3.1.0-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Apache Maven Javadoc Plugin</name>
@@ -116,6 +116,9 @@ under the License.
     <contributor>
       <name>Kevin Risden</name>
     </contributor>
+    <contributor>
+      <name>Michael Stumpf</name>
+    </contributor>
   </contributors>
 
   <dependencies>
@@ -186,7 +189,7 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-artifact-transfer</artifactId>
-      <version>0.9.1</version>
+      <version>0.10.1</version>
     </dependency>
 
     <!-- Doxia -->
@@ -243,6 +246,11 @@ under the License.
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
       <version>3.6.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-io</artifactId>
+      <version>3.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -374,7 +382,6 @@ under the License.
           </execution>
         </executions>
       </plugin>
-      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -389,6 +396,18 @@ under the License.
             <JENKINS_MAVEN_AGENT_DISABLED>true</JENKINS_MAVEN_AGENT_DISABLED>
           </environmentVariables>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <dependencies>
+          <!-- see MPLUGIN-346 -->
+          <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-utils</artifactId>
+            <version>3.1.1</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
@@ -517,7 +536,7 @@ under the License.
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <excludes>
-                <exlude>**/*Test*.java</exlude>
+                <exclude>**/*Test*.java</exclude>
               </excludes>
             </configuration>
           </plugin>

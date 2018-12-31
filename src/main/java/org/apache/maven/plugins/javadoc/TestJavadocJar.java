@@ -39,7 +39,6 @@ import java.util.List;
  * a jar using the standard <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/">Javadoc Tool</a>.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: TestJavadocJar.java 1747985 2016-06-12 12:04:55Z rfscholte $
  * @since 2.5
  */
 @Mojo( name = "test-jar", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.TEST,

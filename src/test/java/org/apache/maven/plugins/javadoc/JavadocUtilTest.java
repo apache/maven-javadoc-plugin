@@ -1,5 +1,7 @@
 package org.apache.maven.plugins.javadoc;
 
+import static org.junit.Assert.assertArrayEquals;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -26,7 +28,10 @@ import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.plugins.javadoc.ProxyServer.AuthAsyncProxyServlet;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
@@ -51,7 +57,6 @@ import org.mortbay.util.ByteArrayISO8859Writer;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: JavadocUtilTest.java 1801354 2017-07-09 08:49:46Z rfscholte $
  */
 public class JavadocUtilTest
     extends PlexusTestCase
@@ -736,10 +741,12 @@ public class JavadocUtilTest
         list.add( getBasedir() + "/target/classes" );
         list.add( getBasedir() + "/target/classes" );
 
-        String FS = System.getProperty( "file.separator" );
-        Set<String> expected = Collections.singleton( getBasedir() + FS +"target" + FS + "classes" );
+        Set<Path> expected = Collections.singleton( Paths.get( getBasedir(), "target/classes" ) );
+        
+        MavenProjectStub project = new MavenProjectStub();
+        project.setFile( new File( getBasedir(), "pom.xml" ) );
 
-        assertEquals( expected, JavadocUtil.pruneDirs( null, list ) );
+        assertEquals( expected, JavadocUtil.pruneDirs( project, list ) );
     }
 
     /**
@@ -774,6 +781,18 @@ public class JavadocUtilTest
         assertEquals( path1 + ps + path2, JavadocUtil.unifyPathSeparator( path1 + ":" + path2 ) );
         assertEquals( path1 + ps + path2 + ps + path1 + ps + path2, JavadocUtil.unifyPathSeparator( path1 + ";"
             + path2 + ":" + path1 + ":" + path2 ) );
+    }
+    
+    
+    public void testGetIncludedFiles() throws Exception
+    {
+        File sourceDirectory = new File("target/it").getAbsoluteFile();
+        String[] fileList = new String[] { "Main.java" };
+        Collection<String> excludePackages = Collections.singleton( "*.it" );
+        
+        List<String> includedFiles = JavadocUtil.getIncludedFiles( sourceDirectory, fileList, excludePackages );
+        
+        assertArrayEquals( fileList, includedFiles.toArray( new String[0] ) );
     }
 
     private void stopSilently( Server server )

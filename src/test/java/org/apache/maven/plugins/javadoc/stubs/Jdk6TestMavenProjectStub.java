@@ -29,7 +29,6 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: Jdk6TestMavenProjectStub.java 985765 2010-08-15 21:37:47Z hboutemy $
  */
 public class Jdk6TestMavenProjectStub
     extends MavenProjectStub

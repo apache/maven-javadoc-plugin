@@ -21,6 +21,7 @@ package org.apache.maven.plugins.javadoc.stubs;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.maven.model.Build;
@@ -29,7 +30,6 @@ import org.apache.maven.project.MavenProject;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: AggregateResourcesTestMavenProjectStub.java 985765 2010-08-15 21:37:47Z hboutemy $
  */
 public class AggregateResourcesTestMavenProjectStub
     extends MavenProjectStub
@@ -57,17 +57,22 @@ public class AggregateResourcesTestMavenProjectStub
         setCompileSourceRoots( compileSourceRoots );
     }
 
-    /** {@inheritDoc} */
     @Override
     public File getBasedir()
     {
         return new File( super.getBasedir() + "/src/test/resources/unit/aggregate-resources-test" );
     }
 
-    /** {@inheritDoc} */
     @Override
     public MavenProject getExecutionProject()
     {
         return this;
     }
+    
+    @Override
+    public List<String> getModules()
+    {
+        return Arrays.asList( "project1", "project2" );
+    }
+
 }

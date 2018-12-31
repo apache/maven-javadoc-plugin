@@ -29,7 +29,6 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @version $Id: SubpackagesTestMavenProjectStub.java 985765 2010-08-15 21:37:47Z hboutemy $
  */
 public class SubpackagesTestMavenProjectStub
     extends MavenProjectStub
@@ -57,7 +56,7 @@ public class SubpackagesTestMavenProjectStub
         setBuild( build );
 
         List<String> compileSourceRoots = new ArrayList<>();
-        compileSourceRoots.add( getBasedir() + "/subpackages/test" );
+        compileSourceRoots.add( getBasedir().getAbsolutePath() );
         setCompileSourceRoots( compileSourceRoots );
     }
 

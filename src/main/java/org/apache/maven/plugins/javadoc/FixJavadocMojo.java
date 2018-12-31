@@ -30,7 +30,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  * Be Used</a>.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: FixJavadocMojo.java 1642248 2014-11-28 00:10:50Z hboutemy $
  * @since 2.6
  */
 @Mojo( name = "fix", requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true )

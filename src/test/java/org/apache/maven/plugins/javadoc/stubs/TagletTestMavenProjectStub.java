@@ -29,7 +29,6 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: TagletTestMavenProjectStub.java 985765 2010-08-15 21:37:47Z hboutemy $
  */
 public class TagletTestMavenProjectStub
     extends MavenProjectStub
@@ -57,7 +56,7 @@ public class TagletTestMavenProjectStub
         setBuild( build );
 
         List<String> compileSourceRoots = new ArrayList<>();
-        compileSourceRoots.add( getBasedir() + "/taglet/test" );
+        compileSourceRoots.add( getBasedir().getAbsolutePath() );
         setCompileSourceRoots( compileSourceRoots );
     }
 

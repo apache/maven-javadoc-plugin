@@ -20,9 +20,10 @@ package org.apache.maven.plugins.javadoc;
  */
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.apache.maven.doxia.siterenderer.RenderingContext;
@@ -45,7 +46,6 @@ import org.codehaus.plexus.util.StringUtils;
  *
  * @author <a href="mailto:evenisse@apache.org">Emmanuel Venisse</a>
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: JavadocReport.java 1800564 2017-07-02 14:08:18Z michaelo $
  * @since 2.0
  * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/">Javadoc Tool</a>
  * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#options">Javadoc Options</a>
@@ -226,10 +226,10 @@ public class JavadocReport
     {
         boolean canGenerate = false;
 
-        if ( !this.isAggregator() || this.project.isExecutionRoot() )
+        if ( this.isAggregator() || !"pom".equals( this.project.getPackaging() ) )
         {
-            Collection<String> sourcePaths;
-            List<String> files;
+            Collection<Path> sourcePaths;
+            Map<Path, Collection<String>> files;
             try
             {
                 sourcePaths = collect( getSourcePaths().values() );

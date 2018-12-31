@@ -29,7 +29,6 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @version $Id$
  */
 public class JavadocJarFailOnErrorMavenProjectStub
     extends MavenProjectStub
@@ -64,7 +63,7 @@ public class JavadocJarFailOnErrorMavenProjectStub
         setBuild( build );
 
         List<String> compileSourceRoots = new ArrayList<>();
-        compileSourceRoots.add( getBasedir() + "/javadocjar/def" );
+        compileSourceRoots.add( getBasedir().getAbsolutePath() );
         setCompileSourceRoots( compileSourceRoots );
     }
 

@@ -29,7 +29,6 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @version $Id: DefaultConfigurationMavenProjectStub.java 985765 2010-08-15 21:37:47Z hboutemy $
  */
 public class DefaultConfigurationMavenProjectStub
     extends MavenProjectStub
@@ -57,7 +56,7 @@ public class DefaultConfigurationMavenProjectStub
         setBuild( build );
 
         List<String> compileSourceRoots = new ArrayList<>();
-        compileSourceRoots.add( getBasedir() + "/def/configuration" );
+        compileSourceRoots.add( getBasedir().getAbsolutePath() );
         setCompileSourceRoots( compileSourceRoots );
     }
 

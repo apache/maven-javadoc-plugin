@@ -28,7 +28,6 @@ import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: PomMavenProjectStub.java 985765 2010-08-15 21:37:47Z hboutemy $
  */
 public class PomMavenProjectStub
     extends MavenProjectStub

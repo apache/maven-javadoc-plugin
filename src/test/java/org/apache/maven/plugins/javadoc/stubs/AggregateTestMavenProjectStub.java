@@ -21,6 +21,7 @@ package org.apache.maven.plugins.javadoc.stubs;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.maven.model.Build;
@@ -29,7 +30,6 @@ import org.apache.maven.project.MavenProject;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @version $Id: AggregateTestMavenProjectStub.java 985765 2010-08-15 21:37:47Z hboutemy $
  */
 public class AggregateTestMavenProjectStub
     extends MavenProjectStub
@@ -57,31 +57,33 @@ public class AggregateTestMavenProjectStub
         setCompileSourceRoots( compileSourceRoots );
     }
 
-    /** {@inheritDoc} */
     @Override
     public Build getBuild()
     {
         return build;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void setBuild( Build build )
     {
         this.build = build;
     }
 
-    /** {@inheritDoc} */
     @Override
     public File getBasedir()
     {
         return new File( super.getBasedir() + "/src/test/resources/unit/aggregate-test" );
     }
 
-    /** {@inheritDoc} */
     @Override
     public MavenProject getExecutionProject()
     {
         return this;
+    }
+    
+    @Override
+    public List<String> getModules()
+    {
+        return Arrays.asList( "project1", "project2" );
     }
 }

@@ -32,7 +32,6 @@ import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: TagletArtifactsMavenProjectStub.java 1385163 2012-09-15 20:29:11Z hboutemy $
  */
 public class TagletArtifactsMavenProjectStub
     extends MavenProjectStub

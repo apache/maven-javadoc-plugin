@@ -30,7 +30,6 @@ import org.apache.maven.project.MavenProject;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @version $Id: AggregateProject1TestMavenProjectStub.java 985765 2010-08-15 21:37:47Z hboutemy $
  */
 public class AggregateProject1TestMavenProjectStub
     extends MavenProjectStub
@@ -54,7 +53,7 @@ public class AggregateProject1TestMavenProjectStub
 
         String basedir = getBasedir().getAbsolutePath();
         List<String> compileSourceRoots = new ArrayList<>();
-        compileSourceRoots.add( basedir + "/aggregate/test/project1" );
+        compileSourceRoots.add( basedir );
         setCompileSourceRoots( compileSourceRoots );
     }
 

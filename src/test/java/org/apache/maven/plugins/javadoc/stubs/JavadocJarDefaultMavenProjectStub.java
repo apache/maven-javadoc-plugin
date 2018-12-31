@@ -29,7 +29,6 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @version $Id: JavadocJarDefaultMavenProjectStub.java 985765 2010-08-15 21:37:47Z hboutemy $
  */
 public class JavadocJarDefaultMavenProjectStub
     extends MavenProjectStub
@@ -64,7 +63,7 @@ public class JavadocJarDefaultMavenProjectStub
         setBuild( build );
 
         List<String> compileSourceRoots = new ArrayList<>();
-        compileSourceRoots.add( getBasedir() + "/javadocjar/def" );
+        compileSourceRoots.add( getBasedir().getAbsolutePath() );
         setCompileSourceRoots( compileSourceRoots );
     }
 

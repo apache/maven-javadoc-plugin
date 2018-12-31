@@ -81,6 +81,11 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -102,7 +107,6 @@ import java.util.regex.PatternSyntaxException;
  * Set of utilities methods for Javadoc.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id: JavadocUtil.java 1801354 2017-07-09 08:49:46Z rfscholte $
  * @since 2.4
  */
 public class JavadocUtil
@@ -123,9 +127,11 @@ public class JavadocUtil
      * @param dirs the collection of <code>String</code> directories path that will be validated.
      * @return a List of valid <code>String</code> directories absolute paths.
      */
-    public static Collection<String> pruneDirs( MavenProject project, Collection<String> dirs )
+    public static Collection<Path> pruneDirs( MavenProject project, Collection<String> dirs )
     {
-        Set<String> pruned = new LinkedHashSet<>( dirs.size() );
+        final Path projectBasedir = project.getBasedir().toPath();
+        
+        Set<Path> pruned = new LinkedHashSet<>( dirs.size() );
         for ( String dir : dirs )
         {
             if ( dir == null )
@@ -133,15 +139,11 @@ public class JavadocUtil
                 continue;
             }
 
-            File directory = new File( dir );
-            if ( !directory.isAbsolute() )
-            {
-                directory = new File( project.getBasedir(), directory.getPath() );
-            }
+            Path directory = projectBasedir.resolve( dir );
 
-            if ( directory.isDirectory() )
+            if ( Files.isDirectory( directory ) )
             {
-                pruned.add( directory.getAbsolutePath() );
+                pruned.add( directory.toAbsolutePath() );
             }
         }
 
@@ -196,15 +198,15 @@ public class JavadocUtil
      *
      * @param sourcePaths the path to the source files
      * @param excludedPackages the package names to be excluded in the javadoc
-     * @return a List of the source files to be excluded in the generated javadoc
+     * @return a List of the packages to be excluded in the generated javadoc
      */
-    protected static List<String> getExcludedNames( Collection<String> sourcePaths, String[] excludedPackages )
+    protected static List<String> getExcludedPackages( Collection<Path> sourcePaths,
+                                                       Collection<String> excludedPackages )
     {
         List<String> excludedNames = new ArrayList<>();
-        for ( String path : sourcePaths )
+        for ( Path sourcePath : sourcePaths )
         {
-            List<String> excludes = getExcludedPackages( path, excludedPackages );
-            excludedNames.addAll( excludes );
+            excludedNames.addAll( getExcludedPackages( sourcePath, excludedPackages ) );
         }
 
         return excludedNames;
@@ -336,70 +338,40 @@ public class JavadocUtil
      * Method that gets the files or classes that would be included in the javadocs using the subpackages parameter.
      *
      * @param sourceDirectory the directory where the source files are located
-     * @param fileList the list of all files found in the sourceDirectory
+     * @param fileList the list of all relative files found in the sourceDirectory
      * @param excludePackages package names to be excluded in the javadoc
      * @return a StringBuilder that contains the appended file names of the files to be included in the javadoc
      */
-    protected static List<String> getIncludedFiles( File sourceDirectory, String[] fileList, String[] excludePackages )
+    protected static List<String> getIncludedFiles( File sourceDirectory, String[] fileList,
+                                                    Collection<String> excludePackages )
     {
         List<String> files = new ArrayList<>();
-
-        for ( String aFileList : fileList )
+        
+        List<Pattern> excludePackagePatterns = new ArrayList<>( excludePackages.size() );
+        for ( String excludePackage :  excludePackages )
         {
-            boolean include = true;
-            for ( int k = 0; k < excludePackages.length && include; k++ )
+            excludePackagePatterns.add( Pattern.compile( excludePackage.replace( '.', File.separatorChar )
+                                                                       .replace( "\\", "\\\\" )
+                                                                       .replace( "*", ".+" )
+                                                                       .concat( "[\\\\/][^\\\\/]+\\.java" )
+                                                                                ) );
+        }
+
+        for ( String file : fileList )
+        {
+            boolean excluded = false;
+            for ( Pattern excludePackagePattern :  excludePackagePatterns )
             {
-                // handle wildcards (*) in the excludePackageNames
-                String[] excludeName = excludePackages[k].split( "[*]" );
-
-                if ( excludeName.length == 0 )
+                if ( excludePackagePattern.matcher( file ).matches() )
                 {
-                    continue;
-                }
-
-                if ( excludeName.length > 1 )
-                {
-                    int u = 0;
-                    while ( include && u < excludeName.length )
-                    {
-                        if ( !"".equals( excludeName[u].trim() ) && aFileList.contains( excludeName[u] ) )
-                        {
-                            include = false;
-                        }
-                        u++;
-                    }
-                }
-                else
-                {
-                    if ( aFileList.startsWith( sourceDirectory.toString() + File.separatorChar + excludeName[0] ) )
-                    {
-                        if ( excludeName[0].endsWith( String.valueOf( File.separatorChar ) ) )
-                        {
-                            int i = aFileList.lastIndexOf( File.separatorChar );
-                            String packageName = aFileList.substring( 0, i + 1 );
-                            File currentPackage = new File( packageName );
-                            File excludedPackage = new File( sourceDirectory, excludeName[0] );
-                            if ( currentPackage.equals( excludedPackage )
-                                && aFileList.substring( i ).contains( ".java" ) )
-                            {
-                                include = true;
-                            }
-                            else
-                            {
-                                include = false;
-                            }
-                        }
-                        else
-                        {
-                            include = false;
-                        }
-                    }
+                    excluded = true;
+                    break;
                 }
             }
-
-            if ( include )
+            
+            if ( !excluded )
             {
-                files.add( quotedPathArgument( aFileList ) );
+                files.add( file );
             }
         }
 
@@ -414,57 +386,69 @@ public class JavadocUtil
      * @param excludePackagenames package names to be excluded in the javadoc
      * @return a List of the packagenames to be excluded
      */
-    protected static List<String> getExcludedPackages( String sourceDirectory, String[] excludePackagenames )
+    protected static Collection<String> getExcludedPackages( final Path sourceDirectory,
+                                                             Collection<String> excludePackagenames )
     {
+        final String regexFileSeparator = File.separator.replace( "\\", "\\\\" );
+        
+        final Collection<String> fileList = new ArrayList<>();
+        
+        try
+        {
+            Files.walkFileTree( sourceDirectory, new SimpleFileVisitor<Path>()
+            {
+                @Override
+                public FileVisitResult visitFile( Path file, BasicFileAttributes attrs )
+                    throws IOException
+                {
+                    if ( file.getFileName().toString().endsWith( ".java" ) )
+                    {
+                        fileList.add( sourceDirectory.relativize( file.getParent() ).toString() );
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+            } );
+        }
+        catch ( IOException e )
+        {
+            // noop
+        }
+
         List<String> files = new ArrayList<>();
         for ( String excludePackagename : excludePackagenames )
         {
-            String[] fileList = FileUtils.getFilesFromExtension( sourceDirectory, new String[] { "java" } );
+            // Usage of wildcard was bad specified and bad implemented, i.e. using String.contains() 
+            //   without respecting surrounding context
+            // Following implementation should match requirements as defined in the examples:  
+            // - A wildcard at the beginning should match 1 or more folders
+            // - Any other wildcard must match exactly one folder
+            Pattern p = Pattern.compile( excludePackagename.replace( ".", regexFileSeparator )
+                                                           .replaceFirst( "^\\*", ".+" )
+                                                           .replace( "*", "[^" + regexFileSeparator + "]+" ) );
+            
             for ( String aFileList : fileList )
             {
-                String[] excludeName = excludePackagename.split( "[*]" );
-                int u = 0;
-                while ( u < excludeName.length )
+                if ( p.matcher( aFileList ).matches() )
                 {
-                    if ( !"".equals( excludeName[u].trim() ) && aFileList.contains( excludeName[u] )
-                        && !sourceDirectory.contains( excludeName[u] ) )
-                    {
-                        files.add( aFileList );
-                    }
-                    u++;
+                    files.add( aFileList.replace( File.separatorChar, '.' ) );
                 }
             }
         }
 
-        List<String> excluded = new ArrayList<>();
-        for ( String file : files )
-        {
-            int idx = file.lastIndexOf( File.separatorChar );
-            String tmpStr = file.substring( 0, idx );
-            tmpStr = tmpStr.replace( '\\', '/' );
-            String[] srcSplit = tmpStr.split( Pattern.quote( sourceDirectory.replace( '\\', '/' ) + '/' ) );
-            String excludedPackage = srcSplit[1].replace( '/', '.' );
-
-            if ( !excluded.contains( excludedPackage ) )
-            {
-                excluded.add( excludedPackage );
-            }
-        }
-
-        return excluded;
+        return files;
     }
 
     /**
      * Convenience method that gets the files to be included in the javadoc.
      *
      * @param sourceDirectory the directory where the source files are located
-     * @param files the variable that contains the appended filenames of the files to be included in the javadoc
      * @param excludePackages the packages to be excluded in the javadocs
      * @param sourceFileIncludes files to include.
      * @param sourceFileExcludes files to exclude.
      */
-    protected static void addFilesFromSource( List<String> files, File sourceDirectory, List<String> sourceFileIncludes,
-                                              List<String> sourceFileExcludes, String[] excludePackages )
+    protected static List<String> getFilesFromSource( File sourceDirectory, List<String> sourceFileIncludes,
+                                                      List<String> sourceFileExcludes,
+                                                      Collection<String> excludePackages )
     {
         DirectoryScanner ds = new DirectoryScanner();
         if ( sourceFileIncludes == null )
@@ -480,17 +464,17 @@ public class JavadocUtil
         ds.scan();
 
         String[] fileList = ds.getIncludedFiles();
-        String[] pathList = new String[fileList.length];
-        for ( int x = 0; x < fileList.length; x++ )
+
+        List<String> files = new ArrayList<>();
+        if ( fileList.length != 0 )
         {
-            pathList[x] = new File( sourceDirectory, fileList[x] ).getAbsolutePath();
+            for ( String includedFile : getIncludedFiles( sourceDirectory, fileList, excludePackages ) )
+            {
+                files.add( includedFile );
+            }
         }
 
-        if ( pathList.length != 0 )
-        {
-            List<String> tmpFiles = getIncludedFiles( sourceDirectory, pathList, excludePackages );
-            files.addAll( tmpFiles );
-        }
+        return files;
     }
 
     /**
@@ -877,6 +861,7 @@ public class JavadocUtil
         InvocationRequest request = new DefaultInvocationRequest();
         request.setBaseDirectory( projectFile.getParentFile() );
         request.setPomFile( projectFile );
+        request.setBatchMode( true );
         if ( log != null )
         {
             request.setDebug( log.isDebugEnabled() );

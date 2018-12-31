@@ -1,4 +1,4 @@
-package com.foo.bar.internal;
+package foo;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,7 +19,5 @@ package com.foo.bar.internal;
  * under the License.
  */
 
-/** Not API */
-public class NotApi {
-
+public class Bar {
 }

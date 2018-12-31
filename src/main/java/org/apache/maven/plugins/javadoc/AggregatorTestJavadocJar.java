@@ -25,10 +25,11 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
- * Bundles the Javadoc documentation for <code>Java Test code</code> in an <b>aggregator</b> project into a jar
- * using the standard <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/">Javadoc Tool</a>.
- *
- * @version $Id: AggregatorTestJavadocJar.java 1749408 2016-06-20 22:54:15Z schulte $
+ * <p>Bundles the Javadoc documentation for <code>Java Test code</code> in an <b>aggregator</b> project into a jar
+ * using the standard <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/">Javadoc Tool</a>.</p>
+ * 
+ * <p>Since version 3.1.0 an aggregated jar is created for every module of a Maven multimodule project.</p>
+ * 
  * @since 2.6
  */
 @Mojo( name = "test-aggregate-jar", defaultPhase = LifecyclePhase.PACKAGE, aggregator = true,

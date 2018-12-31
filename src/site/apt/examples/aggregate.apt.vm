@@ -37,9 +37,13 @@ Project
   |-- pom.xml
   |-- Module1
   |   `-- pom.xml
-  |-- Module2
+  |   `-- Module 2
+  |       `-- pom.xml
+  |   `-- Module 3
+  |       `-- pom.xml
+  |-- Module4
   |   `-- pom.xml
-  `-- Module3
+  `-- Module5
     `-- pom.xml
 
 +-----+
@@ -50,8 +54,42 @@ Project
  <<<aggregate>>> goal instead of.
 
  The {{{../javadoc-mojo.html#aggregate}\<aggregate/\>}} parameter can be used to generate javadocs for multi-module
- projects. It gives the option to
- generate one javadoc report for the entire project (all modules) or generate one javadoc report for each module.
+ projects. It gives the option to generate one javadoc report for the entire project (all modules) or generate one 
+ javadoc report for each module. Since 3.1.0 the <<<aggregate>>> has changed a little bit. It'll generate aggregated 
+ reports at every level.
+ To get only an aggregated project at root level, you need to configure the pom like:
+ 
+ +-----+
+<project>
+  ...
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${project.version}</version>
+        <reportSets>
+          <reportSet>
+            <id>aggregate</id>
+            <inherited>false</inherited>        
+            <reports>
+              <report>aggregate</report>
+            </reports>
+          </reportSet>
+          <reportSet>
+            <id>default</id>
+            <reports>
+              <report>javadoc</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+    ...
+  </reporting>
+  ...
+</project>
++-----+
 
  When you execute javadoc:javadoc from Project directory with aggregate set to <<true>>, a javadoc report will be created
  in the target directory of Project with all the javadocs of Project's modules included. If aggregate is
