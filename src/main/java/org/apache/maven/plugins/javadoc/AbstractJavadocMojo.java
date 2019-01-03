@@ -1766,7 +1766,7 @@ public abstract class AbstractJavadocMojo
         DEFAULT_JAVA_API_LINKS.put( "api_1.8", "https://docs.oracle.com/javase/8/docs/api/" );
         DEFAULT_JAVA_API_LINKS.put( "api_9",   "https://docs.oracle.com/javase/9/docs/api/" );
         DEFAULT_JAVA_API_LINKS.put( "api_10",  "https://docs.oracle.com/javase/10/docs/api/" );
-        DEFAULT_JAVA_API_LINKS.put( "api_11",  "https://docs.oracle.com/en/java/javase/11/docs/api" );
+        DEFAULT_JAVA_API_LINKS.put( "api_11",  "https://docs.oracle.com/en/java/javase/11/docs/api/" );
     }
 
     // ----------------------------------------------------------------------
