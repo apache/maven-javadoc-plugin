@@ -84,6 +84,7 @@ import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.codehaus.plexus.components.io.fileselectors.IncludeExcludeFileSelector;
 import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 import org.codehaus.plexus.languages.java.jpms.LocationManager;
+import org.codehaus.plexus.languages.java.jpms.ResolvePathRequest;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsRequest;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
@@ -1822,6 +1823,15 @@ public abstract class AbstractJavadocMojo
 
         return Collections.singletonList( new File( p.getBuild().getOutputDirectory() ) );
     }
+    
+    protected File getArtifactFile( MavenProject project )
+    {
+        if ( project.getArtifact() != null )
+        {
+            return project.getArtifact().getFile();
+        }
+        return null;
+    }
 
     /**
      * @param p not null maven project
@@ -2025,7 +2035,6 @@ public abstract class AbstractJavadocMojo
         {
             packageNames = getPackageNames( files );
         }
-        List<String> filesWithUnnamedPackages = getFilesWithUnnamedPackages( files );
 
         // ----------------------------------------------------------------------
         // Javadoc output directory as File
@@ -2128,9 +2137,11 @@ public abstract class AbstractJavadocMojo
             // Write argfile file and include it in the command line
             // ----------------------------------------------------------------------
 
-            if ( !filesWithUnnamedPackages.isEmpty() )
+            List<String> specialFiles = getSpecialFiles( files );
+
+            if ( !specialFiles.isEmpty() )
             {
-                addCommandLineArgFile( cmd, javadocOutputDirectory, filesWithUnnamedPackages );
+                addCommandLineArgFile( cmd, javadocOutputDirectory, specialFiles );
             }
         }
         else
@@ -2689,7 +2700,15 @@ public abstract class AbstractJavadocMojo
             {
                 if ( subProject != project )
                 {
-                    classpathElements.addAll( getProjectBuildOutputDirs( subProject ) );
+                    File projectArtifactFile = getArtifactFile( subProject );
+                    if ( projectArtifactFile != null )
+                    {
+                        classpathElements.add( projectArtifactFile );
+                    }
+                    else
+                    {
+                        classpathElements.addAll( getProjectBuildOutputDirs( subProject ) );
+                    }
 
                     try
                     {
@@ -4515,6 +4534,70 @@ public abstract class AbstractJavadocMojo
         
         return returnList;
     }
+    
+    /**
+     * Either return only the module descriptor or all sourcefiles per sourcepath
+     * @param sourcePaths could be null
+     * @param files       not null
+     * @return a list of files
+     */
+    private List<String> getSpecialFiles( Map<Path, Collection<String>> sourcePaths )
+    {
+        if ( !StringUtils.isEmpty( sourcepath ) )
+        {
+            return new ArrayList<>();
+        }
+        
+        boolean containsModuleDescriptor = false;
+        for ( Collection<String> sourcepathFiles : sourcePaths.values() )
+        {
+            containsModuleDescriptor = sourcepathFiles.contains( "module-info.java" );
+            if ( containsModuleDescriptor )
+            {
+                break;
+            }
+        }
+        
+        if ( containsModuleDescriptor )
+        {
+            return getModuleSourcePathFiles( sourcePaths );
+        }
+        else
+        {
+            return getFilesWithUnnamedPackages( sourcePaths );
+        }
+    }
+
+    private List<String> getModuleSourcePathFiles( Map<Path, Collection<String>> sourcePaths )
+    {
+        List<String> returnList = new ArrayList<>();
+        
+        for ( Entry<Path, Collection<String>> currentPathEntry : sourcePaths.entrySet() )
+        {
+            Path currentSourcePath = currentPathEntry.getKey();
+            if ( currentPathEntry.getValue().contains( "module-info.java" ) )
+            {
+                returnList.add( currentSourcePath.resolve( "module-info.java" ).toAbsolutePath().toString() );
+            }
+            else
+            {
+                for ( String currentFile : currentPathEntry.getValue() )
+                {
+                    /*
+                     * Remove the miscellaneous files
+                     * http://docs.oracle.com/javase/1.4.2/docs/tooldocs/solaris/javadoc.html#unprocessed
+                     */
+                    if ( currentFile.contains( "doc-files" ) )
+                    {
+                        continue;
+                    }
+            
+                    returnList.add( currentSourcePath.resolve( currentFile ).toAbsolutePath().toString() );
+                }
+            }
+        }
+        return returnList;
+    }
 
     /**
      * Generate an <code>options</code> file for all options and arguments and add the <code>@options</code> in the
@@ -4822,37 +4905,86 @@ public abstract class AbstractJavadocMojo
             addArgIf( arguments, breakiterator, "-breakiterator", SINCE_JAVADOC_1_5 );
         }
         
-        Collection<String> reactorKeys = new HashSet<>( session.getProjects().size() );
+        Map<String, MavenProject> reactorKeys = new HashMap<>( session.getProjects().size() );
         for ( MavenProject reactorProject : session.getProjects() )
         {
-            reactorKeys.add( ArtifactUtils.versionlessKey( reactorProject.getGroupId(),
-                                                           reactorProject.getArtifactId() ) );
+            reactorKeys.put( ArtifactUtils.versionlessKey( reactorProject.getGroupId(),
+                                                           reactorProject.getArtifactId() ), reactorProject );
         }
         
         final LocationManager locationManager = new LocationManager();
         
         Collection<String> additionalModules = new ArrayList<>();
         
+        boolean containsModuleDescriptor = false;
+        for ( Collection<Path> sourcepaths : allSourcePaths.values() )
+        {
+            if ( findMainDescriptor( sourcepaths ) != null )
+            {
+                containsModuleDescriptor = true;
+            }
+        }
+        
+        
         Path moduleSourceDir = null;
-        if ( allSourcePaths.size() > 1 )
+        if ( containsModuleDescriptor && allSourcePaths.size() > 1 )
         {
             for ( Map.Entry<String, Collection<Path>> projectSourcepaths : allSourcePaths.entrySet() )
             {
-                if ( reactorKeys.contains( projectSourcepaths.getKey() ) )
+                MavenProject aggregatorProject = reactorKeys.get( projectSourcepaths.getKey() );
+                if ( aggregatorProject != null )
                 {
-                    File moduleDescriptor = findMainDescriptor( projectSourcepaths.getValue() );
-                    if ( moduleDescriptor != null )
+                    String moduleName = null;
+                    
+                    // Prefer jar over outputDirectory, since it may may contain an automatic module name
+                    File artifactFile = getArtifactFile( aggregatorProject );
+                    if ( artifactFile != null ) 
+                    {
+                        ResolvePathRequest<File> request = ResolvePathRequest.ofFile( artifactFile );
+                        try
+                        {
+                            moduleName = locationManager.resolvePath( request ).getModuleDescriptor().name();
+                        }
+                        catch ( RuntimeException e )
+                        {
+                            // most likely an invalid module name based on filename
+                            if ( !"java.lang.module.FindException".equals( e.getClass().getName() ) )
+                            {
+                                throw e;
+                            }
+                        }
+                        catch ( IOException e )
+                        {
+                            throw new MavenReportException( e.getMessage(), e );
+                        }
+                    }
+                    else
+                    {
+                        File moduleDescriptor = findMainDescriptor( projectSourcepaths.getValue() );
+                        
+                        if ( moduleDescriptor != null )
+                        {
+                            ResolvePathsRequest<File> request =
+                                            ResolvePathsRequest.ofFiles( Collections.<File>emptyList() )
+                                                               .setMainModuleDescriptor( moduleDescriptor );
+
+                            try
+                            {
+                                moduleName =
+                                    locationManager.resolvePaths( request ).getMainModuleDescriptor().name();
+                            }
+                            catch ( IOException e )
+                            {
+                                throw new MavenReportException( e.getMessage(), e );
+                            }
+                        }
+                    }
+                    if ( moduleName != null )
                     {
                         moduleSourceDir = javadocOutputDirectory.toPath().resolve( "src" );
                         try
                         {
                             moduleSourceDir = Files.createDirectories( moduleSourceDir );
-                            ResolvePathsRequest<File> request =
-                                ResolvePathsRequest.withFiles( Collections.<File>emptyList() )
-                                                   .setMainModuleDescriptor( moduleDescriptor );
-                            
-                            String moduleName =
-                                locationManager.resolvePaths( request ).getMainModuleDescriptor().name();
                             
                             additionalModules.add( moduleName );
                             
@@ -4896,7 +5028,7 @@ public abstract class AbstractJavadocMojo
         if ( javadocRuntimeVersion.isAtLeast( "9" ) && ( isAggregator() || mainDescriptor != null ) && !isTest() )
         {
             ResolvePathsRequest<File> request =
-                ResolvePathsRequest.withFiles( getPathElements() ).setAdditionalModules( additionalModules );
+                ResolvePathsRequest.ofFiles( getPathElements() ).setAdditionalModules( additionalModules );
             
             if ( mainDescriptor != null )
             {
