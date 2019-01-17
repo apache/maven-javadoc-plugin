@@ -3669,7 +3669,6 @@ public abstract class AbstractJavadocMojo
 
         if ( StringUtils.isNotEmpty( activeProxy.getHost() ) )
         {
-            cmd.createArg().setValue( "-J-D" + protocol + "proxySet=true" );
             cmd.createArg().setValue( "-J-D" + protocol + "proxyHost=" + activeProxy.getHost() );
 
             if ( activeProxy.getPort() > 0 )
@@ -3683,13 +3682,14 @@ public abstract class AbstractJavadocMojo
                     "-J-D" + protocol + "nonProxyHosts=\"" + activeProxy.getNonProxyHosts() + "\"" );
             }
 
-            if ( StringUtils.isNotEmpty( activeProxy.getUsername() ) )
+            if ( protocol.equalsIgnoreCase( "http." ) )
             {
-                cmd.createArg().setValue( "-J-Dhttp.proxyUser=\"" + activeProxy.getUsername() + "\"" );
+                // use the same proxy for the https protocol as well
+                cmd.createArg().setValue( "-J-Dhttps.proxyHost=" + activeProxy.getHost() );
 
-                if ( StringUtils.isNotEmpty( activeProxy.getPassword() ) )
+                if ( activeProxy.getPort() > 0 )
                 {
-                    cmd.createArg().setValue( "-J-Dhttp.proxyPassword=\"" + activeProxy.getPassword() + "\"" );
+                    cmd.createArg().setValue( "-J-Dhttps.proxyPort=" + activeProxy.getPort() );
                 }
             }
         }
