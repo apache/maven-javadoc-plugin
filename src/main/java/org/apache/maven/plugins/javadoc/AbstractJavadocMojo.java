@@ -893,6 +893,15 @@ public abstract class AbstractJavadocMojo
      */
     @Parameter( property = "source" )
     private String source;
+    
+    /**
+     * Provide source compatibility with specified release
+     * 
+     * @since JDK 9
+     * @since 3.1.0
+     */
+    @Parameter( defaultValue = "${maven.compiler.release}" )
+    private String release;
 
     /**
      * Specifies the source paths where the subpackages are located. The <code>sourcepath</code> can contain
@@ -5107,7 +5116,15 @@ public abstract class AbstractJavadocMojo
             addArgIf( arguments, quiet, "-quiet", SINCE_JAVADOC_1_5 );
         }
 
-        addArgIfNotEmpty( arguments, "-source", JavadocUtil.quotedArgument( source ), SINCE_JAVADOC_1_4 );
+        if ( release != null )
+        {
+            arguments.add( "--release" );
+            arguments.add( release );
+        }
+        else
+        {
+            addArgIfNotEmpty( arguments, "-source", JavadocUtil.quotedArgument( source ), SINCE_JAVADOC_1_4 );
+        }
 
         if ( ( StringUtils.isEmpty( sourcepath ) ) && ( StringUtils.isNotEmpty( subpackages ) ) )
         {
