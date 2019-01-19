@@ -237,7 +237,8 @@ public class JavadocReportTest
         assertTrue( generatedFile.exists() );
 
         // only test when URL can be reached
-        String url = JavadocReport.DEFAULT_JAVA_API_LINKS.getProperty( "api_9" );
+        
+        String url = mojo.getDefaultJavadocApiLink().getUrl();
         HttpURLConnection connection = (HttpURLConnection) new URL( url ).openConnection();
         connection.setRequestMethod( "HEAD" );
         if ( connection.getResponseCode() == 200 )

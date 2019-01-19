@@ -132,8 +132,6 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.apache.maven.plugins.javadoc.JavadocUtil.toRelative;
 import static org.apache.maven.plugins.javadoc.JavadocUtil.toList;
@@ -169,43 +167,6 @@ public abstract class AbstractJavadocMojo
      * @since 2.7
      */
     public static final String TEST_JAVADOC_RESOURCES_ATTACHMENT_CLASSIFIER = "test-javadoc-resources";
-
-    /**
-     * The default Javadoc API urls according the
-     * <a href="http://www.oracle.com/technetwork/java/javase/documentation/api-jsp-136079.html">Sun API
-     * Specifications</a>:
-     * <pre>
-     * &lt;javaApiLinks&gt;
-     *   &lt;property&gt;
-     *     &lt;name&gt;api_1.3&lt;/name&gt;
-     *     &lt;value&gt;http://docs.oracle.com/javase/1.3/docs/api/&lt;/value&gt;
-     *   &lt;/property&gt;
-     *   &lt;property&gt;
-     *     &lt;name&gt;api_1.4&lt;/name&gt;
-     *     &lt;value&gt;http://docs.oracle.com/javase/1.4.2/docs/api/&lt;/value&gt;
-     *   &lt;/property&gt;
-     *   &lt;property&gt;
-     *     &lt;name&gt;api_1.5&lt;/name&gt;
-     *     &lt;value&gt;http://docs.oracle.com/javase/1.5.0/docs/api/&lt;/value&gt;
-     *   &lt;/property&gt;
-     *   &lt;property&gt;
-     *     &lt;name&gt;api_1.6&lt;/name&gt;
-     *     &lt;value&gt;http://docs.oracle.com/javase/6/docs/api/&lt;/value&gt;
-     *   &lt;/property&gt;
-     *   &lt;property&gt;
-     *     &lt;name&gt;api_1.7&lt;/name&gt;
-     *     &lt;value&gt;http://docs.oracle.com/javase/7/docs/api/&lt;/value&gt;
-     *   &lt;/property&gt;
-     *   &lt;property&gt;
-     *     &lt;name&gt;api_1.8&lt;/name&gt;
-     *     &lt;value&gt;http://docs.oracle.com/javase/8/docs/api/&lt;/value&gt;
-     *   &lt;/property&gt;
-     * &lt;/javaApiLinks&gt;
-     * </pre>
-     *
-     * @since 2.6
-     */
-    public static final Properties DEFAULT_JAVA_API_LINKS = new Properties();
 
     /**
      * The Javadoc script file name when <code>debug</code> parameter is on, i.e. javadoc.bat or javadoc.sh
@@ -606,15 +567,19 @@ public abstract class AbstractJavadocMojo
     private boolean detectJavaApiLink;
 
     /**
-     * Use this parameter <b>only</b> if the <a href="http://java.sun.com/reference/api/index.html">Sun Javadoc API</a>
-     * urls have been changed or to use custom urls for Javadoc API url.
-     * <br/>
-     * See
-     * <a href="./apidocs/org/apache/maven/plugin/javadoc/AbstractJavadocMojo.html#DEFAULT_JAVA_API_LINKS">Javadoc</a>
-     * for the default values.
-     * <br/>
-     *
-     * @see #DEFAULT_JAVA_API_LINKS
+     * Use this parameter <b>only</b> if if you want to override the default URLs.
+     * 
+     * The key should match {@code api_x}, where {@code x} matches the Java version.  
+     * 
+     *  For example:
+     *  <dl>
+     *   <dt>api_1.5</dt>
+     *   <dd>https://docs.oracle.com/javase/1.5.0/docs/api/</dd>
+     *   <dt>api_1.8<dt>
+     *   <dd>https://docs.oracle.com/javase/8/docs/api/</dd>
+     *   <dt>api_9</dd>
+     *   <dd>https://docs.oracle.com/javase/9/docs/api/</dd>
+     * </dl>
      * @since 2.6
      */
     @Parameter( property = "javaApiLinks" )
@@ -1763,21 +1728,6 @@ public abstract class AbstractJavadocMojo
      */
     @Parameter
     private Map<String, String> jdkToolchain;
-
-    // ----------------------------------------------------------------------
-    // static
-    // ----------------------------------------------------------------------
-
-    static
-    {
-        DEFAULT_JAVA_API_LINKS.put( "api_1.5", "https://docs.oracle.com/javase/1.5.0/docs/api/" );
-        DEFAULT_JAVA_API_LINKS.put( "api_1.6", "https://docs.oracle.com/javase/6/docs/api/" );
-        DEFAULT_JAVA_API_LINKS.put( "api_1.7", "https://docs.oracle.com/javase/7/docs/api/" );
-        DEFAULT_JAVA_API_LINKS.put( "api_1.8", "https://docs.oracle.com/javase/8/docs/api/" );
-        DEFAULT_JAVA_API_LINKS.put( "api_9",   "https://docs.oracle.com/javase/9/docs/api/" );
-        DEFAULT_JAVA_API_LINKS.put( "api_10",  "https://docs.oracle.com/javase/10/docs/api/" );
-        DEFAULT_JAVA_API_LINKS.put( "api_11",  "https://docs.oracle.com/en/java/javase/11/docs/api/" );
-    }
 
     // ----------------------------------------------------------------------
     // protected methods
@@ -4861,12 +4811,6 @@ public abstract class AbstractJavadocMojo
         {
             throw new MavenReportException( "Option <stylesheet/> supports only \"maven\" or \"java\" value." );
         }
-
-        // default java api links
-        if ( javaApiLinks == null || javaApiLinks.size() == 0 )
-        {
-            javaApiLinks = DEFAULT_JAVA_API_LINKS;
-        }
     }
 
     /**
@@ -6054,53 +5998,72 @@ public abstract class AbstractJavadocMojo
      * @see <a href="http://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#source">source parameter</a>
      * @since 2.6
      */
-    private OfflineLink getDefaultJavadocApiLink()
+    protected final OfflineLink getDefaultJavadocApiLink()
     {
         if ( !detectJavaApiLink )
         {
             return null;
         }
 
-        final String pluginId = "org.apache.maven.plugins:maven-compiler-plugin";
-        JavaVersion sourceVersion = javadocRuntimeVersion;
-        String sourceConfigured = getPluginParameter( project, pluginId, "source" );
-        if ( sourceConfigured != null )
+        final JavaVersion javaApiversion;
+        if ( release != null )
         {
-            try
-            {
-                sourceVersion = JavaVersion.parse( sourceConfigured );
-            }
-            catch ( NumberFormatException e )
-            {
-                getLog().debug(
-                    "NumberFormatException for the source parameter in the maven-compiler-plugin. " + "Ignored it", e );
-            }
+            javaApiversion = JavaVersion.parse( release );
         }
         else
         {
-            getLog().debug( "No maven-compiler-plugin defined in ${build.plugins} or in "
-                                + "${project.build.pluginManagement} for the " + project.getId()
-                                + ". Added Javadoc API link according the javadoc executable version i.e.: "
-                                + javadocRuntimeVersion );
+            final String pluginId = "org.apache.maven.plugins:maven-compiler-plugin";
+            String sourceConfigured = getPluginParameter( project, pluginId, "source" );
+            if ( sourceConfigured != null )
+            {
+                javaApiversion = JavaVersion.parse( sourceConfigured );
+            }
+            else
+            {
+                getLog().debug( "No maven-compiler-plugin defined in ${build.plugins} or in "
+                                    + "${project.build.pluginManagement} for the " + project.getId()
+                                    + ". Added Javadoc API link according the javadoc executable version i.e.: "
+                                    + javadocRuntimeVersion );
+                
+                javaApiversion = javadocRuntimeVersion;
+            }
         }
-
-        String apiVersion;
         
-        Matcher apiMatcher = Pattern.compile( "(1\\.\\d|\\d\\d*)" ).matcher( sourceVersion.toString() );
-        if ( apiMatcher.find() )
+        final String javaApiKey;
+        if ( javaApiversion.asMajor().isAtLeast( "9" ) )
         {
-            apiVersion = apiMatcher.group( 1 );
+            javaApiKey = "api_" + javaApiversion.asMajor();
         }
         else
         {
-            apiVersion = null;
+            javaApiKey = "api_1." + javaApiversion.asMajor().toString().charAt( 0 );
         }
-
-        String javaApiLink = javaApiLinks.getProperty( "api_" + apiVersion, null );
-
+        
+        final String javaApiLink;
+        if ( javaApiLinks != null && javaApiLinks.containsKey( javaApiKey ) )
+        {
+            javaApiLink = javaApiLinks.getProperty( javaApiKey );  
+        }
+        else if ( javaApiversion.isAtLeast( "11" ) )
+        {
+            javaApiLink = String.format( "https://docs.oracle.com/en/java/javase/%s/docs/api/", javaApiversion );
+        }
+        else if ( javaApiversion.asMajor().isAtLeast( "6" ) )
+        {
+            javaApiLink = String.format( "https://docs.oracle.com/javase/%s/docs/api/", javaApiversion.asMajor() );
+        }
+        else if ( javaApiversion.isAtLeast( "1.5" ) )
+        {
+            javaApiLink = "https://docs.oracle.com/javase/1.5.0/docs/api/";
+        }
+        else
+        {
+            javaApiLink = null;
+        }
+        
         if ( getLog().isDebugEnabled() )
         {
-            if ( StringUtils.isNotEmpty( javaApiLink ) )
+            if ( javaApiLink != null )
             {
                 getLog().debug( "Found Java API link: " + javaApiLink );
             }
@@ -6117,15 +6080,20 @@ public abstract class AbstractJavadocMojo
 
         final Path javaApiListFile;
         final String resourceName;
-        if ( JavaVersion.parse( apiVersion ).isAtLeast( "10" ) )
+        if ( javaApiversion.isAtLeast( "10" ) )
         {
             javaApiListFile = getJavadocOptionsFile().getParentFile().toPath().resolve( "element-list" );
-            resourceName = "java-api-element-list-" + apiVersion;
+            resourceName = "java-api-element-list-" + javaApiversion.toString().substring( 0, 2 );
+        }
+        else if ( javaApiversion.asMajor().isAtLeast( "9" ) )
+        {
+            javaApiListFile = getJavadocOptionsFile().getParentFile().toPath().resolve( "package-list" );
+            resourceName = "java-api-package-list-9";
         }
         else
         {
             javaApiListFile = getJavadocOptionsFile().getParentFile().toPath().resolve( "package-list" );
-            resourceName = "java-api-package-list-" + apiVersion;
+            resourceName = "java-api-package-list-1." + javaApiversion.asMajor().toString().charAt( 0 );
         }
 
         OfflineLink link = new OfflineLink();
@@ -6139,7 +6107,7 @@ public abstract class AbstractJavadocMojo
         }
         catch ( IOException ioe )
         {
-            logError( "Can't get java-api-package-list-" + apiVersion + ": " + ioe.getMessage(), ioe );
+            logError( "Can't get " + resourceName + ": " + ioe.getMessage(), ioe );
             return null;
         }
 
