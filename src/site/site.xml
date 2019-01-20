@@ -55,6 +55,7 @@ under the License.
       <item name="Fixing Javadoc Comments" href="/examples/fix-javadocs.html"/>
       <item name="Adding additional dependencies" href="/examples/additional-dependencies.html"/>
       <item name="Generate Javadoc without duplicate execution of phase generate-sources" href="/examples/javadoc-nofork.html"/>
+      <item name="Generate aggregate Javadoc without duplicate execution of phase compile" href="/examples/aggregate-nofork.html"/>
     </menu>
   </body>
 </project>

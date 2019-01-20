@@ -49,7 +49,7 @@ javadoc.exe(or .sh) @options @packages | @argfile
 
 * Goals Overview
 
-   The Javadoc Plugin has 14 goals:
+   The Javadoc Plugin has 16 goals:
 
    * {{{./javadoc-mojo.html}javadoc:javadoc}} generates the Javadoc files for the project. It executes the standard
      Javadoc tool and supports the parameters used by the tool.
@@ -58,12 +58,12 @@ javadoc.exe(or .sh) @options @packages | @argfile
      the standard Javadoc tool and supports the parameters used by the tool.
 
    * {{{./javadoc-no-fork-mojo.html}javadoc:javadoc-no-fork}} generates the Javadoc files for the project.
-     It executes the standard Javadoc tool and supports the parameters used by the tool without forking the 
+     It executes the standard Javadoc tool and supports the parameters used by the tool without forking the
      <<<generate-sources>>> phase again. Note that this goal does require generation of test sources before site generation, e.g.
      by invoking <<<mvn clean deploy site>>>.
 
-   * {{{./test-javadoc-no-fork-mojo.html}javadoc:test-javadoc-no-fork}} generates the test Javadoc files for the project. 
-     It executes the standard Javadoc tool and supports the parameters used by the tool without forking the 
+   * {{{./test-javadoc-no-fork-mojo.html}javadoc:test-javadoc-no-fork}} generates the test Javadoc files for the project.
+     It executes the standard Javadoc tool and supports the parameters used by the tool without forking the
      <<<generate-test-sources>>> phase again. Note that this goal does require generation of test sources before site generation,
      e.g. by invoking <<<mvn clean deploy site>>>.
 
@@ -72,6 +72,16 @@ javadoc.exe(or .sh) @options @packages | @argfile
 
    * {{{./test-aggregate-mojo.html}javadoc:test-aggregate}} generates the test Javadoc files for an aggregator project.
      It executes the standard Javadoc tool and supports the parameters used by the tool.
+
+   * {{{./aggregate-no-fork-mojo.html}javadoc:aggregate-no-fork}} generates the Javadoc files for an aggregator project.
+     It executes the standard Javadoc tool and supports the parameters used by the tool without forking the <<compile>>>
+     phase again. Note that this goal does require generation of class files before site generation, e.g. by invoking
+     <<<mvn compile>>> or <<<mvn install>>>.
+
+   * {{{./test-aggregate-no-fork-mojo.html}javadoc:test-aggregate}} generates the test Javadoc files for an aggregator
+     project. It executes the standard Javadoc tool and supports the parameters used by the tool without forking the
+     <<<compile>>> phase again. Note that this goal does require generation of test class files before site generation,
+     e.g. by invoking <<<mvn test-compile>>> or <<<mvn install>>>.
 
    * {{{./jar-mojo.html}javadoc:jar}} creates an archive file of the generated Javadocs. It is used during
      the release process to create the Javadoc artifact for the project's release.  This artifact is uploaded
@@ -154,5 +164,7 @@ javadoc.exe(or .sh) @options @packages | @argfile
    * {{{./examples/fix-javadocs.html}Fixing Javadoc Comments}}
 
    * {{{./examples/javadoc-nofork.html}Generate Javadoc without duplicate execution of phase generate-sources}}
+
+   * {{{./examples/aggregate-nofork.html}Generate aggregate Javadocs without execution of phase compile}}
 
    []

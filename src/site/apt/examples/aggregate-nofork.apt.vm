@@ -1,9 +1,5 @@
  ------
- Generate Javadoc without duplicate execution of phase generate-sources.
- ------
- Mirko Friedenhagen
- ------
- 2014-03-19
+ Generate aggregate Javadoc without duplicate execution of phase compile.
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one
@@ -26,21 +22,19 @@
 ~~ NOTE: For help with the syntax of this file, see:
 ~~ http://maven.apache.org/doxia/references/apt-format.html
 
-Generate Javadoc without duplicate execution of phase generate-sources.
+Generate aggregate Javadoc without duplicate execution of phase compile.
 
- * The standard goals <<<javadoc>>> and <<<test-javadoc>>> invoke separate lifecyles
- <<<generate-sources>>> and <<<generate-test-sources>>>.
+ * The standard goals <<<aggregate>>> and <<<test-aggregate>>> invoke separate lifecyles
+ <<<compile>>> and <<<test-compile>>>.
 
  * In a CI environment you now might execute something like <<<mvn clean deploy site site-deploy>>>.
 
- * During <<<site>>> build the standard reports will trigger <<<generate-sources>>> or
- <<<generate-test-sources>>> again, depending on your build this may take some time, because
+ * During <<<site>>> build the standard reports will trigger <<<compile>>> or
+ <<<test-compile>>> again, depending on your build this may take some time, because
  stuff like <<<enforcer>>> or generating stubs from a WDSL will be invoked again, which may lead
  to longer build times.
 
- * See {{{https://issues.apache.org/jira/browse/MJAVADOC-369}MJAVADOC-369}} as well.
-
- * As of version 2.10 two new reports are defined, <<<javadoc-no-fork>>> and <<<test-javadoc-no-fork>>>
+ * As of version 3.0.1 two new reports are defined, <<<aggregate-no-fork>>> and <<<test-aggregate-no-fork>>>
  which will not trigger above phases a second time.
 
  * Configure this in your <<<reporting>>> section as follows:
@@ -58,8 +52,8 @@ Generate Javadoc without duplicate execution of phase generate-sources.
         <reportSets>
           <reportSet>
             <reports>
-              <report>javadoc-no-fork</report>
-              <report>test-javadoc-no-fork</report>
+              <report>aggregate-no-fork</report>
+              <report>test-aggregate-no-fork</report>
             </reports>
           </reportSet>
         </reportSets>
@@ -69,6 +63,3 @@ Generate Javadoc without duplicate execution of phase generate-sources.
   ...
 </project>
 +-----+
-
- <<Note>>: These reports may not be used for aggregate reports. For those, see the example of
-     {{{./aggregate-nofork.html}generating aggregate Javadocs without execution of phase compile}}.
