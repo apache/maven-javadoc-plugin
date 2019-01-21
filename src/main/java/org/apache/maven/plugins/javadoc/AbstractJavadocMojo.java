@@ -6099,16 +6099,20 @@ public abstract class AbstractJavadocMojo
         OfflineLink link = new OfflineLink();
         link.setLocation( javaApiListFile.getParent().toAbsolutePath().toString() );
         link.setUrl( javaApiLink );
-
-        try ( InputStream in = this.getClass().getResourceAsStream( resourceName ) )
+        
+        InputStream in = this.getClass().getResourceAsStream( resourceName );
+        if ( in != null )
         {
-            // TODO only copy when changed
-            Files.copy( in, javaApiListFile, StandardCopyOption.REPLACE_EXISTING );
-        }
-        catch ( IOException ioe )
-        {
-            logError( "Can't get " + resourceName + ": " + ioe.getMessage(), ioe );
-            return null;
+            try ( InputStream closableIS = in )
+            {
+                // TODO only copy when changed
+                Files.copy( closableIS, javaApiListFile, StandardCopyOption.REPLACE_EXISTING );
+            }
+            catch ( IOException ioe )
+            {
+                logError( "Can't get " + resourceName + ": " + ioe.getMessage(), ioe );
+                return null;
+            }
         }
 
         return link;

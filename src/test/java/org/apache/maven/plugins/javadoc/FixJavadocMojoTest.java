@@ -145,7 +145,7 @@ public class FixJavadocMojoTest
         throws Exception
     {
         // Should be an assumption, but not supported by TestCase
-        // Java 5 not supported by Java9 anymore
+        // Java 5 not supported by Java 9 anymore
         if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast( "9" ) )
         {
             return;
@@ -162,6 +162,13 @@ public class FixJavadocMojoTest
     public void testFixJdk6()
         throws Exception
     {
+        // Should be an assumption, but not supported by TestCase
+        // Java 6 not supported by Java 12 anymore
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast( "12" ) )
+        {
+            return;
+        }
+        
         File testPomBasedir = new File( getBasedir(), "target/test/unit/fix-jdk6-test" );
         executeMojoAndTest( testPomBasedir, new String[] { "ClassWithJavadoc.java", "InterfaceWithJavadoc.java" } );
     }
@@ -643,8 +650,13 @@ public class FixJavadocMojoTest
         File invokerLogFile = FileUtils.createTempFile( "FixJavadocMojoTest", ".txt", invokerDir );
         
         Properties properties = new Properties();
-        
-        if( JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast( "9" ) )
+
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast( "12" ) )
+        {
+            properties.put( "maven.compiler.source", "1.7" );
+            properties.put( "maven.compiler.target", "1.7" );
+        }
+        else if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast( "9" ) )
         {
             properties.put( "maven.compiler.source", "1.6" );
             properties.put( "maven.compiler.target", "1.6" );

@@ -394,7 +394,14 @@ public class JavadocReportTest
         assertTrue( str.toUpperCase().contains( "SAMPLE BOTTOM CONTENT" ) );
 
         // offlineLinks
-        assertTrue( str.toLowerCase().contains( "href=\"http://java.sun.com/j2se/1.4.2/docs/api/java/lang/string.html" ) );
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "12" ) )
+        {
+            assertTrue( str.toLowerCase().contains( "href=\"http://java.sun.com/j2se/1.4.2/docs/api/java/lang/string.html" ) );
+        }
+        else
+        {
+            assertTrue( str.toLowerCase().contains( "href=\"http://java.sun.com/j2se/1.4.2/docs/api/java.base/java/lang/string.html" ) );
+        }
 
         // header
         assertTrue( str.toUpperCase().contains( "MAVEN JAVADOC PLUGIN TEST" ) );
@@ -734,7 +741,7 @@ public class JavadocReportTest
         assertTrue( content.contains( "<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">" ) );
 
         JavaVersion javadocVersion = (JavaVersion) getVariableValueFromObject( mojo, "javadocRuntimeVersion" );
-        if( javadocVersion.isAtLeast( "1.8" ) && javadocVersion.isBefore( "12" ) )
+        if( javadocVersion.isAtLeast( "1.8" ) && javadocVersion.isBefore( "13" ) )
         {
             // https://bugs.openjdk.java.net/browse/JDK-8032205
             assertTrue( "Javadoc runtime version: " + javadocVersion
@@ -849,6 +856,13 @@ public class JavadocReportTest
     public void testJdk6()
         throws Exception
     {
+        // Should be an assumption, but not supported by TestCase
+        // Java 6 not supported by Java 12 anymore
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast( "12" ) )
+        {
+            return;
+        }
+        
         File testPom = new File( unit, "jdk6-test/jdk6-test-plugin-config.xml" );
         JavadocReport mojo = lookupMojo( testPom );
         mojo.execute();
