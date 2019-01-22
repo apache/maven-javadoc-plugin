@@ -48,14 +48,7 @@ Project
 
 +-----+
 
-* Using The \<aggregate/\> Parameter (<<deprecated>>)
-
- <<Note>>: {{{../javadoc-mojo.html#aggregate}\<aggregate/\>}} parameter is <<deprecated>> since 2.5. Please use the
- <<<aggregate>>> goal instead of.
-
- The {{{../javadoc-mojo.html#aggregate}\<aggregate/\>}} parameter can be used to generate javadocs for multi-module
- projects. It gives the option to generate one javadoc report for the entire project (all modules) or generate one 
- javadoc report for each module. Since 3.1.0 the <<<aggregate>>> has changed a little bit. It'll generate aggregated 
+ Since 3.1.0 the <<<aggregate>>> has changed a little bit. It'll generate aggregated 
  reports at every level.
  To get only an aggregated project at root level, you need to configure the pom like:
  
@@ -87,34 +80,6 @@ Project
     </plugins>
     ...
   </reporting>
-  ...
-</project>
-+-----+
-
- When you execute javadoc:javadoc from Project directory with aggregate set to <<true>>, a javadoc report will be created
- in the target directory of Project with all the javadocs of Project's modules included. If aggregate is
- set to <<false>> (default), a javadoc report for Module1 will be generated in the target directory of Module1, a javadoc
- report for Module2 will be generated in the target directory of Module2, and a javadoc report for Module3 will be
- generated in the target directory of Module3.
-
-+-----+
-<project>
-  ...
-  <reporting> (or <build>)
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${project.version}</version>
-        <configuration>
-          ...
-          <aggregate>true</aggregate>
-          ...
-        </configuration>
-      </plugin>
-    </plugins>
-    ...
-  </reporting> (or </build>)
   ...
 </project>
 +-----+
@@ -205,6 +170,28 @@ Project
   </reporting>
   ...
 </project>
++-----+
+
+* Aggregating Javadocs For Modularized projects
+
+  Since Java 9 it is possible to add module descriptors to your projects, which can have an impact on the generated reports.
+  Be aware that is not possible to have a mixture of named and unnamed modules. Ideally every Maven module has a Java module descriptor,
+  but this is not always possible, e.g. due to split packages of dependencies.
+  In such case you must have a jar containing a <<<META-INF/MANIFEST.MF>>> with an entry for the <<<Automatic-Module-Name>>>.
+  In other words: ensure to call <<<package javadoc:aggregate>>>, because the manifest file is only being read from jar, not from folder.
+  
++-----+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <configuration>
+            <archive>
+              <manifestEntries>
+                <Automatic-Module-Name>com.foo.bar</Automatic-Module-Name>
+              </manifestEntries>
+            </archive>
+          </configuration>
+        </plugin>  
 +-----+
 
  The Javadoc plugin contains several <<<aggregate>>> goals to be use with an aggregator project. Here is the full list

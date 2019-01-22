@@ -2234,32 +2234,35 @@ public abstract class AbstractJavadocMojo
 
         if ( StringUtils.isEmpty( sourcepath ) )
         {
-            
-            Set<Path> sourcePaths =
-                new LinkedHashSet<>( JavadocUtil.pruneDirs( project, getProjectSourceRoots( project ) ) );
-
-            if ( project.getExecutionProject() != null )
+            if ( !"pom".equals( project.getPackaging()  ) )
             {
-                sourcePaths.addAll( JavadocUtil.pruneDirs( project, getExecutionProjectSourceRoots( project ) ) );
-            }
+                Set<Path> sourcePaths =
+                    new LinkedHashSet<>( JavadocUtil.pruneDirs( project, getProjectSourceRoots( project ) ) );
 
-            /*
-             * Should be after the source path (i.e. -sourcepath '.../src/main/java;.../src/main/javadoc') and
-             * *not* the opposite. If not, the javadoc tool always copies doc files, even if -docfilessubdirs is
-             * not setted.
-             */
-            if ( getJavadocDirectory() != null )
-            {
-                File javadocDir = getJavadocDirectory();
-                if ( javadocDir.exists() && javadocDir.isDirectory() )
+                if ( project.getExecutionProject() != null )
                 {
-                    Collection<Path> l = JavadocUtil.pruneDirs( project, Collections.singletonList(
-                        getJavadocDirectory().getAbsolutePath() ) );
-                    sourcePaths.addAll( l );
+                    sourcePaths.addAll( JavadocUtil.pruneDirs( project, getExecutionProjectSourceRoots( project ) ) );
                 }
+
+                /*
+                 * Should be after the source path (i.e. -sourcepath '.../src/main/java;.../src/main/javadoc') and *not*
+                 * the opposite. If not, the javadoc tool always copies doc files, even if -docfilessubdirs is not
+                 * setted.
+                 */
+                if ( getJavadocDirectory() != null )
+                {
+                    File javadocDir = getJavadocDirectory();
+                    if ( javadocDir.exists() && javadocDir.isDirectory() )
+                    {
+                        Collection<Path> l =
+                            JavadocUtil.pruneDirs( project,
+                                               Collections.singletonList( getJavadocDirectory().getAbsolutePath() ) );
+                        sourcePaths.addAll( l );
+                    }
+                }
+                mappedSourcePaths.put( ArtifactUtils.versionlessKey( project.getGroupId(), project.getArtifactId() ),
+                                       sourcePaths );               
             }
-            mappedSourcePaths.put( ArtifactUtils.versionlessKey( project.getGroupId(), project.getArtifactId() ),
-                                   sourcePaths );
             
             if ( includeDependencySources )
             {
@@ -2356,7 +2359,7 @@ public abstract class AbstractJavadocMojo
             return Collections.singleton( aggregatedProject );
         }
 
-        List<Path> modulePaths = new LinkedList<Path>();
+        List<Path> modulePaths = new LinkedList<>();
         for ( String module :  aggregatedProject.getModules() )
         {
             modulePaths.add( new File( aggregatedProject.getBasedir(), module ).toPath() );
@@ -4875,13 +4878,14 @@ public abstract class AbstractJavadocMojo
             if ( findMainDescriptor( sourcepaths ) != null )
             {
                 containsModuleDescriptor = true;
+                break;
             }
         }
-        
         
         Path moduleSourceDir = null;
         if ( containsModuleDescriptor && allSourcePaths.size() > 1 )
         {
+            Collection<String> unnamedProjects = new ArrayList<>();
             for ( Map.Entry<String, Collection<Path>> projectSourcepaths : allSourcePaths.entrySet() )
             {
                 MavenProject aggregatorProject = reactorKeys.get( projectSourcepaths.getKey() );
@@ -4932,6 +4936,7 @@ public abstract class AbstractJavadocMojo
                             }
                         }
                     }
+
                     if ( moduleName != null )
                     {
                         moduleSourceDir = javadocOutputDirectory.toPath().resolve( "src" );
@@ -4957,16 +4962,27 @@ public abstract class AbstractJavadocMojo
                     }
                     else
                     {
-                        // todo
-                        getLog().error( "no module descriptor for " + projectSourcepaths.getKey() );
+                        unnamedProjects.add( projectSourcepaths.getKey() );
                     }
                 }
                 else
                 {
                     // todo
                     getLog().error( "no reactor project: " + projectSourcepaths.getKey() );
-
                 }
+            }
+            
+            if ( !unnamedProjects.isEmpty() )
+            {
+                getLog().error( "Creating an aggregated report for both named and unnamed modules is not possible." );
+                getLog().error( "Ensure that every module has a module descriptor or is a jar with a MANIFEST.MF "
+                    + "containing an Automatic-Module-Name." );
+                getLog().error( "Fix the following projects:" );
+                for ( String unnamedProject : unnamedProjects )
+                {
+                    getLog().error( " - " + unnamedProject );
+                }
+                throw new MavenReportException( "Aggregator report contains named and unnamed modules" );
             }
         }
 
