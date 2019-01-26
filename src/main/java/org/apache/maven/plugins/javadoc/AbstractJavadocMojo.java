@@ -84,7 +84,9 @@ import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.codehaus.plexus.components.io.fileselectors.IncludeExcludeFileSelector;
 import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 import org.codehaus.plexus.languages.java.jpms.LocationManager;
+import org.codehaus.plexus.languages.java.jpms.ModuleNameSource;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathRequest;
+import org.codehaus.plexus.languages.java.jpms.ResolvePathResult;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsRequest;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
@@ -303,6 +305,8 @@ public abstract class AbstractJavadocMojo
     /** */
     @Component
     private ToolchainManager toolchainManager;
+
+    final LocationManager locationManager = new LocationManager();
 
     // ----------------------------------------------------------------------
     // Mojo parameters
@@ -2046,26 +2050,36 @@ public abstract class AbstractJavadocMojo
             }
         }
 
-        List<String> arguments = new ArrayList<>();
+        // ----------------------------------------------------------------------
+        // Wrap Standard doclet Options
+        // ----------------------------------------------------------------------
+        List<String> standardDocletArguments = new ArrayList<>();
+
+        Set<OfflineLink> offlineLinks;
+        if ( StringUtils.isEmpty( doclet ) || useStandardDocletOptions )
+        {
+            offlineLinks = getLinkofflines();
+            addStandardDocletOptions( javadocOutputDirectory, standardDocletArguments, offlineLinks );
+        }
+        else
+        {
+            offlineLinks = Collections.emptySet();
+        }
 
         // ----------------------------------------------------------------------
         // Wrap Javadoc options
         // ----------------------------------------------------------------------
+        List<String> javadocArguments = new ArrayList<>();
 
-        addJavadocOptions( javadocOutputDirectory, arguments, sourcePaths );
-
-        // ----------------------------------------------------------------------
-        // Wrap Standard doclet Options
-        // ----------------------------------------------------------------------
-
-        if ( StringUtils.isEmpty( doclet ) || useStandardDocletOptions )
-        {
-            addStandardDocletOptions( javadocOutputDirectory, arguments );
-        }
+        addJavadocOptions( javadocOutputDirectory, javadocArguments, sourcePaths, offlineLinks );
 
         // ----------------------------------------------------------------------
         // Write options file and include it in the command line
         // ----------------------------------------------------------------------
+
+        List<String> arguments = new ArrayList<>( javadocArguments.size() + standardDocletArguments.size() );
+        arguments.addAll( javadocArguments );
+        arguments.addAll( standardDocletArguments );
 
         if ( arguments.size() > 0 )
         {
@@ -4045,13 +4059,9 @@ public abstract class AbstractJavadocMojo
      * @see #getModulesLinks()
      * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#package-list">package-list spec</a>
      */
-    private void addLinkofflineArguments( List<String> arguments )
+    private void addLinkofflineArguments( List<String> arguments, Set<OfflineLink> offlineLinksList )
         throws MavenReportException
     {
-        Set<OfflineLink> offlineLinksList = collectOfflineLinks();
-
-        offlineLinksList.addAll( getModulesLinks() );
-
         for ( OfflineLink offlineLink : offlineLinksList )
         {
             String url = offlineLink.getUrl();
@@ -4073,6 +4083,15 @@ public abstract class AbstractJavadocMojo
                                       location ), true );
             }
         }
+    }
+
+    private Set<OfflineLink> getLinkofflines() throws MavenReportException
+    {
+        Set<OfflineLink> offlineLinksList = collectOfflineLinks();
+
+        offlineLinksList.addAll( getModulesLinks() );
+
+        return offlineLinksList;
     }
 
     /**
@@ -4390,7 +4409,6 @@ public abstract class AbstractJavadocMojo
         {
             return returnList;
         }
-        LocationManager locationManager = new LocationManager();
 
         for ( Collection<Path> artifactSourcePaths: allSourcePaths.values() )
         {
@@ -4830,7 +4848,8 @@ public abstract class AbstractJavadocMojo
      */
     private void addJavadocOptions( File javadocOutputDirectory,
                                     List<String> arguments,
-                                    Map<String, Collection<Path>> allSourcePaths )
+                                    Map<String, Collection<Path>> allSourcePaths,
+                                    Set<OfflineLink> offlineLinks )
         throws MavenReportException
     {
         Collection<Path> sourcePaths = collect( allSourcePaths.values() );
@@ -4868,8 +4887,6 @@ public abstract class AbstractJavadocMojo
                                                            reactorProject.getArtifactId() ), reactorProject );
         }
         
-        final LocationManager locationManager = new LocationManager();
-        
         Collection<String> additionalModules = new ArrayList<>();
         
         boolean containsModuleDescriptor = false;
@@ -4888,13 +4905,13 @@ public abstract class AbstractJavadocMojo
             Collection<String> unnamedProjects = new ArrayList<>();
             for ( Map.Entry<String, Collection<Path>> projectSourcepaths : allSourcePaths.entrySet() )
             {
-                MavenProject aggregatorProject = reactorKeys.get( projectSourcepaths.getKey() );
-                if ( aggregatorProject != null )
+                MavenProject aggregatedProject = reactorKeys.get( projectSourcepaths.getKey() );
+                if ( aggregatedProject != null )
                 {
                     String moduleName = null;
                     
                     // Prefer jar over outputDirectory, since it may may contain an automatic module name
-                    File artifactFile = getArtifactFile( aggregatorProject );
+                    File artifactFile = getArtifactFile( aggregatedProject );
                     if ( artifactFile != null ) 
                     {
                         ResolvePathRequest<File> request = ResolvePathRequest.ofFile( artifactFile );
@@ -4986,23 +5003,83 @@ public abstract class AbstractJavadocMojo
             }
         }
 
-        Collection<Path> roots = new ArrayList<>();
-        for ( String path : getProjectSourceRoots( getProject() ) )
-        {
-            roots.add( Paths.get( path ) );
-        }
-        
-        File mainDescriptor = findMainDescriptor( roots );
 
-        if ( javadocRuntimeVersion.isAtLeast( "9" ) && ( isAggregator() || mainDescriptor != null ) && !isTest() )
+        ResolvePathResult resolvePathResult = getResolvePathResult( getArtifactFile( getProject() ) );
+
+        // MJAVADOC-506 
+        File moduleDescriptorSource = null;
+        if ( resolvePathResult == null || resolvePathResult.getModuleNameSource() == ModuleNameSource.FILENAME )
+        {
+            Collection<Path> roots = new ArrayList<>();
+            for ( String path : getProjectSourceRoots( getProject() ) )
+            {
+                roots.add( Paths.get( path ) );
+            }
+
+            moduleDescriptorSource = findMainDescriptor( roots );
+        }
+
+        boolean isExplicitModuleName =
+            resolvePathResult != null && ( resolvePathResult.getModuleNameSource() == ModuleNameSource.MODULEDESCRIPTOR
+                || resolvePathResult.getModuleNameSource() == ModuleNameSource.MANIFEST );
+
+        if ( javadocRuntimeVersion.isAtLeast( "9" )
+            && ( isAggregator() || isExplicitModuleName || moduleDescriptorSource != null ) 
+            && !isTest() )
         {
             ResolvePathsRequest<File> request =
-                ResolvePathsRequest.ofFiles( getPathElements() ).setAdditionalModules( additionalModules );
-            
-            if ( mainDescriptor != null )
+                ResolvePathsRequest.ofFiles( getPathElements() );
+
+            if ( moduleDescriptorSource != null )
             {
-                request.setMainModuleDescriptor( mainDescriptor );
+                request.setMainModuleDescriptor( moduleDescriptorSource );
             }
+            else if ( resolvePathResult != null )
+            {
+                request.setModuleDescriptor( resolvePathResult.getModuleDescriptor() );
+            }
+
+            if ( resolvePathResult != null && resolvePathResult.getModuleNameSource() == ModuleNameSource.MANIFEST )
+            {
+                // represent --add-modules
+                List<String> addModules = new ArrayList<>();
+
+                // scan for element-list in offline links
+                for ( OfflineLink link : offlineLinks )
+                {
+                    if ( link.equals( getDefaultJavadocApiLink() ) )
+                    {
+                        continue;
+                    }
+
+                    Path elementList = Paths.get( link.getLocation(), "element-list" ); 
+                    if ( Files.isRegularFile( elementList ) )
+                    {
+                        try
+                        {
+                            List<String> lines = Files.readAllLines( elementList, StandardCharsets.UTF_8 );
+                            
+                            for ( String line : lines )
+                            {
+                                if ( line.startsWith( "module:" ) )
+                                {
+                                    addModules.add( line.substring( "module:".length() ) );
+                                }
+                            }
+                        }
+                        catch ( IOException e )
+                        {
+                            // noop
+                        }
+                    }
+                }
+                additionalModules.addAll( addModules );
+
+                String addModulesLine = StringUtils.join( addModules.iterator(), "," );
+                addArgIfNotEmpty( arguments, "--add-modules", JavadocUtil.quotedPathArgument( addModulesLine ) );
+            }
+
+            request.setAdditionalModules( additionalModules );
             
             try
             {
@@ -5119,6 +5196,31 @@ public abstract class AbstractJavadocMojo
         }
     }
 
+    private ResolvePathResult getResolvePathResult( File artifactFile )
+    {
+        if ( artifactFile == null )
+        {
+            return null;
+        }
+
+        ResolvePathResult resolvePathResult = null;
+        ResolvePathRequest<File> resolvePathRequest = ResolvePathRequest.ofFile( artifactFile );
+        try
+        {
+            resolvePathResult = locationManager.resolvePath( resolvePathRequest );
+        }
+        catch ( IOException | RuntimeException /* e.g java.lang.module.FindException */ e )
+        {
+            Throwable cause = e;
+            while ( cause.getCause() != null )
+            {
+                cause = cause.getCause();
+            }
+            getLog().warn( e.getMessage() );
+        }
+        return resolvePathResult;
+    }
+
     private File findMainDescriptor( Collection<Path> roots )
     {
         for ( Path root : roots )
@@ -5144,7 +5246,9 @@ public abstract class AbstractJavadocMojo
      * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#standard">
      *      http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#standard</a>
      */
-    private void addStandardDocletOptions( File javadocOutputDirectory, List<String> arguments )
+    private void addStandardDocletOptions( File javadocOutputDirectory, 
+                                           List<String> arguments,
+                                           Set<OfflineLink> offlineLinks )
         throws MavenReportException
     {
         validateStandardDocletOptions();
@@ -5191,7 +5295,7 @@ public abstract class AbstractJavadocMojo
 
         addLinkArguments( arguments );
 
-        addLinkofflineArguments( arguments );
+        addLinkofflineArguments( arguments, offlineLinks );
 
         addArgIf( arguments, linksource, "-linksource", SINCE_JAVADOC_1_4 );
 
