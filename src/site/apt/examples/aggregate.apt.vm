@@ -194,6 +194,22 @@ Project
         </plugin>  
 +-----+
 
+  Occasionally, automatic modules need to import named modules. For example,
+
++-----+
+        error: package org.w3c.dom is not visible
+        (package org.w3c.dom is declared in module java.xml, but module foobar does not read it)
++-----+
+
+  can be solved by adding the relevant --add-modules options to the plugin configuration:
+
++-----+
+        <additionalOptions>
+          <option>--add-modules</option>
+          <option>java.xml</option>
+        </additionalOptions>
++-----+
+
  The Javadoc plugin contains several <<<aggregate>>> goals to be use with an aggregator project. Here is the full list
  of all <<<aggregate>>> goals:
 
