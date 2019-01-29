@@ -394,7 +394,7 @@ public class JavadocReportTest
         assertTrue( str.toUpperCase().contains( "SAMPLE BOTTOM CONTENT" ) );
 
         // offlineLinks
-        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "12" ) )
+        if ( JavaVersion.JAVA_VERSION.isBefore( "11.0.2" ) )
         {
             assertTrue( str.toLowerCase().contains( "href=\"http://java.sun.com/j2se/1.4.2/docs/api/java/lang/string.html" ) );
         }

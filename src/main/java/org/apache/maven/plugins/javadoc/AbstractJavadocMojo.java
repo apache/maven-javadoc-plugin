@@ -4964,7 +4964,8 @@ public abstract class AbstractJavadocMojo
                             additionalModules.add( moduleName );
                             
                             addArgIfNotEmpty( arguments, "--patch-module", moduleName + '='
-                                + JavadocUtil.quotedPathArgument( getSourcePath( projectSourcepaths.getValue() ) ) );
+                                 + JavadocUtil.quotedPathArgument( getSourcePath( projectSourcepaths.getValue() ) ),
+                                   false, false );
                             
                             Path modulePath = moduleSourceDir.resolve( moduleName );
                             if ( !Files.isDirectory( modulePath ) )
@@ -5076,7 +5077,8 @@ public abstract class AbstractJavadocMojo
                 additionalModules.addAll( addModules );
 
                 String addModulesLine = StringUtils.join( addModules.iterator(), "," );
-                addArgIfNotEmpty( arguments, "--add-modules", JavadocUtil.quotedPathArgument( addModulesLine ) );
+                addArgIfNotEmpty( arguments, "--add-modules", JavadocUtil.quotedPathArgument( addModulesLine ),
+                                  false, false );
             }
 
             request.setAdditionalModules( additionalModules );
@@ -5106,11 +5108,13 @@ public abstract class AbstractJavadocMojo
                 }
                 
                 String classpath = StringUtils.join( classPathElements.iterator(), File.pathSeparator );
-                addArgIfNotEmpty( arguments, "--class-path", JavadocUtil.quotedPathArgument( classpath ) );
+                addArgIfNotEmpty( arguments, "--class-path", JavadocUtil.quotedPathArgument( classpath ), false,
+                                  false );
                 
                 String modulepath =
                     StringUtils.join( modulePathElements.iterator(), File.pathSeparator );
-                addArgIfNotEmpty( arguments, "--module-path", JavadocUtil.quotedPathArgument( modulepath ) );
+                addArgIfNotEmpty( arguments, "--module-path", JavadocUtil.quotedPathArgument( modulepath ), false,
+                                  false );
             }
             catch ( IOException e )
             {
@@ -5120,7 +5124,7 @@ public abstract class AbstractJavadocMojo
         else
         {
             String classpath = StringUtils.join( getPathElements().iterator(), File.pathSeparator );
-            addArgIfNotEmpty( arguments, "-classpath", JavadocUtil.quotedPathArgument( classpath ) );
+            addArgIfNotEmpty( arguments, "-classpath", JavadocUtil.quotedPathArgument( classpath ) , false, false );
         }
         
         if ( StringUtils.isNotEmpty( doclet ) )
@@ -5176,7 +5180,7 @@ public abstract class AbstractJavadocMojo
         else
         {
             addArgIfNotEmpty( arguments, "-sourcepath",
-                              JavadocUtil.quotedPathArgument( getSourcePath( sourcePaths ) ) );
+                              JavadocUtil.quotedPathArgument( getSourcePath( sourcePaths ) ), false, false );
         }
 
 
