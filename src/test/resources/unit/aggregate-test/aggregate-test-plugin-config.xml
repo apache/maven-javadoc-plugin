@@ -64,6 +64,7 @@ under the License.
           <version>true</version>
           <windowtitle>Maven Javadoc Plugin Aggregate Test 1.0-SNAPSHOT API</windowtitle>
           <reactorProjects>
+            <project implementation="org.apache.maven.plugins.javadoc.stubs.AggregateTestMavenProjectStub"/>
             <project implementation="org.apache.maven.plugins.javadoc.stubs.AggregateProject1TestMavenProjectStub"/>
             <project implementation="org.apache.maven.plugins.javadoc.stubs.AggregateProject2TestMavenProjectStub"/>
           </reactorProjects>

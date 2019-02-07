@@ -65,6 +65,9 @@ under the License.
           <debug>true</debug>
           <failOnError>true</failOnError>
           <detectJavaApiLink>true</detectJavaApiLink>
+          <reactorProjects>
+            <project implementation="org.apache.maven.plugins.javadoc.stubs.DefaultConfigurationMavenProjectStub"/>
+          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>

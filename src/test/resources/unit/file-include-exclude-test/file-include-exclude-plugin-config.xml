@@ -68,6 +68,9 @@ under the License.
           </sourceFileExcludes>
           <debug>true</debug>
           <failOnError>true</failOnError>
+          <reactorProjects>
+            <project implementation="org.apache.maven.plugins.javadoc.stubs.SubpackagesTestMavenProjectStub"/>
+          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>

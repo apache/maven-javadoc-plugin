@@ -73,6 +73,9 @@ under the License.
           <version>true</version>
           <debug>true</debug>
           <failOnError>true</failOnError>
+          <reactorProjects>
+            <project implementation="org.apache.maven.plugins.javadoc.stubs.JavadocJarDefaultMavenProjectStub"/>
+          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>

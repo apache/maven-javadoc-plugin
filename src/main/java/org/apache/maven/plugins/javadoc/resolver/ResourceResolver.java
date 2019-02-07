@@ -19,7 +19,6 @@ package org.apache.maven.plugins.javadoc.resolver;
  * under the License.
  */
 
-import static org.codehaus.plexus.util.IOUtil.close;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -214,13 +213,10 @@ public final class ResourceResolver extends AbstractLogEnabled
                 continue;
             }
             
-            FileInputStream stream = null;
-            try
+            
+            try ( FileInputStream stream = new FileInputStream( optionsFile ) )
             {
-                stream = new FileInputStream( optionsFile );
                 JavadocOptions options = new JavadocOptionsXpp3Reader().read( stream );
-                stream.close();
-                stream = null;
                 bundles.add( new JavadocBundle( options, new File( project.getBasedir(),
                                                                    options.getJavadocResourcesDirectory() ) ) );
             }
@@ -230,10 +226,6 @@ public final class ResourceResolver extends AbstractLogEnabled
                     new IOException( "Failed to read javadoc options from: " + optionsFile + "\nReason: "
                         + e.getMessage(), e );
                 throw error;
-            }
-            finally
-            {
-                close( stream );
             }
         }
 
@@ -422,7 +414,8 @@ public final class ResourceResolver extends AbstractLogEnabled
 
                 unArchiver.extract();
 
-                result.add( new AbstractMap.SimpleEntry<>( a.getDependencyConflictId(), d.toPath().toAbsolutePath() ) );
+                result.add( new AbstractMap.SimpleEntry<>( key( a.getGroupId(), a.getArtifactId() ),
+                                                           d.toPath().toAbsolutePath() ) );
             }
             catch ( final NoSuchArchiverException e )
             {

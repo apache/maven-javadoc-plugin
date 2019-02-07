@@ -53,6 +53,9 @@ under the License.
           <stylesheet>java</stylesheet>
           <debug>true</debug>
           <failOnError>true</failOnError>
+          <reactorProjects>
+            <project implementation="org.apache.maven.plugins.javadoc.stubs.TestJavadocMavenProjectStub"/>
+          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>

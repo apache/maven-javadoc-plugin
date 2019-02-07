@@ -70,6 +70,9 @@ under the License.
           <windowtitle>Maven Javadoc Plugin Taglet Test 1.0-SNAPSHOT API</windowtitle>
           <debug>true</debug>
           <failOnError>true</failOnError>
+          <reactorProjects>
+            <project implementation="org.apache.maven.plugins.javadoc.stubs.TagletTestMavenProjectStub"/>
+          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>

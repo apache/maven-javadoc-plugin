@@ -76,6 +76,9 @@ under the License.
           <stylesheet>java</stylesheet>
           <debug>true</debug>
           <failOnError>true</failOnError>
+          <reactorProjects>
+            <project implementation="org.apache.maven.plugins.javadoc.stubs.Jdk6TestMavenProjectStub"/>
+          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>

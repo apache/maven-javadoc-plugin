@@ -77,6 +77,9 @@ under the License.
           <windowtitle>Maven Javadoc Plugin Doclet Path Test 1.0-SNAPSHOT API</windowtitle>
           <debug>true</debug>
           <failOnError>true</failOnError>
+          <reactorProjects>
+            <project implementation="org.apache.maven.plugins.javadoc.stubs.DocletPathTestMavenProjectStub"/>
+          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>

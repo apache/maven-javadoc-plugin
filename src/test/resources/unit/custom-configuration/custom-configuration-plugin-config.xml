@@ -103,6 +103,9 @@ under the License.
           <excludePackageNames>*.exclude2:custom.configuration.exclude1.*</excludePackageNames>
           <debug>true</debug>
           <failOnError>true</failOnError>
+          <reactorProjects>
+            <project implementation="org.apache.maven.plugins.javadoc.stubs.CustomConfigurationMavenProjectStub"/>
+          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>

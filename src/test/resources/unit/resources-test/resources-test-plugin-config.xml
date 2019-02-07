@@ -48,6 +48,9 @@ under the License.
           <docfilessubdirs>true</docfilessubdirs>
           <stylesheet>java</stylesheet>
           <failOnError>true</failOnError>
+          <reactorProjects>
+            <project implementation="org.apache.maven.plugins.javadoc.stubs.ResourcesTestMavenProjectStub"/>
+          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>

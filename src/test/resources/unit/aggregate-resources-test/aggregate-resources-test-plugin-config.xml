@@ -40,6 +40,7 @@ under the License.
           <javadocOptionsDir>${basedir}/target/test/unit/aggregate-resources-test/target/javadoc-bundle-options</javadocOptionsDir>
           <windowtitle>Maven Javadoc Plugin aggregate resources 1.0-SNAPSHOT API</windowtitle>
           <reactorProjects>
+            <project implementation="org.apache.maven.plugins.javadoc.stubs.AggregateResourcesTestMavenProjectStub"/>
             <project implementation="org.apache.maven.plugins.javadoc.stubs.AggregateResourcesProject1TestMavenProjectStub"/>
             <project implementation="org.apache.maven.plugins.javadoc.stubs.AggregateResourcesProject2TestMavenProjectStub"/>
           </reactorProjects>

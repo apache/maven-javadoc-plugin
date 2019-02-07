@@ -115,7 +115,6 @@ import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1789,7 +1788,11 @@ public abstract class AbstractJavadocMojo
     
     protected File getArtifactFile( MavenProject project )
     {
-        if ( project.getArtifact() != null )
+        if ( !isAggregator() && isTest() )
+        {
+            return null;
+        }
+        else if ( project.getArtifact() != null )
         {
             return project.getArtifact().getFile();
         }
@@ -2274,8 +2277,12 @@ public abstract class AbstractJavadocMojo
                         sourcePaths.addAll( l );
                     }
                 }
-                mappedSourcePaths.put( ArtifactUtils.versionlessKey( project.getGroupId(), project.getArtifactId() ),
-                                       sourcePaths );               
+                if ( !sourcePaths.isEmpty() )
+                {
+                    mappedSourcePaths.put( ArtifactUtils.versionlessKey( project.getGroupId(),
+                                                                         project.getArtifactId() ),
+                                           sourcePaths );
+                }
             }
             
             if ( includeDependencySources )
@@ -4418,7 +4425,7 @@ public abstract class AbstractJavadocMojo
             if ( mainDescriptor != null && !isTest() )
             {
                 ResolvePathsRequest<File> request =
-                        ResolvePathsRequest.withFiles( Collections.<File>emptyList() ).
+                        ResolvePathsRequest.ofFiles( Collections.<File>emptyList() ).
                                 setMainModuleDescriptor( mainDescriptor );
     
                 try
@@ -4880,27 +4887,59 @@ public abstract class AbstractJavadocMojo
             addArgIf( arguments, breakiterator, "-breakiterator", SINCE_JAVADOC_1_5 );
         }
         
-        Map<String, MavenProject> reactorKeys = new HashMap<>( session.getProjects().size() );
-        for ( MavenProject reactorProject : session.getProjects() )
+        Map<String, MavenProject> reactorKeys = new HashMap<>( reactorProjects.size() );
+        for ( MavenProject reactorProject : reactorProjects )
         {
             reactorKeys.put( ArtifactUtils.versionlessKey( reactorProject.getGroupId(),
                                                            reactorProject.getArtifactId() ), reactorProject );
         }
         
-        Collection<String> additionalModules = new ArrayList<>();
+        Map<String, JavaModuleDescriptor> allModuleDescriptors = new HashMap<>();
         
-        boolean containsModuleDescriptor = false;
-        for ( Collection<Path> sourcepaths : allSourcePaths.values() )
+        for ( Map.Entry<String, Collection<Path>> entry : allSourcePaths.entrySet() )
         {
-            if ( findMainDescriptor( sourcepaths ) != null )
+            MavenProject entryProject = reactorKeys.get( entry.getKey() );
+            
+            File artifactFile;
+            if ( entryProject != null )
             {
-                containsModuleDescriptor = true;
-                break;
+                artifactFile = getArtifactFile( entryProject );
+            }
+            else
+            {
+                artifactFile = project.getArtifactMap().get( entry.getKey() ).getFile();
+            }
+            ResolvePathResult resolvePathResult = getResolvePathResult( artifactFile );
+            
+            if ( resolvePathResult == null || resolvePathResult.getModuleNameSource() == ModuleNameSource.FILENAME )
+            {
+                File moduleDescriptor = findMainDescriptor( entry.getValue() );
+                
+                if ( moduleDescriptor != null )
+                {
+                    try
+                    {
+                        allModuleDescriptors.put( entry.getKey(),
+                                  locationManager.parseModuleDescriptor( moduleDescriptor ).getModuleDescriptor() );
+                    }
+                    catch ( IOException e )
+                    {
+                        throw new MavenReportException( e.getMessage(), e );
+                    }
+                }
+            }
+            else
+            {
+                allModuleDescriptors.put( entry.getKey(), resolvePathResult.getModuleDescriptor() );
             }
         }
+
+        Collection<String> additionalModules = new ArrayList<>();
+
+        ResolvePathResult mainResolvePathResult = null;
         
         Path moduleSourceDir = null;
-        if ( containsModuleDescriptor && allSourcePaths.size() > 1 )
+        if ( javadocRuntimeVersion.isAtLeast( "9" ) && !allModuleDescriptors.isEmpty() )
         {
             Collection<String> unnamedProjects = new ArrayList<>();
             for ( Map.Entry<String, Collection<Path>> projectSourcepaths : allSourcePaths.entrySet() )
@@ -4908,7 +4947,7 @@ public abstract class AbstractJavadocMojo
                 MavenProject aggregatedProject = reactorKeys.get( projectSourcepaths.getKey() );
                 if ( aggregatedProject != null )
                 {
-                    String moduleName = null;
+                    ResolvePathResult result = null;
                     
                     // Prefer jar over outputDirectory, since it may may contain an automatic module name
                     File artifactFile = getArtifactFile( aggregatedProject );
@@ -4917,7 +4956,7 @@ public abstract class AbstractJavadocMojo
                         ResolvePathRequest<File> request = ResolvePathRequest.ofFile( artifactFile );
                         try
                         {
-                            moduleName = locationManager.resolvePath( request ).getModuleDescriptor().name();
+                            result = locationManager.resolvePath( request );
                         }
                         catch ( RuntimeException e )
                         {
@@ -4938,14 +4977,9 @@ public abstract class AbstractJavadocMojo
                         
                         if ( moduleDescriptor != null )
                         {
-                            ResolvePathsRequest<File> request =
-                                            ResolvePathsRequest.ofFiles( Collections.<File>emptyList() )
-                                                               .setMainModuleDescriptor( moduleDescriptor );
-
                             try
                             {
-                                moduleName =
-                                    locationManager.resolvePaths( request ).getMainModuleDescriptor().name();
+                                result = locationManager.parseModuleDescriptor( moduleDescriptor );
                             }
                             catch ( IOException e )
                             {
@@ -4954,20 +4988,20 @@ public abstract class AbstractJavadocMojo
                         }
                     }
 
-                    if ( moduleName != null )
+                    if ( result != null && result.getModuleDescriptor() != null )
                     {
                         moduleSourceDir = javadocOutputDirectory.toPath().resolve( "src" );
                         try
                         {
                             moduleSourceDir = Files.createDirectories( moduleSourceDir );
-                            
-                            additionalModules.add( moduleName );
-                            
-                            addArgIfNotEmpty( arguments, "--patch-module", moduleName + '='
+
+                            additionalModules.add( result.getModuleDescriptor().name() );
+
+                            addArgIfNotEmpty( arguments, "--patch-module", result.getModuleDescriptor().name() + '='
                                  + JavadocUtil.quotedPathArgument( getSourcePath( projectSourcepaths.getValue() ) ),
                                    false, false );
                             
-                            Path modulePath = moduleSourceDir.resolve( moduleName );
+                            Path modulePath = moduleSourceDir.resolve( result.getModuleDescriptor().name() );
                             if ( !Files.isDirectory( modulePath ) )
                             {
                                 Files.createDirectory( modulePath );
@@ -4978,9 +5012,14 @@ public abstract class AbstractJavadocMojo
                             throw new MavenReportException( e.getMessage(), e );
                         }
                     }
-                    else
+                    else 
                     {
                         unnamedProjects.add( projectSourcepaths.getKey() );
+                    }
+                    
+                    if ( aggregatedProject.equals( getProject() ) ) 
+                    {
+                        mainResolvePathResult = result;
                     }
                 }
                 else
@@ -5002,97 +5041,47 @@ public abstract class AbstractJavadocMojo
                 }
                 throw new MavenReportException( "Aggregator report contains named and unnamed modules" );
             }
-        }
-
-
-        ResolvePathResult resolvePathResult = getResolvePathResult( getArtifactFile( getProject() ) );
-
-        // MJAVADOC-506 
-        File moduleDescriptorSource = null;
-        if ( resolvePathResult == null || resolvePathResult.getModuleNameSource() == ModuleNameSource.FILENAME )
-        {
-            Collection<Path> roots = new ArrayList<>();
-            for ( String path : getProjectSourceRoots( getProject() ) )
+            
+            if ( mainResolvePathResult != null
+                && ModuleNameSource.MANIFEST.equals( mainResolvePathResult.getModuleNameSource() ) )
             {
-                roots.add( Paths.get( path ) );
+                arguments.add( "--add-modules" );
+                arguments.add( "ALL-MODULE-PATH" );
             }
-
-            moduleDescriptorSource = findMainDescriptor( roots );
         }
-
-        boolean isExplicitModuleName =
-            resolvePathResult != null && ( resolvePathResult.getModuleNameSource() == ModuleNameSource.MODULEDESCRIPTOR
-                || resolvePathResult.getModuleNameSource() == ModuleNameSource.MANIFEST );
-
+        
+        // MJAVADOC-506
+        boolean moduleDescriptorSource = false;
+        for ( Path sourcepath : sourcePaths )
+        {
+            if ( Files.isRegularFile( sourcepath.resolve( "module-info.java" ) ) )
+            {
+                moduleDescriptorSource = true;
+                break;
+            }
+        }
+        
         if ( javadocRuntimeVersion.isAtLeast( "9" )
-            && ( isAggregator() || isExplicitModuleName || moduleDescriptorSource != null ) 
+            && ( isAggregator() || ( mainResolvePathResult != null
+                && ModuleNameSource.MODULEDESCRIPTOR.equals( mainResolvePathResult.getModuleNameSource() ) ) )
             && !isTest() )
         {
             ResolvePathsRequest<File> request =
                 ResolvePathsRequest.ofFiles( getPathElements() );
 
-            if ( moduleDescriptorSource != null )
+            if ( mainResolvePathResult != null )
             {
-                request.setMainModuleDescriptor( moduleDescriptorSource );
+                request.setModuleDescriptor( mainResolvePathResult.getModuleDescriptor() );
             }
-            else if ( resolvePathResult != null )
-            {
-                request.setModuleDescriptor( resolvePathResult.getModuleDescriptor() );
-            }
-
-            if ( resolvePathResult != null && resolvePathResult.getModuleNameSource() == ModuleNameSource.MANIFEST )
-            {
-                // represent --add-modules
-                List<String> addModules = new ArrayList<>();
-
-                // scan for element-list in offline links
-                for ( OfflineLink link : offlineLinks )
-                {
-                    if ( link.equals( getDefaultJavadocApiLink() ) )
-                    {
-                        continue;
-                    }
-
-                    Path elementList = Paths.get( link.getLocation(), "element-list" ); 
-                    if ( Files.isRegularFile( elementList ) )
-                    {
-                        try
-                        {
-                            List<String> lines = Files.readAllLines( elementList, StandardCharsets.UTF_8 );
-                            
-                            for ( String line : lines )
-                            {
-                                if ( line.startsWith( "module:" ) )
-                                {
-                                    addModules.add( line.substring( "module:".length() ) );
-                                }
-                            }
-                        }
-                        catch ( IOException e )
-                        {
-                            // noop
-                        }
-                    }
-                }
-                additionalModules.addAll( addModules );
-
-                String addModulesLine = StringUtils.join( addModules.iterator(), "," );
-                addArgIfNotEmpty( arguments, "--add-modules", JavadocUtil.quotedPathArgument( addModulesLine ),
-                                  false, false );
-            }
-
-            request.setAdditionalModules( additionalModules );
             
+            request.setAdditionalModules( additionalModules );
+
             try
             {
                 ResolvePathsResult<File> result = locationManager.resolvePaths( request );
                 
                 Set<File> modulePathElements = new HashSet<>( result.getModulepathElements().keySet() )  ;
-                if ( allSourcePaths.size() > 1 )
-                {
-                    // Probably required due to bug in javadoc (Java 9+)   
-                    modulePathElements.addAll( getProjectBuildOutputDirs( getProject() ) );
-                }
+                modulePathElements.addAll( getProjectBuildOutputDirs( getProject() ) );
 
                 Collection<File> classPathElements = new ArrayList<>( result.getClasspathElements().size() );
                 for ( File file : result.getClasspathElements() )
@@ -5120,6 +5109,19 @@ public abstract class AbstractJavadocMojo
             {
                 throw new MavenReportException( e.getMessage(), e );
             }
+        }
+        else if ( javadocRuntimeVersion.isAtLeast( "9" ) && ( mainResolvePathResult != null
+            && ModuleNameSource.MANIFEST.equals( mainResolvePathResult.getModuleNameSource() ) ) && !isTest() )
+        {
+            List<File> modulePathFiles = new ArrayList<>( getPathElements() );
+            modulePathFiles.add( project.getArtifact().getFile() );
+            String modulepath = StringUtils.join( modulePathFiles.iterator(), File.pathSeparator );
+            addArgIfNotEmpty( arguments, "--module-path", JavadocUtil.quotedPathArgument( modulepath ) , false, false );
+        }
+        else if ( javadocRuntimeVersion.isAtLeast( "9" ) && moduleDescriptorSource && !isTest() )
+        {
+            String modulepath = StringUtils.join( getPathElements().iterator(), File.pathSeparator );
+            addArgIfNotEmpty( arguments, "--module-path", JavadocUtil.quotedPathArgument( modulepath ) , false, false );
         }
         else
         {
@@ -5172,15 +5174,16 @@ public abstract class AbstractJavadocMojo
             sourcepath = StringUtils.join( sourcePaths.iterator(), File.pathSeparator );
         }
         
-        if ( moduleSourceDir != null )
-        {
-            addArgIfNotEmpty( arguments, "--module-source-path",
-                              JavadocUtil.quotedPathArgument( moduleSourceDir.toString() ) );
-        }
-        else
+        if ( moduleSourceDir == null )
         {
             addArgIfNotEmpty( arguments, "-sourcepath",
                               JavadocUtil.quotedPathArgument( getSourcePath( sourcePaths ) ), false, false );
+        }
+        else if ( mainResolvePathResult == null
+            || ModuleNameSource.MODULEDESCRIPTOR.equals( mainResolvePathResult.getModuleNameSource() ) )
+        {
+            addArgIfNotEmpty( arguments, "--module-source-path",
+                              JavadocUtil.quotedPathArgument( moduleSourceDir.toString() ) );
         }
 
 
@@ -5212,6 +5215,12 @@ public abstract class AbstractJavadocMojo
         try
         {
             resolvePathResult = locationManager.resolvePath( resolvePathRequest );
+            
+            // happens when artifactFile is a directory without module descriptor
+            if ( resolvePathResult.getModuleDescriptor() == null )
+            {
+                return null;
+            }
         }
         catch ( IOException | RuntimeException /* e.g java.lang.module.FindException */ e )
         {
@@ -5225,14 +5234,13 @@ public abstract class AbstractJavadocMojo
         return resolvePathResult;
     }
 
-    private File findMainDescriptor( Collection<Path> roots )
+    private File findMainDescriptor( Collection<Path> roots ) throws MavenReportException
     {
-        for ( Path root : roots )
+        for ( Map.Entry<Path, Collection<String>> entry : getFiles( roots ).entrySet() )
         {
-            File descriptorFile = root.resolve( "module-info.java" ).toAbsolutePath().toFile();
-            if ( descriptorFile.exists() )
+            if ( entry.getValue().contains( "module-info.java" ) )
             {
-                return descriptorFile;
+                return entry.getKey().resolve( "module-info.java" ).toFile();
             }
         }
         return null;

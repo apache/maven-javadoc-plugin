@@ -76,6 +76,9 @@ under the License.
           <archive>
             <addMavenDescriptor>true</addMavenDescriptor>
           </archive>
+          <reactorProjects>
+            <project implementation="org.apache.maven.plugins.javadoc.stubs.JavadocJarArchiveConfigProjectStub"/>
+          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>

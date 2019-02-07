@@ -49,6 +49,9 @@ under the License.
           <excludedocfilessubdir>test</excludedocfilessubdir>
           <stylesheet>java</stylesheet>
           <failOnError>true</failOnError>
+          <reactorProjects>
+            <project implementation="org.apache.maven.plugins.javadoc.stubs.ResourcesWithExcludesTestMavenProjectStub"/>
+          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>

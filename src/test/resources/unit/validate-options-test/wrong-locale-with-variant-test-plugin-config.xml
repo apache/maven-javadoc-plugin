@@ -45,6 +45,9 @@ under the License.
           <locale>fr_CA_wrong</locale>
           <stylesheet>java</stylesheet>
           <failOnError>true</failOnError>
+          <reactorProjects>
+            <project implementation="org.apache.maven.plugins.javadoc.stubs.WrongEncodingOptionsTestMavenProjectStub"/>
+          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>

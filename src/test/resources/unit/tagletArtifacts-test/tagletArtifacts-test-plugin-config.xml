@@ -76,6 +76,9 @@ under the License.
               <version>1.0</version>
             </tagletArtifact>
           </tagletArtifacts>
+          <reactorProjects>
+            <project implementation="org.apache.maven.plugins.javadoc.stubs.TagletArtifactsMavenProjectStub"/>
+          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>
