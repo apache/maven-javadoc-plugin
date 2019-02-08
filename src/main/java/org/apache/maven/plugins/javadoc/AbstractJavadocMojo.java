@@ -2229,6 +2229,12 @@ public abstract class AbstractJavadocMojo
                 File sourceDirectory = sourcePath.toFile();
                 files.addAll( JavadocUtil.getFilesFromSource( sourceDirectory, sourceFileIncludes, sourceFileExcludes,
                                                               excludedPackages ) );
+                
+                if ( source != null && JavaVersion.parse( source ).isBefore( "9" )
+                    && files.remove( "module-info.java" ) )
+                {
+                    getLog().debug( "Auto exclude module-info.java due to source value" );
+                }
                 mappedFiles.put( sourcePath, files );
             }
         }
@@ -4896,41 +4902,47 @@ public abstract class AbstractJavadocMojo
         
         Map<String, JavaModuleDescriptor> allModuleDescriptors = new HashMap<>();
         
-        for ( Map.Entry<String, Collection<Path>> entry : allSourcePaths.entrySet() )
+        boolean supportModulePath = javadocRuntimeVersion.isAtLeast( "9" )
+            && ( source == null || JavaVersion.parse( source ).isAtLeast( "9" ) );
+        
+        if ( supportModulePath )
         {
-            MavenProject entryProject = reactorKeys.get( entry.getKey() );
-            
-            File artifactFile;
-            if ( entryProject != null )
+            for ( Map.Entry<String, Collection<Path>> entry : allSourcePaths.entrySet() )
             {
-                artifactFile = getArtifactFile( entryProject );
-            }
-            else
-            {
-                artifactFile = project.getArtifactMap().get( entry.getKey() ).getFile();
-            }
-            ResolvePathResult resolvePathResult = getResolvePathResult( artifactFile );
-            
-            if ( resolvePathResult == null || resolvePathResult.getModuleNameSource() == ModuleNameSource.FILENAME )
-            {
-                File moduleDescriptor = findMainDescriptor( entry.getValue() );
+                MavenProject entryProject = reactorKeys.get( entry.getKey() );
                 
-                if ( moduleDescriptor != null )
+                File artifactFile;
+                if ( entryProject != null )
                 {
-                    try
+                    artifactFile = getArtifactFile( entryProject );
+                }
+                else
+                {
+                    artifactFile = project.getArtifactMap().get( entry.getKey() ).getFile();
+                }
+                ResolvePathResult resolvePathResult = getResolvePathResult( artifactFile );
+                
+                if ( resolvePathResult == null || resolvePathResult.getModuleNameSource() == ModuleNameSource.FILENAME )
+                {
+                    File moduleDescriptor = findMainDescriptor( entry.getValue() );
+                    
+                    if ( moduleDescriptor != null )
                     {
-                        allModuleDescriptors.put( entry.getKey(),
-                                  locationManager.parseModuleDescriptor( moduleDescriptor ).getModuleDescriptor() );
-                    }
-                    catch ( IOException e )
-                    {
-                        throw new MavenReportException( e.getMessage(), e );
+                        try
+                        {
+                            allModuleDescriptors.put( entry.getKey(),
+                                      locationManager.parseModuleDescriptor( moduleDescriptor ).getModuleDescriptor() );
+                        }
+                        catch ( IOException e )
+                        {
+                            throw new MavenReportException( e.getMessage(), e );
+                        }
                     }
                 }
-            }
-            else
-            {
-                allModuleDescriptors.put( entry.getKey(), resolvePathResult.getModuleDescriptor() );
+                else
+                {
+                    allModuleDescriptors.put( entry.getKey(), resolvePathResult.getModuleDescriptor() );
+                }
             }
         }
 
@@ -4939,7 +4951,7 @@ public abstract class AbstractJavadocMojo
         ResolvePathResult mainResolvePathResult = null;
         
         Path moduleSourceDir = null;
-        if ( javadocRuntimeVersion.isAtLeast( "9" ) && !allModuleDescriptors.isEmpty() )
+        if ( supportModulePath && !allModuleDescriptors.isEmpty() )
         {
             Collection<String> unnamedProjects = new ArrayList<>();
             for ( Map.Entry<String, Collection<Path>> projectSourcepaths : allSourcePaths.entrySet() )
@@ -5061,7 +5073,7 @@ public abstract class AbstractJavadocMojo
             }
         }
         
-        if ( javadocRuntimeVersion.isAtLeast( "9" )
+        if ( supportModulePath
             && ( isAggregator() || ( mainResolvePathResult != null
                 && ModuleNameSource.MODULEDESCRIPTOR.equals( mainResolvePathResult.getModuleNameSource() ) ) )
             && !isTest() )
@@ -5110,7 +5122,7 @@ public abstract class AbstractJavadocMojo
                 throw new MavenReportException( e.getMessage(), e );
             }
         }
-        else if ( javadocRuntimeVersion.isAtLeast( "9" ) && ( mainResolvePathResult != null
+        else if ( supportModulePath && ( mainResolvePathResult != null
             && ModuleNameSource.MANIFEST.equals( mainResolvePathResult.getModuleNameSource() ) ) && !isTest() )
         {
             List<File> modulePathFiles = new ArrayList<>( getPathElements() );
@@ -5118,7 +5130,7 @@ public abstract class AbstractJavadocMojo
             String modulepath = StringUtils.join( modulePathFiles.iterator(), File.pathSeparator );
             addArgIfNotEmpty( arguments, "--module-path", JavadocUtil.quotedPathArgument( modulepath ) , false, false );
         }
-        else if ( javadocRuntimeVersion.isAtLeast( "9" ) && moduleDescriptorSource && !isTest() )
+        else if ( supportModulePath && moduleDescriptorSource && !isTest() )
         {
             String modulepath = StringUtils.join( getPathElements().iterator(), File.pathSeparator );
             addArgIfNotEmpty( arguments, "--module-path", JavadocUtil.quotedPathArgument( modulepath ) , false, false );
