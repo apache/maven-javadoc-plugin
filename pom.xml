@@ -348,6 +348,11 @@ under the License.
             </excludes>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jxr-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>

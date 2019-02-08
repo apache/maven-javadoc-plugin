@@ -1314,7 +1314,7 @@ public abstract class AbstractJavadocMojo
     /**
      * Specifies the destination directory where javadoc saves the generated HTML files.
      * <br>
-     * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#d">d</a> option
+     * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#d">javadoc d</a>
      */
     @Parameter( property = "destDir", alias = "destDir", defaultValue = "${project.build.directory}/apidocs",
                     required = true )
@@ -6138,7 +6138,6 @@ public abstract class AbstractJavadocMojo
      *         or the {@link #javadocRuntimeVersion}, or <code>null</code> if not defined.
      * @see #detectJavaApiLink
      * @see #javaApiLinks
-     * @see #DEFAULT_JAVA_API_LINKS
      * @see <a href="http://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#source">source parameter</a>
      * @since 2.6
      */
