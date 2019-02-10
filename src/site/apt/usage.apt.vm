@@ -143,7 +143,7 @@ mvn javadoc:test-aggregate-jar
       </plugin>
     </plugins>
   </reporting>
-  </build>
+</project>
 +-----+
 
  [<<<mvn site>>>] It will generate the Javadoc for public members (defined in \<reporting/\>) using the given
