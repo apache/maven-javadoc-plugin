@@ -1043,7 +1043,7 @@ public abstract class AbstractJavadocMojo
      * See <a href="./apidocs/org/apache/maven/plugin/javadoc/options/Group.html">Javadoc</a>.
      * <br/>
      */
-    @Parameter( property = "groups" )
+    @Parameter
     private Group[] groups;
 
     /**
