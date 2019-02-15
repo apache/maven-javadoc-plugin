@@ -22,8 +22,11 @@ package org.apache.maven.plugins.javadoc.stubs;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.project.MavenProject;
@@ -75,4 +78,9 @@ public class AggregateResourcesTestMavenProjectStub
         return Arrays.asList( "project1", "project2" );
     }
 
+    @Override
+    public Set<Artifact> getDependencyArtifacts()
+    {
+        return Collections.emptySet();
+    }
 }

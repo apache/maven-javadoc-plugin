@@ -2243,10 +2243,10 @@ public abstract class AbstractJavadocMojo
     }
 
     /**
-     * Method to get the source paths. If no source path is specified in the parameter, the compile source roots
-     * of the project will be used.
+     * Method to get the source paths per reactorProject. If no source path is specified in the parameter, the compile
+     * source roots of the project will be used.
      *
-     * @return a Collection of the project absolute source paths as <code>String</code>
+     * @return a Map of the project absolute source paths per projects key (G:A)
      * @throws MavenReportException {@link MavenReportException}
      * @see JavadocUtil#pruneDirs(MavenProject, Collection)
      */
@@ -2657,10 +2657,10 @@ public abstract class AbstractJavadocMojo
      * @return all classpath elements
      * @throws MavenReportException if any.
      */
-    private List<File> getPathElements()
+    private Collection<File> getPathElements()
         throws MavenReportException
     {
-        List<File> classpathElements = new ArrayList<>();
+        Set<File> classpathElements = new LinkedHashSet<>();
         Map<String, Artifact> compileArtifactMap = new LinkedHashMap<>();
 
         if ( isTest() )
@@ -2669,7 +2669,6 @@ public abstract class AbstractJavadocMojo
         }
         
         populateCompileArtifactMap( compileArtifactMap, project.getArtifacts() );
-
         
         if ( isAggregator() )
         {
@@ -5075,11 +5074,19 @@ public abstract class AbstractJavadocMojo
         
         if ( supportModulePath
             && ( isAggregator() || ( mainResolvePathResult != null
-                && ModuleNameSource.MODULEDESCRIPTOR.equals( mainResolvePathResult.getModuleNameSource() ) ) )
+                && ( ModuleNameSource.MODULEDESCRIPTOR.equals( mainResolvePathResult.getModuleNameSource() ) 
+                     || ModuleNameSource.MANIFEST.equals( mainResolvePathResult.getModuleNameSource() ) ) ) )
             && !isTest() )
         {
+            List<File> pathElements = new ArrayList<>( getPathElements() );
+            File artifactFile = getArtifactFile( project );
+            if ( artifactFile != null )
+            {
+                pathElements.add( 0, artifactFile );
+            }
+            
             ResolvePathsRequest<File> request =
-                ResolvePathsRequest.ofFiles( getPathElements() );
+                ResolvePathsRequest.ofFiles( pathElements );
 
             if ( mainResolvePathResult != null )
             {
@@ -5093,12 +5100,18 @@ public abstract class AbstractJavadocMojo
                 ResolvePathsResult<File> result = locationManager.resolvePaths( request );
                 
                 Set<File> modulePathElements = new HashSet<>( result.getModulepathElements().keySet() )  ;
-                modulePathElements.addAll( getProjectBuildOutputDirs( getProject() ) );
+                
+                Set<File> directDependencyArtifactFiles = new HashSet<>( project.getDependencyArtifacts().size() );
+                for ( Artifact depArt : project.getDependencyArtifacts() )
+                {
+                    directDependencyArtifactFiles.add( depArt.getFile() );
+                }
 
                 Collection<File> classPathElements = new ArrayList<>( result.getClasspathElements().size() );
                 for ( File file : result.getClasspathElements() )
                 {
-                    if ( file.isDirectory() && new File( file, "module-info.class" ).exists() )
+                    if ( directDependencyArtifactFiles.contains( file )
+                        || ( file.isDirectory() && new File( file, "module-info.class" ).exists() ) )
                     {
                         modulePathElements.add( file );
                     }
@@ -5121,14 +5134,6 @@ public abstract class AbstractJavadocMojo
             {
                 throw new MavenReportException( e.getMessage(), e );
             }
-        }
-        else if ( supportModulePath && ( mainResolvePathResult != null
-            && ModuleNameSource.MANIFEST.equals( mainResolvePathResult.getModuleNameSource() ) ) && !isTest() )
-        {
-            List<File> modulePathFiles = new ArrayList<>( getPathElements() );
-            modulePathFiles.add( project.getArtifact().getFile() );
-            String modulepath = StringUtils.join( modulePathFiles.iterator(), File.pathSeparator );
-            addArgIfNotEmpty( arguments, "--module-path", JavadocUtil.quotedPathArgument( modulepath ) , false, false );
         }
         else if ( supportModulePath && moduleDescriptorSource && !isTest() )
         {

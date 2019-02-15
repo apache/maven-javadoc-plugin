@@ -81,6 +81,7 @@ import java.nio.charset.IllegalCharsetNameException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
@@ -180,8 +181,7 @@ public class JavadocUtil
     {
         if ( f != null )
         {
-            File file = new File( f );
-            if ( file.isFile() && ( isEmpty( pruned ) || !pruned.contains( f ) ) )
+            if ( Files.isRegularFile( Paths.get( f ) ) && !pruned.contains( f ) )
             {
                 return false;
             }
