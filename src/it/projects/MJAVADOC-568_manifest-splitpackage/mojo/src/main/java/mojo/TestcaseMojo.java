@@ -23,6 +23,8 @@ import normal.Testcase;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 
 /**
  * This is also a comment.
@@ -30,6 +32,10 @@ import org.apache.maven.plugins.annotations.Mojo;
 @Mojo(name = "my-mojo", defaultPhase = LifecyclePhase.GENERATE_SOURCES, threadSafe = true)
 public class TestcaseMojo extends AbstractMojo
 {
+    
+    @Parameter( defaultValue="${project}", readonly=true, required = true )
+    private MavenProject project;
+    
 	public Testcase createTestcase()
 	{
 		return null;

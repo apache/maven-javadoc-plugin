@@ -4949,6 +4949,8 @@ public abstract class AbstractJavadocMojo
 
         ResolvePathResult mainResolvePathResult = null;
         
+        Map<String, Collection<Path>> patchModules = new HashMap<>();
+        
         Path moduleSourceDir = null;
         if ( supportModulePath && !allModuleDescriptors.isEmpty() )
         {
@@ -5008,9 +5010,7 @@ public abstract class AbstractJavadocMojo
 
                             additionalModules.add( result.getModuleDescriptor().name() );
 
-                            addArgIfNotEmpty( arguments, "--patch-module", result.getModuleDescriptor().name() + '='
-                                 + JavadocUtil.quotedPathArgument( getSourcePath( projectSourcepaths.getValue() ) ),
-                                   false, false );
+                            patchModules.put( result.getModuleDescriptor().name(), projectSourcepaths.getValue() );
                             
                             Path modulePath = moduleSourceDir.resolve( result.getModuleDescriptor().name() );
                             if ( !Files.isDirectory( modulePath ) )
@@ -5072,11 +5072,21 @@ public abstract class AbstractJavadocMojo
             }
         }
         
+        final ModuleNameSource mainModuleNameSource;
+        if ( mainResolvePathResult != null )
+        {
+            mainModuleNameSource = mainResolvePathResult.getModuleNameSource();
+        }
+        else
+        {
+            mainModuleNameSource = null;
+        }
+        
         if ( supportModulePath
-            && ( isAggregator() || ( mainResolvePathResult != null
-                && ( ModuleNameSource.MODULEDESCRIPTOR.equals( mainResolvePathResult.getModuleNameSource() ) 
-                     || ModuleNameSource.MANIFEST.equals( mainResolvePathResult.getModuleNameSource() ) ) ) )
-            && !isTest() )
+             && !isTest()
+             && ( isAggregator()
+                  || ModuleNameSource.MODULEDESCRIPTOR.equals( mainModuleNameSource )
+                  || ModuleNameSource.MANIFEST.equals( mainModuleNameSource ) ) )
         {
             List<File> pathElements = new ArrayList<>( getPathElements() );
             File artifactFile = getArtifactFile( project );
@@ -5088,9 +5098,11 @@ public abstract class AbstractJavadocMojo
             ResolvePathsRequest<File> request =
                 ResolvePathsRequest.ofFiles( pathElements );
 
+            String mainModuleName = null;
             if ( mainResolvePathResult != null )
             {
                 request.setModuleDescriptor( mainResolvePathResult.getModuleDescriptor() );
+                mainModuleName = mainResolvePathResult.getModuleDescriptor().name();
             }
             
             request.setAdditionalModules( additionalModules );
@@ -5101,26 +5113,34 @@ public abstract class AbstractJavadocMojo
                 
                 Set<File> modulePathElements = new HashSet<>( result.getModulepathElements().keySet() )  ;
                 
-                Set<File> directDependencyArtifactFiles = new HashSet<>( project.getDependencyArtifacts().size() );
-                for ( Artifact depArt : project.getDependencyArtifacts() )
-                {
-                    directDependencyArtifactFiles.add( depArt.getFile() );
-                }
-
                 Collection<File> classPathElements = new ArrayList<>( result.getClasspathElements().size() );
+
                 for ( File file : result.getClasspathElements() )
                 {
-                    if ( directDependencyArtifactFiles.contains( file )
-                        || ( file.isDirectory() && new File( file, "module-info.class" ).exists() ) )
+                    if ( file.isDirectory() && new File( file, "module-info.class" ).exists() )
                     {
                         modulePathElements.add( file );
+                    }
+                    else if ( ModuleNameSource.MANIFEST.equals( mainModuleNameSource ) )
+                    {
+                        ModuleNameSource depModuleNameSource =
+                            locationManager.resolvePath( ResolvePathRequest.ofFile( file ) ).getModuleNameSource();
+                        if ( ModuleNameSource.MODULEDESCRIPTOR.equals( depModuleNameSource )
+                            || ModuleNameSource.MANIFEST.equals( depModuleNameSource ) )
+                        {
+                            modulePathElements.add( file );
+                        }
+                        else
+                        {
+                            patchModules.get( mainModuleName ).add( file.toPath() );
+                        }
                     }
                     else
                     {
                         classPathElements.add( file );
                     }
                 }
-                
+
                 String classpath = StringUtils.join( classPathElements.iterator(), File.pathSeparator );
                 addArgIfNotEmpty( arguments, "--class-path", JavadocUtil.quotedPathArgument( classpath ), false,
                                   false );
@@ -5145,7 +5165,14 @@ public abstract class AbstractJavadocMojo
             String classpath = StringUtils.join( getPathElements().iterator(), File.pathSeparator );
             addArgIfNotEmpty( arguments, "-classpath", JavadocUtil.quotedPathArgument( classpath ) , false, false );
         }
-        
+
+        for ( Entry<String, Collection<Path>> entry : patchModules.entrySet() )
+        {
+            addArgIfNotEmpty( arguments, "--patch-module", entry.getKey() + '='
+                              + JavadocUtil.quotedPathArgument( getSourcePath( entry.getValue() ) ),
+                                false, false );
+        }
+
         if ( StringUtils.isNotEmpty( doclet ) )
         {
             addArgIfNotEmpty( arguments, "-doclet", JavadocUtil.quotedArgument( doclet ) );
