@@ -685,41 +685,6 @@ public class JavadocUtil
     }
 
     /**
-     * For security reasons, if an active proxy is defined and needs an authentication by username/password, hide the
-     * proxy password in the command line.
-     *
-     * @param cmdLine a command line, not null
-     * @param settings the user settings
-     * @return the cmdline with '*' for the http.proxyPassword JVM property
-     */
-    protected static String hideProxyPassword( String cmdLine, Settings settings )
-    {
-        if ( cmdLine == null )
-        {
-            throw new IllegalArgumentException( "cmdLine could not be null" );
-        }
-
-        if ( settings == null )
-        {
-            return cmdLine;
-        }
-
-        Proxy activeProxy = settings.getActiveProxy();
-        if ( activeProxy != null && StringUtils.isNotEmpty( activeProxy.getHost() )
-            && StringUtils.isNotEmpty( activeProxy.getUsername() )
-            && StringUtils.isNotEmpty( activeProxy.getPassword() ) )
-        {
-            String pass = "-J-Dhttp.proxyPassword=\"" + activeProxy.getPassword() + "\"";
-            String hidepass =
-                "-J-Dhttp.proxyPassword=\"" + StringUtils.repeat( "*", activeProxy.getPassword().length() ) + "\"";
-
-            return StringUtils.replace( cmdLine, pass, hidepass );
-        }
-
-        return cmdLine;
-    }
-
-    /**
      * Auto-detect the class names of the implementation of <code>com.sun.tools.doclets.Taglet</code> class from a given
      * jar file. <br>
      * <b>Note</b>: <code>JAVA_HOME/lib/tools.jar</code> is a requirement to find

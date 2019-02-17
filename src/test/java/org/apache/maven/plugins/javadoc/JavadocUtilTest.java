@@ -261,54 +261,6 @@ public class JavadocUtilTest
     }
 
     /**
-     * Method to test the hiding proxy password.
-     *
-     * @throws Exception if any
-     */
-    public void testHideProxyPassword()
-        throws Exception
-    {
-        String cmdLine = "javadoc.exe " + "-J-Dhttp.proxySet=true " + "-J-Dhttp.proxyHost=127.0.0.1 "
-        + "-J-Dhttp.proxyPort=80 " + "-J-Dhttp.nonProxyHosts=\"www.google.com|*.somewhere.com\" "
-        + "-J-Dhttp.proxyUser=\"toto\" " + "-J-Dhttp.proxyPassword=\"toto\" " + "@options @packages";
-        cmdLine = JavadocUtil.hideProxyPassword( cmdLine, null );
-        assertFalse(cmdLine.contains("-J-Dhttp.proxyPassword=\"****\""));
-
-        Settings settings = new Settings();
-        Proxy proxy = new Proxy();
-        proxy.setActive( true );
-        proxy.setHost( "127.0.0.1" );
-        proxy.setPort( 80 );
-        proxy.setProtocol( "http" );
-        proxy.setUsername( "toto" );
-        proxy.setPassword( "toto" );
-        proxy.setNonProxyHosts( "www.google.com|*.somewhere.com" );
-        settings.addProxy( proxy );
-
-        cmdLine = "javadoc.exe " + "-J-Dhttp.proxySet=true " + "-J-Dhttp.proxyHost=127.0.0.1 "
-            + "-J-Dhttp.proxyPort=80 " + "-J-Dhttp.nonProxyHosts=\"www.google.com|*.somewhere.com\" "
-            + "-J-Dhttp.proxyUser=\"toto\" " + "-J-Dhttp.proxyPassword=\"toto\" " + "@options @packages";
-        cmdLine = JavadocUtil.hideProxyPassword( cmdLine, settings );
-        assertTrue(cmdLine.contains("-J-Dhttp.proxyPassword=\"****\""));
-
-        settings = new Settings();
-        proxy = new Proxy();
-        proxy.setActive( true );
-        proxy.setHost( "127.0.0.1" );
-        proxy.setPort( 80 );
-        proxy.setProtocol( "http" );
-        proxy.setUsername( "toto" );
-        proxy.setNonProxyHosts( "www.google.com|*.somewhere.com" );
-        settings.addProxy( proxy );
-
-        cmdLine = "javadoc.exe " + "-J-Dhttp.proxySet=true " + "-J-Dhttp.proxyHost=127.0.0.1 "
-        + "-J-Dhttp.proxyPort=80 " + "-J-Dhttp.nonProxyHosts=\"www.google.com|*.somewhere.com\" "
-        + "-J-Dhttp.proxyUser=\"toto\" " + "-J-Dhttp.proxyPassword=\"toto\" " + "@options @packages";
-        cmdLine = JavadocUtil.hideProxyPassword( cmdLine, null );
-        assertFalse(cmdLine.contains("-J-Dhttp.proxyPassword=\"****\""));
-    }
-
-    /**
      * Method to test isValidPackageList()
      *
      * @throws Exception if any

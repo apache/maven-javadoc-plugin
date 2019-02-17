@@ -3647,40 +3647,67 @@ public abstract class AbstractJavadocMojo
      */
     private void addProxyArg( Commandline cmd )
     {
-        if ( settings == null || settings.getActiveProxy() == null )
+        if ( settings == null || settings.getProxies().isEmpty() )
         {
             return;
         }
 
-        Proxy activeProxy = settings.getActiveProxy();
-        String protocol = StringUtils.isNotEmpty( activeProxy.getProtocol() ) ? activeProxy.getProtocol() + "." : "";
+        Map<String, Proxy> activeProxies = new HashMap<>();
 
-        if ( StringUtils.isNotEmpty( activeProxy.getHost() ) )
+        for ( Proxy proxy : settings.getProxies() )
         {
-            cmd.createArg().setValue( "-J-D" + protocol + "proxySet=true" );
-            cmd.createArg().setValue( "-J-D" + protocol + "proxyHost=" + activeProxy.getHost() );
-
-            if ( activeProxy.getPort() > 0 )
+            if ( proxy.isActive() )
             {
-                cmd.createArg().setValue( "-J-D" + protocol + "proxyPort=" + activeProxy.getPort() );
+                String protocol = proxy.getProtocol();
+
+                if ( !activeProxies.containsKey( protocol ) )
+            {
+                    activeProxies.put( protocol, proxy );
+                }
+            }
             }
 
-            if ( StringUtils.isNotEmpty( activeProxy.getNonProxyHosts() ) )
+        if ( activeProxies.containsKey( "https" ) )
+        {
+            Proxy httpsProxy = activeProxies.get( "https" );
+            if ( StringUtils.isNotEmpty( httpsProxy.getHost() ) )
             {
-                cmd.createArg().setValue(
-                    "-J-D" + protocol + "nonProxyHosts=\"" + activeProxy.getNonProxyHosts() + "\"" );
-            }
+                cmd.createArg().setValue( "-J-Dhttps.proxyHost=" + httpsProxy.getHost() );
+                cmd.createArg().setValue( "-J-Dhttps.proxyPort=" + httpsProxy.getPort() );
 
-            if ( StringUtils.isNotEmpty( activeProxy.getUsername() ) )
-            {
-                cmd.createArg().setValue( "-J-Dhttp.proxyUser=\"" + activeProxy.getUsername() + "\"" );
-
-                if ( StringUtils.isNotEmpty( activeProxy.getPassword() ) )
+                if ( StringUtils.isNotEmpty( httpsProxy.getNonProxyHosts() )
+                     && ( !activeProxies.containsKey( "http" )
+                          || StringUtils.isEmpty( activeProxies.get( "http" ).getNonProxyHosts() ) ) )
                 {
-                    cmd.createArg().setValue( "-J-Dhttp.proxyPassword=\"" + activeProxy.getPassword() + "\"" );
+                    cmd.createArg().setValue( "-J-Dhttp.nonProxyHosts=\""
+                                              + httpsProxy.getNonProxyHosts().replace( "|", "^|" ) + "\"" );
                 }
             }
         }
+
+        if ( activeProxies.containsKey( "http" ) )
+        {
+            Proxy httpProxy = activeProxies.get( "http" );
+            if ( StringUtils.isNotEmpty( httpProxy.getHost() ) )
+            {
+                cmd.createArg().setValue( "-J-Dhttp.proxyHost=" + httpProxy.getHost() );
+                cmd.createArg().setValue( "-J-Dhttp.proxyPort=" + httpProxy.getPort() );
+
+                if ( !activeProxies.containsKey( "https" ) )
+            {
+                    cmd.createArg().setValue( "-J-Dhttps.proxyHost=" + httpProxy.getHost() );
+                    cmd.createArg().setValue( "-J-Dhttps.proxyPort=" + httpProxy.getPort() );
+                }
+
+                if ( StringUtils.isNotEmpty( httpProxy.getNonProxyHosts() ) )
+                {
+                    cmd.createArg().setValue( "-J-Dhttp.nonProxyHosts=\""
+                                              + httpProxy.getNonProxyHosts().replace( "|", "^|" ) + "\"" );
+                }
+            }
+        }
+
+        // We bravely ignore FTP because no one (probably) uses FTP for Javadoc
     }
 
     /**
@@ -5684,7 +5711,6 @@ public abstract class AbstractJavadocMojo
         if ( debug )
         {
             cmdLine = CommandLineUtils.toString( cmd.getCommandline() ).replaceAll( "'", "" );
-            cmdLine = JavadocUtil.hideProxyPassword( cmdLine, settings );
 
             writeDebugJavadocScript( cmdLine, javadocOutputDirectory );
         }
@@ -5702,7 +5728,6 @@ public abstract class AbstractJavadocMojo
                 if ( cmdLine == null )
                 {
                     cmdLine = CommandLineUtils.toString( cmd.getCommandline() ).replaceAll( "'", "" );
-                    cmdLine = JavadocUtil.hideProxyPassword( cmdLine, settings );
                 }
                 writeDebugJavadocScript( cmdLine, javadocOutputDirectory );
 

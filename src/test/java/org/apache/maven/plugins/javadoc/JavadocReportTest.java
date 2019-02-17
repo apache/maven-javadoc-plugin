@@ -66,7 +66,7 @@ public class JavadocReportTest
     private static boolean TEST_REPO_CREATED = false;
 
     private File unit;
-    
+
     private File localRepo;
 
     /** {@inheritDoc} */
@@ -79,10 +79,10 @@ public class JavadocReportTest
         unit = new File( getBasedir(), "src/test/resources/unit" );
 
         localRepo = new File( getBasedir(), "target/local-repo/" );
-        
+
         createTestRepo();
     }
-    
+
 
     private JavadocReport lookupMojo( File testPom )
         throws Exception
@@ -96,9 +96,9 @@ public class JavadocReportTest
         MavenProject currentProject = new MavenProjectStub();
         currentProject.setGroupId( "GROUPID" );
         currentProject.setArtifactId( "ARTIFACTID" );
-        
+
         setVariableValueToObject( mojo, "session", newMavenSession( currentProject ) );
-        
+
         return mojo;
     }
 
@@ -237,7 +237,7 @@ public class JavadocReportTest
         assertTrue( generatedFile.exists() );
 
         // only test when URL can be reached
-        
+
         String url = mojo.getDefaultJavadocApiLink().getUrl();
         HttpURLConnection connection = (HttpURLConnection) new URL( url ).openConnection();
         connection.setRequestMethod( "HEAD" );
@@ -258,7 +258,7 @@ public class JavadocReportTest
             assertTrue( new File( apidocs, "allclasses-frame.html" ).exists() );
             assertTrue( new File( apidocs, "allclasses-noframe.html" ).exists() );
         }
-        
+
         // class level generated javadoc files
         assertTrue( new File( apidocs, "def/configuration/class-use/App.html" ).exists() );
         assertTrue( new File( apidocs, "def/configuration/class-use/AppSample.html" ).exists() );
@@ -276,7 +276,7 @@ public class JavadocReportTest
         {
             assertTrue( new File( apidocs, "element-list" ).exists() );
         }
-        else 
+        else
         {
             assertTrue( new File( apidocs, "package-list" ).exists() );
         }
@@ -338,7 +338,7 @@ public class JavadocReportTest
         {
             return;
         }
-        
+
         File testPom = new File( unit, "docfiles-test/docfiles-test-plugin-config.xml" );
         JavadocReport mojo = lookupMojo( testPom );
         mojo.execute();
@@ -442,7 +442,7 @@ public class JavadocReportTest
 
         File testPom = new File( unit, "doclet-test/doclet-test-plugin-config.xml" );
         JavadocReport mojo = lookupMojo( testPom );
-        
+
         MavenSession session = spy( newMavenSession( mojo.project ) );
         ProjectBuildingRequest buildingRequest = mock( ProjectBuildingRequest.class );
         when( buildingRequest.getRemoteRepositories() ).thenReturn( mojo.project.getRemoteArtifactRepositories() );
@@ -453,9 +453,9 @@ public class JavadocReportTest
         when( session.getRepositorySession() ).thenReturn( repositorySession );
         LegacySupport legacySupport = lookup( LegacySupport.class );
         legacySupport.setSession( session );
-        
+
         setVariableValueToObject( mojo, "session", session );
-        
+
         mojo.execute();
 
         File generatedFile = new File( getBasedir(), "target/test/unit/doclet-test/target/site/apidocs/graph.dot" );
@@ -486,7 +486,7 @@ public class JavadocReportTest
         assertTrue( options.contains( "/target/local-repo/umlgraph/UMLGraph-bis/2.1/UMLGraph-bis-2.1.jar" ) );
     }
 
-    
+
 
     /**
      * Method to test when the path to the project sources has an apostrophe (')
@@ -611,7 +611,7 @@ public class JavadocReportTest
         // ----------------------------------------------------------------------
         // taglet-test: check if a taglet is used
         // ----------------------------------------------------------------------
-        
+
         // Should be an assumption, but not supported by TestCase
         // com.sun.tools.doclets.Taglet not supported by Java9 anymore
         // Should be refactored with jdk.javadoc.doclet.Taglet
@@ -619,10 +619,10 @@ public class JavadocReportTest
         {
             return;
         }
-        
+
         File testPom = new File( unit, "taglet-test/taglet-test-plugin-config.xml" );
         JavadocReport mojo = lookupMojo( testPom );
-        
+
         MavenSession session = spy( newMavenSession( mojo.project ) );
         ProjectBuildingRequest buildingRequest = mock( ProjectBuildingRequest.class );
         when( buildingRequest.getRemoteRepositories() ).thenReturn( mojo.project.getRemoteArtifactRepositories() );
@@ -633,9 +633,9 @@ public class JavadocReportTest
         when( session.getRepositorySession() ).thenReturn( repositorySession );
         LegacySupport legacySupport = lookup( LegacySupport.class );
         legacySupport.setSession( session );
-        
+
         setVariableValueToObject( mojo, "session", session );
-        
+
         mojo.execute();
 
         File apidocs = new File( getBasedir(), "target/test/unit/taglet-test/target/site/apidocs" );
@@ -662,7 +662,7 @@ public class JavadocReportTest
         {
             return;
         }
-        
+
         File testPom = new File( unit, "jdk5-test/jdk5-test-plugin-config.xml" );
         JavadocReport mojo = lookupMojo( testPom );
         mojo.execute();
@@ -793,8 +793,8 @@ public class JavadocReportTest
         String readed = readFile( app );
         assertTrue( readed.contains( ">To do something:</" ) );
         assertTrue( readed.contains( ">Generator Class:</" ) );
-        
-        // In javadoc-options-javadoc-resources.xml tag 'version' has only a name, 
+
+        // In javadoc-options-javadoc-resources.xml tag 'version' has only a name,
         // which is not enough for Java 11 anymore
         if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "11" ) )
         {
@@ -862,7 +862,7 @@ public class JavadocReportTest
         {
             return;
         }
-        
+
         File testPom = new File( unit, "jdk6-test/jdk6-test-plugin-config.xml" );
         JavadocReport mojo = lookupMojo( testPom );
         mojo.execute();
@@ -873,13 +873,13 @@ public class JavadocReportTest
         File overview;
         if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "11" ) )
         {
-            overview = new File( apidocs, "overview-summary.html" );    
+            overview = new File( apidocs, "overview-summary.html" );
         }
         else
         {
             overview = new File( apidocs, "index.html" );
         }
-        
+
         assertTrue( overview.exists() );
         String content = readFile( overview );
         assertTrue( content.contains( "Top - Copyright &#169; All rights reserved." ) );
@@ -917,7 +917,7 @@ public class JavadocReportTest
 
         File testPom = new File( getBasedir(), "src/test/resources/unit/proxy-test/proxy-test-plugin-config.xml" );
         JavadocReport mojo = lookupMojo( testPom );
-        
+
         MavenSession session = spy( newMavenSession( mojo.project ) );
         ProjectBuildingRequest buildingRequest = mock( ProjectBuildingRequest.class );
         when( buildingRequest.getRemoteRepositories() ).thenReturn( mojo.project.getRemoteArtifactRepositories() );
@@ -928,7 +928,7 @@ public class JavadocReportTest
         when( session.getRepositorySession() ).thenReturn( repositorySession );
         LegacySupport legacySupport = lookup( LegacySupport.class );
         legacySupport.setSession( session );
-        
+
         setVariableValueToObject( mojo, "settings", settings );
         setVariableValueToObject( mojo, "session", session );
         mojo.execute();
@@ -936,12 +936,9 @@ public class JavadocReportTest
         File commandLine = new File( getBasedir(), "target/test/unit/proxy-test/target/site/apidocs/javadoc." + ( SystemUtils.IS_OS_WINDOWS ? "bat" : "sh" ) );
         assertTrue( FileUtils.fileExists( commandLine.getAbsolutePath() ) );
         String readed = readFile( commandLine );
-        assertTrue( readed.contains( "-J-Dhttp.proxySet=true" ) );
         assertTrue( readed.contains( "-J-Dhttp.proxyHost=127.0.0.1" ) );
         assertTrue( readed.contains( "-J-Dhttp.proxyPort=80" ) );
-        assertTrue( readed.contains( "-J-Dhttp.proxyUser=\\\"toto\\\"" ) );
-        assertTrue( readed.contains( "-J-Dhttp.proxyPassword=\\\"toto\\\"" ) );
-        assertTrue( readed.contains( "-J-Dhttp.nonProxyHosts=\\\"www.google.com|*.somewhere.com\\\"" ) );
+        assertTrue( readed.contains( "-J-Dhttp.nonProxyHosts=\\\"www.google.com^|*.somewhere.com\\\"" ) );
 
         File options = new File( getBasedir(), "target/test/unit/proxy-test/target/site/apidocs/options" );
         assertTrue( FileUtils.fileExists( options.getAbsolutePath() ) );
@@ -971,7 +968,6 @@ public class JavadocReportTest
             setVariableValueToObject( mojo, "session", session );
             mojo.execute();
             readed = readFile( commandLine );
-            assertTrue( readed.contains( "-J-Dhttp.proxySet=true" ) );
             assertTrue( readed.contains( "-J-Dhttp.proxyHost=" + proxyServer.getHostName() ) );
             assertTrue( readed.contains( "-J-Dhttp.proxyPort=" + proxyServer.getPort() ) );
 
@@ -1019,11 +1015,8 @@ public class JavadocReportTest
             setVariableValueToObject( mojo, "session", session );
             mojo.execute();
             readed = readFile( commandLine );
-            assertTrue( readed.contains( "-J-Dhttp.proxySet=true" ) );
             assertTrue( readed.contains( "-J-Dhttp.proxyHost=" + proxyServer.getHostName() ) );
             assertTrue( readed.contains( "-J-Dhttp.proxyPort=" + proxyServer.getPort() ) );
-            assertTrue( readed.contains( "-J-Dhttp.proxyUser=\\\"foo\\\"" ) );
-            assertTrue( readed.contains( "-J-Dhttp.proxyPassword=\\\"bar\\\"" ) );
 
             optionsContent = readFile( options );
             // -link expected
@@ -1127,7 +1120,7 @@ public class JavadocReportTest
         {
             return;
         }
-        
+
         File testPom = new File( unit, "tagletArtifacts-test/tagletArtifacts-test-plugin-config.xml" );
         JavadocReport mojo = lookupMojo( testPom );
 
@@ -1297,7 +1290,7 @@ public class JavadocReportTest
         throws Exception
     {
         File testPom = new File( unit, "helpfile-test/pom.xml" );
-        
+
         JavadocReport mojo = lookupMojo( testPom );
         assertNotNull( mojo );
 
@@ -1329,9 +1322,9 @@ public class JavadocReportTest
 
         // helpfile defined in a javadoc plugin dependency
         setVariableValueToObject( mojo, "helpfile", "com/mycompany/app/javadoc/helpfile/help-doc.html" );
-        
+
         setVariableValueToObject( mojo, "session", session );
-        
+
         mojo.execute();
 
         content = readFile( helpfile );
