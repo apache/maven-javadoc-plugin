@@ -2442,32 +2442,6 @@ public abstract class AbstractJavadocMojo
 
         final SourceResolverConfig config = getDependencySourceResolverConfig();
 
-        final List<TransformableFilter> andFilters = new ArrayList<>();
-
-        final List<String> dependencyIncludes = dependencySourceIncludes;
-        final List<String> dependencyExcludes = dependencySourceExcludes;
-
-        if ( !includeTransitiveDependencySources || isNotEmpty( dependencyIncludes ) || isNotEmpty(
-            dependencyExcludes ) )
-        {
-            if ( !includeTransitiveDependencySources )
-            {
-                andFilters.add( createDependencyArtifactFilter() );
-            }
-
-            if ( isNotEmpty( dependencyIncludes ) )
-            {
-                andFilters.add( new PatternInclusionsFilter( dependencyIncludes ) );
-            }
-
-            if ( isNotEmpty( dependencyExcludes ) )
-            {
-                andFilters.add( new PatternExclusionsFilter( dependencyExcludes ) );
-            }
-
-            config.withFilter( new AndFilter( andFilters ) );
-        }
-
         try
         {
             return resourceResolver.resolveDependencySourcePaths( config );
@@ -2506,9 +2480,41 @@ public abstract class AbstractJavadocMojo
      */
     private SourceResolverConfig getDependencySourceResolverConfig()
     {
-        return configureDependencySourceResolution(
-                        new SourceResolverConfig( project, session.getProjectBuildingRequest(),
-                                                  sourceDependencyCacheDir ).withReactorProjects( reactorProjects ) );
+        final List<TransformableFilter> andFilters = new ArrayList<>();
+
+        final List<String> dependencyIncludes = dependencySourceIncludes;
+        final List<String> dependencyExcludes = dependencySourceExcludes;
+
+        if ( !includeTransitiveDependencySources || isNotEmpty( dependencyIncludes ) || isNotEmpty(
+            dependencyExcludes ) )
+        {
+            if ( !includeTransitiveDependencySources )
+            {
+                andFilters.add( createDependencyArtifactFilter() );
+            }
+
+            if ( isNotEmpty( dependencyIncludes ) )
+            {
+                andFilters.add( new PatternInclusionsFilter( dependencyIncludes ) );
+            }
+
+            if ( isNotEmpty( dependencyExcludes ) )
+            {
+                andFilters.add( new PatternExclusionsFilter( dependencyExcludes ) );
+            }
+        }
+        
+        return configureDependencySourceResolution( new SourceResolverConfig( project,
+                                                  getProjectBuildingRequest( project ),
+                                                  sourceDependencyCacheDir ).withReactorProjects( reactorProjects ) )
+                                                                            .withFilter( new AndFilter( andFilters ) );
+        
+    }
+    
+    private ProjectBuildingRequest getProjectBuildingRequest( MavenProject currentProject )
+    {
+        return new DefaultProjectBuildingRequest( session.getProjectBuildingRequest() )
+                          .setRemoteRepositories( currentProject.getRemoteArtifactRepositories() );
     }
 
     /**
@@ -2707,9 +2713,7 @@ public abstract class AbstractJavadocMojo
                         sb.append( subProject.getArtifactId() ).append( ":" );
                         sb.append( subProject.getVersion() ).append( '\n' );
 
-                        ProjectBuildingRequest buildingRequest = session.getProjectBuildingRequest();
-                        buildingRequest =
-                            buildingRequest.setRemoteRepositories( subProject.getRemoteArtifactRepositories() );
+                        ProjectBuildingRequest buildingRequest = getProjectBuildingRequest( subProject );
 
                         List<Dependency> managedDependencies = null;
                         if ( subProject.getDependencyManagement() != null )
@@ -2783,7 +2787,7 @@ public abstract class AbstractJavadocMojo
 
         try
         {
-            return artifactResolver.resolveArtifact( session.getProjectBuildingRequest(), coordinate ).getArtifact();
+            return artifactResolver.resolveArtifact( getProjectBuildingRequest( project ), coordinate ).getArtifact();
         }
         catch ( ArtifactResolverException e )
         {
@@ -3573,7 +3577,7 @@ public abstract class AbstractJavadocMojo
             coordinate.setVersion( javadocArtifact.getVersion() );
 
             Iterable<ArtifactResult> deps =
-                dependencyResolver.resolveDependencies( session.getProjectBuildingRequest(), coordinate,
+                dependencyResolver.resolveDependencies( getProjectBuildingRequest( project ), coordinate,
                                                         ScopeFilter.including( "compile", "provided" ) );
             for ( ArtifactResult a : deps )
             {
@@ -3607,11 +3611,7 @@ public abstract class AbstractJavadocMojo
         coordinate.setArtifactId( javadocArtifact.getArtifactId() );
         coordinate.setVersion( javadocArtifact.getVersion() );
 
-        DefaultProjectBuildingRequest buildingRequest =
-            new DefaultProjectBuildingRequest( session.getProjectBuildingRequest() );
-        buildingRequest.setRemoteRepositories( project.getRemoteArtifactRepositories() );
-
-        return artifactResolver.resolveArtifact( buildingRequest, coordinate ).getArtifact();
+        return artifactResolver.resolveArtifact( getProjectBuildingRequest( project ), coordinate ).getArtifact();
     }
 
     /**
@@ -6142,7 +6142,7 @@ public abstract class AbstractJavadocMojo
             try
             {
                 MavenProject artifactProject =
-                    mavenProjectBuilder.build( artifact, session.getProjectBuildingRequest() ).getProject();
+                    mavenProjectBuilder.build( artifact, getProjectBuildingRequest( project ) ).getProject();
 
                 if ( StringUtils.isNotEmpty( artifactProject.getUrl() ) )
                 {

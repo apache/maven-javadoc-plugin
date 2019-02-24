@@ -24,7 +24,7 @@
   
   <repositories>
     <repository>
-      <id>local.private</id>
+      <id>repo494</id>
       <url>@mrm.3rdparty.url@</url>
       <releases>
         <enabled>true</enabled>
