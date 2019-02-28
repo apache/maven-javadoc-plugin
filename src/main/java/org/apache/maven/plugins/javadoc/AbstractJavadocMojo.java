@@ -6249,7 +6249,8 @@ public abstract class AbstractJavadocMojo
         }
         else if ( javaApiversion.isAtLeast( "11" ) )
         {
-            javaApiLink = String.format( "https://docs.oracle.com/en/java/javase/%s/docs/api/", javaApiversion );
+            javaApiLink = String.format( "https://docs.oracle.com/en/java/javase/%s/docs/api/",
+                javaApiversion.getValue( 1 ) );
         }
         else if ( javaApiversion.asMajor().isAtLeast( "6" ) )
         {
