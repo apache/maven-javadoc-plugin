@@ -6249,12 +6249,13 @@ public abstract class AbstractJavadocMojo
         }
         else if ( javaApiversion.isAtLeast( "11" ) )
         {
-            javaApiLink = String.format( "https://docs.oracle.com/en/java/javase/%s/docs/api/",
-                javaApiversion.getValue( 1 ) );
+            javaApiLink =
+                String.format( "https://docs.oracle.com/en/java/javase/%s/docs/api/", javaApiversion.getValue( 1 ) );
         }
         else if ( javaApiversion.asMajor().isAtLeast( "6" ) )
         {
-            javaApiLink = String.format( "https://docs.oracle.com/javase/%s/docs/api/", javaApiversion.asMajor() );
+            javaApiLink =
+                String.format( "https://docs.oracle.com/javase/%s/docs/api/", javaApiversion.asMajor().getValue( 1 ) );
         }
         else if ( javaApiversion.isAtLeast( "1.5" ) )
         {
