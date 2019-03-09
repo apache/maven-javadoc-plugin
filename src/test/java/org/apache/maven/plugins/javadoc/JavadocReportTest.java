@@ -18,6 +18,12 @@ package org.apache.maven.plugins.javadoc;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -49,6 +55,7 @@ import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
+import org.junit.AssumptionViolatedException;
 import org.sonatype.aether.impl.internal.SimpleLocalRepositoryManager;
 
 /**
@@ -233,7 +240,8 @@ public class JavadocReportTest
         // package level generated javadoc files
         File apidocs = new File( getBasedir(), "target/test/unit/default-configuration/target/site/apidocs" );
 
-        File generatedFile = new File( apidocs, "def/configuration/App.html" );
+        String appHtml = "def/configuration/App.html";
+        File generatedFile = new File( apidocs, appHtml );
         assertTrue( generatedFile.exists() );
 
         // only test when URL can be reached
@@ -241,9 +249,20 @@ public class JavadocReportTest
         String url = mojo.getDefaultJavadocApiLink().getUrl();
         HttpURLConnection connection = (HttpURLConnection) new URL( url ).openConnection();
         connection.setRequestMethod( "HEAD" );
-        if ( connection.getResponseCode() == 200 )
+        if ( connection.getResponseCode() == HttpURLConnection.HTTP_OK  )
         {
-            assertTrue( FileUtils.fileRead( generatedFile, "UTF-8" ).contains( "/docs/api/java/lang/Object.html" ) );
+            try 
+            {
+                assumeThat( connection.getURL().toString(), is( url ) );
+
+                assertThat( url + " available, but " + appHtml + " is missing link to java.lang.Object",
+                            FileUtils.fileRead( generatedFile, "UTF-8" ),
+                            containsString( "/docs/api/java/lang/Object.html" ) );
+            }
+            catch ( AssumptionViolatedException e )
+            {
+                System.out.println( "Warning: ignoring defaultAPI check: " + e.getMessage() );
+            }
         }
 
         assertTrue( new File( apidocs, "def/configuration/AppSample.html" ).exists() );
