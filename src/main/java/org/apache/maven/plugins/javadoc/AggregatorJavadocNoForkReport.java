@@ -28,8 +28,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  * Generates documentation for the <code>Java code</code> in an <b>aggregator</b> project using the standard
  * <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/">Javadoc Tool</a>.
  *
- * @version $Id$
- * @since 3.0.1
+ * @since 3.1.0
  */
 @Mojo( name = "aggregate-no-fork", requiresDependencyResolution = ResolutionScope.COMPILE )
 @Execute( phase = LifecyclePhase.NONE )
