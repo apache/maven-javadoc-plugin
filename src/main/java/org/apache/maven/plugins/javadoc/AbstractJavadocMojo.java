@@ -1689,7 +1689,7 @@ public abstract class AbstractJavadocMojo
      *   &lt;additionalDependency&gt;
      *     &lt;groupId&gt;geronimo-spec&lt;/groupId&gt;
      *     &lt;artifactId&gt;geronimo-spec-jta&lt;/artifactId&gt;
-     *     &lt;version&gt;1.0.1B-rc4:&lt;/version&gt;
+     *     &lt;version&gt;1.0.1B-rc4&lt;/version&gt;
      *   &lt;/additionalDependency&gt;
      * &lt;/additionalDependencies&gt;
      * </pre>
