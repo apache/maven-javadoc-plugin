@@ -1702,6 +1702,8 @@ public abstract class AbstractJavadocMojo
     /**
      * Include filters on the source files. Default is **\/\*.java.
      * These are ignored if you specify subpackages or subpackage excludes.
+     *
+     * @since 2.9
      */
     @Parameter
     private List<String> sourceFileIncludes;
@@ -1709,6 +1711,8 @@ public abstract class AbstractJavadocMojo
     /**
      * exclude filters on the source files.
      * These are ignored if you specify subpackages or subpackage excludes.
+     *
+     * @since 2.9
      */
     @Parameter
     private List<String> sourceFileExcludes;
