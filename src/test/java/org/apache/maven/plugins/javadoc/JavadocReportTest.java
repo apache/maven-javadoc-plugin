@@ -21,6 +21,7 @@ package org.apache.maven.plugins.javadoc;
 
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
+import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 
@@ -257,7 +258,8 @@ public class JavadocReportTest
 
                 assertThat( url + " available, but " + appHtml + " is missing link to java.lang.Object",
                             FileUtils.fileRead( generatedFile, "UTF-8" ),
-                            containsString( "/docs/api/java/lang/Object.html" ) );
+                            anyOf( containsString( "/docs/api/java/lang/Object.html" ), 
+                            containsString( "/docs/api/java.base/java/lang/Object.html" ) ) );
             }
             catch ( AssumptionViolatedException e )
             {
