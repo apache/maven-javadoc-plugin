@@ -4933,7 +4933,8 @@ public abstract class AbstractJavadocMojo
         Map<String, JavaModuleDescriptor> allModuleDescriptors = new HashMap<>();
 
         boolean supportModulePath = javadocRuntimeVersion.isAtLeast( "9" )
-            && ( source == null || JavaVersion.parse( source ).isAtLeast( "9" ) );
+            && ( source == null || JavaVersion.parse( source ).isAtLeast( "9" ) )
+            && ( release == null || JavaVersion.parse( release ).isAtLeast( "9" ) );
 
         if ( supportModulePath )
         {
