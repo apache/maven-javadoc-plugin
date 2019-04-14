@@ -19,48 +19,6 @@ package org.apache.maven.plugins.javadoc;
  * under the License.
  */
 
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.client.params.CookiePolicy;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.params.ConnRoutePNames;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.settings.Proxy;
-import org.apache.maven.settings.Settings;
-import org.apache.maven.shared.invoker.DefaultInvocationRequest;
-import org.apache.maven.shared.invoker.DefaultInvoker;
-import org.apache.maven.shared.invoker.InvocationOutputHandler;
-import org.apache.maven.shared.invoker.InvocationRequest;
-import org.apache.maven.shared.invoker.InvocationResult;
-import org.apache.maven.shared.invoker.Invoker;
-import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.apache.maven.shared.invoker.PrintStreamHandler;
-import org.apache.maven.wagon.proxy.ProxyInfo;
-import org.apache.maven.wagon.proxy.ProxyUtils;
-import org.codehaus.plexus.languages.java.version.JavaVersion;
-import org.codehaus.plexus.util.DirectoryScanner;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.Os;
-import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.plexus.util.cli.CommandLineException;
-import org.codehaus.plexus.util.cli.CommandLineUtils;
-import org.codehaus.plexus.util.cli.Commandline;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -100,6 +58,53 @@ import java.util.jar.JarInputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.message.BasicHeader;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.settings.Proxy;
+import org.apache.maven.settings.Settings;
+import org.apache.maven.shared.invoker.DefaultInvocationRequest;
+import org.apache.maven.shared.invoker.DefaultInvoker;
+import org.apache.maven.shared.invoker.InvocationOutputHandler;
+import org.apache.maven.shared.invoker.InvocationRequest;
+import org.apache.maven.shared.invoker.InvocationResult;
+import org.apache.maven.shared.invoker.Invoker;
+import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.apache.maven.shared.invoker.PrintStreamHandler;
+import org.apache.maven.wagon.proxy.ProxyInfo;
+import org.apache.maven.wagon.proxy.ProxyUtils;
+import org.codehaus.plexus.languages.java.version.JavaVersion;
+import org.codehaus.plexus.util.DirectoryScanner;
+import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.IOUtil;
+import org.codehaus.plexus.util.Os;
+import org.codehaus.plexus.util.StringUtils;
+import org.codehaus.plexus.util.cli.CommandLineException;
+import org.codehaus.plexus.util.cli.CommandLineUtils;
+import org.codehaus.plexus.util.cli.Commandline;
 
 /**
  * Set of utilities methods for Javadoc.
@@ -1535,10 +1540,9 @@ public class JavadocUtil
         {
             return url;
         }
-        HttpClient httpClient = null;
-        try
+
+        try ( CloseableHttpClient httpClient = createHttpClient( settings, url ) )
         {
-            httpClient = createHttpClient( settings, url );
             HttpClientContext httpContext = HttpClientContext.create();
             HttpGet httpMethod = new HttpGet( url.toString() );
             HttpResponse response = httpClient.execute( httpMethod, httpContext );
@@ -1551,13 +1555,6 @@ public class JavadocUtil
 
             List<URI> redirects = httpContext.getRedirectLocations();
             return isEmpty( redirects ) ? url : redirects.get( redirects.size() - 1 ).toURL();
-        }
-        finally
-        {
-            if ( httpClient != null )
-            {
-                httpClient.getConnectionManager().shutdown();
-            }
         }
     }
 
@@ -1639,7 +1636,7 @@ public class JavadocUtil
         else
         {
             // http, https...
-            final HttpClient httpClient = createHttpClient( settings, url );
+            final CloseableHttpClient httpClient = createHttpClient( settings, url );
 
             final HttpGet httpMethod = new HttpGet( url.toString() );
 
@@ -1693,7 +1690,7 @@ public class JavadocUtil
                     }
                     if ( httpClient != null )
                     {
-                        httpClient.getConnectionManager().shutdown();
+                        httpClient.close();
                     }
                 }
             };
@@ -1751,22 +1748,29 @@ public class JavadocUtil
      * @see #DEFAULT_TIMEOUT
      * @since 2.8
      */
-    private static HttpClient createHttpClient( Settings settings, URL url )
+    private static CloseableHttpClient createHttpClient( Settings settings, URL url )
     {
-        DefaultHttpClient httpClient = new DefaultHttpClient( new PoolingClientConnectionManager() );
-        httpClient.getParams().setIntParameter( CoreConnectionPNames.SO_TIMEOUT, DEFAULT_TIMEOUT );
-        httpClient.getParams().setIntParameter( CoreConnectionPNames.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT );
-        httpClient.getParams().setBooleanParameter( ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true );
-
+        HttpClientBuilder builder = HttpClients.custom();
+        
+        Registry<ConnectionSocketFactory> csfRegistry =
+            RegistryBuilder.<ConnectionSocketFactory>create()
+                .register( "http", PlainConnectionSocketFactory.getSocketFactory() )
+                .register( "https", SSLConnectionSocketFactory.getSystemSocketFactory() )
+                .build();
+        
+        builder.setConnectionManager( new PoolingHttpClientConnectionManager( csfRegistry ) );
+        builder.setDefaultRequestConfig( RequestConfig.custom()
+                                         .setSocketTimeout( DEFAULT_TIMEOUT )
+                                         .setConnectTimeout( DEFAULT_TIMEOUT )
+                                         .setCircularRedirectsAllowed( true )
+                                         .setCookieSpec( CookieSpecs.IGNORE_COOKIES )
+                                         .build() );
+        
         // Some web servers don't allow the default user-agent sent by httpClient
-        httpClient.getParams().setParameter( CoreProtocolPNames.USER_AGENT,
-                                             "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)" );
+        builder.setUserAgent( "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)" );
 
         // Some server reject requests that do not have an Accept header
-        httpClient.getParams().setParameter( ClientPNames.DEFAULT_HEADERS,
-                                             Arrays.asList( new BasicHeader( HttpHeaders.ACCEPT, "*/*" ) ) );
-
-        httpClient.getParams().setParameter( ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY );
+        builder.setDefaultHeaders( Arrays.asList( new BasicHeader( HttpHeaders.ACCEPT, "*/*" ) ) );
 
         if ( settings != null && settings.getActiveProxy() != null )
         {
@@ -1779,19 +1783,20 @@ public class JavadocUtil
                 && ( url == null || !ProxyUtils.validateNonProxyHosts( proxyInfo, url.getHost() ) ) )
             {
                 HttpHost proxy = new HttpHost( activeProxy.getHost(), activeProxy.getPort() );
-                httpClient.getParams().setParameter( ConnRoutePNames.DEFAULT_PROXY, proxy );
+                builder.setProxy( proxy );
 
                 if ( StringUtils.isNotEmpty( activeProxy.getUsername() ) && activeProxy.getPassword() != null )
                 {
                     Credentials credentials =
                         new UsernamePasswordCredentials( activeProxy.getUsername(), activeProxy.getPassword() );
 
-                    httpClient.getCredentialsProvider().setCredentials( AuthScope.ANY, credentials );
+                    CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                    credentialsProvider.setCredentials( AuthScope.ANY, credentials );
+                    builder.setDefaultCredentialsProvider( credentialsProvider );
                 }
             }
         }
-
-        return httpClient;
+        return builder.build();
     }
 
     static boolean equalsIgnoreCase( String value, String... strings )
