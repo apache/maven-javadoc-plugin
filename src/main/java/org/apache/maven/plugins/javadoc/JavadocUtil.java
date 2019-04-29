@@ -32,6 +32,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Modifier;
 import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
@@ -1554,7 +1555,33 @@ public class JavadocUtil
             }
 
             List<URI> redirects = httpContext.getRedirectLocations();
-            return isEmpty( redirects ) ? url : redirects.get( redirects.size() - 1 ).toURL();
+
+            if ( isEmpty( redirects ) )
+            {
+                return url;
+            }
+            else
+            {
+                URI last = redirects.get( redirects.size() - 1 );
+
+                // URI must refer to directory, so prevent redirects to index.html
+                // see https://issues.apache.org/jira/browse/MJAVADOC-539
+                String truncate = "index.html";
+                if ( last.getPath().endsWith( "/" + truncate ) )
+                {
+                    try
+                    {
+                        String fixedPath = last.getPath().substring( 0, last.getPath().length() - truncate.length() );
+                        last = new URI( last.getScheme(), last.getAuthority(), fixedPath, last.getQuery(),
+                                last.getFragment() );
+                    }
+                    catch ( URISyntaxException ex )
+                    {
+                        // not supposed to happen, but when it does just keep the last URI
+                    }
+                }
+                return last.toURL();
+            }
         }
     }
 
