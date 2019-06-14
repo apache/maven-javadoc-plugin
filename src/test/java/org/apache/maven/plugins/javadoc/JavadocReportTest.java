@@ -57,6 +57,7 @@ import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.junit.AssumptionViolatedException;
+import org.junit.Ignore;
 import org.sonatype.aether.impl.internal.SimpleLocalRepositoryManager;
 
 /**
@@ -920,9 +921,12 @@ public class JavadocReportTest
      *
      * @throws Exception if any
      */
+    @Ignore("We don't really want to have unit test which need internet access")
     public void testProxy()
         throws Exception
     {
+        // ignore test as annotation doesn't ignore anything..
+        if(true) return;
         Settings settings = new Settings();
         Proxy proxy = new Proxy();
 
