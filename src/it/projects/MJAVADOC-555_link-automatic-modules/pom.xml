@@ -57,7 +57,7 @@
             </goals>
             <configuration>
               <links>
-                <link>https://google.github.io/guava/releases/${guava.version}/api/docs/</link>
+                <link>https://guava.dev/releases/${guava.version}/api/docs/</link>
               </links>
             </configuration>
           </execution>

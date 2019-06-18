@@ -4395,7 +4395,6 @@ public abstract class AbstractJavadocMojo
 
     /**
      * @param sourcePaths could be null
-     * @param files       not null
      * @return the list of package names for files in the sourcePaths
      */
     private List<String> getPackageNames( Map<Path, Collection<String>> sourcePaths )
@@ -4521,7 +4520,6 @@ public abstract class AbstractJavadocMojo
 
     /**
      * @param sourcePaths could be null
-     * @param files       not null
      * @return a list files with unnamed package names for files in the sourcePaths
      */
     private List<String> getFilesWithUnnamedPackages( Map<Path, Collection<String>> sourcePaths )
@@ -4561,7 +4559,6 @@ public abstract class AbstractJavadocMojo
     /**
      * Either return only the module descriptor or all sourcefiles per sourcepath
      * @param sourcePaths could be null
-     * @param files       not null
      * @return a list of files
      */
     private List<String> getSpecialFiles( Map<Path, Collection<String>> sourcePaths )
@@ -4990,7 +4987,7 @@ public abstract class AbstractJavadocMojo
             for ( Map.Entry<String, Collection<Path>> projectSourcepaths : allSourcePaths.entrySet() )
             {
                 MavenProject aggregatedProject = reactorKeys.get( projectSourcepaths.getKey() );
-                if ( aggregatedProject != null )
+                if ( aggregatedProject != null && !"pom".equals( aggregatedProject.getPackaging() ) )
                 {
                     ResolvePathResult result = null;
 

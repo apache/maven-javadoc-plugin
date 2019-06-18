@@ -30,4 +30,4 @@ def p = /<a href="([^"]+)"(?:[^>]+)>Multimap<\/a>/
 def m = classFile.text =~ p
 
 assert m.hasGroup()
-assert m[0][1] == "https://google.github.io/guava/releases/27.0.1-jre/api/docs/com/google/common/collect/Multimap.html?is-external=true" 
+assert m[0][1] == "https://guava.dev/releases/27.0.1-jre/api/docs/com/google/common/collect/Multimap.html?is-external=true"
