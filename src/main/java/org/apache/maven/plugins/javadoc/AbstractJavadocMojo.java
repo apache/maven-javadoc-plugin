@@ -2393,7 +2393,7 @@ public abstract class AbstractJavadocMojo
         List<Path> modulePaths = new LinkedList<>();
         for ( String module :  aggregatedProject.getModules() )
         {
-            modulePaths.add( new File( aggregatedProject.getBasedir(), module ).toPath() );
+            modulePaths.add( new File( aggregatedProject.getBasedir(), module ).toPath().normalize() );
         }
 
         Set<MavenProject> aggregatedModules = new LinkedHashSet<>();
