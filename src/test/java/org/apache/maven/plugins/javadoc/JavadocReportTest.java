@@ -69,7 +69,10 @@ import org.sonatype.aether.impl.internal.SimpleLocalRepositoryManager;
 public class JavadocReportTest
     extends AbstractMojoTestCase
 {
+
     private static final char LINE_SEPARATOR = ' ';
+
+    public static final String OPTIONS_UMLAUT_ENCODING_Ö_Ä_Ü_ß = "Options Umlaut Encoding ö ä ü ß";
 
     /** flag to copy repo only one time */
     private static boolean TEST_REPO_CREATED = false;
@@ -567,6 +570,7 @@ public class JavadocReportTest
 
         // check for a part of the window title
         String content;
+        String expected = OPTIONS_UMLAUT_ENCODING_Ö_Ä_Ü_ß;
         if ( JavaVersion.JAVA_VERSION.isAtLeast( "9" ) )
         {
             content = readFile( optionsFile, StandardCharsets.UTF_8 );
@@ -574,8 +578,10 @@ public class JavadocReportTest
         else
         {
             content = readFile( optionsFile, Charset.defaultCharset() );
+            expected = new String(expected.getBytes(Charset.defaultCharset()));
         }
-        assertTrue( content.contains( "Options Umlaut Encoding ö ä ü ß" ) );
+
+        assertTrue( content.contains(expected) );
 
         File apidocs = new File( getBasedir(), "target/test/unit/optionsumlautencoding-test/target/site/apidocs" );
 
