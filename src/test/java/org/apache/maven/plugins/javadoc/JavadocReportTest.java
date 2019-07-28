@@ -72,7 +72,7 @@ public class JavadocReportTest
 
     private static final char LINE_SEPARATOR = ' ';
 
-    public static final String OPTIONS_UMLAUT_ENCODING_Ö_Ä_Ü_ß = "Options Umlaut Encoding ö ä ü ß";
+    public static final String OPTIONS_UMLAUT_ENCODING = "Options Umlaut Encoding ö ä ü ß";
 
     /** flag to copy repo only one time */
     private static boolean TEST_REPO_CREATED = false;
@@ -559,9 +559,9 @@ public class JavadocReportTest
      * @throws Exception if any
      */
     public void testOptionsUmlautEncoding()
-            throws Exception
+        throws Exception
     {
-        File testPom = new File(unit, "optionsumlautencoding-test/optionsumlautencoding-test-plugin-config.xml" );
+        File testPom = new File( unit, "optionsumlautencoding-test/optionsumlautencoding-test-plugin-config.xml" );
         JavadocReport mojo = lookupMojo( testPom );
         mojo.execute();
 
@@ -570,18 +570,19 @@ public class JavadocReportTest
 
         // check for a part of the window title
         String content;
-        String expected = OPTIONS_UMLAUT_ENCODING_Ö_Ä_Ü_ß;
+        String expected;
         if ( JavaVersion.JAVA_VERSION.isAtLeast( "9" ) )
         {
             content = readFile( optionsFile, StandardCharsets.UTF_8 );
+            expected = OPTIONS_UMLAUT_ENCODING;
         }
         else
         {
             content = readFile( optionsFile, Charset.defaultCharset() );
-            expected = new String(expected.getBytes(Charset.defaultCharset()));
+            expected = new String( OPTIONS_UMLAUT_ENCODING.getBytes( Charset.defaultCharset() ) );
         }
 
-        assertTrue( content.contains(expected) );
+        assertTrue( content.contains( expected ) );
 
         File apidocs = new File( getBasedir(), "target/test/unit/optionsumlautencoding-test/target/site/apidocs" );
 
