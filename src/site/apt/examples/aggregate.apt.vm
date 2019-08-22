@@ -52,7 +52,7 @@ Project
  reports at every level.
  To get only an aggregated project at root level, you need to configure the pom like:
  
- +-----+
++-----+
 <project>
   ...
   <reporting>
