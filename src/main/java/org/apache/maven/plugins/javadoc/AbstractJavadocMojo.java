@@ -1422,8 +1422,14 @@ public abstract class AbstractJavadocMojo
      * stylesheetfile</a>.
      */
     @Parameter( property = "stylesheetfile" )
-   private String stylesheetfile;
-
+    private String stylesheetfile;
+    
+    /**
+     * Specifies the path of an additional HTML stylesheet file.
+     */
+    @Parameter
+    private String addStylesheet;
+    
     /**
      * Specifies the class file that starts the taglet used in generating the documentation for that tag.
      * <br/>
@@ -2980,6 +2986,35 @@ public abstract class AbstractJavadocMojo
         }
 
         return getResource( new File( javadocOutputDirectory, DEFAULT_CSS_NAME ), stylesheetfile );
+    }
+    
+    private String getAddStylesheet( final File javadocOutputDirectory )
+            throws MavenReportException
+    {
+        if ( StringUtils.isEmpty( addStylesheet ) )
+        {
+            return null;
+        }
+        
+        File addstylesheetfile = new File( addStylesheet );
+        if ( addstylesheetfile.exists() )
+        {
+            String stylesheet = getStylesheetFile( javadocOutputDirectory );
+            if ( stylesheet != null )
+            {
+                File stylesheetfile = new File( stylesheet );
+                if ( stylesheetfile.getName().equals( addstylesheetfile.getName() ) )
+                {
+                    throw new MavenReportException( "additional stylesheet must have a different name "
+                                                        + "than stylesheetfile: " + stylesheetfile.getName() );
+                }
+            }
+            
+            return addstylesheetfile.getAbsolutePath();
+        }
+
+        throw new MavenReportException( "additional stylesheet file does not exist: " 
+                                            + addstylesheetfile.getAbsolutePath() );
     }
 
     /**
@@ -5432,6 +5467,9 @@ public abstract class AbstractJavadocMojo
 
         addArgIfNotEmpty( arguments, "-stylesheetfile",
                           JavadocUtil.quotedPathArgument( getStylesheetFile( javadocOutputDirectory ) ) );
+        
+        addArgIfNotEmpty( arguments, "--add-stylesheet",
+                          JavadocUtil.quotedPathArgument( getAddStylesheet( javadocOutputDirectory ) ) );
 
         if ( StringUtils.isNotEmpty( sourcepath ) && !isJavaDocVersionAtLeast( SINCE_JAVADOC_1_5 ) )
         {
