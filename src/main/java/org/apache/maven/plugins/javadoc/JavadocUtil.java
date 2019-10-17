@@ -735,6 +735,12 @@ public class JavadocUtil
 
         for ( String s : classes )
         {
+            // skip module-info class (Java 9+ module)
+            if ( s.equals( "module-info" ) )
+            {
+                continue;
+            }
+            
             Class<?> c = cl.loadClass( s );
 
             if ( tagletClass.isAssignableFrom( c ) && !Modifier.isAbstract( c.getModifiers() ) )
