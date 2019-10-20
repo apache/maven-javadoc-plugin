@@ -776,7 +776,7 @@ public class JavadocReportTest
         assertTrue( content.contains( "<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">" ) );
 
         JavaVersion javadocVersion = (JavaVersion) getVariableValueFromObject( mojo, "javadocRuntimeVersion" );
-        if( javadocVersion.isAtLeast( "1.8" ) && javadocVersion.isBefore( "14" ) )
+        if( javadocVersion.isAtLeast( "1.8" ) /* && javadocVersion.isBefore( "14" ) */ )
         {
             // https://bugs.openjdk.java.net/browse/JDK-8032205
             assertTrue( "Javadoc runtime version: " + javadocVersion
