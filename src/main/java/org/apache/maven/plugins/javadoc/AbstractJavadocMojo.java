@@ -1426,9 +1426,23 @@ public abstract class AbstractJavadocMojo
     
     /**
      * Specifies the path of an additional HTML stylesheet file.
+     * @since 3.1.2
      */
     @Parameter
     private String addStylesheet;
+    
+    /**
+     * Specifies the path of an additional HTML stylesheet file.
+     * Example:
+     * <pre>
+     *     &lt;addStylesheets&gt;
+     *         &lt;src/main/javadoc/resources/addstylesheet.css&lt;/addStylesheet&gt;
+     *     &lt;/addStylesheets&gt;
+     * </pre>
+     * @since 3.1.2
+     */
+    @Parameter
+    private String[] addStylesheets;
     
     /**
      * Specifies the class file that starts the taglet used in generating the documentation for that tag.
@@ -2988,21 +3002,21 @@ public abstract class AbstractJavadocMojo
         return getResource( new File( javadocOutputDirectory, DEFAULT_CSS_NAME ), stylesheetfile );
     }
     
-    private String getAddStylesheet( final File javadocOutputDirectory )
+    private String getAddStylesheet( final File javadocOutputDirectory, final String stylesheet )
             throws MavenReportException
     {
-        if ( StringUtils.isEmpty( addStylesheet ) )
+        if ( StringUtils.isEmpty( stylesheet ) )
         {
             return null;
         }
         
-        File addstylesheetfile = new File( addStylesheet );
+        File addstylesheetfile = new File( stylesheet );
         if ( addstylesheetfile.exists() )
         {
-            String stylesheet = getStylesheetFile( javadocOutputDirectory );
-            if ( stylesheet != null )
+            String stylesheetfilename = getStylesheetFile( javadocOutputDirectory );
+            if ( stylesheetfilename != null )
             {
-                File stylesheetfile = new File( stylesheet );
+                File stylesheetfile = new File( stylesheetfilename );
                 if ( stylesheetfile.getName().equals( addstylesheetfile.getName() ) )
                 {
                     throw new MavenReportException( "additional stylesheet must have a different name "
@@ -5469,7 +5483,15 @@ public abstract class AbstractJavadocMojo
                           JavadocUtil.quotedPathArgument( getStylesheetFile( javadocOutputDirectory ) ) );
         
         addArgIfNotEmpty( arguments, "--add-stylesheet",
-                          JavadocUtil.quotedPathArgument( getAddStylesheet( javadocOutputDirectory ) ) );
+                          JavadocUtil.quotedPathArgument( getAddStylesheet( javadocOutputDirectory, addStylesheet ) ) );
+        if ( addStylesheets != null && addStylesheets.length != 0 )
+        {
+            for ( String as : addStylesheets )
+            {
+                addArgIfNotEmpty( arguments, "--add-stylesheet",
+                        JavadocUtil.quotedPathArgument( getAddStylesheet( javadocOutputDirectory, as ) ) );
+            }
+        }
 
         if ( StringUtils.isNotEmpty( sourcepath ) && !isJavaDocVersionAtLeast( SINCE_JAVADOC_1_5 ) )
         {
