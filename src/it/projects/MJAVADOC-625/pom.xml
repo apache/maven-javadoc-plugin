@@ -29,11 +29,9 @@
 				<version>3.8.0</version>
 			</plugin>
 			<plugin>
-				<!-- <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-javadoc-plugin</artifactId> 
-					<version>@project.version@</version> -->
-				<groupId>com.github.schelldorfer</groupId>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.1.2</version>
+				<version>@project.version@</version>
 				<configuration>
 					<addStylesheet>src/main/javadoc/resources/addstylesheet.css</addStylesheet>
 					<addStylesheets>
