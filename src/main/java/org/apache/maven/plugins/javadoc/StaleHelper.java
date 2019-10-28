@@ -21,15 +21,17 @@ package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.apache.maven.reporting.MavenReportException;
+import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
 /**
@@ -61,7 +63,7 @@ public class StaleHelper
                 if ( arg.startsWith( "@" ) )
                 {
                     String name = arg.substring( 1 );
-                    Files.lines( dir.resolve( name ) ).forEachOrdered( options::add );
+                    options.addAll( Files.readAllLines( dir.resolve( name ), StandardCharsets.UTF_8 ) );
                     ignored.add( name );
                 }
             }
@@ -73,31 +75,39 @@ public class StaleHelper
                 if ( cp )
                 {
                     String s = unquote( arg );
-                    Stream.of( s.split( File.pathSeparator ) )
-                            .map( dir::resolve )
-                            .map( p -> p + " = " + lastmod( p ) )
-                            .forEachOrdered( state::add );
+                    for ( String ps : s.split( File.pathSeparator ) )
+                    {
+                        Path p = dir.resolve( ps );
+                        state.add( p + " = " + lastmod( p ) );
+                    }
                 }
                 else if ( sp )
                 {
                     String s = unquote( arg );
-                    Stream.of( s.split( File.pathSeparator ) )
-                            .map( dir::resolve )
-                            .flatMap( StaleHelper::walk )
-                            .filter( Files::isRegularFile )
-                            .map( p -> p + " = " + lastmod( p ) )
-                            .forEachOrdered( state::add );
+                    for ( String ps : s.split( File.pathSeparator ) )
+                    {
+                        Path p = dir.resolve( ps );
+                        for ( Path c : walk( p ) )
+                        {
+                            if ( Files.isRegularFile( c ) )
+                            {
+                                state.add( c + " = " + lastmod( c ) );
+                            }
+                        }
+                        state.add( p + " = " + lastmod( p ) );
+                    }
                 }
                 cp = "-classpath".equals( arg );
                 sp = "-sourcepath".equals( arg );
             }
-            walk( dir )
-                    .filter( Files::isRegularFile )
-                    .filter( p -> !ignored.contains( p.getFileName().toString() ) )
-                    .map( p -> p + " = " + lastmod( p ) )
-                    .forEachOrdered( state::add );
-
-            return String.join( SystemUtils.LINE_SEPARATOR, state );
+            for ( Path p : walk( dir ) )
+            {
+                if ( Files.isRegularFile( p ) && !ignored.contains( p.getFileName().toString() ) )
+                {
+                    state.add( p + " = " + lastmod( p ) );
+                }
+            }
+            return StringUtils.join( state.iterator(), SystemUtils.LINE_SEPARATOR );
         }
         catch ( Exception e )
         {
@@ -119,10 +129,7 @@ public class StaleHelper
         {
             String curdata = getStaleData( cmd );
             Files.createDirectories( path.getParent() );
-            try ( Writer w = Files.newBufferedWriter( path ) )
-            {
-                w.append( curdata );
-            }
+            FileUtils.fileWrite( path.toFile(), null /* platform encoding */, curdata );
         }
         catch ( IOException e )
         {
@@ -130,11 +137,16 @@ public class StaleHelper
         }
     }
 
-    private static Stream<Path> walk( Path dir )
+    private static Collection<Path> walk( Path dir )
     {
         try
         {
-            return Files.walk( dir );
+            Collection<Path> paths = new ArrayList<>();
+            for ( Path p : Files.newDirectoryStream( dir ) )
+            {
+                paths.add( p );
+            }
+            return paths;
         }
         catch ( IOException e )
         {
