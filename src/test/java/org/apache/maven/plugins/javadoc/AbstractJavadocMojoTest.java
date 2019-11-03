@@ -19,6 +19,8 @@ package org.apache.maven.plugins.javadoc;
  * under the License.
  */
 
+import static org.apache.maven.plugins.javadoc.AbstractJavadocMojo.getJavadocIOLink;
+import static org.apache.maven.plugins.javadoc.AbstractJavadocMojo.urlEncode;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -31,7 +33,6 @@ import java.io.File;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.javadoc.AbstractJavadocMojo;
 
 import junit.framework.TestCase;
 
@@ -86,5 +87,21 @@ public class AbstractJavadocMojoTest
 
         assertFalse( mojo.isValidJavadocLink( "http://javamail.java.net/mailapi/apidocs", false ) );
         assertTrue( mojo.isValidJavadocLink( "http://commons.apache.org/proper/commons-lang/apidocs", false ) );
+    }
+
+    public void test_urlEncode()
+    {
+        assertEquals("test+abc", urlEncode("test abc"));
+    }
+
+    public void test_urlEncode_null_input()
+    {
+        assertNull(urlEncode(null));
+    }
+
+    public void test_getJavadocIOLink()
+    {
+        String expected = "https://javadoc.io/doc/org.springframework/spring-core/5.2.0.RELEASE";
+        assertEquals(expected, getJavadocIOLink("org.springframework", "spring-core", "5.2.0.RELEASE"));
     }
 }

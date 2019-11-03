@@ -1,0 +1,75 @@
+
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+import java.io.*;
+import org.codehaus.plexus.util.*;
+
+boolean result = true;
+
+try
+{
+
+    // Generated files checks
+    File apidocs = new File( basedir, "target/site/apidocs" );
+    if ( !apidocs.exists() || !apidocs.isDirectory() )
+    {
+        System.err.println( apidocs.getAbsolutePath() + " dir is missing or a directory." );
+        return false;
+    }
+
+    File options = new File( apidocs, "options" );
+    if ( !options.exists() || !options.isFile() )
+    {
+        System.err.println( options.getAbsolutePath() + " file is missing or not a file." );
+        return false;
+    }
+
+
+    // Read files
+    String contentOptions = FileUtils.fileRead( options );
+    String log = FileUtils.fileRead( new File( basedir, "build.log" ) );
+
+    // Generated files content checks
+    int link = contentOptions.indexOf( "-link" );
+    if ( link == -1 )
+    {
+        System.err.println( "-link not added: " + options );
+        return false;
+    }
+
+    if ( !contentOptions.contains( "https://javadoc.io/doc/org.apache.commons/commons-lang3/3.8.1" ) )
+    {
+        System.err.println( "apache lang3 link is not added: " + options );
+        return false;
+    }
+
+    if ( !contentOptions.contains( "https://javadoc.io/doc/io.fabric8/kubernetes-model/4.1.1" ) )
+    {
+        System.err.println( "kubernetes link is not added: " + options );
+        return false;
+    }
+}
+catch( RuntimeException e )
+{
+    e.printStackTrace();
+    return false;
+}
+
+return result;

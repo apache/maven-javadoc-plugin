@@ -106,12 +106,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -6120,7 +6122,7 @@ public abstract class AbstractJavadocMojo
 
             if ( location.exists() )
             {
-                String url = getJavadocLink( p );
+                String url = getApiDocLink( p );
 
                 OfflineLink ol = new OfflineLink();
                 ol.setUrl( url );
@@ -6173,13 +6175,14 @@ public abstract class AbstractJavadocMojo
 
                 if ( StringUtils.isNotEmpty( artifactProject.getUrl() ) )
                 {
-                    String url = getJavadocLink( artifactProject );
-
-                    if ( isValidJavadocLink( url, true ) )
+                    for ( String url: getJavadocLinks( artifactProject ) )
                     {
-                        getLog().debug( "Added Javadoc link: " + url + " for " + artifactProject.getId() );
+                        if ( isValidJavadocLink( url, true ) )
+                        {
+                            getLog().debug( "Added Javadoc link: " + url + " for " + artifactProject.getId() );
 
-                        dependenciesLinks.add( url );
+                            dependenciesLinks.add( url );
+                        }
                     }
                 }
             }
@@ -6518,12 +6521,23 @@ public abstract class AbstractJavadocMojo
     // ----------------------------------------------------------------------
 
     /**
+     * @return list of potential javadoc home urls to resolve <code>package-list</code> file
+     */
+    private static List<String> getJavadocLinks( MavenProject p )
+    {
+        return Arrays.asList(
+                getApiDocLink( p ),
+                getJavadocIOLink( p.getGroupId(), p.getArtifactId(), p.getVersion() )
+        );
+    }
+
+    /**
      * @param p not null
      * @return the javadoc link based on the project url i.e. <code>${project.url}/${destDir}</code> where
      *         <code>destDir</code> is configued in the Javadoc plugin configuration (<code>apidocs</code> by default).
      * @since 2.6
      */
-    private static String getJavadocLink( MavenProject p )
+    private static String getApiDocLink( MavenProject p )
     {
         if ( p.getUrl() == null )
         {
@@ -6541,6 +6555,38 @@ public abstract class AbstractJavadocMojo
         }
 
         return url + "/" + destDir;
+    }
+
+    /**
+     * @param groupId not null
+     * @param artifactId not null
+     * @param version not null
+     * @return the javadoc link based on the project javadoc.io url
+     *         i.e. <code>https://www.javadoc.io/doc/${group_id}/${artifact_id}/${version_id}/package-list</code>
+     */
+    static String getJavadocIOLink( String groupId, String artifactId, String version )
+    {
+        String baseUrl = "https://javadoc.io/doc/";
+        return baseUrl + urlEncode( groupId ) + "/" + urlEncode( artifactId ) + "/" + urlEncode( version );
+    }
+
+    static String urlEncode( String s )
+    {
+        if ( s == null )
+        {
+            return null;
+        }
+
+        try
+        {
+            return URLEncoder.encode( s, "UTF8" );
+        }
+        catch ( UnsupportedEncodingException e )
+        {
+            // once it passed unit test
+            // this shouldn't really happen when we hardcode "UTF8" in the code
+            throw new RuntimeException( e );
+        }
     }
 
     /**
