@@ -1080,14 +1080,21 @@ public class JavadocUtil
         InvocationOutputHandler outputHandler = new PrintStreamHandler( ps, false );
         request.setOutputHandler( outputHandler );
 
-        outputHandler.consumeLine( "Invoking Maven for the goals: " + goals + " with "
-            + ( properties == null ? "no properties" : "properties=" + properties ) );
-        outputHandler.consumeLine( "" );
-        outputHandler.consumeLine( "M2_HOME=" + getMavenHome( log ) );
-        outputHandler.consumeLine( "MAVEN_OPTS=" + getMavenOpts( log ) );
-        outputHandler.consumeLine( "JAVA_HOME=" + getJavaHome( log ) );
-        outputHandler.consumeLine( "JAVA_OPTS=" + getJavaOpts( log ) );
-        outputHandler.consumeLine( "" );
+        try
+        {
+            outputHandler.consumeLine( "Invoking Maven for the goals: " + goals + " with "
+                + ( properties == null ? "no properties" : "properties=" + properties ) );
+            outputHandler.consumeLine( "" );
+            outputHandler.consumeLine( "M2_HOME=" + getMavenHome( log ) );
+            outputHandler.consumeLine( "MAVEN_OPTS=" + getMavenOpts( log ) );
+            outputHandler.consumeLine( "JAVA_HOME=" + getJavaHome( log ) );
+            outputHandler.consumeLine( "JAVA_OPTS=" + getJavaOpts( log ) );
+            outputHandler.consumeLine( "" );
+        }
+        catch ( IOException ioe )
+        {
+            throw new MavenInvocationException( "IOException while consuming invocation output", ioe );
+        }
 
         try
         {

@@ -157,6 +157,16 @@ public class JavadocJar
     @Parameter( property = "maven.javadoc.classifier", defaultValue = "javadoc", required = true )
     private String classifier;
 
+    /**
+     * Timestamp for reproducible output archive entries, either formatted as ISO 8601
+     * <code>yyyy-MM-dd'T'HH:mm:ssXXX</code> or as an int representing seconds since the epoch (like
+     * <a href="https://reproducible-builds.org/docs/source-date-epoch/">SOURCE_DATE_EPOCH</a>).
+     *
+     * @since 3.2.0
+     */
+    @Parameter( defaultValue = "${project.build.outputTimestamp}" )
+    private String outputTimestamp;
+
     /** {@inheritDoc} */
     @Override
     public void doExecute()
@@ -265,8 +275,12 @@ public class JavadocJar
         }
 
         MavenArchiver archiver = new MavenArchiver();
+        archiver.setCreatedBy( "Maven Javadoc Plugin", "org.apache.maven.plugins", "maven-javadoc-plugin" );
         archiver.setArchiver( jarArchiver );
         archiver.setOutputFile( javadocJar );
+
+        // configure for Reproducible Builds based on outputTimestamp value
+        archiver.configureReproducible( outputTimestamp );
 
         if ( !javadocFiles.exists() )
         {
