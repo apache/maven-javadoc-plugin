@@ -5170,6 +5170,18 @@ public abstract class AbstractJavadocMojo
                     }
                 }
 
+                /* MJAVADOC-620: also add all JARs where module-name-guessing leads to a FindException: */
+                for ( Entry<File, Exception> pathExceptionEntry : result.getPathExceptions().entrySet() )
+                {
+                    Exception exception = pathExceptionEntry.getValue();
+                    // For Java < 9 compatibility, reference FindException by name:
+                    if ( "java.lang.module.FindException".equals( exception.getClass().getName() ) )
+                    {
+                        File jarPath = pathExceptionEntry.getKey();
+                        classPathElements.add( jarPath );
+                    }
+                }
+
                 String classpath = StringUtils.join( classPathElements.iterator(), File.pathSeparator );
                 addArgIfNotEmpty( arguments, "--class-path", JavadocUtil.quotedPathArgument( classpath ), false,
                                   false );
