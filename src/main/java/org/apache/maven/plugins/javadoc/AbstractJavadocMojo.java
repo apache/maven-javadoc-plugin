@@ -19,7 +19,9 @@ package org.apache.maven.plugins.javadoc;
  * under the License.
  */
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.artifact.handler.ArtifactHandler;
@@ -94,7 +96,6 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.ReaderFactory;
-import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.WriterFactory;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
@@ -2229,7 +2230,7 @@ public abstract class AbstractJavadocMojo
      *
      * @param sourcePaths a Collection that contains the paths to the source files
      * @return a List that contains the specific path for every source file
-     * @throws MavenReportException {@link MavenReportException}
+     * @throws MavenReportException {@link MavenReportException} issue while generating report
      */
     protected Map<Path, Collection<String>> getFiles( Collection<Path> sourcePaths )
         throws MavenReportException
@@ -2263,7 +2264,7 @@ public abstract class AbstractJavadocMojo
      * source roots of the project will be used.
      *
      * @return a Map of the project absolute source paths per projects key (G:A)
-     * @throws MavenReportException {@link MavenReportException}
+     * @throws MavenReportException {@link MavenReportException} issue while generating report
      * @see JavadocUtil#pruneDirs(MavenProject, Collection)
      */
     protected Map<String, Collection<Path>> getSourcePaths()
@@ -2371,23 +2372,11 @@ public abstract class AbstractJavadocMojo
         return mappedSourcePaths;
     }
 
-    private Collection<MavenProject> getAggregatedProjects()
-    {
-        Map<Path, MavenProject> reactorProjectsMap = new HashMap<>();
-        for ( MavenProject reactorProject : this.reactorProjects )
-        {
-            reactorProjectsMap.put( reactorProject.getBasedir().toPath(), reactorProject );
-        }
-
-        return modulesForAggregatedProject( project, reactorProjectsMap );
-    }
-
     /**
      * Recursively add the modules of the aggregatedProject to the set of aggregatedModules.
      *
      * @param aggregatedProject the project being aggregated
      * @param reactorProjectsMap map of (still) available reactor projects
-     * @throws MavenReportException if any
      */
     private Set<MavenProject> modulesForAggregatedProject( MavenProject aggregatedProject,
                                                            Map<Path, MavenProject> reactorProjectsMap )
@@ -2522,8 +2511,9 @@ public abstract class AbstractJavadocMojo
         
         return configureDependencySourceResolution( new SourceResolverConfig( project,
                                                   getProjectBuildingRequest( project ),
-                                                  sourceDependencyCacheDir ).withReactorProjects( reactorProjects ) )
-                                                                            .withFilter( new AndFilter( andFilters ) );
+                                                  sourceDependencyCacheDir )
+                                                  .withReactorProjects( this.reactorProjects ) )
+                                                  .withFilter( new AndFilter( andFilters ) );
         
     }
     
@@ -3617,7 +3607,7 @@ public abstract class AbstractJavadocMojo
      *
      * @param javadocArtifact the {@link JavadocPathArtifact} to resolve
      * @return a resolved {@link Artifact}
-     * @throws ArtifactResolverException
+     * @throws ArtifactResolverException issue while resolving artifact
      */
     private Artifact createAndResolveArtifact( JavadocPathArtifact javadocArtifact )
         throws ArtifactResolverException
@@ -4163,7 +4153,7 @@ public abstract class AbstractJavadocMojo
      * </ul>
      *
      * @param arguments a list of arguments, not null
-     * @throws MavenReportException
+     * @throws MavenReportException issue while generating report
      * @see #detectLinks
      * @see #getDependenciesLinks()
      * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#package-list">package-list spec</a>
@@ -4932,8 +4922,9 @@ public abstract class AbstractJavadocMojo
             addArgIf( arguments, breakiterator, "-breakiterator", SINCE_JAVADOC_1_5 );
         }
 
-        Map<String, MavenProject> reactorKeys = new HashMap<>( reactorProjects.size() );
-        for ( MavenProject reactorProject : reactorProjects )
+        List<MavenProject> aggregatedProjects = reactorProjects; // getAggregatedProjects();
+        Map<String, MavenProject> reactorKeys = new HashMap<>( aggregatedProjects.size() );
+        for ( MavenProject reactorProject : aggregatedProjects )
         {
             reactorKeys.put( ArtifactUtils.versionlessKey( reactorProject.getGroupId(),
                                                            reactorProject.getArtifactId() ), reactorProject );
@@ -5904,21 +5895,15 @@ public abstract class AbstractJavadocMojo
         throws IOException
     {
         final String fixData;
-        InputStream in = null;
-        try
+
+        try ( InputStream in = this.getClass().getResourceAsStream( "frame-injection-fix.txt" ) )
         {
-            in = this.getClass().getResourceAsStream( "frame-injection-fix.txt" );
             if ( in == null )
             {
                 throw new FileNotFoundException( "Missing resource 'frame-injection-fix.txt' in classpath." );
             }
-            fixData = StringUtils.unifyLineSeparators( IOUtil.toString( in, "US-ASCII" ) ).trim();
-            in.close();
-            in = null;
-        }
-        finally
-        {
-            IOUtil.close( in );
+            fixData = org.codehaus.plexus.util.StringUtils
+                .unifyLineSeparators( IOUtil.toString( in, "US-ASCII" ) ).trim();
         }
 
         final DirectoryScanner ds = new DirectoryScanner();
@@ -6143,7 +6128,8 @@ public abstract class AbstractJavadocMojo
     private List<OfflineLink> getModulesLinks()
         throws MavenReportException
     {
-        if ( !detectOfflineLinks || isAggregator() || reactorProjects == null )
+        List<MavenProject> aggregatedProjects = reactorProjects;
+        if ( !detectOfflineLinks || isAggregator() || aggregatedProjects.isEmpty() )
         {
             return Collections.emptyList();
         }
@@ -6159,7 +6145,7 @@ public abstract class AbstractJavadocMojo
 
         List<OfflineLink> modulesLinks = new ArrayList<>();
         String javadocDirRelative = PathUtils.toRelative( project.getBasedir(), getOutputDirectory() );
-        for ( MavenProject p : reactorProjects )
+        for ( MavenProject p : aggregatedProjects )
         {
             if ( !dependencyArtifactIds.contains( p.getArtifact().getId() ) || ( p.getUrl() == null ) )
             {
@@ -6802,7 +6788,7 @@ public abstract class AbstractJavadocMojo
     /**
      * @param prefix The prefix of the exception.
      * @param e The exception.
-     * @throws MojoExecutionException {@link MojoExecutionException}
+     * @throws MojoExecutionException {@link MojoExecutionException} issue while generating report
      */
     protected void failOnError( String prefix, Exception e )
         throws MojoExecutionException
@@ -6818,4 +6804,49 @@ public abstract class AbstractJavadocMojo
 
         getLog().error( prefix + ": " + e.getMessage(), e );
     }
+
+
+    private List<MavenProject> getAggregatedProjects()
+    {
+        if ( this.reactorProjects == null )
+        {
+           return Collections.emptyList();
+        }
+        Map<Path, MavenProject> reactorProjectsMap = new HashMap<>();
+        for ( MavenProject reactorProject : this.reactorProjects )
+        {
+            if ( !isSkippedJavadoc( reactorProject ) )
+            {
+                reactorProjectsMap.put( reactorProject.getBasedir().toPath(), reactorProject );
+            }
+        }
+
+        return new ArrayList<>( modulesForAggregatedProject( project, reactorProjectsMap ) );
+    }
+
+    protected boolean isSkippedJavadoc( MavenProject mavenProject )
+    {
+        String property = mavenProject.getProperties().getProperty( "maven.javadoc.skip" );
+        if ( property != null )
+        {
+            boolean skip = BooleanUtils.toBoolean( property );
+            getLog().debug( "isSkippedJavadoc " + mavenProject + " " + skip );
+            return skip;
+        }
+        final String pluginId = "org.apache.maven.plugins:maven-javadoc-plugin";
+        property = getPluginParameter( mavenProject, pluginId, "skip" );
+        if ( property != null )
+        {
+            boolean skip = BooleanUtils.toBoolean( property );
+            getLog().debug( "isSkippedJavadoc " + mavenProject + " " + skip );
+            return skip;
+        }
+        if ( mavenProject.getParent() != null )
+        {
+            return isSkippedJavadoc( mavenProject.getParent() );
+        }
+        getLog().debug( "isSkippedJavadoc " + mavenProject + " " + false );
+        return false;
+    }
+
 }

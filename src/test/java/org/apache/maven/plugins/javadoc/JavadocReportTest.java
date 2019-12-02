@@ -1180,7 +1180,7 @@ public class JavadocReportTest
         assertTrue( optionsFile.exists() );
         String options = readFile( optionsFile );
         // count -taglet
-        assertEquals( 20, StringUtils.countMatches( options, LINE_SEPARATOR + "-taglet" + LINE_SEPARATOR ) );
+        assertEquals( 22, StringUtils.countMatches( options, LINE_SEPARATOR + "-taglet" + LINE_SEPARATOR ) );
         assertTrue( options.contains( "org.apache.maven.tools.plugin.javadoc.MojoAggregatorTypeTaglet" ) );
         assertTrue( options.contains( "org.apache.maven.tools.plugin.javadoc.MojoComponentFieldTaglet" ) );
         assertTrue( options.contains( "org.apache.maven.tools.plugin.javadoc.MojoConfiguratorTypeTaglet" ) );
