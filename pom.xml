@@ -72,6 +72,7 @@ under the License.
     <doxia-sitetoolsVersion>1.7.4</doxia-sitetoolsVersion>
     <wagonVersion>2.4</wagonVersion>
     <sonatypeAetherVersion>1.13.1</sonatypeAetherVersion>
+    <plexus-java.version>1.0.3</plexus-java.version>
     <!-- for ITs -->
     <sitePluginVersion>3.3</sitePluginVersion>
     <projectInfoReportsPluginVersion>2.7</projectInfoReportsPluginVersion>
@@ -274,7 +275,7 @@ under the License.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-java</artifactId>
-      <version>1.0.3</version>
+      <version>${plexus-java.version}</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -429,6 +430,9 @@ under the License.
             <maven.home>${maven.home}</maven.home>
             <https.protocols>${https.protocols}</https.protocols>
           </systemPropertyVariables> 
+          <environmentVariables>
+            <JENKINS_MAVEN_AGENT_DISABLED>true</JENKINS_MAVEN_AGENT_DISABLED>
+          </environmentVariables>
         </configuration>
       </plugin>
       <plugin>

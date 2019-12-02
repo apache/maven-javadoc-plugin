@@ -90,21 +90,6 @@ public class FixJavadocMojoTest
         assertTrue( sourceDir.exists() );
         FileUtils.copyDirectoryStructure( sourceDir, localRepo );
 
-        // ----------------------------------------------------------------------
-        // fix-jdk5-test-1.0.jar
-        // ----------------------------------------------------------------------
-
-        sourceDir = new File( getBasedir(), "src/test/resources/unit/fix-jdk5-test/repo/" );
-        assertTrue( sourceDir.exists() );
-        FileUtils.copyDirectoryStructure( sourceDir, localRepo );
-
-        // ----------------------------------------------------------------------
-        // fix-jdk6-test-1.0.jar
-        // ----------------------------------------------------------------------
-
-        sourceDir = new File( getBasedir(), "src/test/resources/unit/fix-jdk6-test/repo/" );
-        assertTrue( sourceDir.exists() );
-        FileUtils.copyDirectoryStructure( sourceDir, localRepo );
 
         // Remove SCM files
         List<String> files =
@@ -137,41 +122,6 @@ public class FixJavadocMojoTest
 
         executeMojoAndTest( testPomBasedir, new String[] { "ClassWithJavadoc.java", "ClassWithNoJavadoc.java",
             "InterfaceWithJavadoc.java", "InterfaceWithNoJavadoc.java" } );
-    }
-
-    /**
-     * @throws Exception if any
-     */
-    public void testFixJdk5()
-        throws Exception
-    {
-        // Should be an assumption, but not supported by TestCase
-        // Java 5 not supported by Java 9 anymore
-        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast( "9" ) )
-        {
-            return;
-        }
-        
-        File testPomBasedir = new File( getBasedir(), "target/test/unit/fix-jdk5-test" );
-        executeMojoAndTest( testPomBasedir, new String[] { "ClassWithJavadoc.java", "ClassWithNoJavadoc.java",
-            "InterfaceWithJavadoc.java", "InterfaceWithNoJavadoc.java", "SubClassWithJavadoc.java" } );
-    }
-
-    /**
-     * @throws Exception if any
-     */
-    public void testFixJdk6()
-        throws Exception
-    {
-        // Should be an assumption, but not supported by TestCase
-        // Java 6 not supported by Java 12 anymore
-        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast( "12" ) )
-        {
-            return;
-        }
-        
-        File testPomBasedir = new File( getBasedir(), "target/test/unit/fix-jdk6-test" );
-        executeMojoAndTest( testPomBasedir, new String[] { "ClassWithJavadoc.java", "InterfaceWithJavadoc.java" } );
     }
 
     // ----------------------------------------------------------------------
