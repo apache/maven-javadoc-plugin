@@ -76,6 +76,7 @@ under the License.
     <!-- for ITs -->
     <sitePluginVersion>3.3</sitePluginVersion>
     <projectInfoReportsPluginVersion>2.7</projectInfoReportsPluginVersion>
+    <plexus-java.version>1.0.3</plexus-java.version>
   </properties>
 
   <contributors>
