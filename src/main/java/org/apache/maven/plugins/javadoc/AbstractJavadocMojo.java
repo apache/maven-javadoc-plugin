@@ -1736,6 +1736,18 @@ public abstract class AbstractJavadocMojo
     @Parameter
     private Map<String, String> jdkToolchain;
 
+    /**
+     * <p>
+     * Location of the file used to store the state of the previous javadoc run.
+     * This is used to skip the generation if nothing has changed.
+     * </p>
+     *
+     * @since 3.2.0
+     */
+    @Parameter( property = "staleDataPath",
+            defaultValue = "${project.build.directory}/maven-javadoc-plugin-stale-data.txt" )
+    private File staleDataPath;
+
     // ----------------------------------------------------------------------
     // protected methods
     // ----------------------------------------------------------------------
@@ -5713,6 +5725,77 @@ public abstract class AbstractJavadocMojo
      * @throws MavenReportException if any errors occur
      */
     private void executeJavadocCommandLine( Commandline cmd, File javadocOutputDirectory )
+            throws MavenReportException
+    {
+        if ( staleDataPath != null )
+        {
+            if ( !isUpToDate( cmd ) )
+            {
+                doExecuteJavadocCommandLine( cmd, javadocOutputDirectory );
+                StaleHelper.writeStaleData( cmd, staleDataPath.toPath() );
+            }
+        }
+        else
+        {
+            doExecuteJavadocCommandLine( cmd, javadocOutputDirectory );
+        }
+    }
+
+    /**
+     * Check if the javadoc is uptodate or not
+     *
+     * @param cmd                    not null
+     * @return <code>true</code> is the javadoc is uptodate, <code>false</code> otherwise
+     * @throws MavenReportException  if any error occur
+     */
+    private boolean isUpToDate( Commandline cmd )
+            throws MavenReportException
+    {
+        try
+        {
+            String curdata = StaleHelper.getStaleData( cmd );
+            Path cacheData = staleDataPath.toPath();
+            String prvdata;
+            if ( Files.isRegularFile( cacheData ) )
+            {
+                prvdata = new String( Files.readAllBytes( cacheData ), StandardCharsets.UTF_8 );
+            }
+            else
+            {
+                prvdata = null;
+            }
+            if ( curdata.equals( prvdata ) )
+            {
+                getLog().info( "Skipping javadoc generation, everything is up to date." );
+                return true;
+            }
+            else
+            {
+                if ( prvdata == null )
+                {
+                    getLog().info( "No previous run data found, generating javadoc." );
+                }
+                else
+                {
+                    getLog().info( "Configuration changed, re-generating javadoc." );
+                }
+            }
+        }
+        catch ( IOException e )
+        {
+            throw new MavenReportException( "Error checking uptodate status", e );
+        }
+        return false;
+    }
+
+    /**
+     * Execute the Javadoc command line
+     *
+     * @param cmd                    not null
+     * @param javadocOutputDirectory not null
+     * @throws MavenReportException if any errors occur
+     */
+    private void doExecuteJavadocCommandLine( Commandline cmd, File javadocOutputDirectory )
         throws MavenReportException
     {
         if ( getLog().isDebugEnabled() )
