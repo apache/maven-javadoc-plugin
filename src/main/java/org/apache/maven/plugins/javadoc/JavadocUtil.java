@@ -781,11 +781,12 @@ public class JavadocUtil
      * @param goals a not null goals list.
      * @param properties the properties for the goals, could be null.
      * @param invokerLog the log file where the invoker will be written, if null using <code>System.out</code>.
+     * @param globalSettingsFile reference to settings file, could be null.
      * @throws MavenInvocationException if any
      * @since 2.6
      */
     protected static void invokeMaven( Log log, File localRepositoryDir, File projectFile, List<String> goals,
-                                       Properties properties, File invokerLog )
+                                       Properties properties, File invokerLog, File globalSettingsFile )
         throws MavenInvocationException
     {
         if ( projectFile == null )
@@ -829,6 +830,7 @@ public class JavadocUtil
         InvocationRequest request = new DefaultInvocationRequest();
         request.setBaseDirectory( projectFile.getParentFile() );
         request.setPomFile( projectFile );
+        request.setGlobalSettingsFile( globalSettingsFile );
         request.setBatchMode( true );
         if ( log != null )
         {

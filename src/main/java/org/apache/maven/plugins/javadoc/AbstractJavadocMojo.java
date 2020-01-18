@@ -6186,7 +6186,8 @@ public abstract class AbstractJavadocMojo
                 try
                 {
                     JavadocUtil.invokeMaven( getLog(), new File( localRepository.getBasedir() ), p.getFile(),
-                                             Collections.singletonList( javadocGoal ), null, invokerLogFile );
+                                             Collections.singletonList( javadocGoal ), null, invokerLogFile,
+                                             session.getRequest().getGlobalSettingsFile() );
                 }
                 catch ( MavenInvocationException e )
                 {

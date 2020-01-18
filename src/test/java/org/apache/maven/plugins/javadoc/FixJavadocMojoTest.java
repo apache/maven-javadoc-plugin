@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
@@ -614,9 +615,15 @@ public class FixJavadocMojoTest
 
         FixJavadocMojo mojo = (FixJavadocMojo) lookupMojo( "fix", testPom );
         assertNotNull( mojo );
+        
+        MavenSession session = newMavenSession( mojo.getProject() );
+        // Ensure remote repo connection uses SSL
+        File globalSettingsFile = new File( getBasedir(), "target/test-classes/unit/settings.xml" );
+        session.getRequest().setGlobalSettingsFile( globalSettingsFile );
+        setVariableValueToObject( mojo, "session", session );
 
         // compile the test project
-        invokeCompileGoal( testPom, mojo.getLog() );
+        invokeCompileGoal( testPom, globalSettingsFile, mojo.getLog() );
         assertTrue( new File( testPomBasedir, "target/classes" ).exists() );
 
         mojo.execute();
@@ -639,7 +646,7 @@ public class FixJavadocMojoTest
      * @param log not null
      * @throws MavenInvocationException if any
      */
-    private void invokeCompileGoal( File testPom, Log log )
+    private void invokeCompileGoal( File testPom, File globalSettingsFile, Log log )
         throws Exception
     {
         List<String> goals = new ArrayList<>();
@@ -670,7 +677,7 @@ public class FixJavadocMojoTest
         }
         
         JavadocUtil.invokeMaven( log, new File( getBasedir(), "target/local-repo" ), testPom, goals, properties,
-                                 invokerLogFile );
+                                 invokerLogFile, globalSettingsFile );
     }
 
     // ----------------------------------------------------------------------

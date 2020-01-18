@@ -43,6 +43,7 @@ import org.apache.commons.lang3.ClassUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -377,6 +378,9 @@ public abstract class AbstractFixJavadocMojo
     @Parameter( defaultValue = "${project}", readonly = true, required = true )
     private MavenProject project;
 
+    @Parameter ( defaultValue = "${session}", readonly = true, required = true )
+    private MavenSession session;
+
     /**
      * The current user system settings for use in Maven.
      */
@@ -482,6 +486,11 @@ public abstract class AbstractFixJavadocMojo
     // ----------------------------------------------------------------------
     // protected methods
     // ----------------------------------------------------------------------
+
+    protected final MavenProject getProject()
+    {
+        return project;
+    }    
 
     /**
      * @param p not null maven project.
@@ -697,8 +706,10 @@ public abstract class AbstractFixJavadocMojo
         invokerDir.mkdirs();
         File invokerLogFile = FileUtils.createTempFile( "clirr-maven-plugin", ".txt", invokerDir );
         new File( project.getBuild().getDirectory(), "invoker-clirr-maven-plugin.txt" );
+
         JavadocUtil.invokeMaven( getLog(), new File( localRepository.getBasedir() ), project.getFile(),
-                                 Collections.singletonList( clirrGoal ), properties, invokerLogFile );
+                                 Collections.singletonList( clirrGoal ), properties, invokerLogFile,
+                                 session.getRequest().getGlobalSettingsFile() );
 
         try
         {

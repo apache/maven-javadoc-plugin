@@ -70,7 +70,8 @@ under the License.
     <mavenVersion>3.0</mavenVersion>
     <doxiaVersion>1.7</doxiaVersion>
     <doxia-sitetoolsVersion>1.7.4</doxia-sitetoolsVersion>
-    <wagonVersion>1.0-beta-6</wagonVersion>
+    <wagonVersion>2.4</wagonVersion>
+    <sonatypeAetherVersion>1.13.1</sonatypeAetherVersion>
     <!-- for ITs -->
     <sitePluginVersion>3.3</sitePluginVersion>
     <projectInfoReportsPluginVersion>2.7</projectInfoReportsPluginVersion>
@@ -124,6 +125,36 @@ under the License.
     </contributor>
   </contributors>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-api</artifactId>
+        <version>${sonatypeAetherVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-connector</artifactId>
+        <version>${sonatypeAetherVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-connector-wagon</artifactId>
+        <version>${sonatypeAetherVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-impl</artifactId>
+        <version>${sonatypeAetherVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-util</artifactId>
+        <version>${sonatypeAetherVersion}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  
   <dependencies>
     <dependency> <!-- @TODO remove!! -->
       <groupId>org.apache.maven</groupId>
@@ -316,13 +347,13 @@ under the License.
     <dependency>
       <groupId>org.sonatype.aether</groupId>
       <artifactId>aether-connector-wagon</artifactId>
-      <version>1.7</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-http</artifactId>
-      <version>1.0-beta-6</version>
+      <version>${wagonVersion}</version>
+      <classifier>shaded</classifier>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -394,15 +425,10 @@ under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <systemProperties>
-            <property>
-              <name>maven.home</name>
-              <value>${maven.home}</value>
-            </property>
-          </systemProperties>
-          <environmentVariables>
-            <JENKINS_MAVEN_AGENT_DISABLED>true</JENKINS_MAVEN_AGENT_DISABLED>
-          </environmentVariables>
+          <systemPropertyVariables>
+            <maven.home>${maven.home}</maven.home>
+            <https.protocols>${https.protocols}</https.protocols>
+          </systemPropertyVariables> 
         </configuration>
       </plugin>
       <plugin>
