@@ -25,7 +25,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-plugins</artifactId>
-    <version>33</version>
+    <version>34</version>
     <relativePath />
   </parent>
 
@@ -76,6 +76,7 @@ under the License.
     <!-- for ITs -->
     <sitePluginVersion>3.3</sitePluginVersion>
     <projectInfoReportsPluginVersion>2.7</projectInfoReportsPluginVersion>
+    <project.build.outputTimestamp>2020-02-14T20:43:59Z</project.build.outputTimestamp>
   </properties>
 
   <contributors>
@@ -163,7 +164,7 @@ under the License.
       <version>${mavenVersion}</version>
       <scope>test</scope>
     </dependency>
-    <!-- maven -->
+    <!-- Maven -->
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
