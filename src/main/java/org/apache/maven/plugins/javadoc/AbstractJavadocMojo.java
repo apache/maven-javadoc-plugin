@@ -1749,6 +1749,17 @@ public abstract class AbstractJavadocMojo
             defaultValue = "${project.build.directory}/maven-javadoc-plugin-stale-data.txt" )
     private File staleDataPath;
 
+
+    /**
+     * <p>
+     * Comma separated list of modules (artifactId) to not add in aggregated javadoc
+     * </p>
+     *
+     * @since 3.2.0
+     */
+    @Parameter( property = "maven.javadoc.skippedModules" )
+    private String skippedModules;
+
     // ----------------------------------------------------------------------
     // protected methods
     // ----------------------------------------------------------------------
@@ -6806,6 +6817,10 @@ public abstract class AbstractJavadocMojo
     }
 
 
+    /**
+     *
+     * @return List of projects to be part of aggregated javadoc
+     */
     private List<MavenProject> getAggregatedProjects()
     {
         if ( this.reactorProjects == null )
@@ -6815,7 +6830,8 @@ public abstract class AbstractJavadocMojo
         Map<Path, MavenProject> reactorProjectsMap = new HashMap<>();
         for ( MavenProject reactorProject : this.reactorProjects )
         {
-            if ( !isSkippedJavadoc( reactorProject ) )
+            if ( !isSkippedJavadoc( reactorProject ) && //
+                    !isSkippedModule( reactorProject ) )
             {
                 reactorProjectsMap.put( reactorProject.getBasedir().toPath(), reactorProject );
             }
@@ -6824,6 +6840,24 @@ public abstract class AbstractJavadocMojo
         return new ArrayList<>( modulesForAggregatedProject( project, reactorProjectsMap ) );
     }
 
+    /**
+     *
+     * @return <code>true</code> if the module need to be skipped from aggregate generation
+     */
+    protected boolean isSkippedModule( MavenProject mavenProject )
+    {
+        if ( StringUtils.isEmpty( this.skippedModules ) )
+        {
+            return false;
+        }
+        List<String> modulesToSkip = Arrays.asList( StringUtils.split( this.skippedModules, ',' ) );
+        return modulesToSkip.contains( mavenProject.getArtifactId() );
+    }
+
+    /**
+     *
+     * @return <code>true</code> if the pom configuration skip javadoc generation for the project
+     */
     protected boolean isSkippedJavadoc( MavenProject mavenProject )
     {
         String property = mavenProject.getProperties().getProperty( "maven.javadoc.skip" );
