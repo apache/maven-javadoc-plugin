@@ -5149,6 +5149,7 @@ public abstract class AbstractJavadocMojo
             }
 
             request.setAdditionalModules( additionalModules );
+            request.setIncludeAdditionalModulesStatic( isAggregator() );
 
             try
             {
