@@ -1,5 +1,3 @@
-package com.foo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -8,9 +6,9 @@ package com.foo;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,21 +17,8 @@ package com.foo;
  * under the License.
  */
 
-public class MyClass
-{
+def file = new File( basedir, 'target/mjavadoc610-1.0-SNAPSHOT-javadoc.jar' )
+assert file.exists()
 
-    /**
-     * bar method
-     */
-    public void foo(){
-
-    }
-
-    /**
-     * bar method
-     */
-    public void bar(){
-
-    }
-
-}
+assert new File( basedir, 'target/apidocs/com.foo/com/foo/MyClass.html').exists()
+assert new File( basedir, 'target/apidocs/com.foo/com/foo/OtherClass.html').exists()

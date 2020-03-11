@@ -21,5 +21,10 @@ package com.foo;
 
 public class MyClass
 {
+    /**
+     * foo method
+     */
+    public void foo(){
 
+    }
 }

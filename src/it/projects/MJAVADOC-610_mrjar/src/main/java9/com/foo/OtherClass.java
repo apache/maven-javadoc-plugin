@@ -19,21 +19,7 @@ package com.foo;
  * under the License.
  */
 
-public class MyClass
+public class OtherClass
 {
-
-    /**
-     * bar method
-     */
-    public void foo(){
-
-    }
-
-    /**
-     * bar method
-     */
-    public void bar(){
-
-    }
 
 }
