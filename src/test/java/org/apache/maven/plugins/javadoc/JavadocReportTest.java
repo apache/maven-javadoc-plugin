@@ -260,6 +260,7 @@ public class JavadocReportTest
             {
                 assumeThat( connection.getURL().toString(), is( url ) );
 
+                // https://bugs.openjdk.java.net/browse/JDK-8216497
                 assertThat( url + " available, but " + appHtml + " is missing link to java.lang.Object",
                             FileUtils.fileRead( generatedFile, "UTF-8" ),
                             anyOf( containsString( "/docs/api/java/lang/Object.html" ), 
