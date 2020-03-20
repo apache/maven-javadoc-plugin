@@ -32,7 +32,8 @@ def m = classFile.text =~ p
 
 assert m.hasGroup()
 try {
-  // Looks like as of Java 15-ea ?is-external=true is removed 
+  // https://bugs.openjdk.java.net/browse/JDK-8232438
+  // As of Java 15 ?is-external=true is removed 
   assert m[0][1].startsWith('https://guava.dev/releases/27.0.1-jre/api/docs/com/google/common/collect/Multimap.html')
 }
 catch(IndexOutOfBoundsException ioobe) {
