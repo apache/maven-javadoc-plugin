@@ -32,10 +32,11 @@ def m = classFile.text =~ p
 
 assert m.hasGroup()
 try {
-  assert m[0][1] == "https://guava.dev/releases/27.0.1-jre/api/docs/com/google/common/collect/Multimap.html?is-external=true"
+  // Looks like as of Java 15-ea ?is-external=true is removed 
+  assert m[0][1].startsWith('https://guava.dev/releases/27.0.1-jre/api/docs/com/google/common/collect/Multimap.html')
 }
 catch(IndexOutOfBoundsException ioobe) {
-  // seems to happen some Java 11 releases... 
+  // seems to happen with some Java 11 releases... 
   if ( javaVersion != 11 ) { throw ioobe }  
 }
 
