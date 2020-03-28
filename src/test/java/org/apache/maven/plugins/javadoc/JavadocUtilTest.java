@@ -283,7 +283,7 @@ public class JavadocUtilTest
             assertTrue( true );
         }
 
-        url = new File( getBasedir(), "/pom.xml" ).toURL();
+        url = new File( getBasedir(), "/pom.xml" ).toURI().toURL();
         assertTrue( JavadocUtil.isValidPackageList( url, settings, false ) );
 
         try

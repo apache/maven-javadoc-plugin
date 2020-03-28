@@ -965,7 +965,7 @@ public abstract class AbstractFixJavadocMojo
             {
                 try
                 {
-                    urls.add( new File( filename ).toURL() );
+                    urls.add( new File( filename ).toURI().toURL() );
                 }
                 catch ( MalformedURLException e )
                 {
