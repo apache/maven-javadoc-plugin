@@ -707,7 +707,7 @@ public class JavadocUtil
         throws IOException, ClassNotFoundException, NoClassDefFoundError
     {
         List<String> classes = getClassNamesFromJar( jarFile );
-        ClassLoader cl;
+        URLClassLoader cl;
 
         // Needed to find com.sun.tools.doclets.Taglet class
         File tools = new File( System.getProperty( "java.home" ), "../lib/tools.jar" );
@@ -742,7 +742,16 @@ public class JavadocUtil
                 tagletClasses.add( c.getName() );
             }
         }
-
+        
+        try
+        {
+            cl.close();
+        }
+        catch ( IOException ex )
+        {
+            // no big deal
+        }
+        
         return tagletClasses;
     }
 

@@ -38,7 +38,6 @@ import com.thoughtworks.qdox.model.JavaTypeVariable;
 import com.thoughtworks.qdox.parser.ParseException;
 import com.thoughtworks.qdox.type.TypeResolver;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
@@ -55,7 +54,6 @@ import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.codehaus.plexus.components.interactivity.InputHandler;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -91,7 +89,7 @@ import java.util.regex.Pattern;
 /**
  * Abstract class to fix Javadoc documentation and tags in source files.
  * <br>
- * See <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#wheretags">Where Tags
+ * See <a href="https://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#wheretags">Where Tags
  * Can Be Used</a>.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
@@ -771,10 +769,8 @@ public abstract class AbstractFixJavadocMojo
         clirrNewClasses = new LinkedList<>();
         clirrNewMethods = new LinkedHashMap<>();
 
-        BufferedReader reader = null;
-        try
+        try ( BufferedReader reader = new BufferedReader( ReaderFactory.newReader( clirrTextOutputFile, "UTF-8" ) ) )
         {
-            reader = new BufferedReader( ReaderFactory.newReader( clirrTextOutputFile, "UTF-8" ) );
 
             for ( String line = reader.readLine(); line != null; line = reader.readLine() )
             {
@@ -849,13 +845,6 @@ public abstract class AbstractFixJavadocMojo
                 }
                 // CHECKSTYLE_ON: MagicNumber
             }
-
-            reader.close();
-            reader = null;
-        }
-        finally
-        {
-            IOUtils.closeQuietly( reader );
         }
         if ( clirrNewClasses.isEmpty() && clirrNewMethods.isEmpty() )
         {
@@ -1025,11 +1014,9 @@ public abstract class AbstractFixJavadocMojo
         }
 
         final StringWriter stringWriter = new StringWriter();
-        BufferedReader reader = null;
         boolean changeDetected = false;
-        try
+        try ( BufferedReader reader = new BufferedReader( new StringReader( originalContent ) ) )
         {
-            reader = new BufferedReader( new StringReader( originalContent ) );
 
             int lineNumber = 0;
             for ( String line = reader.readLine(); line != null; line = reader.readLine() )
@@ -1106,13 +1093,6 @@ public abstract class AbstractFixJavadocMojo
                 stringWriter.write( line );
                 stringWriter.write( EOL );
             }
-
-            reader.close();
-            reader = null;
-        }
-        finally
-        {
-            IOUtil.close( reader );
         }
 
         if ( changeDetected )
@@ -3068,19 +3048,18 @@ public abstract class AbstractFixJavadocMojo
         sb.append( CLIRR_MAVEN_PLUGIN_GROUPID ).append( ":" ).append( CLIRR_MAVEN_PLUGIN_ARTIFACTID ).append( ":" );
 
         String clirrVersion = CLIRR_MAVEN_PLUGIN_VERSION;
-        InputStream resourceAsStream = null;
-        try
+        
+        String resource = "META-INF/maven/" + CLIRR_MAVEN_PLUGIN_GROUPID + "/" + CLIRR_MAVEN_PLUGIN_ARTIFACTID
+                        + "/pom.properties";
+         
+        try ( InputStream resourceAsStream =
+            AbstractFixJavadocMojo.class.getClassLoader().getResourceAsStream( resource ) )
         {
-            String resource = "META-INF/maven/" + CLIRR_MAVEN_PLUGIN_GROUPID + "/" + CLIRR_MAVEN_PLUGIN_ARTIFACTID
-                + "/pom.properties";
-            resourceAsStream = AbstractFixJavadocMojo.class.getClassLoader().getResourceAsStream( resource );
 
             if ( resourceAsStream != null )
             {
                 Properties properties = new Properties();
                 properties.load( resourceAsStream );
-                resourceAsStream.close();
-                resourceAsStream = null;
                 if ( StringUtils.isNotEmpty( properties.getProperty( "version" ) ) )
                 {
                     clirrVersion = properties.getProperty( "version" );
@@ -3090,10 +3069,6 @@ public abstract class AbstractFixJavadocMojo
         catch ( IOException e )
         {
             // nop
-        }
-        finally
-        {
-            IOUtil.close( resourceAsStream );
         }
 
         sb.append( clirrVersion ).append( ":" ).append( CLIRR_MAVEN_PLUGIN_GOAL );
@@ -3137,7 +3112,7 @@ public abstract class AbstractFixJavadocMojo
      * Default comment for method with taking care of getter/setter in the javaMethod name.
      *
      * @param javaExecutable not null
-     * @return a default comment for method.
+     * @return a default comment for method
      */
     private static String getDefaultMethodJavadocComment( final JavaExecutable javaExecutable )
     {
