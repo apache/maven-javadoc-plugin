@@ -572,7 +572,7 @@ public class JavadocReportTest
         // check for a part of the window title
         String content;
         String expected;
-        if ( JavaVersion.JAVA_VERSION.isAtLeast( "9" ) )
+        if ( JavaVersion.JAVA_VERSION.isAtLeast( "9" ) && JavaVersion.JAVA_VERSION.isBefore( "12" ) )
         {
             content = readFile( optionsFile, StandardCharsets.UTF_8 );
             expected = OPTIONS_UMLAUT_ENCODING;

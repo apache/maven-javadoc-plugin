@@ -4655,7 +4655,7 @@ public abstract class AbstractJavadocMojo
 
         /* default to platform encoding */
         String outputFileEncoding = null;
-        if ( JAVA_VERSION.isAtLeast( "9" ) )
+        if ( JAVA_VERSION.isAtLeast( "9" ) && JAVA_VERSION.isBefore( "12" ) )
         {
             outputFileEncoding = StandardCharsets.UTF_8.name();
         }
