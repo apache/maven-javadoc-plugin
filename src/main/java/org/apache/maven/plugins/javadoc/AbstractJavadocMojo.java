@@ -6093,7 +6093,7 @@ public abstract class AbstractJavadocMojo
     {
         String javadocPluginVersion = null;
         String resource = "META-INF/maven/org.apache.maven.plugins/maven-javadoc-plugin/pom.properties";
-        try (InputStream resourceAsStream 
+        try ( InputStream resourceAsStream 
                         = AbstractJavadocMojo.class.getClassLoader().getResourceAsStream( resource ) )
         {
             if ( resourceAsStream != null )
