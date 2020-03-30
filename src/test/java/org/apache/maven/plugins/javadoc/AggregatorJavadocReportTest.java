@@ -232,15 +232,7 @@ public class AggregatorJavadocReportTest
         File apidocs = new File( getBasedir(), "target/test/unit/aggregate-resources-test/target/site/apidocs" );
 
         // Test overview
-        File overviewSummary;
-        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "11" ) )
-        {
-            overviewSummary = new File( apidocs, "overview-summary.html" );
-        }
-        else
-        {
-            overviewSummary = new File( apidocs, "index.html" );
-        }
+        File overviewSummary = getOverviewSummary(apidocs);
         
         assertTrue( overviewSummary.exists() );
         String overview = readFile( overviewSummary ).toLowerCase();
@@ -257,4 +249,30 @@ public class AggregatorJavadocReportTest
         assertTrue( overview.contains( "<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">" ) );
         assertTrue( new File( apidocs, "resources/test/doc-files/maven-feather.png" ).exists() );
     }
+
+    public void testAggregateWithModulsNotInSubFolders() throws Exception
+    {
+      File testPom = new File( unit, "aggregate-modules-not-in-subfolders-test/all/pom.xml");
+      JavadocReport mojo = lookupMojo( testPom );
+      mojo.execute();
+      
+      File apidocs = new File( getBasedir(), "target/test/unit/aggregate-modules-not-in-subfolders-test/target/site/apidocs" );
+      assertTrue(apidocs.exists());
+      assertTrue( getOverviewSummary(apidocs).exists() );
+    }
+    
+    private File getOverviewSummary(File apidocs)
+    {
+      File overviewSummary;
+      if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "11" ) )
+      {
+          overviewSummary = new File( apidocs, "overview-summary.html" );
+      }
+      else
+      {
+          overviewSummary = new File( apidocs, "index.html" );
+      }
+      return overviewSummary;
+    }
+
 }
