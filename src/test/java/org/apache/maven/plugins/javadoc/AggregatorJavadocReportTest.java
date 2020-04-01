@@ -258,8 +258,8 @@ public class AggregatorJavadocReportTest
       mojo.execute();
       
       File apidocs = new File( getBasedir(), "target/test/unit/aggregate-modules-not-in-subfolders-test/target/site/apidocs" );
-      assertTrue( apidocs.exists() );
-      assertTrue( getOverviewSummary( apidocs ).exists() );
+      assertTrue( apidocs.isDirectory() );
+      assertTrue( getOverviewSummary( apidocs ).isFile() );
     }
     
     private static File getOverviewSummary(File apidocs)
