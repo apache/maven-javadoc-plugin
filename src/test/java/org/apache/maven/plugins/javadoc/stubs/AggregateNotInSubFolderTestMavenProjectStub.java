@@ -19,68 +19,18 @@ package org.apache.maven.plugins.javadoc.stubs;
  * under the License.
  */
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Build;
-import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
-import org.apache.maven.project.MavenProject;
-
 /**
- * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
+ * @author <a href="mailto:reto.weiss@axonivy.com">Reto Weiss</a>
  */
 public class AggregateNotInSubFolderTestMavenProjectStub
-    extends MavenProjectStub
+    extends AbstractAggregateMavenProjectStub
 {
     public AggregateNotInSubFolderTestMavenProjectStub()
     {
-        readModel( new File( getBasedir(), "pom.xml" ) );
-
-        setGroupId( getModel().getGroupId() );
-        setArtifactId( getModel().getArtifactId() );
-        setVersion( getModel().getVersion() );
-        setName( getModel().getName() );
-        setUrl( getModel().getUrl() );
-        setPackaging( getModel().getPackaging() );
-
-        setExecutionRoot( true );
-
-        Build build = new Build();
-        build.setFinalName( getModel().getArtifactId() );
-        build.setSourceDirectory( getBasedir() + "/src/main/java" );
-        build.setDirectory( super.getBasedir() + "/target/test/unit/aggregate-modules-not-in-subfolders-test/target" );
-        setBuild( build );
-
-        List<String> compileSourceRoots = new ArrayList<>();
-        setCompileSourceRoots( compileSourceRoots );
-    }
-
-    @Override
-    public File getBasedir()
-    {
-        return new File( super.getBasedir() + "/src/test/resources/unit/aggregate-modules-not-in-subfolders-test/all" );
-    }
-
-    @Override
-    public MavenProject getExecutionProject()
-    {
-        return this;
-    }
-    
-    @Override
-    public List<String> getModules()
-    {
-        return Arrays.asList( "../project1", "../project2" );
-    }
-
-    @Override
-    public Set<Artifact> getDependencyArtifacts()
-    {
-        return Collections.emptySet();
+        super( "/src/test/resources/unit/aggregate-modules-not-in-subfolders-test/all", 
+               "pom.xml",
+               "/target/test/unit/aggregate-modules-not-in-subfolders-test/target",
+               "../project1",
+               "../project2");
     }
 }

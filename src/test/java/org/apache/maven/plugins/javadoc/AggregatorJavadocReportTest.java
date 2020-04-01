@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
@@ -235,7 +236,7 @@ public class AggregatorJavadocReportTest
         File overviewSummary = getOverviewSummary(apidocs);
         
         assertTrue( overviewSummary.exists() );
-        String overview = readFile( overviewSummary ).toLowerCase();
+        String overview = readFile( overviewSummary ).toLowerCase( Locale.ENGLISH );
         assertTrue( overview.contains( "<a href=\"resources/test/package-summary.html\">resources.test</a>" ) );
         assertTrue( overview.contains( ">blabla</" ) );
         assertTrue( overview.contains( "<a href=\"resources/test2/package-summary.html\">resources.test2</a>" ) );
@@ -257,22 +258,17 @@ public class AggregatorJavadocReportTest
       mojo.execute();
       
       File apidocs = new File( getBasedir(), "target/test/unit/aggregate-modules-not-in-subfolders-test/target/site/apidocs" );
-      assertTrue(apidocs.exists());
-      assertTrue( getOverviewSummary(apidocs).exists() );
+      assertTrue( apidocs.exists() );
+      assertTrue( getOverviewSummary( apidocs ).exists() );
     }
     
-    private File getOverviewSummary(File apidocs)
+    private static File getOverviewSummary(File apidocs)
     {
-      File overviewSummary;
       if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "11" ) )
       {
-          overviewSummary = new File( apidocs, "overview-summary.html" );
+          return new File( apidocs, "overview-summary.html" );
       }
-      else
-      {
-          overviewSummary = new File( apidocs, "index.html" );
-      }
-      return overviewSummary;
+      return new File( apidocs, "index.html" );
     }
 
 }
