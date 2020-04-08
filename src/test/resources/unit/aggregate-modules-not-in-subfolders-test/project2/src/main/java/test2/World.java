@@ -1,4 +1,4 @@
-package org.apache.maven.plugins.javadoc.stubs;
+package test2;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,15 +20,7 @@ package org.apache.maven.plugins.javadoc.stubs;
  */
 
 /**
- * @author <a href="mailto:reto.weiss@axonivy.com">Reto Weiss</a>
+ * This is World 
  */
-public class AggregateResourcesProject1TestMavenProjectStub
-    extends AbstractAggregateChildMavenProjectStub
-{
-    public AggregateResourcesProject1TestMavenProjectStub()
-    {
-        super( "/src/test/resources/unit/aggregate-resources-test/project1",
-               "pom.xml",
-               "/target/test/unit/aggregate-resources-test/project1/target" );
-    }
-}
+public class World
+{}

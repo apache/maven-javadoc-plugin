@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
@@ -232,18 +233,10 @@ public class AggregatorJavadocReportTest
         File apidocs = new File( getBasedir(), "target/test/unit/aggregate-resources-test/target/site/apidocs" );
 
         // Test overview
-        File overviewSummary;
-        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "11" ) )
-        {
-            overviewSummary = new File( apidocs, "overview-summary.html" );
-        }
-        else
-        {
-            overviewSummary = new File( apidocs, "index.html" );
-        }
+        File overviewSummary = getOverviewSummary(apidocs);
         
         assertTrue( overviewSummary.exists() );
-        String overview = readFile( overviewSummary ).toLowerCase();
+        String overview = readFile( overviewSummary ).toLowerCase( Locale.ENGLISH );
         assertTrue( overview.contains( "<a href=\"resources/test/package-summary.html\">resources.test</a>" ) );
         assertTrue( overview.contains( ">blabla</" ) );
         assertTrue( overview.contains( "<a href=\"resources/test2/package-summary.html\">resources.test2</a>" ) );
@@ -257,4 +250,25 @@ public class AggregatorJavadocReportTest
         assertTrue( overview.contains( "<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">" ) );
         assertTrue( new File( apidocs, "resources/test/doc-files/maven-feather.png" ).exists() );
     }
+
+    public void testAggregateWithModulsNotInSubFolders() throws Exception
+    {
+      File testPom = new File( unit, "aggregate-modules-not-in-subfolders-test/all/pom.xml");
+      JavadocReport mojo = lookupMojo( testPom );
+      mojo.execute();
+      
+      File apidocs = new File( getBasedir(), "target/test/unit/aggregate-modules-not-in-subfolders-test/target/site/apidocs" );
+      assertTrue( apidocs.isDirectory() );
+      assertTrue( getOverviewSummary( apidocs ).isFile() );
+    }
+    
+    private static File getOverviewSummary(File apidocs)
+    {
+      if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "11" ) )
+      {
+          return new File( apidocs, "overview-summary.html" );
+      }
+      return new File( apidocs, "index.html" );
+    }
+
 }

@@ -2401,10 +2401,11 @@ public abstract class AbstractJavadocMojo
             return Collections.singleton( aggregatedProject );
         }
 
+        Path basePath = aggregatedProject.getBasedir().toPath();
         List<Path> modulePaths = new LinkedList<>();
         for ( String module :  aggregatedProject.getModules() )
         {
-            modulePaths.add( new File( aggregatedProject.getBasedir(), module ).toPath() );
+            modulePaths.add( basePath.resolve( module ).normalize() );
         }
 
         Set<MavenProject> aggregatedModules = new LinkedHashSet<>();

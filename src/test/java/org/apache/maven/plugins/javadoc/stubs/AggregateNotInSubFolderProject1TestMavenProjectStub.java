@@ -22,13 +22,13 @@ package org.apache.maven.plugins.javadoc.stubs;
 /**
  * @author <a href="mailto:reto.weiss@axonivy.com">Reto Weiss</a>
  */
-public class AggregateResourcesProject1TestMavenProjectStub
+public class AggregateNotInSubFolderProject1TestMavenProjectStub
     extends AbstractAggregateChildMavenProjectStub
 {
-    public AggregateResourcesProject1TestMavenProjectStub()
+    public AggregateNotInSubFolderProject1TestMavenProjectStub()
     {
-        super( "/src/test/resources/unit/aggregate-resources-test/project1",
+        super( "/src/test/resources/unit/aggregate-modules-not-in-subfolders-test/project1",
                "pom.xml",
-               "/target/test/unit/aggregate-resources-test/project1/target" );
+               "/target/test/unit/aggregate-modules-not-in-subfolders-test/project1/target" );
     }
 }
