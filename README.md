@@ -23,14 +23,12 @@ Contributing to [Apache Maven Javadoc Plugin](https://maven.apache.org/plugins/m
 [![Jenkins Status](https://img.shields.io/jenkins/s/https/builds.apache.org/job/maven-box/job/maven-javadoc-plugin/job/master.svg?style=flat-square)][build]
 [![Jenkins tests](https://img.shields.io/jenkins/t/https/builds.apache.org/job/maven-box/job/maven-javadoc-plugin/job/master.svg?style=flat-square)][test-results]
 
+
 You have found a bug or you have an idea for a cool new feature? Contributing
 code is a great way to give something back to the open source community. Before
 you dig right into the code, there are a few guidelines that we need
 contributors to follow so that we can have a chance of keeping on top of
 things.
-
-Some of the ideas are documented in the [Maven Wiki][maven-wiki]
-which might be interesting to read and for further discussion.
 
 Getting Started
 ---------------
@@ -84,7 +82,7 @@ Additional Resources
 --------------------
 
 + [Contributing patches](https://maven.apache.org/guides/development/guide-maven-development.html#Creating_and_submitting_a_patch)
-+ [Apache Maven JavaDoc JIRA project page][jira]
++ [Apache Maven Javadoc JIRA project page][jira]
 + [Contributor License Agreement][cla]
 + [General GitHub documentation](https://help.github.com/)
 + [GitHub pull request documentation](https://help.github.com/send-pull-requests/)
