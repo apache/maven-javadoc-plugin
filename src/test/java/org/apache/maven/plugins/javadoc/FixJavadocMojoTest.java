@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -524,25 +524,26 @@ public class FixJavadocMojoTest
         JavaEntityTags javaEntityTags = mojoInstance.parseJavadocTags( source, javaMethod, "", true );
         
         StringBuilder sb = new StringBuilder();
-        mojoInstance.writeThrowsTag( sb, javaMethod, javaEntityTags, Arrays.asList( "java.lang.RuntimeException" ) );
+        mojoInstance.writeThrowsTag( sb, javaMethod, javaEntityTags, Collections.singletonList("java.lang" +
+                ".RuntimeException"));
         assertEquals( " * @throws java.lang.RuntimeException", sb.toString() );
 
         sb = new StringBuilder();
-        mojoInstance.writeThrowsTag( sb, javaMethod, javaEntityTags, Arrays.asList( "NumberFormatException" ) );
+        mojoInstance.writeThrowsTag( sb, javaMethod, javaEntityTags, Collections.singletonList("NumberFormatException"));
         assertEquals( " * @throws java.lang.NumberFormatException", sb.toString() );
 
         sb = new StringBuilder();
-        mojoInstance.writeThrowsTag( sb, javaMethod, javaEntityTags, Arrays.asList( "java.lang.Exception" ) );
+        mojoInstance.writeThrowsTag( sb, javaMethod, javaEntityTags, Collections.singletonList("java.lang.Exception"));
         assertEquals( "", sb.toString() );
         
         setVariableValueToObject( mojoInstance, "removeUnknownThrows", true );
         sb = new StringBuilder();
-        mojoInstance.writeThrowsTag( sb, javaMethod, javaEntityTags, Arrays.asList( "com.foo.FatalException" ) );
+        mojoInstance.writeThrowsTag( sb, javaMethod, javaEntityTags, Collections.singletonList("com.foo.FatalException"));
         assertEquals( "", sb.toString() );
 
         setVariableValueToObject( mojoInstance, "removeUnknownThrows", false );
         sb = new StringBuilder();
-        mojoInstance.writeThrowsTag( sb, javaMethod, javaEntityTags, Arrays.asList( "com.foo.FatalException" ) );
+        mojoInstance.writeThrowsTag( sb, javaMethod, javaEntityTags, Collections.singletonList("com.foo.FatalException"));
         assertEquals( " * @throws com.foo.FatalException if any.", sb.toString() );
     }
 
