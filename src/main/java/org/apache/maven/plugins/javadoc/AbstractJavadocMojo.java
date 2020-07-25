@@ -6389,7 +6389,12 @@ public abstract class AbstractJavadocMojo
         if ( javaApiversion.isAtLeast( "10" ) )
         {
             javaApiListFile = getJavadocOptionsFile().getParentFile().toPath().resolve( "element-list" );
-            resourceName = "java-api-element-list-" + javaApiversion.toString().substring( 0, 2 );
+            int version = Integer.parseInt( javaApiversion.toString().substring( 0, 2 ) );
+            while ( this.getClass().getResource( "java-api-element-list-" + version ) == null && version > 10 )
+            {
+                version--;
+            }
+            resourceName = "java-api-element-list-" + version;
         }
         else if ( javaApiversion.asMajor().isAtLeast( "9" ) )
         {
