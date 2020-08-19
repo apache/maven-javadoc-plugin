@@ -154,7 +154,7 @@ public class JavadocJarTest
         //check if the javadoc jar file was generated
         File generatedFile = new File( getBasedir(),
                                        "target/test/unit/javadocjar-invalid-destdir/target/javadocjar-invalid-destdir-javadoc.jar" );
-        assertTrue( !FileUtils.fileExists( generatedFile.getAbsolutePath() ) );
+        assertFalse( FileUtils.fileExists( generatedFile.getAbsolutePath() ) );
     }
 
     public void testContinueIfFailOnErrorIsFalse() throws Exception
@@ -200,10 +200,8 @@ public class JavadocJarTest
         expected.add( "META-INF/maven/org.apache.maven.plugins.maven-javadoc-plugin.unit/javadocjar-archive-config/pom.xml" );
         expected.add( "META-INF/maven/org.apache.maven.plugins.maven-javadoc-plugin.unit/javadocjar-archive-config/pom.properties" );
 
-        for (int i = 0; i < expected.size(); i++)
-        {
-            String entry = expected.get( i );
-            assertTrue( "Expected jar to contain " + entry, set.contains( entry ) );
+        for (String entry : expected) {
+            assertTrue("Expected jar to contain " + entry, set.contains(entry));
         }
     }
 }

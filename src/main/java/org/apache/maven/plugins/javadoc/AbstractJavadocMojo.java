@@ -564,7 +564,6 @@ public abstract class AbstractJavadocMojo
      *
      * @see #links
      * @see #javaApiLinks
-     * @see #DEFAULT_JAVA_API_LINKS
      * @since 2.6
      */
     @Parameter( property = "detectJavaApiLink", defaultValue = "true" )
@@ -2252,10 +2251,10 @@ public abstract class AbstractJavadocMojo
 
             for ( Path sourcePath : sourcePaths )
             {
-                List<String> files = new ArrayList<>();
                 File sourceDirectory = sourcePath.toFile();
-                files.addAll( JavadocUtil.getFilesFromSource( sourceDirectory, sourceFileIncludes, sourceFileExcludes,
-                                                              excludedPackages ) );
+                List<String> files = new ArrayList<>( JavadocUtil.getFilesFromSource( sourceDirectory,
+                        sourceFileIncludes, sourceFileExcludes,
+                        excludedPackages ) );
 
                 if ( source != null && JavaVersion.parse( source ).isBefore( "9" )
                     && files.remove( "module-info.java" ) )

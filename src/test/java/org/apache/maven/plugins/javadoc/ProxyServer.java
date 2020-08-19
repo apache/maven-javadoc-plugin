@@ -59,7 +59,6 @@ class ProxyServer
     /**
      * @param hostName the server name
      * @param port the server port
-     * @param debug true to display System.err, false otherwise.
      * @param proxyServlet the wanted auth proxy servlet
      */
     public ProxyServer( String hostName, int port, AuthAsyncProxyServlet proxyServlet )

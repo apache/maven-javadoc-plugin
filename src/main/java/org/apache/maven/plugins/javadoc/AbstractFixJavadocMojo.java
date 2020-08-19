@@ -802,41 +802,16 @@ public abstract class AbstractFixJavadocMojo
                 // 7011 - Method Added
                 // 7012 - Method Added to Interface
                 // 8000 - Class Added
-                List<String> list;
-                String[] splits2;
+
                 // CHECKSTYLE_OFF: MagicNumber
                 switch ( code )
                 {
                     case 7011:
-                        list = clirrNewMethods.get( split[2].trim() );
-                        if ( list == null )
-                        {
-                            list = new ArrayList<>();
-                        }
-                        splits2 = StringUtils.split( split[3].trim(), "'" );
-                        if ( splits2.length != 3 )
-                        {
-                            continue;
-                        }
-                        list.add( splits2[1].trim() );
-                        clirrNewMethods.put( split[2].trim(), list );
+                        methodAdded( split );
                         break;
-
                     case 7012:
-                        list = clirrNewMethods.get( split[2].trim() );
-                        if ( list == null )
-                        {
-                            list = new ArrayList<>();
-                        }
-                        splits2 = StringUtils.split( split[3].trim(), "'" );
-                        if ( splits2.length != 3 )
-                        {
-                            continue;
-                        }
-                        list.add( splits2[1].trim() );
-                        clirrNewMethods.put( split[2].trim(), list );
+                        methodAdded( split );
                         break;
-
                     case 8000:
                         clirrNewClasses.add( split[2].trim() );
                         break;
@@ -854,6 +829,22 @@ public abstract class AbstractFixJavadocMojo
         {
             getLog().info( "Clirr found API differences, i.e. new classes/interfaces or methods." );
         }
+    }
+
+    private void methodAdded( String[] split )
+    {
+        List<String> list = clirrNewMethods.get( split[2].trim() );
+        if ( list == null )
+        {
+            list = new ArrayList<>();
+        }
+        String[] splits2 = StringUtils.split( split[3].trim(), "'" );
+        if ( splits2.length != 3 )
+        {
+            return;
+        }
+        list.add( splits2[1].trim() );
+        clirrNewMethods.put( split[2].trim(), list );
     }
 
     /**
@@ -1796,11 +1787,13 @@ public abstract class AbstractFixJavadocMojo
         }
     }
 
+    private static final Pattern REPLACE_LINK_TAGS_PATTERN = Pattern.compile( "\\{@link\\s" );
+
     static String replaceLinkTags( String comment, JavaAnnotatedElement entity )
     {
         StringBuilder resolvedComment = new StringBuilder();
         // scan comment for {@link someClassName} and try to resolve this
-        Matcher linktagMatcher = Pattern.compile( "\\{@link\\s" ).matcher( comment );
+        Matcher linktagMatcher = REPLACE_LINK_TAGS_PATTERN.matcher( comment );
         int startIndex = 0;
         while ( linktagMatcher.find() )
         {
