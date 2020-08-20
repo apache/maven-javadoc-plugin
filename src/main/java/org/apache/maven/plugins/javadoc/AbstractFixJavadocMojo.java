@@ -1052,9 +1052,13 @@ public abstract class AbstractFixJavadocMojo
                     {
                         if ( lineNumber == method.getLineNumber() )
                         {
-                            changeDetected |= fixMethodComment( stringWriter, originalContent, method, indent );
-
-                            takeCareSingleComment( stringWriter, originalContent, method );
+                            final boolean commentUpdated =
+                                    fixMethodComment( stringWriter, originalContent, method, indent );
+                            if ( commentUpdated )
+                            {
+                                takeCareSingleComment( stringWriter, originalContent, method );
+                            }
+                            changeDetected |= commentUpdated;
                         }
                     }
                 }
@@ -1075,9 +1079,13 @@ public abstract class AbstractFixJavadocMojo
                     
                     if ( lineNumber == methodLineNumber )
                     {
-                        changeDetected |= fixMethodComment( stringWriter, originalContent, method, indent );
-
-                        takeCareSingleComment( stringWriter, originalContent, method );
+                        final boolean commentUpdated =
+                                fixMethodComment( stringWriter, originalContent, method, indent );
+                        if ( commentUpdated )
+                        {
+                            takeCareSingleComment( stringWriter, originalContent, method );
+                        }
+                        changeDetected |= commentUpdated;
                     }
                 }
 

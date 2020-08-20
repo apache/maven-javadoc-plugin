@@ -21,6 +21,7 @@ package fix.test;
 
 import java.util.Map;
 
+@SuppressWarnings("SameReturnValue")
 public class ClassWithNoJavadoc
     implements InterfaceWithNoJavadoc
 {
@@ -46,6 +47,16 @@ public class ClassWithNoJavadoc
     }
 
     public ClassWithNoJavadoc( String aString )
+    {
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    public ClassWithNoJavadoc( Boolean b )
+    {
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    private ClassWithNoJavadoc( Integer i )
     {
     }
 
@@ -106,4 +117,29 @@ public class ClassWithNoJavadoc
         {
         }
     }
+
+    @SuppressWarnings("SameReturnValue")
+    private void t000() {
+        return;
+    }
+
+    //test comment
+    private void t001() {
+        return;
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    public void t010() {
+        return;
+    }
+
+    //test comment
+    public void t011() {
+        return;
+    }
+}
+
+@SuppressWarnings("SameReturnValue")
+class PrivateTestClassWithNoJavadoc
+{
 }

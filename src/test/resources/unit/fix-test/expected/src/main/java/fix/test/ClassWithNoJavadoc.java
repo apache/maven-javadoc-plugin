@@ -27,6 +27,7 @@ import java.util.Map;
  * @author <a href="mailto:vsiveton@apache.org">vsiveton@apache.org</a>
  * @version $Id: $
  */
+@SuppressWarnings("SameReturnValue")
 public class ClassWithNoJavadoc
     implements InterfaceWithNoJavadoc
 {
@@ -66,6 +67,22 @@ public class ClassWithNoJavadoc
      * @param aString a {@link java.lang.String} object.
      */
     public ClassWithNoJavadoc( String aString )
+    {
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    /**
+     * <p>Constructor for ClassWithNoJavadoc.</p>
+     *
+     * @param b a {@link java.lang.Boolean} object.
+     * @since 1.1
+     */
+    public ClassWithNoJavadoc( Boolean b )
+    {
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    private ClassWithNoJavadoc( Integer i )
     {
     }
 
@@ -154,4 +171,39 @@ public class ClassWithNoJavadoc
         {
         }
     }
+
+    @SuppressWarnings("SameReturnValue")
+    private void t000() {
+        return;
+    }
+
+    //test comment
+    private void t001() {
+        return;
+    }
+
+    /**
+     * <p>t010.</p>
+     *
+     * @since 1.1
+     */
+    @SuppressWarnings("SameReturnValue")
+    public void t010() {
+        return;
+    }
+
+    //test comment
+    /**
+     * <p>t011.</p>
+     *
+     * @since 1.1
+     */
+    public void t011() {
+        return;
+    }
+}
+
+@SuppressWarnings("SameReturnValue")
+class PrivateTestClassWithNoJavadoc
+{
 }
