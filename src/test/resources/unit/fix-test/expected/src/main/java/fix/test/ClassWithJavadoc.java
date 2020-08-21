@@ -25,6 +25,7 @@ package fix.test;
  * @author <a href="mailto:vsiveton@apache.org">vsiveton@apache.org</a>
  * @version $Id: $
  */
+@SuppressWarnings("SameReturnValue")
 public class ClassWithJavadoc
     implements InterfaceWithJavadoc
 {
@@ -41,6 +42,25 @@ public class ClassWithJavadoc
      * @param aString a {@link java.lang.String} object.
      */
     public ClassWithJavadoc( String aString )
+    {
+    }
+
+    /**
+     * public constructor with annotation
+     *
+     * @param b a {@link java.lang.Boolean} object.
+     * @since 1.1
+     */
+    @SuppressWarnings("SameReturnValue")
+    public ClassWithJavadoc( Boolean b )
+    {
+    }
+
+    /**
+     * private constructor with annotation
+     */
+    @SuppressWarnings("SameReturnValue")
+    private ClassWithJavadoc( Integer i )
     {
     }
 
@@ -298,4 +318,52 @@ public class ClassWithJavadoc
         extends RuntimeException
     {
     }
+
+    /**
+     * private method with annotation
+     */
+    @SuppressWarnings("SameReturnValue")
+    private void t000()
+    {
+        return;
+    }
+
+    /**
+     * private method with line comment
+     */
+    //test comment
+    private void t001()
+    {
+        return;
+    }
+
+    /**
+     * public method with annotation
+     *
+     * @since 1.1
+     */
+    @SuppressWarnings("SameReturnValue")
+    public void t010()
+    {
+        return;
+    }
+
+    /**
+     * public method with annotation
+     *
+     * @since 1.1
+     */
+    //test comment
+    public void t011()
+    {
+        return;
+    }
+}
+
+/**
+ * To test package class
+ */
+@SuppressWarnings("SameReturnValue")
+class PrivateTestClassWithJavadoc
+{
 }
