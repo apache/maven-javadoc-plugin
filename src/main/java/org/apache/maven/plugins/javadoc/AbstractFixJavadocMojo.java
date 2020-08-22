@@ -1635,11 +1635,7 @@ public abstract class AbstractFixJavadocMojo
             return;
         }
 
-        boolean isJavaExecutable = false;
-        if ( entity instanceof JavaExecutable )
-        {
-            isJavaExecutable = true;
-        }
+        boolean isJavaExecutable = entity instanceof JavaExecutable;
 
         StringBuilder sb = new StringBuilder();
 
@@ -1740,14 +1736,7 @@ public abstract class AbstractFixJavadocMojo
         }
 
         // tags
-        if ( entity.getTags() != null && !entity.getTags().isEmpty() )
-        {
-            updateJavadocTags( sb, originalContent, entity, indent, isJavaExecutable );
-        }
-        else
-        {
-            addDefaultJavadocTags( sb, entity, indent, isJavaExecutable );
-        }
+        updateJavadocTags( sb, originalContent, entity, indent, isJavaExecutable );
 
         sb = new StringBuilder( removeLastEmptyJavadocLines( sb.toString() ) ).append( EOL );
 
@@ -2074,7 +2063,7 @@ public abstract class AbstractFixJavadocMojo
             List<JavaTypeVariable<JavaGenericDeclaration>> typeParams = javaExecutable.getTypeParameters();
             for ( JavaTypeVariable<JavaGenericDeclaration> typeParam : typeParams )
             {
-                if ( typeParam.getGenericValue().equals( paramName ) )
+                if ( ( "<" + typeParam.getName() + ">" ).equals( paramName ) )
                 {
                     found = true;
                 }
@@ -2340,96 +2329,6 @@ public abstract class AbstractFixJavadocMojo
                         && !sinceClassesContains( ( (JavaClass) entity ).getDeclaringClass() ) )
                     {
                         appendDefaultSinceTag( sb, indent );
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * @param sb           not null
-     * @param entity       not null
-     * @param indent       not null
-     * @param isJavaExecutable
-     * @throws MojoExecutionException if any
-     */
-    private void addDefaultJavadocTags( final StringBuilder sb, final JavaAnnotatedElement entity,
-                                        final String indent, final boolean isJavaExecutable )
-        throws MojoExecutionException
-    {
-        boolean separatorAdded = false;
-        if ( isJavaExecutable )
-        {
-            JavaExecutable javaExecutable = (JavaExecutable) entity;
-
-            if ( fixTag( PARAM_TAG ) && javaExecutable.getParameters() != null )
-            {
-                for ( JavaParameter javaParameter : javaExecutable.getParameters() )
-                {
-                    separatorAdded = appendDefaultParamTag( sb, indent, separatorAdded, javaParameter );
-                }
-            }
-
-            if ( javaExecutable instanceof JavaMethod && fixTag( RETURN_TAG ) )
-            {
-                JavaMethod javaMethod = (JavaMethod) javaExecutable;
-                if ( javaMethod.getReturns() != null && !javaMethod.getReturns().isVoid() )
-                {
-                    separatorAdded = appendDefaultReturnTag( sb, indent, separatorAdded, javaMethod );
-                }
-            }
-
-            if ( fixTag( THROWS_TAG ) && javaExecutable.getExceptions() != null )
-            {
-                for ( JavaType exception : javaExecutable.getExceptions() )
-                {
-                    separatorAdded = appendDefaultThrowsTag( sb, indent, separatorAdded, exception );
-                }
-            }
-        }
-        else
-        {
-            separatorAdded = appendDefaultAuthorTag( sb, indent, separatorAdded );
-
-            separatorAdded = appendDefaultVersionTag( sb, indent, separatorAdded );
-        }
-
-        if ( fixTag( SINCE_TAG ) )
-        {
-            if ( !isJavaExecutable )
-            {
-                JavaClass javaClass = (JavaClass) entity;
-
-                if ( !ignoreClirr )
-                {
-                    if ( isNewClassFromLastVersion( javaClass ) )
-                    {
-                        separatorAdded = appendDefaultSinceTag( sb, indent, separatorAdded );
-                    }
-                }
-                else
-                {
-                    separatorAdded = appendDefaultSinceTag( sb, indent, separatorAdded );
-
-                    addSinceClasses( javaClass );
-                }
-            }
-            else
-            {
-                JavaExecutable javaExecutable = (JavaExecutable) entity;
-
-                if ( !ignoreClirr )
-                {
-                    if ( isNewMethodFromLastRevision( javaExecutable ) )
-                    {
-                        separatorAdded = appendDefaultSinceTag( sb, indent, separatorAdded );
-                    }
-                }
-                else
-                {
-                    if ( sinceClasses != null && !sinceClassesContains( javaExecutable.getDeclaringClass() ) )
-                    {
-                        separatorAdded = appendDefaultSinceTag( sb, indent, separatorAdded );
                     }
                 }
             }
@@ -2875,7 +2774,7 @@ public abstract class AbstractFixJavadocMojo
     
     private String getDefaultJavadocForType( JavaTypeVariable<JavaGenericDeclaration> typeParameter )
     {
-        return "a " + typeParameter.getName() + " object.";
+        return "a " + typeParameter.getName() + " class.";
     }
 
     /**

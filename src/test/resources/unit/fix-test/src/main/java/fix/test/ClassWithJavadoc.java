@@ -335,6 +335,37 @@ public class ClassWithJavadoc
     {
         return;
     }
+
+    /**
+     * test generic function (with only head javadoc)
+     */
+    public <T extends Object> void testGeneric0(Class<T> tClass, Object o)
+    {
+        return;
+    }
+
+    /**
+     * test generic function (with full javadoc)
+     *
+     * @param tClass a {@link java.lang.Class} object.
+     * @param o a {@link java.lang.Object} object.
+     * @param <T> a T class.
+     */
+    public <T extends Object> void testGeneric1(Class<T> tClass, Object o)
+    {
+        return;
+    }
+
+    /**
+     * test generic function (with full javadoc, except generic docs)
+     *
+     * @param tClass a {@link java.lang.Class} object.
+     * @param o a {@link java.lang.Object} object.
+     */
+    public <T extends Object> void testGeneric2(Class<T> tClass, Object o)
+    {
+        return;
+    }
 }
 
 /**
