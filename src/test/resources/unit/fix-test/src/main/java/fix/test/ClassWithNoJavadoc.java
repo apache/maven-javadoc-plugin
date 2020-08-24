@@ -119,22 +119,31 @@ public class ClassWithNoJavadoc
     }
 
     @SuppressWarnings("SameReturnValue")
-    private void t000() {
+    private void t000()
+    {
         return;
     }
 
     //test comment
-    private void t001() {
+    private void t001()
+    {
         return;
     }
 
     @SuppressWarnings("SameReturnValue")
-    public void t010() {
+    public void t010()
+    {
         return;
     }
 
     //test comment
-    public void t011() {
+    public void t011()
+    {
+        return;
+    }
+
+    public <T extends Object> void testGeneric3(Class<T> tClass, Object o)
+    {
         return;
     }
 }
