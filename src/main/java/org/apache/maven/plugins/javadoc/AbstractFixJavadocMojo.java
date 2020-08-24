@@ -703,7 +703,6 @@ public abstract class AbstractFixJavadocMojo
         File invokerDir = new File( project.getBuild().getDirectory(), "invoker" );
         invokerDir.mkdirs();
         File invokerLogFile = FileUtils.createTempFile( "clirr-maven-plugin", ".txt", invokerDir );
-        new File( project.getBuild().getDirectory(), "invoker-clirr-maven-plugin.txt" );
 
         JavadocUtil.invokeMaven( getLog(), new File( localRepository.getBasedir() ), project.getFile(),
                                  Collections.singletonList( clirrGoal ), properties, invokerLogFile,
