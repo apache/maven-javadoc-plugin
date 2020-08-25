@@ -146,6 +146,30 @@ public class ClassWithNoJavadoc
     {
         return;
     }
+
+    public void testException0()
+            throws Exception
+    {
+        throw new Exception();
+    }
+
+    public void testException1()
+            throws Exception
+    {
+        throw new Exception();
+    }
+
+    public void testException2()
+            throws Exception
+    {
+        throw new Exception();
+    }
+
+    public void testException3()
+            throws RuntimeException , Exception
+    {
+        throw new Exception();
+    }
 }
 
 @SuppressWarnings("SameReturnValue")

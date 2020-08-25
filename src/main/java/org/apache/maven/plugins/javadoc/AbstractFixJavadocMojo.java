@@ -2152,7 +2152,7 @@ public abstract class AbstractFixJavadocMojo
         {
             for ( JavaType exception : javaExecutable.getExceptions() )
             {
-                if ( exception.getValue().endsWith( exceptionClassName ) )
+                if ( exception.getFullyQualifiedName().endsWith( exceptionClassName ) )
                 {
                     originalJavadocTag = StringUtils.replace( originalJavadocTag, exceptionClassName,
                                                               exception.getFullyQualifiedName() );
