@@ -218,6 +218,55 @@ public class ClassWithNoJavadoc
     {
         return;
     }
+
+    /**
+     * <p>testException0.</p>
+     *
+     * @throws java.lang.Exception if any.
+     * @since 1.1
+     */
+    public void testException0()
+            throws Exception
+    {
+        throw new Exception();
+    }
+
+    /**
+     * <p>testException1.</p>
+     *
+     * @throws java.lang.Exception if any.
+     * @since 1.1
+     */
+    public void testException1()
+            throws Exception
+    {
+        throw new Exception();
+    }
+
+    /**
+     * <p>testException2.</p>
+     *
+     * @throws java.lang.Exception if any.
+     * @since 1.1
+     */
+    public void testException2()
+            throws Exception
+    {
+        throw new Exception();
+    }
+
+    /**
+     * <p>testException3.</p>
+     *
+     * @throws java.lang.RuntimeException if any.
+     * @throws java.lang.Exception if any.
+     * @since 1.1
+     */
+    public void testException3()
+            throws RuntimeException , Exception
+    {
+        throw new Exception();
+    }
 }
 
 @SuppressWarnings("SameReturnValue")

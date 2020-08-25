@@ -397,6 +397,60 @@ public class ClassWithJavadoc
     {
         return;
     }
+
+    /**
+     * test whether it will change exception description when using "fix"
+     * test if we use fully qualified name for the exception.
+     *
+     * @throws java.lang.Exception original description, should not be changed to "if any".
+     * @since 1.1
+     */
+    public void testException0()
+            throws Exception
+    {
+        throw new Exception();
+    }
+
+    /**
+     * test whether it will change exception description when using "fix"
+     * test if we use short name for the exception.
+     *
+     * @throws java.lang.Exception original description, should not be changed to "if any".
+     * @since 1.1
+     */
+    public void testException1()
+            throws Exception
+    {
+        throw new Exception();
+    }
+
+    /**
+     * test whether it will change exception description when using "fix"
+     * test if we use a wrong name for the exception.
+     *
+     * @throws RuaaaaaaException abcdefghijklmn.
+     * @throws java.lang.Exception if any.
+     * @since 1.1
+     */
+    public void testException2()
+            throws Exception
+    {
+        throw new Exception();
+    }
+
+    /**
+     * test whether it will change exception description when using "fix"
+     * test if we provide only one exception description.
+     *
+     * @throws java.lang.RuntimeException text.
+     * @throws java.lang.Exception if any.
+     * @since 1.1
+     */
+    public void testException3()
+            throws RuntimeException , Exception
+    {
+        throw new Exception();
+    }
 }
 
 /**
