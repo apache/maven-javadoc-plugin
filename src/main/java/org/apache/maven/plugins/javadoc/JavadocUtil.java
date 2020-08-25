@@ -49,7 +49,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Set;
@@ -1017,16 +1016,23 @@ public class JavadocUtil
         }
 
         List<String> classes = new ArrayList<>();
+        Pattern pattern =
+            Pattern.compile( "(?i)^(META-INF/versions/(?<v>[0-9]+)/)?(?<n>.+)[.]class$" );
         try ( JarInputStream jarStream = new JarInputStream( new FileInputStream( jarFile ) ) )
         {
             for ( JarEntry jarEntry = jarStream.getNextJarEntry(); jarEntry != null; jarEntry =
                 jarStream.getNextJarEntry() )
             {
-                if ( jarEntry.getName().toLowerCase( Locale.ENGLISH ).endsWith( ".class" ) )
+                Matcher matcher = pattern.matcher( jarEntry.getName() );
+                if ( matcher.matches() )
                 {
-                    String name = jarEntry.getName().substring( 0, jarEntry.getName().indexOf( "." ) );
+                    String version = matcher.group( "v" );
+                    if ( StringUtils.isEmpty( version ) || JavaVersion.JAVA_VERSION.isAtLeast( version ) )
+                    {
+                        String name = matcher.group( "n" );
 
-                    classes.add( name.replaceAll( "/", "\\." ) );
+                        classes.add( name.replaceAll( "/", "\\." ) );
+                    }
                 }
 
                 jarStream.closeEntry();
