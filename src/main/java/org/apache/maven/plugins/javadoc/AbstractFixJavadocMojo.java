@@ -39,6 +39,7 @@ import com.thoughtworks.qdox.parser.ParseException;
 import com.thoughtworks.qdox.type.TypeResolver;
 
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -1381,7 +1382,7 @@ public abstract class AbstractFixJavadocMojo
                 Character.TYPE.toString() ) )
             {
                 sb.append( "=" );
-                sb.append( field.getInitializationExpression().trim() );
+                sb.append( StringEscapeUtils.escapeHtml4( field.getInitializationExpression().trim() ) );
             }
 
             if ( qualifiedName.equals( String.class.getName() ) )
@@ -1412,11 +1413,11 @@ public abstract class AbstractFixJavadocMojo
                 // CHECKSTYLE_OFF: MagicNumber
                 if ( value.length() < 40 )
                 {
-                    sb.append( value.toString() ).append( "\"" );
+                    sb.append( StringEscapeUtils.escapeHtml4( value.toString() ) ).append( "\"" );
                 }
                 else
                 {
-                    sb.append( value.toString(), 0, 39 ).append( "\"{trunked}" );
+                    sb.append( StringEscapeUtils.escapeHtml4( value.toString() ), 0, 39 ).append( "\"{trunked}" );
                 }
                 // CHECKSTYLE_ON: MagicNumber
             }

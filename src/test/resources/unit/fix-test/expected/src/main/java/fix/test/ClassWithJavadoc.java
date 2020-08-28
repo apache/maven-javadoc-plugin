@@ -451,6 +451,21 @@ public class ClassWithJavadoc
     {
         throw new Exception();
     }
+
+    /**
+     * to test if it will handle static final field correctly.
+     */
+    public static final int TEST_STATIC_FINAL_FIELD_0 = 1 << 2;
+
+    /**
+     * to test if it will handle static final field correctly.
+     */
+    public static final int TEST_STATIC_FINAL_FIELD_1 = 2 >> 1;
+
+    /**
+     * to test if it will handle static final field correctly.
+     */
+    public static final String TEST_STATIC_FINAL_FIELD_2 = "<>?";
 }
 
 /**

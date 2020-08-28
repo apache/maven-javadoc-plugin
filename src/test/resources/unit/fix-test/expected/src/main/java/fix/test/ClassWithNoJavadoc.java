@@ -267,6 +267,15 @@ public class ClassWithNoJavadoc
     {
         throw new Exception();
     }
+
+    /** Constant <code>TEST_STATIC_FINAL_FIELD_0=1 &lt;&lt; 2</code> */
+    public static final int TEST_STATIC_FINAL_FIELD_0 = 1 << 2;
+
+    /** Constant <code>TEST_STATIC_FINAL_FIELD_1=2 &gt;&gt; 1</code> */
+    public static final int TEST_STATIC_FINAL_FIELD_1 = 2 >> 1;
+
+    /** Constant <code>TEST_STATIC_FINAL_FIELD_2="&lt;&gt;?"</code> */
+    public static final String TEST_STATIC_FINAL_FIELD_2 = "<>?";
 }
 
 @SuppressWarnings("SameReturnValue")
