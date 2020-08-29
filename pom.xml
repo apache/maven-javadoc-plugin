@@ -56,7 +56,7 @@ under the License.
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
-    <url>https://builds.apache.org/job/maven-box/job/maven-javadoc-plugin/</url>
+    <url>https://ci-builds.apache.org/job/Maven/job/maven-box/job/maven-javadoc-plugin/</url>
   </ciManagement>
   <distributionManagement>
     <site>
