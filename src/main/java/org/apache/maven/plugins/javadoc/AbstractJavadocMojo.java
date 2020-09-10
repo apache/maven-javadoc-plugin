@@ -3799,7 +3799,7 @@ public abstract class AbstractJavadocMojo
         {
             javadocExe = new File( SystemUtils.getJavaHome() + File.separator + "bin", javadocCommand );
         }
-        // On Java 9, this has moved to: /usr/lib/jvm/java-9-openjdk-amd64/bin/javadoc
+        // On Java 9 the jre subdirectory was removed from the JDK
         else if ( org.apache.commons.lang3.SystemUtils.isJavaVersionAtLeast( org.apache.commons.lang3.JavaVersion.JAVA_9 ) )
         {
             javadocExe =
