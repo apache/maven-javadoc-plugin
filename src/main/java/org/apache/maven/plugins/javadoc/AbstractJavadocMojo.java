@@ -3783,8 +3783,35 @@ public abstract class AbstractJavadocMojo
 
         // ----------------------------------------------------------------------
         // Try to find javadocExe from System.getProperty( "java.home" )
-        // By default, System.getProperty( "java.home" ) = JRE_HOME and JRE_HOME
-        // should be in the JDK_HOME
+        // "java.home" is the "Installation directory for Java Runtime
+        // Environment (JRE)" used to run this code. I.e. it is the parent of
+        // the directory containing the `java` command used to start this
+        // application. It does not necessarily have any relation to the
+        // environment variable JAVA_HOME.
+        //
+        // In Java 8 and below the JRE is separate from the JDK. When
+        // installing the JDK to my-dir/ the javadoc command is installed in
+        // my-dir/bin/javadoc, the JRE is installed to my-dir/jre, and hence
+        // the java command is installed to my-dir/jre/bin/java. In this
+        // configuration "java.home" is mydir/jre/, threfore the relative path
+        // to the javadoc command is ../bin/javadoc.
+        //
+        // In Java 9 and above the JRE is no longer in a subdirectory of the
+        // JDK, i.e. the JDK and the JDK are merged. In this case the java
+        // command is installed to my-dir/bin/java along side the javadoc
+        // command. So the relative path from "java.home" to the javadoc
+        // command is bin/javadoc.
+        //
+        // References
+        //
+        // "System Properties" in "The Java Tutorials"
+        // https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html
+        //
+        // "Changes to the Installed JDK/JRE Image" in "JDK 9 Migration Guide"
+        // https://docs.oracle.com/javase/9/migrate/toc.htm?xd_co_f=122a7174-9132-4acd-b122-fac02f8c4fef#JSMIG-GUID-D867DCCC-CEB5-4AFA-9D11-9C62B7A3FAB1
+        //
+        // "JEP 220: Modular Run-Time Images"
+        // http://openjdk.java.net/jeps/220
         // ----------------------------------------------------------------------
         // For IBM's JDK 1.2
         if ( SystemUtils.IS_OS_AIX )
@@ -3799,7 +3826,6 @@ public abstract class AbstractJavadocMojo
         {
             javadocExe = new File( SystemUtils.getJavaHome() + File.separator + "bin", javadocCommand );
         }
-        // On Java 9 the jre subdirectory was removed from the JDK
         else if ( org.apache.commons.lang3.SystemUtils.isJavaVersionAtLeast( org.apache.commons.lang3.JavaVersion.JAVA_9 ) )
         {
             javadocExe =
@@ -3807,6 +3833,7 @@ public abstract class AbstractJavadocMojo
         }
         else
         {
+            // Java <= 8
             javadocExe =
                 new File( SystemUtils.getJavaHome() + File.separator + ".." + File.separator + "bin", javadocCommand );
         }
