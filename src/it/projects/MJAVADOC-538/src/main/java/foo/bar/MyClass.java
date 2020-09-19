@@ -18,7 +18,9 @@ package foo.bar;
  * specific language governing permissions and limitations
  * under the License.
  */
-
+/**
+ * App class
+ */
 public class MyClass
 {
 }
