@@ -33,14 +33,14 @@ public interface InterfaceWithJavadoc
     /**
      * To add default method tags.
      *
-     * @param aString a {@link java.lang.String} object.
+     * @param aString a {@link java.lang.String} object
      */
     public void method1( String aString );
 
     /**
      * To take care of identifier.
      *
-     * @param aString a {@link java.lang.String} object.
+     * @param aString a {@link java.lang.String} object
      */
     void method2( String aString );
 
@@ -57,16 +57,16 @@ public interface InterfaceWithJavadoc
     /**
      * Nothing.
      *
-     * @param aString a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param aString a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
      */
     public String method4( String aString );
 
     /**
      * Nothing.
      *
-     * @param aString a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param aString a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
      */
     public String method5( String aString );
 
@@ -77,8 +77,8 @@ public interface InterfaceWithJavadoc
     /**
      * New interface method to be found by Clirr.
      *
-     * @param aString a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param aString a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
      * @since 1.1
      */
     public String newInterfaceMethod( String aString );

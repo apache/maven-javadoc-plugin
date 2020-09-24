@@ -33,7 +33,7 @@ public interface InterfaceWithNoJavadoc
     /**
      * <p>missingJavadoc.</p>
      *
-     * @param aString a {@link java.lang.String} object.
+     * @param aString a {@link java.lang.String} object
      */
     public void missingJavadoc( String aString );
 
@@ -41,7 +41,7 @@ public interface InterfaceWithNoJavadoc
     /**
      * <p>missingJavadoc2.</p>
      *
-     * @param aString a {@link java.lang.String} object.
+     * @param aString a {@link java.lang.String} object
      */
     void missingJavadoc2( String aString );
 
@@ -52,8 +52,8 @@ public interface InterfaceWithNoJavadoc
     /**
      * <p>newInterfaceMethod.</p>
      *
-     * @param aString a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param aString a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
      * @since 1.1
      */
     public String newInterfaceMethod( String aString );
