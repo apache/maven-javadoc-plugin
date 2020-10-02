@@ -57,7 +57,7 @@ public class StaleHelper
             List<String> ignored = new ArrayList<>();
             List<String> options = new ArrayList<>();
             Path dir = cmd.getWorkingDirectory().toPath().toAbsolutePath().normalize();
-            String[] args = cmd.getCommandline();
+            String[] args = cmd.getArguments();
             Collections.addAll( options, args );
             for ( String arg : args )
             {
