@@ -416,17 +416,17 @@ public class ClassWithJavadoc
     }
 
     /**
-     * to test if it will handle static final field correctly.
+     * to test if it will handle static final int field with left shift operators correctly.
      */
     public static final int TEST_STATIC_FINAL_FIELD_0 = 1 << 2;
 
     /**
-     * to test if it will handle static final field correctly.
+     * to test if it will handle static final int field with right shift operators correctly.
      */
     public static final int TEST_STATIC_FINAL_FIELD_1 = 2 >> 1;
 
     /**
-     * to test if it will handle static final field correctly.
+     * to test if it will handle static final String field with left shift operator and right shift operator correctly.
      */
     public static final String TEST_STATIC_FINAL_FIELD_2 = "<>?";
 }
