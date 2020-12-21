@@ -31,7 +31,7 @@ under the License.
         <p>
           All options provided by Sun on the Javadoc homepages are wrapped in the Maven Javadoc Plugin. This
           plugin supports Javadoc 1.4, 1.5 and 6.0 options. Refer you to the
-          <a href="./apidocs/org/apache/maven/plugin/javadoc/package-summary.html">Javadoc Package Summary</a>
+          <a href="./apidocs/org/apache/maven/plugins/javadoc/package-summary.html">Javadoc Package Summary</a>
           for more information and to the <a href="./javadoc-mojo.html">Javadoc Plugin Documentation</a>.
         </p>
       </answer>

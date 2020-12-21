@@ -411,7 +411,7 @@ public abstract class AbstractJavadocMojo
      * &lt;/resourcesArtifacts&gt;
      * </pre>
      * <br/>
-     * See <a href="./apidocs/org/apache/maven/plugin/javadoc/options/ResourcesArtifact.html">Javadoc</a>.
+     * See <a href="./apidocs/org/apache/maven/plugins/javadoc/options/ResourcesArtifact.html">Javadoc</a>.
      * <br/>
      *
      * @since 2.5
@@ -559,7 +559,7 @@ public abstract class AbstractJavadocMojo
      * or try to compute it from the {@link #javadocExecutable} version.
      * <br/>
      * See
-     * <a href="./apidocs/org/apache/maven/plugin/javadoc/AbstractJavadocMojo.html#DEFAULT_JAVA_API_LINKS">Javadoc</a>
+     * <a href="./apidocs/org/apache/maven/plugins/javadoc/AbstractJavadocMojo.html#DEFAULT_JAVA_API_LINKS">Javadoc</a>
      * for the default values.
      * <br/>
      *
@@ -631,7 +631,7 @@ public abstract class AbstractJavadocMojo
      * &lt;/bootclasspathArtifacts&gt;
      * </pre>
      * <br/>
-     * See <a href="./apidocs/org/apache/maven/plugin/javadoc/options/BootclasspathArtifact.html">Javadoc</a>.
+     * See <a href="./apidocs/org/apache/maven/plugins/javadoc/options/BootclasspathArtifact.html">Javadoc</a>.
      * <br/>
      *
      * @since 2.5
@@ -676,7 +676,7 @@ public abstract class AbstractJavadocMojo
      * &lt;/docletArtifact&gt;
      * </pre>
      * <br/>
-     * See <a href="./apidocs/org/apache/maven/plugin/javadoc/options/DocletArtifact.html">Javadoc</a>.
+     * See <a href="./apidocs/org/apache/maven/plugins/javadoc/options/DocletArtifact.html">Javadoc</a>.
      * <br/>
      */
     @Parameter( property = "docletArtifact" )
@@ -700,7 +700,7 @@ public abstract class AbstractJavadocMojo
      * &lt;/docletArtifacts&gt;
      * </pre>
      * <br/>
-     * See <a href="./apidocs/org/apache/maven/plugin/javadoc/options/DocletArtifact.html">Javadoc</a>.
+     * See <a href="./apidocs/org/apache/maven/plugins/javadoc/options/DocletArtifact.html">Javadoc</a>.
      * <br/>
      *
      * @since 2.1
@@ -1040,7 +1040,7 @@ public abstract class AbstractJavadocMojo
      * <br/>
      * See <a href="https://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#group">group</a>.
      * <br/>
-     * See <a href="./apidocs/org/apache/maven/plugin/javadoc/options/Group.html">Javadoc</a>.
+     * See <a href="./apidocs/org/apache/maven/plugins/javadoc/options/Group.html">Javadoc</a>.
      * <br/>
      */
     @Parameter
@@ -1306,7 +1306,7 @@ public abstract class AbstractJavadocMojo
      * <b>Note</b>: if {@link #detectOfflineLinks} is defined, the offline links between the project modules are
      * automatically added if the goal is calling in a non-aggregator way.
      * <br>
-     * @see <a href="./apidocs/org/apache/maven/plugin/javadoc/options/OfflineLink.html">Javadoc</a>.
+     * @see <a href="./apidocs/org/apache/maven/plugins/javadoc/options/OfflineLink.html">Javadoc</a>.
      */
     @Parameter( property = "offlineLinks" )
     private OfflineLink[] offlineLinks;
@@ -1459,7 +1459,7 @@ public abstract class AbstractJavadocMojo
      * &lt;/tagletArtifact&gt;
      * </pre>
      * <br/>
-     * See <a href="./apidocs/org/apache/maven/plugin/javadoc/options/TagletArtifact.html">Javadoc</a>.
+     * See <a href="./apidocs/org/apache/maven/plugins/javadoc/options/TagletArtifact.html">Javadoc</a>.
      * <br/>
      *
      * @since 2.1
@@ -1488,7 +1488,7 @@ public abstract class AbstractJavadocMojo
      * &lt;/tagletArtifacts&gt;
      * </pre>
      * <br/>
-     * See <a href="./apidocs/org/apache/maven/plugin/javadoc/options/TagletArtifact.html">Javadoc</a>.
+     * See <a href="./apidocs/org/apache/maven/plugins/javadoc/options/TagletArtifact.html">Javadoc</a>.
      * <br/>
      *
      * @since 2.5
@@ -1532,7 +1532,7 @@ public abstract class AbstractJavadocMojo
      * &lt;/taglets&gt;
      * </pre>
      * <br/>
-     * See <a href="./apidocs/org/apache/maven/plugin/javadoc/options/Taglet.html">Javadoc</a>.
+     * See <a href="./apidocs/org/apache/maven/plugins/javadoc/options/Taglet.html">Javadoc</a>.
      * <br/>
      *
      * @since 2.1
@@ -1569,7 +1569,7 @@ public abstract class AbstractJavadocMojo
      * <li><b><code>m</code></b> (methods)</li>
      * <li><b><code>f</code></b> (fields)</li>
      * </ul>
-     * See <a href="./apidocs/org/apache/maven/plugin/javadoc/options/Tag.html">Javadoc</a>.
+     * See <a href="./apidocs/org/apache/maven/plugins/javadoc/options/Tag.html">Javadoc</a>.
      * <br/>
      */
     @Parameter( property = "tags" )
