@@ -167,6 +167,14 @@ public class JavadocJar
     @Parameter( defaultValue = "${project.build.outputTimestamp}" )
     private String outputTimestamp;
 
+    /**
+     * Generate Javadoc archive even if empty.
+     *
+     * @since 3.2.1
+     */
+    @Parameter( defaultValue = "false" )
+    private boolean generateIfEmpty;
+
     /** {@inheritDoc} */
     @Override
     public void doExecute()
@@ -249,6 +257,13 @@ public class JavadocJar
     protected String getClassifier()
     {
         return classifier;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected boolean canGenerateIfEmpty()
+    {
+        return generateIfEmpty;
     }
 
     // ----------------------------------------------------------------------

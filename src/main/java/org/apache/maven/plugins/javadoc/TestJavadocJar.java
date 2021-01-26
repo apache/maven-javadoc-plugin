@@ -115,6 +115,14 @@ public class TestJavadocJar
     @Parameter( property = "maven.javadoc.testClassifier", defaultValue = "test-javadoc", required = true )
     private String testClassifier;
 
+    /**
+     * Generate Test Javadoc archive even if empty.
+     *
+     * @since 3.2.1
+     */
+    @Parameter( defaultValue = "false" )
+    private boolean testGenerateIfEmpty;
+
     // ----------------------------------------------------------------------
     // Protected methods
     // ----------------------------------------------------------------------
@@ -157,6 +165,12 @@ public class TestJavadocJar
     protected String getWindowtitle()
     {
         return testWindowtitle;
+    }
+
+    @Override
+    protected boolean canGenerateIfEmpty()
+    {
+        return testGenerateIfEmpty;
     }
 
     @Override

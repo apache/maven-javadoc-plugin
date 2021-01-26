@@ -1999,7 +1999,30 @@ public abstract class AbstractJavadocMojo
         Collection<Path> collectedSourcePaths = collect( sourcePaths.values() );
 
         Map<Path, Collection<String>> files = getFiles( collectedSourcePaths );
-        if ( !canGenerateReport( files ) )
+
+        boolean canGenerateReport = canGenerateReport( files );
+
+        if ( !canGenerateReport && !canGenerateIfEmpty() )
+        {
+            return;
+        }
+
+        // ----------------------------------------------------------------------
+        // Javadoc output directory as File
+        // ----------------------------------------------------------------------
+
+        File javadocOutputDirectory = new File( getOutputDirectory() );
+        if ( javadocOutputDirectory.exists() && !javadocOutputDirectory.isDirectory() )
+        {
+            throw new MavenReportException( "IOException: " + getOutputDirectory() + " is not a directory." );
+        }
+        if ( javadocOutputDirectory.exists() && !javadocOutputDirectory.canWrite() )
+        {
+            throw new MavenReportException( "IOException: " + getOutputDirectory() + " is not writable." );
+        }
+        javadocOutputDirectory.mkdirs();
+
+        if ( !canGenerateReport )
         {
             return;
         }
@@ -2028,21 +2051,6 @@ public abstract class AbstractJavadocMojo
         {
             packageNames = getPackageNames( files );
         }
-
-        // ----------------------------------------------------------------------
-        // Javadoc output directory as File
-        // ----------------------------------------------------------------------
-
-        File javadocOutputDirectory = new File( getOutputDirectory() );
-        if ( javadocOutputDirectory.exists() && !javadocOutputDirectory.isDirectory() )
-        {
-            throw new MavenReportException( "IOException: " + getOutputDirectory() + " is not a directory." );
-        }
-        if ( javadocOutputDirectory.exists() && !javadocOutputDirectory.canWrite() )
-        {
-            throw new MavenReportException( "IOException: " + getOutputDirectory() + " is not writable." );
-        }
-        javadocOutputDirectory.mkdirs();
 
         // ----------------------------------------------------------------------
         // Copy all resources
@@ -2223,6 +2231,16 @@ public abstract class AbstractJavadocMojo
         {
           getLog().info( "applying javadoc security fix has been disabled" );
         }
+    }
+
+    /**
+     * Determine if an empty jar can be generated.
+     *
+     * @return true if an empty jar can be generated, otherwise false
+     */
+    protected boolean canGenerateIfEmpty()
+    {
+        return false;
     }
 
     protected final <T> Collection<T> collect( Collection<Collection<T>> sourcePaths )
