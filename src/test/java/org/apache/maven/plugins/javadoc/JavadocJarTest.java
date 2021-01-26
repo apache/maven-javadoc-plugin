@@ -204,4 +204,17 @@ public class JavadocJarTest
             assertTrue("Expected jar to contain " + entry, set.contains(entry));
         }
     }
+
+    public void testGenerateIfEmpty() throws Exception
+    {
+        File testPom =
+                new File( getBasedir(), "src/test/resources/unit/javadocjar-generateifempty/javadocjar-generateifempty-plugin-config.xml" );
+        JavadocJar mojo = lookupMojo( testPom );
+        mojo.execute();
+
+        //check if the javadoc jar file was generated
+        File generatedFile =
+                new File( getBasedir(), "target/test/unit/javadocjar-generateifempty/target/javadocjar-generateifempty-javadoc.jar" );
+        assertTrue( FileUtils.fileExists( generatedFile.getAbsolutePath() ) );
+    }
 }
