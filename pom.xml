@@ -72,7 +72,7 @@ under the License.
     <doxia-sitetoolsVersion>1.9.2</doxia-sitetoolsVersion>
     <wagonVersion>2.4</wagonVersion>
     <sonatypeAetherVersion>1.13.1</sonatypeAetherVersion>
-    <plexus-java.version>1.0.5</plexus-java.version>
+    <plexus-java.version>1.0.6</plexus-java.version>
     <!-- for ITs -->
     <sitePluginVersion>3.3</sitePluginVersion>
     <projectInfoReportsPluginVersion>2.7</projectInfoReportsPluginVersion>
