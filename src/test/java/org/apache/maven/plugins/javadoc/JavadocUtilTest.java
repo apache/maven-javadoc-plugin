@@ -1,7 +1,5 @@
 package org.apache.maven.plugins.javadoc;
 
-import static org.junit.Assert.assertArrayEquals;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -39,11 +37,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.PatternSyntaxException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.plugins.javadoc.ProxyServer.AuthAsyncProxyServlet;
 import org.apache.maven.settings.Proxy;
@@ -55,6 +51,8 @@ import org.mortbay.jetty.handler.AbstractHandler;
 import org.mortbay.jetty.handler.MovedContextHandler;
 import org.mortbay.util.ByteArrayISO8859Writer;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
@@ -64,10 +62,8 @@ public class JavadocUtilTest
     /**
      * Method to test the javadoc version parsing.
      *
-     * @throws Exception if any
      */
     public void testParseJavadocVersion()
-        throws Exception
     {
         String version = null;
         try
@@ -174,10 +170,8 @@ public class JavadocUtilTest
     /**
      * Method to test the javadoc memory parsing.
      *
-     * @throws Exception if any
      */
     public void testParseJavadocMemory()
-        throws Exception
     {
         String memory = null;
         try
@@ -248,10 +242,8 @@ public class JavadocUtilTest
     /**
      * Method to test the validate encoding parsing.
      *
-     * @throws Exception if any
      */
     public void testValidateEncoding()
-        throws Exception
     {
         assertFalse( "Not catch null", JavadocUtil.validateEncoding( null ) );
         assertTrue( "UTF-8 not supported on this plateform", JavadocUtil.validateEncoding( "UTF-8" ) );
@@ -369,10 +361,7 @@ public class JavadocUtilTest
         }
         finally
         {
-            if ( proxyServer != null )
-            {
-                proxyServer.stop();
-            }
+            proxyServer.stop();
         }
 
         // auth proxy
@@ -406,10 +395,7 @@ public class JavadocUtilTest
         }
         finally
         {
-            if ( proxyServer != null )
-            {
-                proxyServer.stop();
-            }
+            proxyServer.stop();
         }
 
         // timeout
@@ -438,10 +424,7 @@ public class JavadocUtilTest
         }
         finally
         {
-            if ( proxyServer != null )
-            {
-                proxyServer.stop();
-            }
+            proxyServer.stop();
         }
 
         // nonProxyHosts
@@ -466,10 +449,7 @@ public class JavadocUtilTest
         }
         finally
         {
-            if ( proxyServer != null )
-            {
-                proxyServer.stop();
-            }
+            proxyServer.stop();
         }
     }
 
@@ -498,7 +478,7 @@ public class JavadocUtilTest
                 @Override
                 public void handle( String target, HttpServletRequest request, HttpServletResponse response,
                                     int dispatch )
-                    throws IOException, ServletException
+                    throws IOException
                 {
                     response.setStatus( HttpServletResponse.SC_OK );
                     ByteArrayISO8859Writer writer = new ByteArrayISO8859Writer( 100 );
@@ -547,7 +527,7 @@ public class JavadocUtilTest
                 @Override
                 public void handle( String target, HttpServletRequest request, HttpServletResponse response,
                                     int dispatch )
-                    throws IOException, ServletException
+                    throws IOException
                 {
                     response.setStatus( HttpServletResponse.SC_OK );
                     ByteArrayISO8859Writer writer = new ByteArrayISO8859Writer( 100 );
@@ -589,7 +569,7 @@ public class JavadocUtilTest
                 @Override
                 public void handle( String target, HttpServletRequest request, HttpServletResponse response,
                                     int dispatch )
-                    throws IOException, ServletException
+                    throws IOException
                 {
                     if ( request.getHeader( "Accept" ) == null )
                     {
@@ -622,7 +602,7 @@ public class JavadocUtilTest
         throws Exception
     {
         File input = new File( getBasedir(), "src/test/resources/unit/docfiles-test/docfiles/" );
-        assertTrue( input.exists() );
+        assertThat( input ).exists();
 
         File output = new File( getBasedir(), "target/test/unit/docfiles-test/target/output" );
         if ( output.exists() )
@@ -632,26 +612,17 @@ public class JavadocUtilTest
         assertTrue( output.mkdirs() );
 
         JavadocUtil.copyJavadocResources( output, input, null );
-        List<String> expected = new ArrayList<>();
-        expected.add( "test" + File.separator + "doc-files" + File.separator + "excluded-dir1" + File.separator
-            + "sample-excluded1.gif" );
-        expected.add( "test" + File.separator + "doc-files" + File.separator + "excluded-dir2" + File.separator
-            + "sample-excluded2.gif" );
-        expected.add( "test" + File.separator + "doc-files" + File.separator + "included-dir1" + File.separator
-            + "sample-included1.gif" );
-        expected.add( "test" + File.separator + "doc-files" + File.separator + "included-dir2" + File.separator
-            + "sample-included2.gif" );
-        assertTrue( EqualsBuilder.reflectionEquals( expected, FileUtils.getFiles( output, null, null, false ) ) );
-        expected = new ArrayList<>();
-        expected.add( "" );
-        expected.add( "test" + File.separator + "doc-files" + File.separator + "excluded-dir1" );
-        expected.add( "test" + File.separator + "doc-files" + File.separator + "excluded-dir1" );
-        expected.add( "test" + File.separator + "doc-files" + File.separator + "included-dir1" );
-        expected.add( "test" + File.separator + "doc-files" + File.separator + "included-dir2" );
-        assertTrue( EqualsBuilder.reflectionEquals( expected,
-                                                    FileUtils.getDirectoryNames( new File( output,
-                                                                                           "test/doc-files" ),
-                                                                                 null, null, false ) ) );
+
+        assertThat( FileUtils.getFiles( output, null, null, false ) )
+                .containsExactlyInAnyOrder(
+                    Paths.get( "test", "doc-files", "excluded-dir1", "sample-excluded1.gif" ).toFile(),
+                    Paths.get( "test", "doc-files", "excluded-dir2", "sample-excluded2.gif" ).toFile(),
+                    Paths.get( "test", "doc-files", "included-dir1", "sample-included1.gif" ).toFile(),
+                    Paths.get( "test", "doc-files", "included-dir2", "sample-included2.gif" ).toFile()
+        );
+
+        assertThat( FileUtils.getDirectoryNames( new File( output, "test/doc-files" ), null, null, false ) )
+                .containsExactlyInAnyOrder( "", "excluded-dir1", "excluded-dir2", "included-dir1", "included-dir2" );
 
         input = new File( getBasedir(), "src/test/resources/unit/docfiles-test/docfiles/" );
         assertTrue( input.exists() );
@@ -664,29 +635,22 @@ public class JavadocUtilTest
         assertTrue( output.mkdirs() );
 
         JavadocUtil.copyJavadocResources( output, input, "excluded-dir1:excluded-dir2" );
-        expected = new ArrayList<>();
-        expected.add( "test" + File.separator + "doc-files" + File.separator + "included-dir1" + File.separator
-            + "sample-included1.gif" );
-        expected.add( "test" + File.separator + "doc-files" + File.separator + "included-dir2" + File.separator
-            + "sample-included2.gif" );
-        assertTrue( EqualsBuilder.reflectionEquals( expected, FileUtils.getFiles( output, null, null, false ) ) );
-        expected = new ArrayList<>();
-        expected.add( "" );
-        expected.add( "test" + File.separator + "doc-files" + File.separator + "included-dir1" );
-        expected.add( "test" + File.separator + "doc-files" + File.separator + "included-dir2" );
-        assertTrue( EqualsBuilder.reflectionEquals( expected,
-                                                    FileUtils.getDirectoryNames( new File( output,
-                                                                                           "test/doc-files" ),
-                                                                                 null, null, false ) ) );
+
+        assertThat( FileUtils.getFiles( output, null, null, false ) )
+                .containsExactlyInAnyOrder(
+                    Paths.get( "test", "doc-files", "included-dir1", "sample-included1.gif" ).toFile(),
+                    Paths.get( "test", "doc-files", "included-dir2", "sample-included2.gif" ).toFile()
+                );
+
+        assertThat( FileUtils.getDirectoryNames( new File( output, "test/doc-files" ), null, null, false ) )
+                .containsExactlyInAnyOrder( "", "included-dir1", "included-dir2" );
     }
 
     /**
      * Method to test pruneDirs()
      *
-     * @throws Exception if any
      */
     public void testPruneDirs()
-        throws Exception
     {
         List<String> list = new ArrayList<>();
         list.add( getBasedir() + "/target/classes" );
@@ -704,10 +668,8 @@ public class JavadocUtilTest
     /**
      * Method to test unifyPathSeparator()
      *
-     * @throws Exception if any
      */
     public void testUnifyPathSeparator()
-        throws Exception
     {
         assertNull( JavadocUtil.unifyPathSeparator( null ) );
 
@@ -736,7 +698,7 @@ public class JavadocUtilTest
     }
     
     
-    public void testGetIncludedFiles() throws Exception
+    public void testGetIncludedFiles()
     {
         File sourceDirectory = new File("target/it").getAbsoluteFile();
         String[] fileList = new String[] { "Main.java" };
@@ -744,7 +706,7 @@ public class JavadocUtilTest
         
         List<String> includedFiles = JavadocUtil.getIncludedFiles( sourceDirectory, fileList, excludePackages );
         
-        assertArrayEquals( fileList, includedFiles.toArray( new String[0] ) );
+        assertThat( includedFiles.toArray( new String[0] ) ).isEqualTo( fileList );
     }
 
     private void stopSilently( Server server )

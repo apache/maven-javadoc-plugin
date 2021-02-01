@@ -26,7 +26,7 @@ package def.configuration;
  */
 public class AppSample
 {
-
+    public static final String CONST = "My Constant";
     /**
      * The main method
      *

@@ -21,10 +21,8 @@ package org.apache.maven.plugins.javadoc;
 
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -35,7 +33,8 @@ import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
-import org.codehaus.plexus.util.FileUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
@@ -79,7 +78,7 @@ public class JavadocJarTest
         //check if the javadoc jar file was generated
         File generatedFile =
             new File( getBasedir(), "target/test/unit/javadocjar-default/target/javadocjar-default-javadoc.jar" );
-        assertTrue( FileUtils.fileExists( generatedFile.getAbsolutePath() ) );
+        assertThat( generatedFile ).exists();
 
         Set<String> set = new HashSet<>();
 
@@ -131,11 +130,11 @@ public class JavadocJarTest
         //check if the javadoc files were created
         generatedFile =
             new File( getBasedir(), "target/test/unit/javadocjar-default/target/site/apidocs/javadocjar/def/App.html" );
-        assertTrue( FileUtils.fileExists( generatedFile.getAbsolutePath() ) );
+        assertThat(generatedFile).exists();
 
         generatedFile = new File( getBasedir(),
                                   "target/test/unit/javadocjar-default/target/site/apidocs/javadocjar/def/AppSample.html" );
-        assertTrue( FileUtils.fileExists( generatedFile.getAbsolutePath() ) );
+        assertThat( generatedFile ).exists();
     }
 
     /**
@@ -154,7 +153,7 @@ public class JavadocJarTest
         //check if the javadoc jar file was generated
         File generatedFile = new File( getBasedir(),
                                        "target/test/unit/javadocjar-invalid-destdir/target/javadocjar-invalid-destdir-javadoc.jar" );
-        assertFalse( FileUtils.fileExists( generatedFile.getAbsolutePath() ) );
+        assertThat( generatedFile ).doesNotExist();
     }
 
     public void testContinueIfFailOnErrorIsFalse() throws Exception
@@ -167,7 +166,7 @@ public class JavadocJarTest
         //check if the javadoc jar file was generated
         File generatedFile =
                 new File( getBasedir(), "target/test/unit/javadocjar-failonerror/target/javadocjar-failonerror-javadoc.jar" );
-        assertTrue( FileUtils.fileExists( generatedFile.getAbsolutePath() ) );
+        assertThat( generatedFile ).exists();
     }
 
     public void testIncludeMavenDescriptorWhenExplicitlyConfigured() throws Exception
@@ -180,7 +179,7 @@ public class JavadocJarTest
         //check if the javadoc jar file was generated
         File generatedFile =
                 new File( getBasedir(), "target/test/unit/javadocjar-archive-config/target/javadocjar-archive-config-javadoc.jar" );
-        assertTrue( FileUtils.fileExists( generatedFile.getAbsolutePath() ) );
+        assertThat( generatedFile ).exists();
 
         //validate contents of jar file
         ZipFile jar = new ZipFile( generatedFile );
@@ -192,16 +191,12 @@ public class JavadocJarTest
         }
         jar.close();
 
-        List<String> expected = new ArrayList<>();
-        expected.add( "META-INF/" );
-        expected.add( "META-INF/maven/" );
-        expected.add( "META-INF/maven/org.apache.maven.plugins.maven-javadoc-plugin.unit/" );
-        expected.add( "META-INF/maven/org.apache.maven.plugins.maven-javadoc-plugin.unit/javadocjar-archive-config/" );
-        expected.add( "META-INF/maven/org.apache.maven.plugins.maven-javadoc-plugin.unit/javadocjar-archive-config/pom.xml" );
-        expected.add( "META-INF/maven/org.apache.maven.plugins.maven-javadoc-plugin.unit/javadocjar-archive-config/pom.properties" );
-
-        for (String entry : expected) {
-            assertTrue("Expected jar to contain " + entry, set.contains(entry));
-        }
+        assertThat( set ).contains(
+                "META-INF/",
+                "META-INF/maven/",
+                "META-INF/maven/org.apache.maven.plugins.maven-javadoc-plugin.unit/",
+                "META-INF/maven/org.apache.maven.plugins.maven-javadoc-plugin.unit/javadocjar-archive-config/",
+                "META-INF/maven/org.apache.maven.plugins.maven-javadoc-plugin.unit/javadocjar-archive-config/pom.xml",
+                "META-INF/maven/org.apache.maven.plugins.maven-javadoc-plugin.unit/javadocjar-archive-config/pom.properties" );
     }
 }

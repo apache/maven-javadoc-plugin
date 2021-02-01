@@ -28,6 +28,8 @@ import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.FileUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
@@ -61,9 +63,9 @@ public class TestJavadocReportTest
 
         File generatedFile =
             new File( getBasedir(), "target/test/unit/test-javadoc-test/target/site/apidocs/maven/AppTest.html" );
-        assertTrue( FileUtils.fileExists( generatedFile.getAbsolutePath() ) );
+        assertThat( generatedFile ).exists();
         
         File options = new File( getBasedir(), "target/test/unit/test-javadoc-test/target/site/apidocs/options");
-        FileUtils.fileRead( options ).contains( "junit-3.8.1.jar" );
+        assertThat( FileUtils.fileRead( options ) ).contains( "junit-3.8.1.jar" );
     }
 }
