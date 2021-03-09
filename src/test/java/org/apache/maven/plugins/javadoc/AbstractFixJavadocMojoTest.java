@@ -25,18 +25,19 @@ import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaSource;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AbstractFixJavadocMojoTest
-    extends TestCase
 {
     private JavaSource getJavaSource( String source )
     {
         return new JavaProjectBuilder().addSource( new StringReader( source ) );
     }
 
+    @Test
     public void testReplaceLinkTags_noLinkTag()
-        throws Throwable
     {
         String comment = "/** @see ConnectException */";
         String source = "import java.net.ConnectException;\n"
@@ -46,12 +47,12 @@ public class AbstractFixJavadocMojoTest
         JavaClass clazz = getJavaSource( source ).getClassByName( "NoLinkTag" );
 
         String newComment = AbstractFixJavadocMojo.replaceLinkTags( comment, clazz );
-            
-        assertEquals( "/** @see ConnectException */", newComment );
+
+        assertThat( newComment ).isEqualTo( "/** @see ConnectException */" );
     }
 
+    @Test
     public void testReplaceLinkTags_oneLinkTag()
-        throws Throwable
     {
         String comment = "/** {@link ConnectException} */";
         String source = "import java.net.ConnectException;\n"
@@ -61,11 +62,11 @@ public class AbstractFixJavadocMojoTest
         JavaClass clazz = getJavaSource( source ).getClassByName( "OneLinkTag" );
 
         String newComment = AbstractFixJavadocMojo.replaceLinkTags( comment, clazz );
-        assertEquals( "/** {@link java.net.ConnectException} */", newComment );
+        assertThat( newComment ).isEqualTo( "/** {@link java.net.ConnectException} */" );
     }
 
+    @Test
     public void testReplaceLinkTags_missingEndBrace()
-        throws Throwable
     {
         String comment = "/** {@link ConnectException */";
         String source = "import java.net.ConnectException;\n"
@@ -75,11 +76,11 @@ public class AbstractFixJavadocMojoTest
         JavaClass clazz = getJavaSource( source ).getClassByName( "MissingEndBrace" );
                     
         String newComment = AbstractFixJavadocMojo.replaceLinkTags( comment, clazz );
-        assertEquals( "/** {@link ConnectException */", newComment );
+        assertThat( newComment ).isEqualTo( "/** {@link ConnectException */" );
     }
 
+    @Test
     public void testReplaceLinkTags_spacesAfterLinkTag()
-        throws Throwable
     {
         String comment = "/** {@link     ConnectException} */";
         String source = "import java.net.ConnectException;\n"
@@ -89,11 +90,11 @@ public class AbstractFixJavadocMojoTest
         JavaClass clazz = getJavaSource( source ).getClassByName( "SpacesAfterLinkTag" );
         
         String newComment = AbstractFixJavadocMojo.replaceLinkTags( comment, clazz );
-        assertEquals( "/** {@link java.net.ConnectException} */", newComment );
+        assertThat( newComment ).isEqualTo( "/** {@link java.net.ConnectException} */" );
     }
 
+    @Test
     public void testReplaceLinkTags_spacesAfterClassName()
-        throws Throwable
     {
         String comment = "/** {@link ConnectException       } */";
         String source = "import java.net.ConnectException;\n"
@@ -103,11 +104,11 @@ public class AbstractFixJavadocMojoTest
         JavaClass clazz = getJavaSource( source ).getClassByName( "SpacesAfterClassName" );
         
         String newComment = AbstractFixJavadocMojo.replaceLinkTags( comment, clazz );
-        assertEquals( "/** {@link java.net.ConnectException} */", newComment );
+        assertThat( newComment ).isEqualTo( "/** {@link java.net.ConnectException} */" );
     }
 
+    @Test
     public void testReplaceLinkTags_spacesAfterMethod()
-        throws Throwable
     {
         String comment = "/** {@link ConnectException#getMessage()       } */";
         String source = "import java.net.ConnectException;\n"
@@ -117,11 +118,11 @@ public class AbstractFixJavadocMojoTest
         JavaClass clazz = getJavaSource( source ).getClassByName( "SpacesAfterMethod" );
 
         String newComment = AbstractFixJavadocMojo.replaceLinkTags( comment, clazz );
-        assertEquals( "/** {@link java.net.ConnectException#getMessage()} */", newComment );
+        assertThat( newComment ).isEqualTo( "/** {@link java.net.ConnectException#getMessage()} */" );
     }
 
+    @Test
     public void testReplaceLinkTags_containingHash()
-        throws Throwable
     {
         String comment = "/** {@link ConnectException#getMessage()} */";
         String source = "import java.net.ConnectException;\n"
@@ -131,11 +132,11 @@ public class AbstractFixJavadocMojoTest
         JavaClass clazz = getJavaSource( source ).getClassByName( "ContainingHashes" );
 
         String newComment = AbstractFixJavadocMojo.replaceLinkTags( comment, clazz );
-        assertEquals( "/** {@link java.net.ConnectException#getMessage()} */", newComment );
+        assertThat( newComment ).isEqualTo( "/** {@link java.net.ConnectException#getMessage()} */" );
     }
 
+    @Test
     public void testReplaceLinkTags_followedByHash()
-        throws Throwable
     {
         String comment = "/** {@link ConnectException} ##important## */";
         String source = "import java.net.ConnectException;\n"
@@ -145,11 +146,11 @@ public class AbstractFixJavadocMojoTest
         JavaClass clazz = getJavaSource( source ).getClassByName( "FollowedByHash" );
 
         String newComment = AbstractFixJavadocMojo.replaceLinkTags( comment, clazz );
-        assertEquals( "/** {@link java.net.ConnectException} ##important## */", newComment );
+        assertThat( newComment ).isEqualTo( "/** {@link java.net.ConnectException} ##important## */" );
     }
 
+    @Test
     public void testReplaceLinkTags_twoLinks()
-        throws Throwable
     {
         String comment = "/** Use {@link ConnectException} instead of {@link Exception} */";
         String source = "import java.net.ConnectException;\n"
@@ -159,11 +160,12 @@ public class AbstractFixJavadocMojoTest
         JavaClass clazz = getJavaSource( source ).getClassByName( "TwoLinks" );
 
         String newComment = AbstractFixJavadocMojo.replaceLinkTags( comment, clazz );
-        assertEquals( "/** Use {@link java.net.ConnectException} instead of {@link java.lang.Exception} */", newComment );
+        assertThat( newComment ).isEqualTo(
+                "/** Use {@link java.net.ConnectException} instead of {@link java.lang.Exception} */" );
     }
 
+    @Test
     public void testReplaceLinkTags_OnlyAnchor()
-        throws Throwable
     {
         String comment = "/** There's a {@link #getClass()} but no setClass() */";
         String source = "import java.net.ConnectException;\n"
@@ -173,6 +175,6 @@ public class AbstractFixJavadocMojoTest
         JavaClass clazz = getJavaSource( source ).getClassByName( "OnlyAnchor" );
 
         String newComment = AbstractFixJavadocMojo.replaceLinkTags( comment, clazz );
-        assertEquals( "/** There's a {@link #getClass()} but no setClass() */", newComment );
+        assertThat( newComment ).isEqualTo( "/** There's a {@link #getClass()} but no setClass() */" );
     }
 }

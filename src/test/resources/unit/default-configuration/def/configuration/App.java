@@ -22,6 +22,9 @@ package def.configuration;
 public class App
 {
 
+    @Deprecated
+    public int notUsed = 0;
+
     public static void main( String[] args )
     {
         System.out.println( "Sample Application." );

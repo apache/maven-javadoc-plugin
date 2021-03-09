@@ -19,7 +19,8 @@ package org.apache.maven.plugins.javadoc;
  * under the License.
  */
 
-import static org.mockito.Matchers.anyString;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -28,33 +29,28 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.javadoc.AbstractJavadocMojo;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 public class AbstractJavadocMojoTest
-    extends TestCase
 {
     AbstractJavadocMojo mojo;
 
-    @Override
-    protected void setUp()
-        throws Exception
+    @Before
+    public void setUp()
     {
-        super.setUp();
         mojo = new AbstractJavadocMojo()
         {
             @Override
             public void doExecute()
-                throws MojoExecutionException, MojoFailureException
             {
             }
         };
     }
 
+    @Test
     public void testMJAVADOC432_DetectLinksMessages()
     {
         Log log = mock( Log.class );
@@ -63,20 +59,21 @@ public class AbstractJavadocMojoTest
         mojo.outputDirectory = new File( "target/test-classes" );
 
         // first continues after warning, next exits with warning
-        assertFalse( mojo.isValidJavadocLink( new File( "pom.xml" ).getPath(), true ) );
-        assertFalse( mojo.isValidJavadocLink( "file://%%", true ) );
-        assertFalse( mojo.isValidJavadocLink( new File( "pom.xml" ).toURI().toString(), true ) );
+        assertThat( mojo.isValidJavadocLink( new File( "pom.xml" ).getPath(), true ) ).isFalse();
+        assertThat( mojo.isValidJavadocLink( "file://%%", true ) ).isFalse();
+        assertThat( mojo.isValidJavadocLink( new File( "pom.xml" ).toURI().toString(), true ) ).isFalse();
         verify( log, times( 4 ) ).warn( anyString() );
         verify( log, never() ).error( anyString() );
 
         // first continues after error, next exits with error
-        assertFalse( mojo.isValidJavadocLink( new File( "pom.xml" ).getPath(), false ) );
-        assertFalse( mojo.isValidJavadocLink( "file://%%", false ) );
-        assertFalse( mojo.isValidJavadocLink( new File( "pom.xml" ).toURI().toString(), false ) );
+        assertThat( mojo.isValidJavadocLink( new File( "pom.xml" ).getPath(), false ) ).isFalse();
+        assertThat( mojo.isValidJavadocLink( "file://%%", false ) ).isFalse();
+        assertThat( mojo.isValidJavadocLink( new File( "pom.xml" ).toURI().toString(), false ) ).isFalse();
         verify( log, times( 4 ) ).error( anyString() );
         verify( log, times( 4 ) ).warn( anyString() ); // no extra warnings
     }
 
+    @Test
     public void testMJAVADOC527_DetectLinksRecursion()
     {
         Log log = mock( Log.class );
@@ -84,7 +81,8 @@ public class AbstractJavadocMojoTest
         mojo.setLog( log );
         mojo.outputDirectory = new File( "target/test-classes" );
 
-        assertFalse( mojo.isValidJavadocLink( "http://javamail.java.net/mailapi/apidocs", false ) );
-        assertTrue( mojo.isValidJavadocLink( "http://commons.apache.org/proper/commons-lang/apidocs", false ) );
+        assertThat( mojo.isValidJavadocLink( "http://javamail.java.net/mailapi/apidocs", false ) ).isFalse();
+        assertThat(
+                mojo.isValidJavadocLink( "http://commons.apache.org/proper/commons-lang/apidocs", false ) ).isTrue();
     }
 }

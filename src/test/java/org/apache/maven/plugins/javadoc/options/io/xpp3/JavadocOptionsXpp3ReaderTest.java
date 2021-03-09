@@ -19,13 +19,13 @@ package org.apache.maven.plugins.javadoc.options.io.xpp3;
  * under the License.
  */
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.StringReader;
 
 import org.apache.maven.plugins.javadoc.options.JavadocOptions;
 import org.apache.maven.plugins.javadoc.options.Tag;
 import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavadocOptionsXpp3ReaderTest
 {
@@ -37,10 +37,10 @@ public class JavadocOptionsXpp3ReaderTest
         StringReader reader = new StringReader(testString);
 
         JavadocOptions options = parser.read(reader);
-        assertEquals(1, options.getTags().size());
+        assertThat( options.getTags().size() ).isEqualTo( 1 );
         Tag tag = options.getTags().get(0);
-        assertEquals("foo", tag.getName());
-        assertEquals("bar", tag.getHead());
+        assertThat( tag.getName() ).isEqualTo( "foo" );
+        assertThat( tag.getHead() ).isEqualTo( "bar" );
     }
     
     @Test
@@ -50,10 +50,10 @@ public class JavadocOptionsXpp3ReaderTest
         StringReader reader = new StringReader(testString);
 
         JavadocOptions options = parser.read(reader);
-        assertEquals(1, options.getTags().size());
+        assertThat( options.getTags().size() ).isEqualTo( 1 );
         Tag tag = options.getTags().get(0);
-        assertEquals("foo", tag.getName());
-        assertEquals("Xaoptcmf", tag.getPlacement());
+        assertThat( tag.getName() ).isEqualTo( "foo" );
+        assertThat( tag.getPlacement() ).isEqualTo( "Xaoptcmf" );
     }
 
 }

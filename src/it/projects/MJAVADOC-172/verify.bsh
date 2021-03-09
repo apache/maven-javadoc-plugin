@@ -48,7 +48,7 @@ try
 
     String str = FileUtils.fileRead( options );
 
-    if ( !str.contains( "junit-3.8.2.jar" ) )
+    if ( !str.contains( "junit-4.13.1.jar" ) )
     {
         System.err.println( "Javadoc doesn't used correct artifacts." );
         return false;
