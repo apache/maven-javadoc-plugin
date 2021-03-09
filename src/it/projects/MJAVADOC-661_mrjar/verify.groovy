@@ -18,12 +18,12 @@
  */
 
 int javaVersion = System.getProperty( "java.specification.version" ) as Integer
-def versions = 9..javaVersion
+def versions = 9..Math.min( 13, javaVersion )
 def required = []
 
 versions.each { required << "'com.foo.Taglet" + it + "'" }
 
-def options = new File( basedir, 'target/site/apidocs/options');
+def options = new File( basedir, 'target/site/apidocs/options' );
 
 assert options.exists() : options + " not found"
 
