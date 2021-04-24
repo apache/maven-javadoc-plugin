@@ -170,6 +170,12 @@ public class ClassWithNoJavadoc
     {
         throw new Exception();
     }
+
+    public static final int TEST_STATIC_FINAL_FIELD_0 = 1 << 2;
+
+    public static final int TEST_STATIC_FINAL_FIELD_1 = 2 >> 1;
+
+    public static final String TEST_STATIC_FINAL_FIELD_2 = "<>?";
 }
 
 @SuppressWarnings("SameReturnValue")
