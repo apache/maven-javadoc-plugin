@@ -39,7 +39,7 @@ public class ClassWithJavadoc
     /**
      * <p>Constructor for ClassWithJavadoc.</p>
      *
-     * @param aString a {@link java.lang.String} object.
+     * @param aString a {@link java.lang.String} object
      */
     public ClassWithJavadoc( String aString )
     {
@@ -48,7 +48,7 @@ public class ClassWithJavadoc
     /**
      * public constructor with annotation
      *
-     * @param b a {@link java.lang.Boolean} object.
+     * @param b a {@link java.lang.Boolean} object
      * @since 1.1
      */
     @SuppressWarnings("SameReturnValue")
@@ -76,10 +76,10 @@ public class ClassWithJavadoc
     /**
      * <p>missingJavadocTags.</p>
      *
-     * @param str a {@link java.lang.String} object.
-     * @param b a boolean.
-     * @param i a int.
-     * @return a {@link java.lang.String} object.
+     * @param str a {@link java.lang.String} object
+     * @param b a boolean
+     * @param i a int
+     * @return a {@link java.lang.String} object
      */
     public String missingJavadocTags( String str, boolean b, int i )
     {
@@ -89,11 +89,11 @@ public class ClassWithJavadoc
     /**
      * <p>missingJavadocTags2.</p>
      *
-     * @param str a {@link java.lang.String} object.
+     * @param str a {@link java.lang.String} object
      * @throws java.lang.UnsupportedOperationException if any
-     * @param b a boolean.
-     * @param i a int.
-     * @return a {@link java.lang.String} object.
+     * @param b a boolean
+     * @param i a int
+     * @return a {@link java.lang.String} object
      */
     public String missingJavadocTags2( String str, boolean b, int i )
         throws UnsupportedOperationException
@@ -104,7 +104,7 @@ public class ClassWithJavadoc
     /**
      * <p>wrongJavadocTag.</p>
      *
-     * @param aString a {@link java.lang.String} object.
+     * @param aString a {@link java.lang.String} object
      */
     public void wrongJavadocTag( String aString )
     {
@@ -148,8 +148,8 @@ public class ClassWithJavadoc
     /**
      * To take care of single comments.
      *
-     * @param aString a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param aString a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
      */
     // other single comment
     public String singleComments( String aString )
@@ -172,7 +172,7 @@ public class ClassWithJavadoc
      * Empty Javadoc tag.
      *
      * @return a string
-     * @param aString a {@link java.lang.String} object.
+     * @param aString a {@link java.lang.String} object
      */
     public String emptyJavadocTag( String aString )
     {
@@ -231,8 +231,8 @@ public class ClassWithJavadoc
     /**
      * New class method to be found by Clirr.
      *
-     * @param aString a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param aString a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
      * @since 1.1
      */
     public String newClassMethod( String aString )
@@ -362,9 +362,9 @@ public class ClassWithJavadoc
     /**
      * test generic function (with only head javadoc)
      *
-     * @param tClass a {@link java.lang.Class} object.
-     * @param o a {@link java.lang.Object} object.
-     * @param <T> a T class.
+     * @param tClass a {@link java.lang.Class} object
+     * @param o a {@link java.lang.Object} object
+     * @param <T> a T class
      * @since 1.1
      */
     public <T extends Object> void testGeneric0(Class<T> tClass, Object o)
@@ -375,9 +375,9 @@ public class ClassWithJavadoc
     /**
      * test generic function (with full javadoc)
      *
-     * @param tClass a {@link java.lang.Class} object.
-     * @param o a {@link java.lang.Object} object.
-     * @param <T> a T class.
+     * @param tClass this comment should be preserved
+     * @param o this comment should be preserved
+     * @param <T> this comment should be preserved
      * @since 1.1
      */
     public <T extends Object> void testGeneric1(Class<T> tClass, Object o)
@@ -388,9 +388,9 @@ public class ClassWithJavadoc
     /**
      * test generic function (with full javadoc, except generic docs)
      *
-     * @param tClass a {@link java.lang.Class} object.
-     * @param o a {@link java.lang.Object} object.
-     * @param <T> a T class.
+     * @param tClass this comment should be preserved
+     * @param o this comment should be preserved
+     * @param <T> a T class
      * @since 1.1
      */
     public <T extends Object> void testGeneric2(Class<T> tClass, Object o)

@@ -54,7 +54,7 @@ try
     assertContains( content, "     * The main method" );
     assertContains( content, "     * @param args  an array of strings that contains the arguments" );
     assertContains( content, "     * <p>sampleMethod.</p>" );
-    assertContains( content, "     * @param str a {@link java.lang.String} object." );
+    assertContains( content, "     * @param str a {@link java.lang.String} object" );
 
     javaFile = new File( basedir, "/src/main/java/fix/test/ClassWithNoJavadoc.java" );
     content = FileUtils.fileRead( javaFile, "UTF-8" );
@@ -63,10 +63,10 @@ try
     assertContains( content, " * @version $Id: $" );
     assertContains( content, " * @since 1.0" );
     assertContains( content, "     * <p>main.</p>" );
-    assertContains( content, "     * @param args an array of {@link java.lang.String} objects." );
+    assertContains( content, "     * @param args an array of {@link java.lang.String} objects" );
     // private sampleMethod
     assertNotContains( content, "     * <p>sampleMethod.</p>" );
-    assertNotContains( content, "     * @param str a {@link java.lang.String} object." );
+    assertNotContains( content, "     * @param str a {@link java.lang.String} object" );
 
     javaFile = new File( basedir, "/src/main/java/fix/test/ClassWithJavadoc.java" );
     content = FileUtils.fileRead( javaFile, "UTF-8" );
@@ -79,12 +79,12 @@ try
     // private constant
     assertNotContains( content, "    /** Constant <code>MY_PRIVATE_CONSTANT=\"\"</code> */" );
     assertContains( content, "     * <p>main.</p>" );
-    assertContains( content, "     * @param args an array of {@link java.lang.String} objects." );
+    assertContains( content, "     * @param args an array of {@link java.lang.String} objects" );
     assertContains( content, "     * <p>methodWithMissingParameters.</p>" );
-    assertContains( content, "     * @param str a {@link java.lang.String} object." );
-    assertContains( content, "     * @param b a boolean." );
-    assertContains( content, "     * @param i a int." );
-    assertContains( content, "     * @return a {@link java.lang.String} object." );
+    assertContains( content, "     * @param str a {@link java.lang.String} object" );
+    assertContains( content, "     * @param b a boolean" );
+    assertContains( content, "     * @param i a int" );
+    assertContains( content, "     * @return a {@link java.lang.String} object" );
 
     // check unknown param
     assertContains( logContent, "[WARNING] Fixed unknown param 'str' defined in fix.test.ClassWithJavadoc#methodWithWrongJavadocParameters(aString)" );
@@ -97,7 +97,7 @@ try
     assertContains( content, " * @since 1.0" );
     assertContains( content, "    /** Constant <code>MY_STRING_CONSTANT=\"value\"</code> */" );
     assertContains( content, "     * <p>method.</p>" );
-    assertContains( content, "     * @param aString a {@link java.lang.String} object." );
+    assertContains( content, "     * @param aString a {@link java.lang.String} object" );
 
     javaFile = new File( basedir, "/src/main/java/fix/test/InterfaceWithJavadoc.java" );
     content = FileUtils.fileRead( javaFile, "UTF-8" );
@@ -107,7 +107,7 @@ try
     assertContains( content, " * @since 1.0" );
     assertContains( content, "    /** comment */" );
     assertContains( content, "     * My method" );
-    assertContains( content, "     * @param aString a {@link java.lang.String} object." );
+    assertContains( content, "     * @param aString a {@link java.lang.String} object" );
 
 }
 catch( Throwable e )

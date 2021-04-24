@@ -347,9 +347,9 @@ public class ClassWithJavadoc
     /**
      * test generic function (with full javadoc)
      *
-     * @param tClass a {@link java.lang.Class} object.
-     * @param o a {@link java.lang.Object} object.
-     * @param <T> a T class.
+     * @param tClass this comment should be preserved
+     * @param o this comment should be preserved
+     * @param <T> this comment should be preserved
      */
     public <T extends Object> void testGeneric1(Class<T> tClass, Object o)
     {
@@ -359,8 +359,8 @@ public class ClassWithJavadoc
     /**
      * test generic function (with full javadoc, except generic docs)
      *
-     * @param tClass a {@link java.lang.Class} object.
-     * @param o a {@link java.lang.Object} object.
+     * @param tClass this comment should be preserved
+     * @param o this comment should be preserved
      */
     public <T extends Object> void testGeneric2(Class<T> tClass, Object o)
     {

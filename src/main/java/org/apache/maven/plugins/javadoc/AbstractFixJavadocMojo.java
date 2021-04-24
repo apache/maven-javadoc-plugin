@@ -2734,7 +2734,7 @@ public abstract class AbstractFixJavadocMojo
             {
                 sb.append( "a " ).append( clazz.getCanonicalName() );
             }
-            return sb.append( "." ).toString();
+            return sb.toString();
         }
 
         StringBuilder javadocLink = new StringBuilder();
@@ -2761,11 +2761,11 @@ public abstract class AbstractFixJavadocMojo
 
         if ( clazz.isArray() )
         {
-            sb.append( "an array of " ).append( javadocLink ).append( " objects." );
+            sb.append( "an array of " ).append( javadocLink ).append( " objects" );
         }
         else
         {
-            sb.append( "a " ).append( javadocLink ).append( " object." );
+            sb.append( "a " ).append( javadocLink ).append( " object" );
         }
 
         return sb.toString();
@@ -2773,7 +2773,7 @@ public abstract class AbstractFixJavadocMojo
     
     private String getDefaultJavadocForType( JavaTypeVariable<JavaGenericDeclaration> typeParameter )
     {
-        return "a " + typeParameter.getName() + " class.";
+        return "a " + typeParameter.getName() + " class";
     }
 
     /**

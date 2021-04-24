@@ -64,7 +64,7 @@ public class ClassWithNoJavadoc
     /**
      * <p>Constructor for ClassWithNoJavadoc.</p>
      *
-     * @param aString a {@link java.lang.String} object.
+     * @param aString a {@link java.lang.String} object
      */
     public ClassWithNoJavadoc( String aString )
     {
@@ -74,7 +74,7 @@ public class ClassWithNoJavadoc
     /**
      * <p>Constructor for ClassWithNoJavadoc.</p>
      *
-     * @param b a {@link java.lang.Boolean} object.
+     * @param b a {@link java.lang.Boolean} object
      * @since 1.1
      */
     public ClassWithNoJavadoc( Boolean b )
@@ -90,14 +90,14 @@ public class ClassWithNoJavadoc
     /**
      * <p>missingJavadocTagsForPrimitives.</p>
      *
-     * @param i a int.
-     * @param b a byte.
-     * @param f a float.
-     * @param c a char.
-     * @param s a short.
-     * @param l a long.
-     * @param d a double.
-     * @param bb a boolean.
+     * @param i a int
+     * @param b a byte
+     * @param f a float
+     * @param c a char
+     * @param s a short
+     * @param l a long
+     * @param d a double
+     * @param bb a boolean
      */
     public void missingJavadocTagsForPrimitives( int i, byte b, float f, char c, short s, long l, double d, boolean bb )
     {
@@ -107,8 +107,8 @@ public class ClassWithNoJavadoc
     /**
      * <p>missingJavadocTagsForObjects.</p>
      *
-     * @param s a {@link java.lang.String} object.
-     * @param m a {@link java.util.Map} object.
+     * @param s a {@link java.lang.String} object
+     * @param m a {@link java.util.Map} object
      */
     public void missingJavadocTagsForObjects( String s, Map m )
     {
@@ -126,8 +126,8 @@ public class ClassWithNoJavadoc
     /**
      * <p>newClassMethod.</p>
      *
-     * @param aString a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param aString a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
      * @since 1.1
      */
     public String newClassMethod( String aString )
@@ -209,9 +209,9 @@ public class ClassWithNoJavadoc
     /**
      * <p>testGeneric3.</p>
      *
-     * @param tClass a {@link java.lang.Class} object.
-     * @param o a {@link java.lang.Object} object.
-     * @param <T> a T class.
+     * @param tClass a {@link java.lang.Class} object
+     * @param o a {@link java.lang.Object} object
+     * @param <T> a T class
      * @since 1.1
      */
     public <T extends Object> void testGeneric3(Class<T> tClass, Object o)
