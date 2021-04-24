@@ -199,4 +199,17 @@ public class JavadocJarTest
                 "META-INF/maven/org.apache.maven.plugins.maven-javadoc-plugin.unit/javadocjar-archive-config/pom.xml",
                 "META-INF/maven/org.apache.maven.plugins.maven-javadoc-plugin.unit/javadocjar-archive-config/pom.properties" );
     }
+
+    public void testGenerateIfEmpty() throws Exception
+    {
+        File testPom =
+                new File( getBasedir(), "src/test/resources/unit/javadocjar-generateifempty/javadocjar-generateifempty-plugin-config.xml" );
+        JavadocJar mojo = lookupMojo( testPom );
+        mojo.execute();
+
+        //check if the javadoc jar file was generated
+        File generatedFile =
+                new File( getBasedir(), "target/test/unit/javadocjar-generateifempty/target/javadocjar-generateifempty-javadoc.jar" );
+        assertTrue( FileUtils.fileExists( generatedFile.getAbsolutePath() ) );
+    }
 }
