@@ -30,10 +30,9 @@ public class JavadocVersionTest
 {
     /**
      * Parsing is lazy, only triggered when comparing
-     * 
-     * @noinspection deprecation
      */
     @Test
+    @SuppressWarnings("deprecation")
     public void testParse()
     {
         assertThat( JavadocVersion.parse( "1.4" ) )

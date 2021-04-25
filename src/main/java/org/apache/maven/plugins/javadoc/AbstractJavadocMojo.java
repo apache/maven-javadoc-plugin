@@ -1726,9 +1726,33 @@ public abstract class AbstractJavadocMojo
 
     /**
      * <p>
-     * Specify the requirements for this jdk toolchain.
+     * Allow for configuration of the javadoc tool via maven toolchains.
      * This overrules the toolchain selected by the maven-toolchain-plugin.
      * </p>
+     *
+     * <p>Examples:</p>
+     * (see <a href="https://maven.apache.org/guides/mini/guide-using-toolchains.html">
+     *     Guide to Toolchains</a> for more info)
+     *
+     * <pre>
+     * {@code
+     *    <configuration>
+     *        ...
+     *        <jdkToolchain>
+     *            <version>11</version>
+     *        </jdkToolchain>
+     *    </configuration>
+     *
+     *    <configuration>
+     *        ...
+     *        <jdkToolchain>
+     *            <version>1.8</version>
+     *            <vendor>zulu</vendor>
+     *        </jdkToolchain>
+     *    </configuration>
+     *    }
+     * </pre>
+     * 
      * <strong>note:</strong> requires at least Maven 3.3.1
      *
      * @since 3.0.0
