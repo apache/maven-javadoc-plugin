@@ -2381,9 +2381,13 @@ public abstract class AbstractJavadocMojo
                                 additionalSourcePaths.addAll( l );
                             }
                         }
-                        mappedSourcePaths.put( ArtifactUtils.versionlessKey( subProject.getGroupId(),
-                                                                             subProject.getArtifactId() ),
-                                               additionalSourcePaths );
+                        
+                        if ( !additionalSourcePaths.isEmpty() )
+                        {
+                            mappedSourcePaths.put( ArtifactUtils.versionlessKey( subProject.getGroupId(),
+                                                                                 subProject.getArtifactId() ),
+                                                   additionalSourcePaths );
+                        }
                     }
                 }
             }
@@ -2399,8 +2403,12 @@ public abstract class AbstractJavadocMojo
                     getJavadocDirectory().getAbsolutePath() ) );
                 sourcePaths.addAll( l );
             }
-            mappedSourcePaths.put( ArtifactUtils.versionlessKey( project.getGroupId(), project.getArtifactId() ),
-                                   sourcePaths );
+            
+            if ( !sourcePaths.isEmpty() )
+            {
+                mappedSourcePaths.put( ArtifactUtils.versionlessKey( project.getGroupId(), project.getArtifactId() ),
+                                       sourcePaths );
+            }
         }
 
         return mappedSourcePaths;
