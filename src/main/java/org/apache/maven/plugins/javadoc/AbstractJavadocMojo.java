@@ -134,6 +134,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtLeast;
 import static org.apache.maven.plugins.javadoc.JavadocUtil.toRelative;
@@ -1843,9 +1844,13 @@ public abstract class AbstractJavadocMojo
         {
             return null;
         }
-        else if ( project.getArtifact() != null )
+        else if ( project.getArtifact() != null && project.getArtifact().getFile() != null )
         {
             return project.getArtifact().getFile();
+        }
+        else if ( project.getExecutionProject() != null && project.getExecutionProject().getArtifact() != null ) 
+        {
+            return project.getExecutionProject().getArtifact().getFile();
         }
         return null;
     }
@@ -2018,9 +2023,11 @@ public abstract class AbstractJavadocMojo
             throw new MavenReportException( "Failed to generate javadoc options file: " + e.getMessage(), e );
         }
 
-        Map<String, Collection<Path>> sourcePaths = getSourcePaths();
+        Collection<JavadocModule> sourcePaths = getSourcePaths();
 
-        Collection<Path> collectedSourcePaths = collect( sourcePaths.values() );
+        Collection<Path> collectedSourcePaths = sourcePaths.stream()
+                                                           .flatMap( e -> e.getSourcePaths().stream() )
+                                                           .collect( Collectors.toList() );
 
         Map<Path, Collection<String>> files = getFiles( collectedSourcePaths );
         if ( !canGenerateReport( files ) )
@@ -2043,7 +2050,7 @@ public abstract class AbstractJavadocMojo
         }
         setFJavadocVersion( new File( jExecutable ) );
 
-        List<String> packageNames;
+        Collection<String> packageNames;
         if ( javadocRuntimeVersion.isAtLeast( "9" ) )
         {
             packageNames = getPackageNamesRespectingJavaModules( sourcePaths );
@@ -2249,16 +2256,6 @@ public abstract class AbstractJavadocMojo
         }
     }
 
-    protected final <T> Collection<T> collect( Collection<Collection<T>> sourcePaths )
-    {
-        Collection<T> collectedSourcePaths = new LinkedHashSet<>();
-        for ( Collection<T> sp : sourcePaths )
-        {
-            collectedSourcePaths.addAll( sp );
-        }
-        return collectedSourcePaths;
-    }
-
     /**
      * Method to get the files on the specified source paths
      *
@@ -2301,10 +2298,10 @@ public abstract class AbstractJavadocMojo
      * @throws MavenReportException {@link MavenReportException} issue while generating report
      * @see JavadocUtil#pruneDirs(MavenProject, Collection)
      */
-    protected Map<String, Collection<Path>> getSourcePaths()
+    protected Collection<JavadocModule> getSourcePaths()
         throws MavenReportException
     {
-        Map<String, Collection<Path>> mappedSourcePaths = new LinkedHashMap<>();
+        Collection<JavadocModule> mappedSourcePaths = new ArrayList<>();
 
         if ( StringUtils.isEmpty( sourcepath ) )
         {
@@ -2336,15 +2333,11 @@ public abstract class AbstractJavadocMojo
                 }
                 if ( !sourcePaths.isEmpty() )
                 {
-                    mappedSourcePaths.put( ArtifactUtils.versionlessKey( project.getGroupId(),
-                                                                         project.getArtifactId() ),
-                                           sourcePaths );
+                    mappedSourcePaths.add( new JavadocModule( ArtifactUtils.versionlessKey( project.getGroupId(),
+                                                                                            project.getArtifactId() ),
+                                                              getArtifactFile( project ),
+                                                              sourcePaths ) );
                 }
-            }
-
-            if ( includeDependencySources )
-            {
-                mappedSourcePaths.putAll( getDependencySourcePaths() );
             }
 
             if ( isAggregator() )
@@ -2384,12 +2377,19 @@ public abstract class AbstractJavadocMojo
                         
                         if ( !additionalSourcePaths.isEmpty() )
                         {
-                            mappedSourcePaths.put( ArtifactUtils.versionlessKey( subProject.getGroupId(),
-                                                                                 subProject.getArtifactId() ),
-                                                   additionalSourcePaths );
+                            mappedSourcePaths.add( new JavadocModule( 
+                                                          ArtifactUtils.versionlessKey( subProject.getGroupId(),
+                                                                                        subProject.getArtifactId() ),
+                                                          getArtifactFile( subProject ),
+                                                          additionalSourcePaths ) );
                         }
                     }
                 }
+            }
+
+            if ( includeDependencySources )
+            {
+                mappedSourcePaths.addAll( getDependencySourcePaths() );
             }
         }
         else
@@ -2406,8 +2406,10 @@ public abstract class AbstractJavadocMojo
             
             if ( !sourcePaths.isEmpty() )
             {
-                mappedSourcePaths.put( ArtifactUtils.versionlessKey( project.getGroupId(), project.getArtifactId() ),
-                                       sourcePaths );
+                mappedSourcePaths.add( new JavadocModule( ArtifactUtils.versionlessKey( project.getGroupId(),
+                                                                                        project.getArtifactId() ),
+                                                          getArtifactFile( project ),
+                                                          sourcePaths ) );
             }
         }
 
@@ -2471,7 +2473,7 @@ public abstract class AbstractJavadocMojo
      * @return List of source paths.
      * @throws MavenReportException {@link MavenReportException}
      */
-    protected final Map<String, Collection<Path>> getDependencySourcePaths()
+    protected final Collection<JavadocModule> getDependencySourcePaths()
         throws MavenReportException
     {
         try
@@ -4521,43 +4523,31 @@ public abstract class AbstractJavadocMojo
      * @see #getFiles
      * @see #getSourcePaths()
      */
-    private List<String> getPackageNamesRespectingJavaModules( Map<String, Collection<Path>> allSourcePaths )
+    private Collection<String> getPackageNamesRespectingJavaModules( Collection<JavadocModule> javadocModules )
             throws MavenReportException
     {
-        List<String> returnList = new ArrayList<>();
-
         if ( !StringUtils.isEmpty( sourcepath ) )
         {
-            return returnList;
+            return Collections.emptyList();
         }
 
-        for ( Collection<Path> artifactSourcePaths: allSourcePaths.values() )
+        Set<String> returnList = new LinkedHashSet<>();
+        for ( JavadocModule javadocModule  : javadocModules )
         {
+            Collection<Path> artifactSourcePaths = javadocModule.getSourcePaths();
             Set<String> exportedPackages = new HashSet<>();
             boolean exportAllPackages;
-            File mainDescriptor = findMainDescriptor( artifactSourcePaths );
-            if ( mainDescriptor != null && !isTest() )
+            ResolvePathResult resolvedPath = getResolvePathResult( javadocModule.getArtifactFile() );
+            if ( resolvedPath != null && resolvedPath.getModuleNameSource() == ModuleNameSource.MODULEDESCRIPTOR )
             {
-                ResolvePathsRequest<File> request =
-                        ResolvePathsRequest.ofFiles( Collections.<File>emptyList() ).
-                                setMainModuleDescriptor( mainDescriptor );
-
-                try
+                Set<JavaModuleDescriptor.JavaExports> exports = resolvedPath.getModuleDescriptor().exports();
+                if ( exports.isEmpty() )
                 {
-                    Set<JavaModuleDescriptor.JavaExports> exports = locationManager.resolvePaths( request ).
-                            getMainModuleDescriptor().exports();
-                    if ( exports.isEmpty() )
-                    {
-                        continue;
-                    }
-                    for ( JavaModuleDescriptor.JavaExports export : exports )
-                    {
-                        exportedPackages.add( export.source() );
-                    }
+                    continue;
                 }
-                catch ( IOException e )
+                for ( JavaModuleDescriptor.JavaExports export : exports )
                 {
-                    throw new MavenReportException( e.getMessage(), e );
+                    exportedPackages.add( export.source() );
                 }
                 exportAllPackages = false;
             }
@@ -4801,7 +4791,7 @@ public abstract class AbstractJavadocMojo
      *      Reference Guide, Command line argument files</a>
      * @see #PACKAGES_FILE_NAME
      */
-    private void addCommandLinePackages( Commandline cmd, File javadocOutputDirectory, List<String> packageNames )
+    private void addCommandLinePackages( Commandline cmd, File javadocOutputDirectory, Collection<String> packageNames )
         throws MavenReportException
     {
         File packagesFile = new File( javadocOutputDirectory, PACKAGES_FILE_NAME );
@@ -4967,11 +4957,13 @@ public abstract class AbstractJavadocMojo
      */
     private void addJavadocOptions( File javadocOutputDirectory,
                                     List<String> arguments,
-                                    Map<String, Collection<Path>> allSourcePaths,
+                                    Collection<JavadocModule> allSourcePaths,
                                     Set<OfflineLink> offlineLinks )
         throws MavenReportException
     {
-        Collection<Path> sourcePaths = collect( allSourcePaths.values() );
+        Collection<Path> sourcePaths = allSourcePaths.stream()
+                                                     .flatMap( e -> e.getSourcePaths().stream() )
+                                                     .collect( Collectors.toList() );
 
         validateJavadocOptions();
 
@@ -5015,30 +5007,21 @@ public abstract class AbstractJavadocMojo
 
         if ( supportModulePath )
         {
-            for ( Map.Entry<String, Collection<Path>> entry : allSourcePaths.entrySet() )
+            for ( JavadocModule entry : allSourcePaths )
             {
-                MavenProject entryProject = reactorKeys.get( entry.getKey() );
-
-                File artifactFile;
-                if ( entryProject != null )
-                {
-                    artifactFile = getArtifactFile( entryProject );
-                }
-                else
-                {
-                    artifactFile = project.getArtifactMap().get( entry.getKey() ).getFile();
-                }
+                File artifactFile = entry.getArtifactFile();
+                
                 ResolvePathResult resolvePathResult = getResolvePathResult( artifactFile );
 
                 if ( resolvePathResult == null || resolvePathResult.getModuleNameSource() == ModuleNameSource.FILENAME )
                 {
-                    File moduleDescriptor = findMainDescriptor( entry.getValue() );
+                    Path moduleDescriptor = findMainDescriptor( entry.getSourcePaths() );
 
                     if ( moduleDescriptor != null )
                     {
                         try
                         {
-                            allModuleDescriptors.put( entry.getKey(),
+                            allModuleDescriptors.put( entry.getGa(),
                                       locationManager.parseModuleDescriptor( moduleDescriptor ).getModuleDescriptor() );
                         }
                         catch ( IOException e )
@@ -5049,7 +5032,7 @@ public abstract class AbstractJavadocMojo
                 }
                 else
                 {
-                    allModuleDescriptors.put( entry.getKey(), resolvePathResult.getModuleDescriptor() );
+                    allModuleDescriptors.put( entry.getGa(), resolvePathResult.getModuleDescriptor() );
                 }
             }
         }
@@ -5064,9 +5047,9 @@ public abstract class AbstractJavadocMojo
         if ( supportModulePath && !allModuleDescriptors.isEmpty() )
         {
             Collection<String> unnamedProjects = new ArrayList<>();
-            for ( Map.Entry<String, Collection<Path>> projectSourcepaths : allSourcePaths.entrySet() )
+            for ( JavadocModule javadocModule : allSourcePaths )
             {
-                MavenProject aggregatedProject = reactorKeys.get( projectSourcepaths.getKey() );
+                MavenProject aggregatedProject = reactorKeys.get( javadocModule.getGa() );
                 if ( aggregatedProject != null && !"pom".equals( aggregatedProject.getPackaging() ) )
                 {
                     ResolvePathResult result = null;
@@ -5095,7 +5078,7 @@ public abstract class AbstractJavadocMojo
                     }
                     else
                     {
-                        File moduleDescriptor = findMainDescriptor( projectSourcepaths.getValue() );
+                        Path moduleDescriptor = findMainDescriptor( javadocModule.getSourcePaths() );
 
                         if ( moduleDescriptor != null )
                         {
@@ -5119,7 +5102,7 @@ public abstract class AbstractJavadocMojo
 
                             additionalModules.add( result.getModuleDescriptor().name() );
 
-                            patchModules.put( result.getModuleDescriptor().name(), projectSourcepaths.getValue() );
+                            patchModules.put( result.getModuleDescriptor().name(), javadocModule.getSourcePaths() );
 
                             Path modulePath = moduleSourceDir.resolve( result.getModuleDescriptor().name() );
                             if ( !Files.isDirectory( modulePath ) )
@@ -5134,7 +5117,7 @@ public abstract class AbstractJavadocMojo
                     }
                     else
                     {
-                        unnamedProjects.add( projectSourcepaths.getKey() );
+                        unnamedProjects.add( javadocModule.getGa() );
                     }
 
                     if ( aggregatedProject.equals( getProject() ) )
@@ -5145,7 +5128,7 @@ public abstract class AbstractJavadocMojo
                 else
                 {
                     // todo
-                    getLog().error( "no reactor project: " + projectSourcepaths.getKey() );
+                    getLog().error( "no reactor project: " + javadocModule.getGa() );
                 }
             }
 
@@ -5192,7 +5175,6 @@ public abstract class AbstractJavadocMojo
         }
 
         if ( supportModulePath
-             && !isTest()
              && ( isAggregator()
                   || ModuleNameSource.MODULEDESCRIPTOR.equals( mainModuleNameSource )
                   || ModuleNameSource.MANIFEST.equals( mainModuleNameSource ) ) )
@@ -5403,13 +5385,13 @@ public abstract class AbstractJavadocMojo
         return resolvePathResult;
     }
 
-    private File findMainDescriptor( Collection<Path> roots ) throws MavenReportException
+    private Path findMainDescriptor( Collection<Path> roots ) throws MavenReportException
     {
         for ( Map.Entry<Path, Collection<String>> entry : getFiles( roots ).entrySet() )
         {
             if ( entry.getValue().contains( "module-info.java" ) )
             {
-                return entry.getKey().resolve( "module-info.java" ).toFile();
+                return entry.getKey().resolve( "module-info.java" );
             }
         }
         return null;

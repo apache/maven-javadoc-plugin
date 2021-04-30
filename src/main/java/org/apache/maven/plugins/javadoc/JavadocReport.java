@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import org.apache.maven.doxia.siterenderer.RenderingContext;
 import org.apache.maven.doxia.siterenderer.sink.SiteRendererSink;
@@ -232,7 +233,9 @@ public class JavadocReport
             Map<Path, Collection<String>> files;
             try
             {
-                sourcePaths = collect( getSourcePaths().values() );
+                sourcePaths = getSourcePaths().stream()
+                                .flatMap( e -> e.getSourcePaths().stream() )
+                                .collect( Collectors.toList() );
                 files = getFiles( sourcePaths );
             }
             catch ( MavenReportException e )
