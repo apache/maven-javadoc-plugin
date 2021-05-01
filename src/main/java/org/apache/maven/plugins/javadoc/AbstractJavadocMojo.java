@@ -131,6 +131,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -3020,51 +3021,71 @@ public abstract class AbstractJavadocMojo
      * @return the stylesheet file absolute path as String.
      * @see #getResource(List, String)
      */
-    private String getStylesheetFile( final File javadocOutputDirectory )
+    private Optional<File> getStylesheetFile( final File javadocOutputDirectory )
     {
         if ( StringUtils.isEmpty( stylesheetfile ) )
         {
             if ( "java".equalsIgnoreCase( stylesheet ) )
             {
                 // use the default Javadoc tool stylesheet
-                return null;
+                return Optional.empty();
             }
 
             // maven, see #copyDefaultStylesheet(File)
-            return new File( javadocOutputDirectory, DEFAULT_CSS_NAME ).getAbsolutePath();
+            return Optional.of( new File( javadocOutputDirectory, DEFAULT_CSS_NAME ) );
         }
 
         if ( new File( stylesheetfile ).exists() )
         {
-            return new File( stylesheetfile ).getAbsolutePath();
+            return Optional.of( new File( stylesheetfile ) );
         }
 
         return getResource( new File( javadocOutputDirectory, DEFAULT_CSS_NAME ), stylesheetfile );
     }
     
-    private String getAddStylesheet( final File javadocOutputDirectory, final String stylesheet )
+    private void addAddStyleSheets( List<String> arguments ) throws MavenReportException
+    {
+        if ( addStylesheets == null )
+        {
+            return;
+        }
+        
+        for ( String addStylesheet : addStylesheets )
+        {
+            Optional<File> styleSheet = getAddStylesheet( getJavadocDirectory(), addStylesheet );
+            
+            if ( styleSheet.isPresent() )
+            {
+                addArgIfNotEmpty( arguments, "--add-stylesheet",
+                                  JavadocUtil.quotedPathArgument( styleSheet.get().getAbsolutePath() ),
+                                  JavaVersion.parse( "10" ) );
+            }
+        }
+    }
+    
+    
+    private Optional<File> getAddStylesheet( final File javadocOutputDirectory, final String stylesheet )
             throws MavenReportException
     {
         if ( StringUtils.isEmpty( stylesheet ) )
         {
-            return null;
+            return Optional.empty();
         }
         
         File addstylesheetfile = new File( getJavadocDirectory(), stylesheet );
         if ( addstylesheetfile.exists() )
         {
-            String stylesheetfilename = getStylesheetFile( javadocOutputDirectory );
-            if ( stylesheetfilename != null )
+            Optional<File> stylesheetfile = getStylesheetFile( javadocOutputDirectory );
+            if ( stylesheetfile.isPresent() )
             {
-                File stylesheetfile = new File( stylesheetfilename );
-                if ( stylesheetfile.getName().equals( addstylesheetfile.getName() ) )
+                if ( stylesheetfile.get().getName().equals( addstylesheetfile.getName() ) )
                 {
                     throw new MavenReportException( "additional stylesheet must have a different name "
-                                                        + "than stylesheetfile: " + stylesheetfile.getName() );
+                                                        + "than stylesheetfile: " + stylesheetfile.get().getName() );
                 }
             }
             
-            return addstylesheetfile.getAbsolutePath();
+            return Optional.of( addstylesheetfile );
         }
 
         throw new MavenReportException( "additional stylesheet file does not exist: " 
@@ -3083,16 +3104,16 @@ public abstract class AbstractJavadocMojo
      * @see #getResource(File, String)
      * @since 2.6
      */
-    private String getHelpFile( final File javadocOutputDirectory )
+    private Optional<File> getHelpFile( final File javadocOutputDirectory )
     {
         if ( StringUtils.isEmpty( helpfile ) )
         {
-            return null;
+            return Optional.empty();
         }
 
         if ( new File( helpfile ).exists() )
         {
-            return new File( helpfile ).getAbsolutePath();
+            return Optional.of( new File( helpfile ) );
         }
 
         return getResource( new File( javadocOutputDirectory, "help-doc.html" ), helpfile );
@@ -5493,8 +5514,12 @@ public abstract class AbstractJavadocMojo
 
         addArgIfNotEmpty( arguments, "-header", JavadocUtil.quotedArgument( header ), false, false );
 
-        addArgIfNotEmpty( arguments, "-helpfile",
-                          JavadocUtil.quotedPathArgument( getHelpFile( javadocOutputDirectory ) ) );
+        Optional<File> helpFile = getHelpFile( javadocOutputDirectory );
+        if ( helpFile.isPresent() )
+        {
+            addArgIfNotEmpty( arguments, "-helpfile",
+                              JavadocUtil.quotedPathArgument( helpFile.get().getAbsolutePath() ) );
+        }
 
         addArgIf( arguments, keywords, "-keywords", SINCE_JAVADOC_1_4_2 );
 
@@ -5547,19 +5572,15 @@ public abstract class AbstractJavadocMojo
 
         addArgIf( arguments, splitindex, "-splitindex" );
 
-        addArgIfNotEmpty( arguments, "-stylesheetfile",
-                          JavadocUtil.quotedPathArgument( getStylesheetFile( javadocOutputDirectory ) ) );
+        Optional<File> stylesheetfile = getStylesheetFile( javadocOutputDirectory );
         
-        if ( addStylesheets != null )
+        if ( stylesheetfile.isPresent() )
         {
-            for ( String addStylesheet : addStylesheets )
-            {
-                addArgIfNotEmpty( arguments, "--add-stylesheet",
-                                  JavadocUtil.quotedPathArgument( getAddStylesheet( javadocOutputDirectory,
-                                                                                    addStylesheet ) ),
-                                  JavaVersion.parse( "10" ) );
-            }
+            addArgIfNotEmpty( arguments, "-stylesheetfile",
+                              JavadocUtil.quotedPathArgument( stylesheetfile.get().getAbsolutePath() ) );
         }
+        
+        addAddStyleSheets( arguments ); 
 
         if ( StringUtils.isNotEmpty( sourcepath ) && !isJavaDocVersionAtLeast( SINCE_JAVADOC_1_5 ) )
         {
@@ -6058,7 +6079,7 @@ public abstract class AbstractJavadocMojo
      * @return the resource file absolute path as String
      * @since 2.6
      */
-    private String getResource( File outputFile, String inputResourceName )
+    private Optional<File> getResource( File outputFile, String inputResourceName )
     {
         if ( inputResourceName.startsWith( "/" ) )
         {
@@ -6072,7 +6093,7 @@ public abstract class AbstractJavadocMojo
         if ( resourceURL != null )
         {
             getLog().debug( inputResourceName + " found in the main src directory of the project." );
-            return FileUtils.toFile( resourceURL ).getAbsolutePath();
+            return Optional.of( FileUtils.toFile( resourceURL ) );
         }
 
         classPath.clear();
@@ -6085,7 +6106,7 @@ public abstract class AbstractJavadocMojo
         if ( resourceURL != null )
         {
             getLog().debug( inputResourceName + " found in the main resources directories of the project." );
-            return FileUtils.toFile( resourceURL ).getAbsolutePath();
+            return Optional.of( FileUtils.toFile( resourceURL ) );
         }
 
         if ( javadocDirectory.exists() )
@@ -6096,7 +6117,7 @@ public abstract class AbstractJavadocMojo
             if ( resourceURL != null )
             {
                 getLog().debug( inputResourceName + " found in the main javadoc directory of the project." );
-                return FileUtils.toFile( resourceURL ).getAbsolutePath();
+                return Optional.of( FileUtils.toFile( resourceURL ) );
             }
         }
 
@@ -6135,7 +6156,7 @@ public abstract class AbstractJavadocMojo
                 {
                     JavadocUtil.copyResource( resourceURL, outputFile );
 
-                    return outputFile.getAbsolutePath();
+                    return Optional.of( outputFile );
                 }
                 catch ( IOException e )
                 {
@@ -6146,7 +6167,7 @@ public abstract class AbstractJavadocMojo
 
         getLog().warn( "Unable to find the resource '" + inputResourceName + "'. Using default Javadoc resources." );
 
-        return null;
+        return Optional.empty();
     }
 
     /**
