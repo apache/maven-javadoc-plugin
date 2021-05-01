@@ -117,6 +117,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -922,9 +924,12 @@ public abstract class AbstractJavadocMojo
      * Specifies the text to be placed at the bottom of each output file.<br/>
      * If you want to use html, you have to put it in a CDATA section, <br/>
      * e.g. <code>&lt;![CDATA[Copyright 2005, &lt;a href="http://www.mycompany.com">MyCompany, Inc.&lt;a>]]&gt;</code>
-     * <br/>
+     * <br>
+     * <strong>Note:<strong>If the project has the property <code>project.build.outputTimestamp</code>, its year will
+     * be used as {currentYear}. This way it is possible to generate reproducible javadoc jars.
+     * <br>
      * See <a href="https://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#bottom">bottom</a>.
-     * <br/>
+     * <br>
      */
     @Parameter( property = "bottom",
                     defaultValue = "Copyright &#169; {inceptionYear}&#x2013;{currentYear} {organizationName}. "
@@ -2954,8 +2959,18 @@ public abstract class AbstractJavadocMojo
      */
     private String getBottomText()
     {
-        int currentYear = Calendar.getInstance().get( Calendar.YEAR );
-        String year = String.valueOf( currentYear );
+        final String year;
+        String buildTime = project.getProperties().getProperty( "project.build.outputTimestamp" );
+        if ( buildTime != null )
+        {
+            year = String.valueOf( DateTimeFormatter.ISO_DATE_TIME.parse( buildTime ).get( ChronoField.YEAR ) );
+        }
+        else
+        {
+            getLog().debug( "Missing property project.build.outputTimestamp, using current year instead" );
+            int currentYear = Calendar.getInstance().get( Calendar.YEAR );
+            year = String.valueOf( currentYear );
+        }
 
         String inceptionYear = project.getInceptionYear();
 
