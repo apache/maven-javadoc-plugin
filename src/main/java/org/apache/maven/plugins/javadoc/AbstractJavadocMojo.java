@@ -5574,14 +5574,17 @@ public abstract class AbstractJavadocMojo
     private void addTags( List<String> arguments )
         throws MavenReportException
     {
-        Set<Tag> tags = collectTags();
-
-        if ( isEmpty( tags ) )
+        final String lineSeparator;
+        if ( javadocRuntimeVersion.isBefore( "9" ) )
         {
-            return;
+            lineSeparator = " ";
+        }
+        else
+        {
+            lineSeparator = " \\\\" + SystemUtils.LINE_SEPARATOR;
         }
 
-        for ( Tag tag : tags )
+        for ( Tag tag : collectTags() )
         {
             if ( StringUtils.isEmpty( tag.getName() ) )
             {
@@ -5595,10 +5598,10 @@ public abstract class AbstractJavadocMojo
                 String value = "\"" + tag.getName();
                 if ( StringUtils.isNotEmpty( tag.getPlacement() ) )
                 {
-                    value += ":" + tag.getPlacement();
+                    value += ":" + tag.getPlacement().replaceAll( "\\R", lineSeparator );
                     if ( StringUtils.isNotEmpty( tag.getHead() ) )
                     {
-                        value += ":" + tag.getHead();
+                        value += ":" + tag.getHead().replaceAll( "\\R", lineSeparator );
                     }
                 }
                 value += "\"";
