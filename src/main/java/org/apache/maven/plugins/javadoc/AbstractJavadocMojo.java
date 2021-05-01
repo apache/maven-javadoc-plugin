@@ -1423,8 +1423,21 @@ public abstract class AbstractJavadocMojo
      * stylesheetfile</a>.
      */
     @Parameter( property = "stylesheetfile" )
-   private String stylesheetfile;
-
+    private String stylesheetfile;
+    
+    /**
+     * Specifies the path of an additional HTML stylesheet file relative to the {@link #javadocDirectory}
+     * Example:
+     * <pre>
+     *     &lt;addStylesheets&gt;
+     *         &lt;resources/addstylesheet.css&lt;/addStylesheet&gt;
+     *     &lt;/addStylesheets&gt;
+     * </pre>
+     * @since 3.3.0
+     */
+    @Parameter
+    private String[] addStylesheets;
+    
     /**
      * Specifies the class file that starts the taglet used in generating the documentation for that tag.
      * <br/>
@@ -3027,6 +3040,35 @@ public abstract class AbstractJavadocMojo
         }
 
         return getResource( new File( javadocOutputDirectory, DEFAULT_CSS_NAME ), stylesheetfile );
+    }
+    
+    private String getAddStylesheet( final File javadocOutputDirectory, final String stylesheet )
+            throws MavenReportException
+    {
+        if ( StringUtils.isEmpty( stylesheet ) )
+        {
+            return null;
+        }
+        
+        File addstylesheetfile = new File( getJavadocDirectory(), stylesheet );
+        if ( addstylesheetfile.exists() )
+        {
+            String stylesheetfilename = getStylesheetFile( javadocOutputDirectory );
+            if ( stylesheetfilename != null )
+            {
+                File stylesheetfile = new File( stylesheetfilename );
+                if ( stylesheetfile.getName().equals( addstylesheetfile.getName() ) )
+                {
+                    throw new MavenReportException( "additional stylesheet must have a different name "
+                                                        + "than stylesheetfile: " + stylesheetfile.getName() );
+                }
+            }
+            
+            return addstylesheetfile.getAbsolutePath();
+        }
+
+        throw new MavenReportException( "additional stylesheet file does not exist: " 
+                                            + addstylesheetfile.getAbsolutePath() );
     }
 
     /**
@@ -5507,6 +5549,17 @@ public abstract class AbstractJavadocMojo
 
         addArgIfNotEmpty( arguments, "-stylesheetfile",
                           JavadocUtil.quotedPathArgument( getStylesheetFile( javadocOutputDirectory ) ) );
+        
+        if ( addStylesheets != null )
+        {
+            for ( String addStylesheet : addStylesheets )
+            {
+                addArgIfNotEmpty( arguments, "--add-stylesheet",
+                                  JavadocUtil.quotedPathArgument( getAddStylesheet( javadocOutputDirectory,
+                                                                                    addStylesheet ) ),
+                                  JavaVersion.parse( "10" ) );
+            }
+        }
 
         if ( StringUtils.isNotEmpty( sourcepath ) && !isJavaDocVersionAtLeast( SINCE_JAVADOC_1_5 ) )
         {
