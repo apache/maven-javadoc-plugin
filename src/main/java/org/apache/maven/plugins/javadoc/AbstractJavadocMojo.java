@@ -527,6 +527,7 @@ public abstract class AbstractJavadocMojo
      * The added Javadoc <code>-link</code> parameter will be <code>http://commons.apache.org/lang/apidocs</code>.
      *
      * @see #links
+     * @see #dependencyLinks
      * @since 2.6
      */
     @Parameter( property = "detectLinks", defaultValue = "false" )
@@ -1142,9 +1143,31 @@ public abstract class AbstractJavadocMojo
      *
      * @see #detectLinks
      * @see #detectJavaApiLink
+     * @see #dependencyLinks
      */
     @Parameter( property = "links" )
     protected ArrayList<String> links;
+    
+
+    /**
+     * Redefine the apidoc URL for specific dependencies when using {@link #detectLinks}.
+     * Useful if the dependency wasn't build with Maven or when the apidocs have been moved.
+     * <pre>
+     * &lt;dependencyLinks&gt;
+     *   &lt;dependencyLink&gt;
+     *     &lt;groupId&gt;groupId&lt;/groupId&gt;
+     *     &lt;artifactId&gt;artifactId&lt;/artifactId&gt;
+     *     &lt;classifier&gt;classifier&lt;/classifier&gt; &lt;!-- optional --&gt; 
+     *     &lt;url&gt;version&lt;/url&gt;
+     *   &lt;/dependencyLink&gt;
+     * &lt;/dependencyLinks&gt;
+     * </pre>
+     * 
+     * @see #detectLinks
+     * @since 3.3.0
+     */
+    @Parameter
+    private List<DependencyLink> dependencyLinks = new ArrayList<>();
 
     /**
      * Creates an HTML version of each source file (with line numbers) and adds links to them from the standard
@@ -6390,30 +6413,59 @@ public abstract class AbstractJavadocMojo
                 continue;
             }
 
-            try
+            Optional<DependencyLink> depLink =
+                this.dependencyLinks.stream().filter( d -> matches( d, artifact ) ).findAny();
+            
+            final String url;
+            final boolean detected;
+            if ( depLink.isPresent() )
             {
-                MavenProject artifactProject =
-                    mavenProjectBuilder.build( artifact, getProjectBuildingRequest( project ) ).getProject();
-
-                if ( StringUtils.isNotEmpty( artifactProject.getUrl() ) )
+                url = depLink.get().getUrl();
+                detected = false;
+            }
+            else
+            {
+                try
                 {
-                    String url = getJavadocLink( artifactProject );
+                    MavenProject artifactProject =
+                        mavenProjectBuilder.build( artifact, getProjectBuildingRequest( project ) ).getProject();
 
-                    if ( isValidJavadocLink( url, true ) )
-                    {
-                        getLog().debug( "Added Javadoc link: " + url + " for " + artifactProject.getId() );
-
-                        dependenciesLinks.add( url );
-                    }
+                    url = getJavadocLink( artifactProject );
+                    detected = true;
+                }
+                catch ( ProjectBuildingException e )
+                {
+                    logError( "ProjectBuildingException for " + artifact.toString() + ": " + e.getMessage(), e );
+                    continue;
                 }
             }
-            catch ( ProjectBuildingException e )
+            
+            if ( isValidJavadocLink( url, detected ) )
             {
-                logError( "ProjectBuildingException for " + artifact.toString() + ": " + e.getMessage(), e );
+                getLog().debug( "Added Javadoc link: " + url + " for " + artifact.getId() );
+
+                dependenciesLinks.add( url );
             }
         }
 
         return dependenciesLinks;
+    }
+
+    private boolean matches( DependencyLink d, Artifact artifact )
+    {
+        if ( d.getGroupId() != null && !d.getGroupId().equals( artifact.getGroupId() ) )
+        {
+            return false;
+        }
+        if ( d.getArtifactId() != null && !d.getArtifactId().equals( artifact.getArtifactId() ) )
+        {
+            return false;
+        }
+        if ( d.getClassifier() != null && !d.getClassifier().equals( artifact.getClassifier() ) )
+        {
+            return false;
+        }
+        return true;
     }
 
     /**
