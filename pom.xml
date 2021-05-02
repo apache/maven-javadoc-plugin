@@ -70,7 +70,7 @@ under the License.
     <mavenVersion>3.0</mavenVersion>
     <doxiaVersion>1.9.1</doxiaVersion>
     <doxia-sitetoolsVersion>1.9.2</doxia-sitetoolsVersion>
-    <wagonVersion>2.4</wagonVersion>
+    <wagonVersion>3.4.3</wagonVersion>
     <sonatypeAetherVersion>1.13.1</sonatypeAetherVersion>
     <plexus-java.version>1.0.7</plexus-java.version>
     <!-- for ITs -->
