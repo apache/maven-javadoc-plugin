@@ -391,6 +391,7 @@ under the License.
               <exclude>src/test/resources/unit/test-javadoc-test/junit/junit/3.8.1/junit-3.8.1.pom</exclude>
               <!-- temporary file that sometimes stays after a failure then completely blocks build -->
               <exclude>javadoc-options-javadoc-resources.xml</exclude>
+              <exclude>.github/dependabot.yml</exclude>
             </excludes>
           </configuration>
         </plugin>
