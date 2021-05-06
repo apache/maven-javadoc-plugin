@@ -6686,14 +6686,19 @@ public abstract class AbstractJavadocMojo
      */
     protected boolean isValidJavadocLink( String link, boolean detecting )
     {
+        if ( link == null )
+        {
+          return false;
+        }
+
         try
         {
             final URI packageListUri;
             final URI elementListUri;
 
-            if ( link.trim().toLowerCase( Locale.ENGLISH ).startsWith( "http:" ) || link.trim().toLowerCase(
-                Locale.ENGLISH ).startsWith( "https:" ) || link.trim().toLowerCase( Locale.ENGLISH ).startsWith(
-                "ftp:" ) || link.trim().toLowerCase( Locale.ENGLISH ).startsWith( "file:" ) )
+          final String trimmedLowercaseLink = link.trim().toLowerCase( Locale.ENGLISH );
+          if ( trimmedLowercaseLink.startsWith( "http:" ) || trimmedLowercaseLink.startsWith( "https:" )
+              || trimmedLowercaseLink.startsWith( "ftp:" ) || trimmedLowercaseLink.startsWith( "file:" ) )
             {
                 packageListUri = new URI( link + '/' + PACKAGE_LIST );
                 elementListUri = new URI( link + '/' + ELEMENT_LIST );
@@ -6721,6 +6726,11 @@ public abstract class AbstractJavadocMojo
                 elementListUri = new File( dir, ELEMENT_LIST ).toURI();
             }
 
+            if ( isOffline && !trimmedLowercaseLink.startsWith( "file:" ) )
+            {
+              // checking of both elementlists and package lists skipped.
+              return false;
+            }
 
             try
             {
