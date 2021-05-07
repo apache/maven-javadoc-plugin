@@ -158,6 +158,11 @@ public abstract class AbstractJavadocMojo
     extends AbstractMojo
 {
     /**
+     * Property with timestamp used for reproducible builds
+     */
+    private static final String PROJECT_BUILD_OUTPUTTIMESTAMP = "project.build.outputTimestamp";
+
+    /**
      * Classifier used in the name of the javadoc-options XML file, and in the resources bundle
      * artifact that gets attached to the project. This one is used for non-test javadocs.
      *
@@ -2960,14 +2965,14 @@ public abstract class AbstractJavadocMojo
     private String getBottomText()
     {
         final String year;
-        String buildTime = project.getProperties().getProperty( "project.build.outputTimestamp" );
+        String buildTime = project.getProperties().getProperty( PROJECT_BUILD_OUTPUTTIMESTAMP );
         if ( buildTime != null )
         {
             year = String.valueOf( DateTimeFormatter.ISO_DATE_TIME.parse( buildTime ).get( ChronoField.YEAR ) );
         }
         else
         {
-            getLog().debug( "Missing property project.build.outputTimestamp, using current year instead" );
+            getLog().debug( "Using current year due to unavailable property '" + PROJECT_BUILD_OUTPUTTIMESTAMP + "'" );
             int currentYear = Calendar.getInstance().get( Calendar.YEAR );
             year = String.valueOf( currentYear );
         }
