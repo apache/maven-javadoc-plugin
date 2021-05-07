@@ -5030,7 +5030,7 @@ public abstract class AbstractJavadocMojo
         }
 
         // overview
-        if ( ( getOverview() != null ) && nooverview )
+        if ( getOverview() != null && getOverview().exists() && nooverview )
         {
             throw new MavenReportException( "Option <nooverview/> conflicts with <overview/>" );
         }
