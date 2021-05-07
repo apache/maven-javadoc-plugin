@@ -117,6 +117,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -155,6 +157,11 @@ import static org.apache.maven.plugins.javadoc.JavadocUtil.isNotEmpty;
 public abstract class AbstractJavadocMojo
     extends AbstractMojo
 {
+    /**
+     * Property with timestamp used for reproducible builds
+     */
+    private static final String PROJECT_BUILD_OUTPUTTIMESTAMP = "project.build.outputTimestamp";
+
     /**
      * Classifier used in the name of the javadoc-options XML file, and in the resources bundle
      * artifact that gets attached to the project. This one is used for non-test javadocs.
@@ -923,9 +930,12 @@ public abstract class AbstractJavadocMojo
      * Specifies the text to be placed at the bottom of each output file.<br/>
      * If you want to use html, you have to put it in a CDATA section, <br/>
      * e.g. <code>&lt;![CDATA[Copyright 2005, &lt;a href="http://www.mycompany.com">MyCompany, Inc.&lt;a>]]&gt;</code>
-     * <br/>
+     * <br>
+     * <strong>Note:<strong>If the project has the property <code>project.build.outputTimestamp</code>, its year will
+     * be used as {currentYear}. This way it is possible to generate reproducible javadoc jars.
+     * <br>
      * See <a href="https://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#bottom">bottom</a>.
-     * <br/>
+     * <br>
      */
     @Parameter( property = "bottom",
                     defaultValue = "Copyright &#169; {inceptionYear}&#x2013;{currentYear} {organizationName}. "
@@ -2977,8 +2987,18 @@ public abstract class AbstractJavadocMojo
      */
     private String getBottomText()
     {
-        int currentYear = Calendar.getInstance().get( Calendar.YEAR );
-        String year = String.valueOf( currentYear );
+        final String year;
+        String buildTime = project.getProperties().getProperty( PROJECT_BUILD_OUTPUTTIMESTAMP );
+        if ( buildTime != null )
+        {
+            year = String.valueOf( DateTimeFormatter.ISO_DATE_TIME.parse( buildTime ).get( ChronoField.YEAR ) );
+        }
+        else
+        {
+            getLog().debug( "Using current year due to unavailable property '" + PROJECT_BUILD_OUTPUTTIMESTAMP + "'" );
+            int currentYear = Calendar.getInstance().get( Calendar.YEAR );
+            year = String.valueOf( currentYear );
+        }
 
         String inceptionYear = project.getInceptionYear();
 
