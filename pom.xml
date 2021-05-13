@@ -479,13 +479,10 @@ under the License.
                 <pomExclude>MJAVADOC-181/pom.xml</pomExclude> <!-- seems to be wrong, see comment in Jira issue  -->
                 <pomExclude>output-encoding/pom.xml</pomExclude>
               </pomExcludes>
-              <properties>
+              <properties combine.self="override"/>
+              <filterProperties>
                 <maven.compiler.source>${maven.compiler.source}</maven.compiler.source>
                 <maven.compiler.target>${maven.compiler.target}</maven.compiler.target>
-                <!-- e.g. ensure that Java7 picks up TLSv1.2 when connecting with Central -->
-                <https.protocols>${https.protocols}</https.protocols>
-              </properties>
-              <filterProperties>
                 <mrm.3rdparty.url>${mrm.3rdparty.url}</mrm.3rdparty.url>
               </filterProperties>
               <environmentVariables>

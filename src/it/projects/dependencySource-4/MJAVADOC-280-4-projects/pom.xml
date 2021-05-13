@@ -28,7 +28,13 @@ under the License.
   <packaging>pom</packaging>
 
   <name>MJAVADOC-280-4-projects</name>
-  
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>@maven.compiler.source@</maven.compiler.source>
+    <maven.compiler.target>@maven.compiler.target@</maven.compiler.target>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

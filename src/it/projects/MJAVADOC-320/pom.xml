@@ -36,9 +36,11 @@
         <module>module3</module>
     </modules>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>@maven.compiler.source@</maven.compiler.source>
+    <maven.compiler.target>@maven.compiler.target@</maven.compiler.target>
+  </properties>
 
     <build>
         <pluginManagement>

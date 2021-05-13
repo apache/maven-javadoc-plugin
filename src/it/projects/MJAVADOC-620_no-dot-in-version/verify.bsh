@@ -25,14 +25,14 @@ boolean result = true;
 
 try
 {
-    File target = new File( basedir, "target" );
+    File target = new File( basedir, "app/target" );
     if ( !target.exists() || !target.isDirectory() )
     {
         System.err.println( "target file is missing or not a directory." );
         return false;
     }
 
-    File apidocs = new File( basedir, "target/site/apidocs" );
+    File apidocs = new File( target, "site/apidocs" );
     if ( !apidocs.exists() || !apidocs.isDirectory() )
     {
         System.err.println( "target/site/apidocs file is missing or not a directory." );
