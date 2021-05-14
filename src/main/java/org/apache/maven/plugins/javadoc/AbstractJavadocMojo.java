@@ -869,7 +869,7 @@ public abstract class AbstractJavadocMojo
      * Since <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/whatsnew-1.4.html#summary">Java
      * 1.4</a>.
      */
-    @Parameter( property = "source" )
+    @Parameter( property = "source", defaultValue = "${maven.compiler.source}" )
     private String source;
 
     /**
@@ -2317,6 +2317,20 @@ public abstract class AbstractJavadocMojo
         if ( StringUtils.isEmpty( subpackages ) )
         {
             Collection<String> excludedPackages = getExcludedPackages();
+            
+            final boolean autoExclude;
+            if ( release != null )
+            {
+                autoExclude = JavaVersion.parse( release ).isBefore( "9" );
+            }
+            else if ( source != null )
+            {
+                autoExclude = JavaVersion.parse( source ).isBefore( "9" );
+            }
+            else
+            {
+                autoExclude = false;
+            }
 
             for ( Path sourcePath : sourcePaths )
             {
@@ -2325,8 +2339,7 @@ public abstract class AbstractJavadocMojo
                         sourceFileIncludes, sourceFileExcludes,
                         excludedPackages ) );
 
-                if ( source != null && JavaVersion.parse( source ).isBefore( "9" )
-                    && files.remove( "module-info.java" ) )
+                if ( autoExclude && files.remove( "module-info.java" ) )
                 {
                     getLog().debug( "Auto exclude module-info.java due to source value" );
                 }
@@ -5107,9 +5120,16 @@ public abstract class AbstractJavadocMojo
 
         Map<String, JavaModuleDescriptor> allModuleDescriptors = new HashMap<>();
 
-        boolean supportModulePath = javadocRuntimeVersion.isAtLeast( "9" )
-            && ( source == null || JavaVersion.parse( source ).isAtLeast( "9" ) )
-            && ( release == null || JavaVersion.parse( release ).isAtLeast( "9" ) );
+        
+        boolean supportModulePath = javadocRuntimeVersion.isAtLeast( "9" );
+        if ( release != null ) 
+        {
+            supportModulePath &= JavaVersion.parse( release ).isAtLeast( "9" );
+        }
+        else if ( source != null )
+        {
+            supportModulePath &= JavaVersion.parse( source ).isAtLeast( "9" );
+        }
 
         if ( supportModulePath )
         {
@@ -6510,6 +6530,10 @@ public abstract class AbstractJavadocMojo
         if ( release != null )
         {
             javaApiversion = JavaVersion.parse( release );
+        }
+        else if ( source != null && !source.isEmpty() )
+        {
+            javaApiversion = JavaVersion.parse( source );
         }
         else
         {
