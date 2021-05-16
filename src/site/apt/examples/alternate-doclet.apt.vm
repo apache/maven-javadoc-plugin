@@ -37,35 +37,7 @@ Using Alternate Doclet
  <<Note about UmlGraph>>: You must have the Graphviz binary in your PATH, or the images will not be generated.
  For more information about Graphviz, please refer to {{http://www.graphviz.org/}}.
 
-+-----+
-<project>
-  ...
-  <reporting> (or <build>)
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${project.version}</version>
-        <configuration>
-          <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
-
-          <!-- <docletPath>/path/to/UmlGraph.jar</docletPath> -->
-          <docletArtifact>
-            <groupId>org.umlgraph</groupId>
-            <artifactId>doclet</artifactId>
-            <version>5.1</version>
-          </docletArtifact>
-          <additionalOptions>
-            <additionalOption>-views</additionalOption>
-          </additionalOptions>
-        </configuration>
-      </plugin>
-    ...
-    </plugins>
-  </reporting> (or </build>)
-  ...
-</project>
-+-----+
+%{snippet|id=umlgraph|file=target/it/examples/alternate-doclet/pom.xml}
 
  <<Note>>:
 

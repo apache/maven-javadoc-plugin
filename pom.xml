@@ -475,6 +475,9 @@ under the License.
               <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
               <projectsDirectory>src/it/projects</projectsDirectory>
               <settingsFile>src/it/mrm/settings.xml</settingsFile>
+              <pomIncludes combine.children="append">
+                <pomInclude>examples/*/pom.xml</pomInclude>
+              </pomIncludes>
               <pomExcludes>
                 <pomExclude>MJAVADOC-181/pom.xml</pomExclude> <!-- seems to be wrong, see comment in Jira issue  -->
                 <pomExclude>output-encoding/pom.xml</pomExclude>
