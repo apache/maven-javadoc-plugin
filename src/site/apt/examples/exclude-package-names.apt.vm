@@ -57,44 +57,4 @@ com.mycompany.myapp.package3.util
 
   You could have the following configuration:
 
-+-----+
-<project>
-  ...
-  <reporting> (or <build>)
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${project.version}</version>
-        <configuration>
-          <!--
-          Exclude packages:
-            com.mycompany.myapp.package1.subpackage1
-            com.mycompany.myapp.package1.subpackage2
-            com.mycompany.myapp.package1.subpackage3
-            com.mycompany.myapp.package1.util
-            com.mycompany.myapp.package2
-            com.mycompany.myapp.package2.subpackage4
-            com.mycompany.myapp.package2.subpackage5
-            com.mycompany.myapp.package2.util
-            com.mycompany.myapp.package3.util
-          BUT include the packages:
-            com.mycompany.myapp
-            com.mycompany.myapp.package1
-            com.mycompany.myapp.package3
-            com.mycompany.myapp.package3.subpackage6
-            com.mycompany.myapp.package3.subpackage6.subsubpackage1
-            com.mycompany.myapp.package3.subpackage6.subsubpackage2
-            com.mycompany.myapp.package3.subpackage7
-          -->
-          <excludePackageNames>com.mycompany.myapp.package1.*:com.mycompany.myapp.package2:*.util.*</excludePackageNames>
-          ...
-        </configuration>
-      </plugin>
-      ...
-    </plugins>
-    ...
-  </reporting> (or <build>)
-  ...
-</project>
-+-----+
+%{snippet|id=excludePackageNames|file=target/it/examples/exclude-package-names/pom.xml}

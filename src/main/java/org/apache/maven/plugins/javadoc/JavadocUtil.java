@@ -379,7 +379,7 @@ public class JavadocUtil
 
             if ( !excluded )
             {
-                files.add( file );
+                files.add( file.replace( '\\', '/' ) );
             }
         }
 
