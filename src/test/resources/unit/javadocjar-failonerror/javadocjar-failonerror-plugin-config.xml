@@ -37,6 +37,7 @@ under the License.
           <localRepository>${localRepository}</localRepository>
           <jarOutputDirectory>${basedir}/target/test/unit/javadocjar-failonerror/target</jarOutputDirectory>
           <outputDirectory>${basedir}/target/test/unit/javadocjar-failonerror/target/site/apidocs</outputDirectory>
+          <javadocOptionsDir>${basedir}/target/test/unit/javadocjar-failonerror/target/javadoc-bundle-options</javadocOptionsDir>
           <finalName>javadocjar-failonerror</finalName>
           <attach>true</attach>
           <classifier>javadoc</classifier>
