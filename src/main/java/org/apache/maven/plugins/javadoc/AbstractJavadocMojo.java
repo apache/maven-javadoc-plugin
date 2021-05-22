@@ -293,6 +293,9 @@ public abstract class AbstractJavadocMojo
     @Component
     private DependencyResolver dependencyResolver;
 
+    @Component
+    private List<JavadocImplementation> javadocInvocators;
+
     /**
      * Project builder
      *
@@ -5721,7 +5724,16 @@ public abstract class AbstractJavadocMojo
         CommandLineUtils.StringStreamConsumer out = new JavadocUtil.JavadocOutputStreamConsumer();
         try
         {
-            int exitCode = CommandLineUtils.executeCommandLine( cmd, out, err );
+            getLog().debug( "javadocInvocators: " + javadocInvocators );
+            int exitCode;
+            if ( javadocInvocators.isEmpty() )
+            {
+                exitCode = CommandLineUtils.executeCommandLine( cmd, out, err );
+            }
+            else
+            {
+                exitCode = javadocInvocators.get( 0 ).execute( cmd, out, err );
+            }
 
             String output = ( StringUtils.isEmpty( out.getOutput() ) ? null : '\n' + out.getOutput().trim() );
 
