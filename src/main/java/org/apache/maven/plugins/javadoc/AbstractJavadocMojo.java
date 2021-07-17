@@ -6057,22 +6057,41 @@ public abstract class AbstractJavadocMojo
         // Handle Javadoc warnings
         // ----------------------------------------------------------------------
 
-        if ( StringUtils.isNotEmpty( err.getOutput() ) && getLog().isWarnEnabled() )
+        if ( containsWarnings( err.getOutput() ) )
         {
-            getLog().warn( "Javadoc Warnings" );
-
-            StringTokenizer token = new StringTokenizer( err.getOutput(), "\n" );
-            while ( token.hasMoreTokens() )
+            if ( getLog().isWarnEnabled() )
             {
-                String current = token.nextToken().trim();
+                getLog().warn( "Javadoc Warnings" );
 
-                getLog().warn( current );
+                StringTokenizer token = new StringTokenizer( err.getOutput(), "\n" );
+                while ( token.hasMoreTokens() )
+                {
+                    String current = token.nextToken().trim();
+
+                    getLog().warn( current );
+                }
+            }
+
+            if ( failOnWarnings )
+            {
+                throw new MavenReportException( "Project contains Javadoc Warnings" );
             }
         }
+    }
 
-        if ( StringUtils.isNotEmpty( err.getOutput() ) && failOnWarnings )
+    private boolean containsWarnings( String output )
+    {
+        // JDK-8268774 / JDK-8270831
+        if ( this.javadocRuntimeVersion.isBefore( "17" ) )
         {
-            throw new MavenReportException( "Project contains Javadoc Warnings" );
+            return StringUtils.isNotEmpty( output );
+        }
+        else
+        {
+            return Arrays.stream( output.split( "\\R" ) )
+                            .reduce( ( first, second ) -> second ) // last line
+                            .filter( line -> line.matches( "\\d+ warnings?" ) )
+                            .isPresent();
         }
     }
 
