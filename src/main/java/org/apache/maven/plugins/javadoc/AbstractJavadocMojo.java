@@ -22,6 +22,7 @@ package org.apache.maven.plugins.javadoc;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.artifact.handler.ArtifactHandler;
@@ -117,13 +118,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -157,11 +157,6 @@ import static org.apache.maven.plugins.javadoc.JavadocUtil.isNotEmpty;
 public abstract class AbstractJavadocMojo
     extends AbstractMojo
 {
-    /**
-     * Property with timestamp used for reproducible builds
-     */
-    private static final String PROJECT_BUILD_OUTPUTTIMESTAMP = "project.build.outputTimestamp";
-
     /**
      * Classifier used in the name of the javadoc-options XML file, and in the resources bundle
      * artifact that gets attached to the project. This one is used for non-test javadocs.
@@ -1831,6 +1826,16 @@ public abstract class AbstractJavadocMojo
     @Parameter( property = "maven.javadoc.skippedModules" )
     private String skippedModules;
 
+    /**
+     * Timestamp for reproducible output archive entries, either formatted as ISO 8601
+     * <code>yyyy-MM-dd'T'HH:mm:ssXXX</code> or as an int representing seconds since the epoch (like
+     * <a href="https://reproducible-builds.org/docs/source-date-epoch/">SOURCE_DATE_EPOCH</a>).
+     *
+     * @since 3.2.0
+     */
+    @Parameter( defaultValue = "${project.build.outputTimestamp}" )
+    protected String outputTimestamp;
+
     // ----------------------------------------------------------------------
     // protected methods
     // ----------------------------------------------------------------------
@@ -3000,37 +3005,26 @@ public abstract class AbstractJavadocMojo
      */
     private String getBottomText()
     {
-        final String year;
-        String buildTime = project.getProperties().getProperty( PROJECT_BUILD_OUTPUTTIMESTAMP );
-        if ( buildTime != null )
-        {
-            year = String.valueOf( DateTimeFormatter.ISO_DATE_TIME.parse( buildTime ).get( ChronoField.YEAR ) );
-        }
-        else
-        {
-            getLog().debug( "Using current year due to unavailable property '" + PROJECT_BUILD_OUTPUTTIMESTAMP + "'" );
-            int currentYear = Calendar.getInstance().get( Calendar.YEAR );
-            year = String.valueOf( currentYear );
-        }
+        final String inceptionYear = project.getInceptionYear();
 
-        String inceptionYear = project.getInceptionYear();
-
-        String theBottom = StringUtils.replace( this.bottom, "{currentYear}", year );
-
-        if ( inceptionYear != null )
+        // get Reproducible Builds outputTimestamp value
+        final Calendar currentYearCal = Calendar.getInstance();
+        final Date reproducibleDate = new MavenArchiver().parseOutputTimestamp( outputTimestamp );
+        if ( reproducibleDate != null )
         {
-            if ( inceptionYear.equals( year ) )
-            {
-                theBottom = StringUtils.replace( theBottom, "{inceptionYear}&#x2013;", "" );
-            }
-            else
-            {
-                theBottom = StringUtils.replace( theBottom, "{inceptionYear}", inceptionYear );
-            }
+            currentYearCal.setTime( reproducibleDate );
         }
-        else
+        final String currentYear = String.valueOf( currentYearCal.get( Calendar.YEAR ) );
+
+        String theBottom = StringUtils.replace( this.bottom, "{currentYear}", currentYear );
+
+        if ( ( inceptionYear == null ) || inceptionYear.equals( currentYear ) )
         {
             theBottom = StringUtils.replace( theBottom, "{inceptionYear}&#x2013;", "" );
+        }
+        else
+        {
+            theBottom = StringUtils.replace( theBottom, "{inceptionYear}", inceptionYear );
         }
 
         if ( project.getOrganization() == null )
