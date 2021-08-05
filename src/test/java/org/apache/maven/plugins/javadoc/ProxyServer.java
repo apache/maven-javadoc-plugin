@@ -125,6 +125,7 @@ class ProxyServer
     private ServerConnector getDefaultConnector( String hostName, int port, Server server )
     {
         ServerConnector connector = new ServerConnector( server );
+        connector.setReuseAddress( true );
         if ( hostName != null )
         {
             connector.setHost( hostName );
