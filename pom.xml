@@ -78,6 +78,7 @@ under the License.
     <sitePluginVersion>3.3</sitePluginVersion>
     <projectInfoReportsPluginVersion>2.7</projectInfoReportsPluginVersion>
     <project.build.outputTimestamp>2021-05-18T17:44:35Z</project.build.outputTimestamp>
+    <slf4j.version>1.7.30</slf4j.version>
   </properties>
 
   <contributors>
@@ -384,7 +385,7 @@ under the License.
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>1.7.5</version>
+      <version>${slf4j.version}</version>
     </dependency>
   </dependencies>
 
