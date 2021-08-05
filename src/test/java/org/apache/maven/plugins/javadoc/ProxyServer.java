@@ -49,6 +49,8 @@ class ProxyServer
 {
     private Server proxyServer;
 
+    private ServerConnector serverConnector;
+
     /**
      * @param proxyServlet the wanted auth proxy servlet
      */
@@ -64,7 +66,14 @@ class ProxyServer
      */
     public ProxyServer( String hostName, int port, AuthAsyncProxyServlet proxyServlet )
     {
-        proxyServer = new Server( 0 );
+        proxyServer = new Server( );
+
+        serverConnector = new ServerConnector( proxyServer );
+        serverConnector.setHost( InetAddress.getLoopbackAddress().getHostName() );
+        serverConnector.setReuseAddress( true );
+        serverConnector.setPort( 0 );
+
+        proxyServer.addConnector( serverConnector );
 
         // Setup proxy handler to handle CONNECT methods
         ConnectHandler proxy = new ConnectHandler();
@@ -82,8 +91,7 @@ class ProxyServer
      */
     public String getHostName() throws UnknownHostException
     {
-        ServerConnector connector = (ServerConnector) proxyServer.getConnectors()[0];
-        return connector.getHost() == null ? InetAddress.getLoopbackAddress().getHostName() : connector.getHost(); //InetAddress.getLocalHost().getHostName()
+        return serverConnector.getHost() == null ? InetAddress.getLoopbackAddress().getHostName() : serverConnector.getHost(); //InetAddress.getLocalHost().getHostName()
     }
 
     /**
@@ -91,8 +99,7 @@ class ProxyServer
      */
     public int getPort()
     {
-        ServerConnector connector = (ServerConnector) proxyServer.getConnectors()[0];
-        return ( connector.getLocalPort() <= 0 ? connector.getPort() : connector.getLocalPort() );
+        return serverConnector.getLocalPort();
     }
 
     /**

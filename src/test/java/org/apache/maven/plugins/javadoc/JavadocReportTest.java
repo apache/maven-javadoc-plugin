@@ -63,6 +63,8 @@ import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.hamcrest.MatcherAssert;
 import org.junit.AssumptionViolatedException;
 import org.junit.Ignore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonatype.aether.impl.internal.SimpleLocalRepositoryManager;
 
 /**
@@ -85,6 +87,8 @@ public class JavadocReportTest
     private Path unit;
 
     private File localRepo;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( JavadocReportTest.class );
 
     /** {@inheritDoc} */
     @Override
@@ -259,22 +263,30 @@ public class JavadocReportTest
         String url = Objects.requireNonNull( mojo.getDefaultJavadocApiLink() ).getUrl();
         HttpURLConnection connection = (HttpURLConnection) new URL( url ).openConnection();
         connection.setRequestMethod( "HEAD" );
-        if ( connection.getResponseCode() == HttpURLConnection.HTTP_OK  )
+        try
         {
-            try 
+            if ( connection.getResponseCode() == HttpURLConnection.HTTP_OK  )
             {
-                assumeThat( connection.getURL().toString(), is( url ) );
+                try
+                {
+                    assumeThat( connection.getURL().toString(), is( url ) );
 
-                // https://bugs.openjdk.java.net/browse/JDK-8216497
-                MatcherAssert.assertThat( url + " available, but " + appHtml + " is missing link to java.lang.Object",
-                            new String( Files.readAllBytes(generatedFile), StandardCharsets.UTF_8 ),
-                            anyOf( containsString( "/docs/api/java/lang/Object.html" ), 
-                            containsString( "/docs/api/java.base/java/lang/Object.html" ) ) );
+                    // https://bugs.openjdk.java.net/browse/JDK-8216497
+                    MatcherAssert.assertThat( url + " available, but " + appHtml + " is missing link to java.lang.Object",
+                                new String( Files.readAllBytes(generatedFile), StandardCharsets.UTF_8 ),
+                                anyOf( containsString( "/docs/api/java/lang/Object.html" ),
+                                containsString( "/docs/api/java.base/java/lang/Object.html" ) ) );
+                }
+                catch ( AssumptionViolatedException e )
+                {
+                    System.out.println( "Warning: ignoring defaultAPI check: " + e.getMessage() );
+                }
             }
-            catch ( AssumptionViolatedException e )
-            {
-                System.out.println( "Warning: ignoring defaultAPI check: " + e.getMessage() );
-            }
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("error connecting to javadoc URL: {}", url);
+            throw e;
         }
 
         assertThat( apidocs.resolve( "def/configuration/AppSample.html" )).exists();
