@@ -83,7 +83,7 @@ class ProxyServer
     public String getHostName() throws UnknownHostException
     {
         ServerConnector connector = (ServerConnector) proxyServer.getConnectors()[0];
-        return connector.getHost() == null ? InetAddress.getLocalHost().getHostName() : connector.getHost();
+        return connector.getHost() == null ? "localhost" : connector.getHost(); //InetAddress.getLocalHost().getHostName()
     }
 
     /**
