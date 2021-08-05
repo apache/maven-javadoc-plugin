@@ -64,9 +64,7 @@ class ProxyServer
      */
     public ProxyServer( String hostName, int port, AuthAsyncProxyServlet proxyServlet )
     {
-        proxyServer = new Server();
-
-        proxyServer.addConnector(getDefaultConnector( hostName, port, proxyServer ));
+        proxyServer = new Server( 0 );
 
         // Setup proxy handler to handle CONNECT methods
         ConnectHandler proxy = new ConnectHandler();
@@ -122,32 +120,6 @@ class ProxyServer
         proxyServer = null;
     }
 
-    private ServerConnector getDefaultConnector( String hostName, int port, Server server )
-    {
-        ServerConnector connector = new ServerConnector( server );
-        connector.setReuseAddress( true );
-        if ( hostName != null )
-        {
-            connector.setHost( hostName );
-        }
-        else
-        {
-            try
-            {
-                connector.setHost( InetAddress.getLocalHost().getCanonicalHostName() );
-            }
-            catch ( UnknownHostException e )
-            {
-                // nop
-            }
-        }
-        if ( port > 0 )
-        {
-            connector.setPort( port );
-        }
-
-        return connector;
-    }
 
     /**
      * A proxy servlet with authentication support.
@@ -188,7 +160,6 @@ class ProxyServer
         public AuthAsyncProxyServlet( Map<String, String> authentications, long sleepTime )
         {
             this();
-
             this.authentications = authentications;
             this.sleepTime = sleepTime;
         }
