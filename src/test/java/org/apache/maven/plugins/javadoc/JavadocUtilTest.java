@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.PatternSyntaxException;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -46,10 +47,12 @@ import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.AbstractHandler;
-import org.mortbay.jetty.handler.MovedContextHandler;
-import org.mortbay.util.ByteArrayISO8859Writer;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.server.handler.MovedContextHandler;
+import org.eclipse.jetty.util.ByteArrayISO8859Writer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -473,12 +476,11 @@ public class JavadocUtilTest
         try
         {
             redirectServer = new Server( 0 );
-            redirectServer.addHandler( new AbstractHandler()
+            redirectServer.setHandler( new AbstractHandler()
             {
                 @Override
-                public void handle( String target, HttpServletRequest request, HttpServletResponse response,
-                                    int dispatch )
-                    throws IOException
+                public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+                        throws IOException, ServletException
                 {
                     response.setStatus( HttpServletResponse.SC_OK );
                     ByteArrayISO8859Writer writer = new ByteArrayISO8859Writer( 100 );
@@ -495,12 +497,12 @@ public class JavadocUtilTest
 
             server = new Server( 0 );
             MovedContextHandler handler = new MovedContextHandler();
-            int redirectPort = redirectServer.getConnectors()[0].getLocalPort();
+            int redirectPort = ((ServerConnector)redirectServer.getConnectors()[0]).getLocalPort();
             handler.setNewContextURL( "http://localhost:" + redirectPort );
-            server.addHandler( handler );
+            server.setHandler( handler );
             server.start();
 
-            URL url = new URI( "http://localhost:" + server.getConnectors()[0].getLocalPort() ).toURL();
+            URL url = new URI( "http://localhost:" + ((ServerConnector)redirectServer.getConnectors()[0]).getLocalPort() ).toURL();
             URL redirectUrl = JavadocUtil.getRedirectUrl( url, new Settings() );
 
             assertTrue( redirectUrl.toString().startsWith( "http://localhost:" + redirectPort ) );
@@ -522,12 +524,11 @@ public class JavadocUtilTest
         try
         {
             server = new Server( 0 );
-            server.addHandler( new AbstractHandler()
+            server.setHandler( new AbstractHandler()
             {
                 @Override
-                public void handle( String target, HttpServletRequest request, HttpServletResponse response,
-                                    int dispatch )
-                    throws IOException
+                public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+                        throws IOException, ServletException
                 {
                     response.setStatus( HttpServletResponse.SC_OK );
                     ByteArrayISO8859Writer writer = new ByteArrayISO8859Writer( 100 );
@@ -542,7 +543,7 @@ public class JavadocUtilTest
             } );
             server.start();
 
-            URL url = new URI( "http://localhost:" + server.getConnectors()[0].getLocalPort() ).toURL();
+            URL url = new URI( "http://localhost:" + ((ServerConnector)server.getConnectors()[0]).getLocalPort() ).toURL();
             URL redirectUrl = JavadocUtil.getRedirectUrl( url, new Settings() );
 
             assertEquals( url.toURI(), redirectUrl.toURI() );
@@ -564,13 +565,13 @@ public class JavadocUtilTest
         try
         {
             server = new Server( 0 );
-            server.addHandler( new AbstractHandler()
+            server.setHandler( new AbstractHandler()
             {
                 @Override
-                public void handle( String target, HttpServletRequest request, HttpServletResponse response,
-                                    int dispatch )
-                    throws IOException
+                public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+                        throws IOException, ServletException
                 {
+
                     if ( request.getHeader( "Accept" ) == null )
                     {
                         response.setStatus( HttpServletResponse.SC_FORBIDDEN );
@@ -584,7 +585,7 @@ public class JavadocUtilTest
             } );
             server.start();
 
-            URL url = new URI( "http://localhost:" + server.getConnectors()[0].getLocalPort() ).toURL();
+            URL url = new URI( "http://localhost:" + ((ServerConnector)server.getConnectors()[0]).getLocalPort() ).toURL();
             JavadocUtil.getRedirectUrl( url, new Settings() );
         }
         finally

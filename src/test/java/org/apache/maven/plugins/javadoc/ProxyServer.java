@@ -22,6 +22,8 @@ package org.apache.maven.plugins.javadoc;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -30,13 +32,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.security.B64Code;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
-import org.mortbay.proxy.AsyncProxyServlet;
+import org.eclipse.jetty.proxy.AsyncProxyServlet;
+import org.eclipse.jetty.proxy.ConnectHandler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
  * A Proxy server.
@@ -65,11 +66,17 @@ class ProxyServer
     {
         proxyServer = new Server();
 
-        proxyServer.addConnector( getDefaultConnector( hostName, port ) );
+        proxyServer.addConnector(getDefaultConnector( hostName, port, proxyServer ));
 
-        Context context = new Context( proxyServer, "/", 0 );
+        // Setup proxy handler to handle CONNECT methods
+        ConnectHandler proxy = new ConnectHandler();
+        proxyServer.setHandler(proxy);
 
-        context.addServlet( new ServletHolder( proxyServlet ), "/" );
+        // Setup proxy servlet
+        ServletContextHandler context = new ServletContextHandler(proxy, "/", true, false);
+        ServletHolder appServletHolder = new ServletHolder(proxyServlet);
+        context.addServlet(appServletHolder, "/*");
+
     }
 
     /**
@@ -77,7 +84,7 @@ class ProxyServer
      */
     public String getHostName()
     {
-        Connector connector = proxyServer.getConnectors()[0];
+        ServerConnector connector = (ServerConnector) proxyServer.getConnectors()[0];
         return connector.getHost();
     }
 
@@ -86,7 +93,7 @@ class ProxyServer
      */
     public int getPort()
     {
-        Connector connector = proxyServer.getConnectors()[0];
+        ServerConnector connector = (ServerConnector) proxyServer.getConnectors()[0];
         return ( connector.getLocalPort() <= 0 ? connector.getPort() : connector.getLocalPort() );
     }
 
@@ -115,9 +122,9 @@ class ProxyServer
         proxyServer = null;
     }
 
-    private Connector getDefaultConnector( String hostName, int port )
+    private ServerConnector getDefaultConnector( String hostName, int port, Server server )
     {
-        Connector connector = new SocketConnector();
+        ServerConnector connector = new ServerConnector( server );
         if ( hostName != null )
         {
             connector.setHost( hostName );
@@ -198,8 +205,10 @@ class ProxyServer
                 String proxyAuthorization = request.getHeader( "Proxy-Authorization" );
                 if ( proxyAuthorization != null && proxyAuthorization.startsWith( "Basic " ) )
                 {
-                    String proxyAuth = proxyAuthorization.substring( 6 );
-                    String authorization = B64Code.decode( proxyAuth );
+                    String proxyAuth = proxyAuthorization.substring("Basic ".length());
+                    String authorization = new String(Base64.getDecoder().decode(proxyAuth), StandardCharsets.UTF_8);
+
+
                     String[] authTokens = authorization.split( ":" );
                     String user = authTokens[0];
                     String password = authTokens[1];
