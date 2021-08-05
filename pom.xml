@@ -463,6 +463,7 @@ under the License.
           <environmentVariables>
             <JENKINS_MAVEN_AGENT_DISABLED>true</JENKINS_MAVEN_AGENT_DISABLED>
           </environmentVariables>
+          <trimStackTrace>false</trimStackTrace>
         </configuration>
       </plugin>
       <plugin>
