@@ -279,7 +279,7 @@ public class JavadocReportTest
                 }
                 catch ( AssumptionViolatedException e )
                 {
-                    System.out.println( "Warning: ignoring defaultAPI check: " + e.getMessage() );
+                    LOGGER.warn( "ignoring defaultAPI check: {}", e.getMessage() );
                 }
             }
         }
