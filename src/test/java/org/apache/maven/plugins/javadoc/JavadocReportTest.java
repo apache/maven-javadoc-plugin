@@ -297,7 +297,7 @@ public class JavadocReportTest
         // package-frame and allclasses-(no)frame not generated anymore since Java 11
         if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "11" ) )
         {
-            assertThat( apidocs.resolve( "def/configuration/package-frame.html" )).exists();;
+            assertThat( apidocs.resolve( "def/configuration/package-frame.html" )).exists();
             assertThat( apidocs.resolve( "allclasses-frame.html" )).exists();
             assertThat( apidocs.resolve( "allclasses-noframe.html" )).exists();
         }
@@ -957,11 +957,6 @@ public class JavadocReportTest
     public void testProxy()
         throws Exception
     {
-        // ignore test as annotation doesn't ignore anything..
-        if ( true )
-        {
-            return;
-        }
         Settings settings = new Settings();
         Proxy proxy = new Proxy();
 

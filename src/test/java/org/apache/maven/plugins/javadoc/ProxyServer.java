@@ -21,7 +21,6 @@ package org.apache.maven.plugins.javadoc;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
@@ -89,9 +88,9 @@ class ProxyServer
     /**
      * @return the host name
      */
-    public String getHostName() throws UnknownHostException
+    public String getHostName()
     {
-        return serverConnector.getHost() == null ? InetAddress.getLoopbackAddress().getHostName() : serverConnector.getHost(); //InetAddress.getLocalHost().getHostName()
+        return serverConnector.getHost() == null ? InetAddress.getLoopbackAddress().getHostName() : serverConnector.getHost();
     }
 
     /**
