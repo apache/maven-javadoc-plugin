@@ -62,7 +62,6 @@ import org.apache.maven.shared.utils.io.FileUtils;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.hamcrest.MatcherAssert;
 import org.junit.AssumptionViolatedException;
-import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.aether.impl.internal.SimpleLocalRepositoryManager;
@@ -953,7 +952,6 @@ public class JavadocReportTest
      *
      * @throws Exception if any
      */
-    @Ignore("We don't really want to have unit test which need internet access")
     public void testProxy()
         throws Exception
     {
@@ -991,8 +989,15 @@ public class JavadocReportTest
         Path commandLine = new File( getBasedir(), "target/test/unit/proxy-test/target/site/apidocs/javadoc." + ( SystemUtils.IS_OS_WINDOWS ? "bat" : "sh" ) ).toPath();
         assertThat( commandLine ).exists();
         String readed = readFile( commandLine );
-        assertThat( readed ).contains( "-J-Dhttp.proxyHost=127.0.0.1" ).contains( "-J-Dhttp.proxyPort=80" )
-                .contains( "-J-Dhttp.nonProxyHosts=\\\"www.google.com^|*.somewhere.com\\\"" );
+        assertThat( readed ).contains( "-J-Dhttp.proxyHost=127.0.0.1" ).contains( "-J-Dhttp.proxyPort=80" );
+        if ( SystemUtils.IS_OS_WINDOWS )
+        {
+            assertThat( readed ).contains( " -J-Dhttp.nonProxyHosts=\"www.google.com^|*.somewhere.com\" " );
+        }
+        else
+        {
+            assertThat( readed ).contains( " \"-J-Dhttp.nonProxyHosts=\\\"www.google.com^|*.somewhere.com\\\"\" " );
+        }
 
         Path options = new File( getBasedir(), "target/test/unit/proxy-test/target/site/apidocs/options" ).toPath();
         assertThat( options ).exists();
