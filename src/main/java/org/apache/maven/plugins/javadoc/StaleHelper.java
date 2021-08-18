@@ -21,6 +21,7 @@ package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -31,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.reporting.MavenReportException;
-import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
@@ -59,12 +60,24 @@ public class StaleHelper
             Path dir = cmd.getWorkingDirectory().toPath().toAbsolutePath().normalize();
             String[] args = cmd.getArguments();
             Collections.addAll( options, args );
+            
+            final Charset cs;
+            if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast( "9" )
+                && JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "12" ) )
+            {
+                cs = StandardCharsets.UTF_8;
+            }
+            else
+            {
+                cs = Charset.defaultCharset();
+            }
+            
             for ( String arg : args )
             {
                 if ( arg.startsWith( "@" ) )
                 {
                     String name = arg.substring( 1 );
-                    options.addAll( Files.readAllLines( dir.resolve( name ), StandardCharsets.UTF_8 ) );
+                    options.addAll( Files.readAllLines( dir.resolve( name ), cs ) );
                     ignored.add( name );
                 }
             }
@@ -130,7 +143,7 @@ public class StaleHelper
         {
             String curdata = getStaleData( cmd );
             Files.createDirectories( path.getParent() );
-            FileUtils.fileWrite( path.toFile(), null /* platform encoding */, curdata );
+            Files.write( path, Collections.singleton( curdata ), Charset.defaultCharset() );
         }
         catch ( IOException e )
         {

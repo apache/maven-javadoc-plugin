@@ -114,6 +114,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -4822,15 +4823,18 @@ public abstract class AbstractJavadocMojo
         options.append( StringUtils.join( arguments.iterator(),
                                           SystemUtils.LINE_SEPARATOR ) );
 
-        /* default to platform encoding */
-        String outputFileEncoding = null;
+        Charset outputFileEncoding;
         if ( JAVA_VERSION.isAtLeast( "9" ) && JAVA_VERSION.isBefore( "12" ) )
         {
-            outputFileEncoding = StandardCharsets.UTF_8.name();
+            outputFileEncoding = StandardCharsets.UTF_8;
+        }
+        else
+        {
+            outputFileEncoding = Charset.defaultCharset();
         }
         try
         {
-            FileUtils.fileWrite( optionsFile.getAbsolutePath(), outputFileEncoding, options.toString() );
+            Files.write( optionsFile.toPath(), Collections.singleton( options ), outputFileEncoding );
         }
         catch ( IOException e )
         {
@@ -4880,10 +4884,20 @@ public abstract class AbstractJavadocMojo
             quotedFiles.add( JavadocUtil.quotedPathArgument( file ) );
         }
 
+        Charset cs;
+        if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast( "9" )
+            && JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "12" ) )
+        {
+            cs = StandardCharsets.UTF_8;
+        }
+        else
+        {
+            cs = Charset.defaultCharset();
+        }
+
         try
         {
-            FileUtils.fileWrite( argfileFile.getAbsolutePath(), null /* platform encoding */,
-                                 StringUtils.join( quotedFiles.iterator(), SystemUtils.LINE_SEPARATOR ) );
+            Files.write( argfileFile.toPath(), quotedFiles, cs );
         }
         catch ( IOException e )
         {
