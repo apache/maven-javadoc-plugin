@@ -78,7 +78,7 @@ under the License.
     <sitePluginVersion>3.3</sitePluginVersion>
     <projectInfoReportsPluginVersion>2.7</projectInfoReportsPluginVersion>
     <project.build.outputTimestamp>2021-05-18T17:44:35Z</project.build.outputTimestamp>
-    <slf4j.version>1.7.30</slf4j.version>
+    <slf4j.version>1.7.32</slf4j.version>
   </properties>
 
   <contributors>
@@ -298,7 +298,7 @@ under the License.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-      <version>3.3.0</version>
+      <version>3.4.0</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -476,7 +476,7 @@ under the License.
           <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-utils</artifactId>
-            <version>3.1.1</version>
+            <version>3.4.0</version>
           </dependency>
         </dependencies>
       </plugin>
