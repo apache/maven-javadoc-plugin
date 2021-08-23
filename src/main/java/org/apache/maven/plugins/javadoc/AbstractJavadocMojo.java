@@ -6596,6 +6596,10 @@ public abstract class AbstractJavadocMojo
         {
             javaApiLink = javaApiLinks.getProperty( javaApiKey );
         }
+        else if ( javaApiversion.isAtLeast( "16" ) )
+        {
+            javaApiLink = null; // JDK-8216497
+        }
         else if ( javaApiversion.isAtLeast( "11" ) )
         {
             javaApiLink =

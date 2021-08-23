@@ -17,5 +17,15 @@
  * under the License.
  */
  
-def buildLog = new File(basedir,'build.log')
-assert buildLog.readLines().any{ it ==~ /\[DEBUG\] Found Java API link: .*\/javase\/\d+\/docs\/api\// }
+def javaVersion = System.getProperty( 'java.specification.version' )
+
+if ( javaVersion.startsWith('1.') || Integer.parseInt(javaVersion) < 16 )
+{
+  def buildLog = new File(basedir,'build.log')
+  assert buildLog.readLines().any{ it ==~ /\[DEBUG\] Found Java API link: .*\/javase\/\d+\/docs\/api\// }
+}
+else
+{
+  def barHtml = new File(basedir,'target/site/apidocs/foo/Bar.html')
+  assert barHtml.text =~ /<a href="https:[^"]+Object.html"/
+}
