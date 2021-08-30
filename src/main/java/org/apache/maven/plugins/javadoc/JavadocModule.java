@@ -23,6 +23,9 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
 
+import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
+import org.codehaus.plexus.languages.java.jpms.ModuleNameSource;
+
 /**
  * Represents a unit of Javadoc referring to the binary and java source paths  
  * 
@@ -31,16 +34,28 @@ import java.util.Collection;
 public class JavadocModule
 {
     private final String ga;
-    
+
     private final File artifactFile;
-    
+
     private final Collection<Path> sourcePaths;
 
+    private final JavaModuleDescriptor moduleDescriptor;
+
+    private final ModuleNameSource moduleNameSource;
+
     public JavadocModule( String ga, File artifactFile, Collection<Path> sourcePaths )
+    {
+        this( ga, artifactFile, sourcePaths, null, null );
+    }
+
+    public JavadocModule( String ga, File artifactFile, Collection<Path> sourcePaths,
+                          JavaModuleDescriptor moduleDescriptor, ModuleNameSource moduleNameSource )
     {
         this.ga = ga;
         this.artifactFile = artifactFile;
         this.sourcePaths = sourcePaths;
+        this.moduleDescriptor = moduleDescriptor;
+        this.moduleNameSource = moduleNameSource;
     }
 
     public String getGa()
@@ -52,9 +67,19 @@ public class JavadocModule
     {
         return sourcePaths;
     }
-    
+
     public File getArtifactFile()
     {
         return artifactFile;
+    }
+
+    public JavaModuleDescriptor getModuleDescriptor()
+    {
+        return moduleDescriptor;
+    }
+
+    public ModuleNameSource getModuleNameSource()
+    {
+        return moduleNameSource;
     }
 }

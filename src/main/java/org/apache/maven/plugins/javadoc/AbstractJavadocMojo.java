@@ -1891,21 +1891,46 @@ public abstract class AbstractJavadocMojo
         return Collections.singletonList( new File( p.getBuild().getOutputDirectory() ) );
     }
 
-    protected File getArtifactFile( MavenProject project )
+    /**
+     * Either returns the attached artifact file or outputDirectory
+     * 
+     * @param project
+     * @return
+     */
+    protected File getClassesFile( MavenProject project )
     {
         if ( !isAggregator() && isTest() )
         {
             return null;
         }
-        else if ( project.getArtifact() != null && project.getArtifact().getFile() != null )
+
+        if ( project.getArtifact() != null && project.getArtifact().getFile() != null )
         {
-            return project.getArtifact().getFile();
+            File artifactFile = project.getArtifact().getFile();
+            if ( artifactFile.isDirectory() || artifactFile.getName().endsWith( ".jar" ) )
+            {
+                return artifactFile;
+            }
         }
-        else if ( project.getExecutionProject() != null && project.getExecutionProject().getArtifact() != null ) 
+        else if ( project.getExecutionProject() != null 
+                        && project.getExecutionProject().getArtifact() != null
+                        && project.getExecutionProject().getArtifact().getFile() != null )
         {
-            return project.getExecutionProject().getArtifact().getFile();
+            File artifactFile = project.getExecutionProject().getArtifact().getFile();
+            if ( artifactFile.isDirectory() || artifactFile.getName().endsWith( ".jar" ) )
+            {
+                return artifactFile;
+            }
         }
-        return null;
+        
+        if ( project.getBuild().getOutputDirectory() != null )
+        {
+            return new File( project.getBuild().getOutputDirectory() );    
+        }
+        else
+        {
+            return null;
+        }
     }
 
     /**
@@ -2399,10 +2424,7 @@ public abstract class AbstractJavadocMojo
                 }
                 if ( !sourcePaths.isEmpty() )
                 {
-                    mappedSourcePaths.add( new JavadocModule( ArtifactUtils.versionlessKey( project.getGroupId(),
-                                                                                            project.getArtifactId() ),
-                                                              getArtifactFile( project ),
-                                                              sourcePaths ) );
+                    mappedSourcePaths.add( buildJavadocModule( project, sourcePaths ) );
                 }
             }
 
@@ -2443,11 +2465,7 @@ public abstract class AbstractJavadocMojo
                         
                         if ( !additionalSourcePaths.isEmpty() )
                         {
-                            mappedSourcePaths.add( new JavadocModule( 
-                                                          ArtifactUtils.versionlessKey( subProject.getGroupId(),
-                                                                                        subProject.getArtifactId() ),
-                                                          getArtifactFile( subProject ),
-                                                          additionalSourcePaths ) );
+                            mappedSourcePaths.add( buildJavadocModule( subProject , additionalSourcePaths ) );
                         }
                     }
                 }
@@ -2474,12 +2492,32 @@ public abstract class AbstractJavadocMojo
             {
                 mappedSourcePaths.add( new JavadocModule( ArtifactUtils.versionlessKey( project.getGroupId(),
                                                                                         project.getArtifactId() ),
-                                                          getArtifactFile( project ),
+                                                          getClassesFile( project ),
                                                           sourcePaths ) );
             }
         }
 
         return mappedSourcePaths;
+    }
+    
+    private JavadocModule buildJavadocModule( MavenProject project, Collection<Path> sourcePaths )
+    {
+        File classessFile = getClassesFile( project );
+        ResolvePathResult resolvePathResult = getResolvePathResult( classessFile );
+        if ( resolvePathResult == null )
+        {
+            return new JavadocModule( ArtifactUtils.versionlessKey( project.getGroupId(), project.getArtifactId() ),
+                                      classessFile, 
+                                      sourcePaths );
+        }
+        else
+        {
+            return new JavadocModule( ArtifactUtils.versionlessKey( project.getGroupId(), project.getArtifactId() ),
+                                      classessFile, 
+                                      sourcePaths, 
+                                      resolvePathResult.getModuleDescriptor(),
+                                      resolvePathResult.getModuleNameSource() );
+        }
     }
 
     /**
@@ -2811,7 +2849,7 @@ public abstract class AbstractJavadocMojo
             {
                 if ( subProject != project )
                 {
-                    File projectArtifactFile = getArtifactFile( subProject );
+                    File projectArtifactFile = getClassesFile( subProject );
                     if ( projectArtifactFile != null )
                     {
                         classpathElements.add( projectArtifactFile );
@@ -4683,11 +4721,11 @@ public abstract class AbstractJavadocMojo
                         continue;
                     }
 
-                    int lastIndexOfSeparator = currentFile.lastIndexOf( File.separatorChar );
+                    int lastIndexOfSeparator = currentFile.lastIndexOf( '/' );
                     if ( lastIndexOfSeparator != -1 )
                     {
                         String packagename =
-                            currentFile.substring( 0, lastIndexOfSeparator ).replace( File.separatorChar, '.' );
+                            currentFile.substring( 0, lastIndexOfSeparator ).replace( '/', '.' );
 
                         if ( exportAllPackages || exportedPackages.contains( packagename ) )
                         {
@@ -5128,7 +5166,6 @@ public abstract class AbstractJavadocMojo
 
         Map<String, JavaModuleDescriptor> allModuleDescriptors = new HashMap<>();
 
-        
         boolean supportModulePath = javadocRuntimeVersion.isAtLeast( "9" );
         if ( release != null ) 
         {
@@ -5143,11 +5180,7 @@ public abstract class AbstractJavadocMojo
         {
             for ( JavadocModule entry : allSourcePaths )
             {
-                File artifactFile = entry.getArtifactFile();
-                
-                ResolvePathResult resolvePathResult = getResolvePathResult( artifactFile );
-
-                if ( resolvePathResult == null || resolvePathResult.getModuleNameSource() == ModuleNameSource.FILENAME )
+                if ( entry.getModuleNameSource() == null || entry.getModuleNameSource() == ModuleNameSource.FILENAME )
                 {
                     Path moduleDescriptor = findMainDescriptor( entry.getSourcePaths() );
 
@@ -5166,7 +5199,7 @@ public abstract class AbstractJavadocMojo
                 }
                 else
                 {
-                    allModuleDescriptors.put( entry.getGa(), resolvePathResult.getModuleDescriptor() );
+                    allModuleDescriptors.put( entry.getGa(), entry.getModuleDescriptor() );
                 }
             }
         }
@@ -5189,7 +5222,7 @@ public abstract class AbstractJavadocMojo
                     ResolvePathResult result = null;
 
                     // Prefer jar over outputDirectory, since it may may contain an automatic module name
-                    File artifactFile = getArtifactFile( aggregatedProject );
+                    File artifactFile = getClassesFile( aggregatedProject );
                     if ( artifactFile != null )
                     {
                         ResolvePathRequest<File> request = ResolvePathRequest.ofFile( artifactFile );
@@ -5314,7 +5347,7 @@ public abstract class AbstractJavadocMojo
                   || ModuleNameSource.MANIFEST.equals( mainModuleNameSource ) ) )
         {
             List<File> pathElements = new ArrayList<>( getPathElements() );
-            File artifactFile = getArtifactFile( project );
+            File artifactFile = getClassesFile( project );
             if ( artifactFile != null )
             {
                 pathElements.add( 0, artifactFile );
