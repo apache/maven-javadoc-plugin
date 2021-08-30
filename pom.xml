@@ -382,11 +382,6 @@ under the License.
       <version>3.19.0</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
   </dependencies>
 
   <build>
