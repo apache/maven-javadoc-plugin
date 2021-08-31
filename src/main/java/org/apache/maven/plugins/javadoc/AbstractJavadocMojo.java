@@ -3813,6 +3813,7 @@ public abstract class AbstractJavadocMojo
         coordinate.setGroupId( javadocArtifact.getGroupId() );
         coordinate.setArtifactId( javadocArtifact.getArtifactId() );
         coordinate.setVersion( javadocArtifact.getVersion() );
+        coordinate.setClassifier( javadocArtifact.getClassifier() );
 
         return artifactResolver.resolveArtifact( getProjectBuildingRequest( project ), coordinate ).getArtifact();
     }
@@ -6252,14 +6253,15 @@ public abstract class AbstractJavadocMojo
             List<Dependency> dependencies = javadocPlugin.getDependencies();
             for ( Dependency dependency : dependencies )
             {
-                JavadocPathArtifact javadocPathArtifact = new JavadocPathArtifact();
-                javadocPathArtifact.setGroupId( dependency.getGroupId() );
-                javadocPathArtifact.setArtifactId( dependency.getArtifactId() );
-                javadocPathArtifact.setVersion( dependency.getVersion() );
+                ResourcesArtifact resourceArtifact = new ResourcesArtifact();
+                resourceArtifact.setGroupId( dependency.getGroupId() );
+                resourceArtifact.setArtifactId( dependency.getArtifactId() );
+                resourceArtifact.setVersion( dependency.getVersion() );
+                resourceArtifact.setClassifier( dependency.getClassifier() );
                 Artifact artifact = null;
                 try
                 {
-                    artifact = createAndResolveArtifact( javadocPathArtifact );
+                    artifact = createAndResolveArtifact( resourceArtifact );
                 }
                 catch ( Exception e )
                 {

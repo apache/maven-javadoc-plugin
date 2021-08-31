@@ -290,6 +290,13 @@ under the License.
           <type>String</type>
           <identifier>true</identifier>
         </field>
+        <field>
+          <name>classifier</name>
+          <description>The classifier of the artifact.</description>
+          <version>1.1.1+</version>
+          <type>String</type>
+          <identifier>true</identifier>
+        </field>
       </fields>
     </class>
 
