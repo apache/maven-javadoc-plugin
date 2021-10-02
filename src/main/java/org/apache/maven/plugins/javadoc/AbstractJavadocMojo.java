@@ -6542,7 +6542,7 @@ public abstract class AbstractJavadocMojo
                 }
             }
             
-            if ( isValidJavadocLink( url, detected ) )
+            if ( url != null && isValidJavadocLink( url, detected ) )
             {
                 getLog().debug( "Added Javadoc link: " + url + " for " + artifact.getId() );
 
