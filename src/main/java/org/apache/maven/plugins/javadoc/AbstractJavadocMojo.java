@@ -5543,12 +5543,16 @@ public abstract class AbstractJavadocMojo
         }
         catch ( IOException | RuntimeException /* e.g java.lang.module.FindException */ e )
         {
-            Throwable cause = e;
-            while ( cause.getCause() != null )
+            if ( getLog().isDebugEnabled() )
             {
-                cause = cause.getCause();
+                Throwable cause = e;
+                while ( cause.getCause() != null )
+                {
+                    cause = cause.getCause();
+                }
+
+                getLog().debug( "resolve path for: " + artifactFile + " cause error: " + cause );
             }
-            getLog().warn( e.getMessage() );
         }
         return resolvePathResult;
     }
