@@ -163,7 +163,7 @@ public class JavadocReport
      *
      * <br>
      * The logic is the following:
-     * <table summary="Can-generate-report Matrix">
+     * <table><caption>Can-generate-report Matrix</caption>
      *   <tbody>
      *     <tr>
      *       <th> isAggregator </th>

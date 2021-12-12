@@ -541,7 +541,7 @@ public class JavadocUtil
     /**
      * Parse the output for 'javadoc -J-version' and return the javadoc version recognized. <br>
      * Here are some output for 'javadoc -J-version' depending the JDK used:
-     * <table summary="Output for 'javadoc -J-version' per JDK">
+     * <table><caption>Output for 'javadoc -J-version' per JDK</caption>
      * <tr>
      * <th>JDK</th>
      * <th>Output for 'javadoc -J-version'</th>
@@ -575,7 +575,7 @@ public class JavadocUtil
      * @param output for 'javadoc -J-version'
      * @return the version of the javadoc for the output, only digits and dots
      * @throws PatternSyntaxException if the output doesn't match with the output pattern
-     *             <tt>(?s).*?[^a-zA-Z]([0-9]+\\.?[0-9]*)(\\.([0-9]+))?.*</tt>.
+     *             {@code (?s).*?[^a-zA-Z]([0-9]+\\.?[0-9]*)(\\.([0-9]+))?.*}.
      * @throws IllegalArgumentException if the output is null
      */
     protected static String extractJavadocVersion( String output )
@@ -616,7 +616,7 @@ public class JavadocUtil
     /**
      * Parse a memory string which be used in the JVM arguments <code>-Xms</code> or <code>-Xmx</code>. <br>
      * Here are some supported memory string depending the JDK used:
-     * <table summary="Memory argument support per JDK">
+     * <table><caption>Memory argument support per JDK</caption>
      * <tr>
      * <th>JDK</th>
      * <th>Memory argument support for <code>-Xms</code> or <code>-Xmx</code></th>

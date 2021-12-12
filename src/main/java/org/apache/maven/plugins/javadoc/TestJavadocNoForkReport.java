@@ -28,7 +28,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  * Generates documentation for the <code>Java Test code</code> in an <b>NON aggregator</b> project using the standard
  * <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/">Javadoc Tool</a>. Note that this
  * goal does require generation of test sources before site generation, e.g. by invoking
- * <tt>mvn clean deploy site</tt>.
+ * {@code mvn clean deploy site}.
  *
  * @author <a href="mailto:mfriedenhagen@apache.org">Mirko Friedenhagen</a>
  * @since 2.10
