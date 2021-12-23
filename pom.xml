@@ -76,6 +76,7 @@ under the License.
     <jetty.version>9.4.43.v20210629</jetty.version>
     <!-- for ITs -->
     <sitePluginVersion>3.3</sitePluginVersion>
+    <mavenPluginToolsVersion>3.6.2</mavenPluginToolsVersion>
     <projectInfoReportsPluginVersion>2.7</projectInfoReportsPluginVersion>
     <project.build.outputTimestamp>2021-09-04T08:23:53Z</project.build.outputTimestamp>
     <slf4j.version>1.7.32</slf4j.version>
@@ -171,26 +172,31 @@ under the License.
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
       <version>${mavenVersion}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
       <version>${mavenVersion}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-settings</artifactId>
       <version>${mavenVersion}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
       <version>${mavenVersion}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-artifact</artifactId>
       <version>${mavenVersion}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
@@ -478,7 +484,6 @@ under the License.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
-        <version>3.6.1</version>
         <dependencies>
           <!-- see MPLUGIN-346 -->
           <dependency>
