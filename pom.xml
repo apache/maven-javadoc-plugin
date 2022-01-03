@@ -70,7 +70,7 @@ under the License.
     <mavenVersion>3.0</mavenVersion>
     <doxiaVersion>1.11.1</doxiaVersion>
     <doxia-sitetoolsVersion>1.11.1</doxia-sitetoolsVersion>
-    <wagonVersion>2.4</wagonVersion>
+    <wagonVersion>3.5.1</wagonVersion>
     <sonatypeAetherVersion>1.13.1</sonatypeAetherVersion>
     <plexus-java.version>1.1.0</plexus-java.version>
     <jetty.version>9.4.43.v20210629</jetty.version>
