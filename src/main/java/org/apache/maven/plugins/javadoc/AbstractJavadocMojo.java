@@ -7125,8 +7125,8 @@ public abstract class AbstractJavadocMojo
         Map<Path, MavenProject> reactorProjectsMap = new HashMap<>();
         for ( MavenProject reactorProject : this.reactorProjects )
         {
-            if ( !isSkippedJavadoc( reactorProject ) && //
-                    !isSkippedModule( reactorProject ) )
+            if ( !isSkippedJavadoc( reactorProject )
+                    &&  !isSkippedModule( reactorProject ) )
             {
                 reactorProjectsMap.put( reactorProject.getBasedir().toPath(), reactorProject );
             }

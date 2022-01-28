@@ -25,7 +25,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-plugins</artifactId>
-    <version>34</version>
+    <version>35-SNAPSHOT</version>
     <relativePath />
   </parent>
 
@@ -67,10 +67,11 @@ under the License.
 
   <properties>
     <javaVersion>8</javaVersion>
-    <mavenVersion>3.0</mavenVersion>
-    <doxiaVersion>1.11.1</doxiaVersion>
-    <doxia-sitetoolsVersion>1.11.1</doxia-sitetoolsVersion>
-    <wagonVersion>2.4</wagonVersion>
+    <mavenVersion>4.0.0-alpha-1-SNAPSHOT</mavenVersion>
+    <doxiaVersion>2.0.0-M2-SNAPSHOT</doxiaVersion>
+    <doxiaSitetoolsVersion>2.0.0-M1-SNAPSHOT</doxiaSitetoolsVersion>
+    <wagonVersion>3.5.2-SNAPSHOT</wagonVersion>
+    <resolverVersion>1.8.0-SNAPSHOT</resolverVersion>
     <sonatypeAetherVersion>1.13.1</sonatypeAetherVersion>
     <plexus-java.version>1.1.0</plexus-java.version>
     <jetty.version>9.4.43.v20210629</jetty.version>
@@ -193,6 +194,11 @@ under the License.
       <version>${mavenVersion}</version>
     </dependency>
     <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-resolver-provider</artifactId>
+      <version>${mavenVersion}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
       <artifactId>maven-plugin-annotations</artifactId>
       <scope>provided</scope>
@@ -207,27 +213,27 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-api</artifactId>
-      <version>3.0</version>
+      <version>3.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-archiver</artifactId>
-      <version>3.5.1</version>
+      <version>3.5.3-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-invoker</artifactId>
-      <version>3.1.0</version>
+      <version>3.2.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-common-artifact-filters</artifactId>
-      <version>3.1.1</version>
+      <version>3.2.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-artifact-transfer</artifactId>
-      <version>0.13.1</version>
+      <version>2.0.0-SNAPSHOT</version>
     </dependency>
 
     <!-- Doxia -->
@@ -241,7 +247,7 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-site-renderer</artifactId>
-      <version>${doxia-sitetoolsVersion}</version>
+      <version>${doxiaSitetoolsVersion}</version>
     </dependency>
 
     <!-- wagon -->
@@ -331,7 +337,7 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.plugin-testing</groupId>
       <artifactId>maven-plugin-testing-harness</artifactId>
-      <version>2.1</version>
+      <version>3.4.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -365,8 +371,9 @@ under the License.
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.sonatype.aether</groupId>
-      <artifactId>aether-connector-wagon</artifactId>
+      <groupId>org.apache.maven.resolver</groupId>
+      <artifactId>maven-resolver-transport-wagon</artifactId>
+      <version>${resolverVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
