@@ -21,7 +21,6 @@ package org.apache.maven.plugins.javadoc;
 
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -72,7 +71,7 @@ public class TestFixJavadocMojo
     /** {@inheritDoc} */
     @Override
     public void execute()
-        throws MojoExecutionException, MojoFailureException
+        throws MojoExecutionException
     {
         // clirr doesn't analyze test code, so ignore it
         ignoreClirr = true;

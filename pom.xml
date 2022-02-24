@@ -69,7 +69,7 @@ under the License.
     <javaVersion>8</javaVersion>
     <mavenVersion>4.0.0-alpha-1-SNAPSHOT</mavenVersion>
     <doxiaVersion>2.0.0-M2-SNAPSHOT</doxiaVersion>
-    <doxiaSitetoolsVersion>2.0.0-M1-SNAPSHOT</doxiaSitetoolsVersion>
+    <doxiaSitetoolsVersion>2.0.0-M3-SNAPSHOT</doxiaSitetoolsVersion>
     <wagonVersion>3.5.2-SNAPSHOT</wagonVersion>
     <resolverVersion>1.8.0-SNAPSHOT</resolverVersion>
     <sonatypeAetherVersion>1.13.1</sonatypeAetherVersion>
@@ -485,7 +485,7 @@ under the License.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
-        <version>3.6.1</version>
+        <version>3.6.5-SNAPSHOT</version>
         <dependencies>
           <!-- see MPLUGIN-346 -->
           <dependency>

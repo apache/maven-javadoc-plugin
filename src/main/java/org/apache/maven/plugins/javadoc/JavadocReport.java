@@ -31,7 +31,6 @@ import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.doxia.siterenderer.RenderingContext;
 import org.apache.maven.doxia.siterenderer.sink.SiteRendererSink;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -308,7 +307,7 @@ public class JavadocReport
     /** {@inheritDoc} */
     @Override
     public void doExecute()
-        throws MojoExecutionException, MojoFailureException
+        throws MojoExecutionException
     {
         if ( skip )
         {
