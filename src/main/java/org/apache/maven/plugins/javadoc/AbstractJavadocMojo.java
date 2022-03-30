@@ -4670,7 +4670,7 @@ public abstract class AbstractJavadocMojo
     }
 
     /**
-     * @param allSourcePaths     not null, containing absolute and relative paths
+     * @param javadocModules     not null
      * @return a list of exported package names for files in allSourcePaths
      * @throws MavenReportException if any
      * @see #getFiles
