@@ -85,4 +85,19 @@ public class AbstractJavadocMojoTest
         assertThat(
                 mojo.isValidJavadocLink( "http://commons.apache.org/proper/commons-lang/apidocs", false ) ).isTrue();
     }
+
+    @Test( expected = IllegalArgumentException.class )
+    public void shouldThrowIAExOnNonEmptyReplacedParameter() {
+        AbstractJavadocMojo.verifyReplacedParameter( "value", "name", "name" );
+    }
+
+    @Test
+    public void shouldNotThrowOnEmptyReplacedParameter() {
+        AbstractJavadocMojo.verifyReplacedParameter( "", "name", "name" );
+    }
+
+    @Test
+    public void shouldNotThrowOnNullReplacedParameter() {
+        AbstractJavadocMojo.verifyReplacedParameter( null, "name", "name" );
+    }
 }

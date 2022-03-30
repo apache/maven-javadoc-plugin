@@ -362,6 +362,15 @@ public abstract class AbstractJavadocMojo
     private File javadocDirectory;
 
     /**
+     * Not only deprecated, but using this param will cause build failure.
+     *
+     * @deprecated since 3.0.0, replaced with additionalOptions
+     */
+    @Deprecated
+    @Parameter
+    private String additionalparam;
+
+    /**
      * Set an additional option(s) on the command line. All input will be passed as-is to the
      * {@code @options} file. You must take care of quoting and escaping. Useful for a custom doclet.
      *
@@ -2036,7 +2045,7 @@ public abstract class AbstractJavadocMojo
         verifyRemovedParameter( "aggregator" );
         verifyRemovedParameter( "proxyHost" );
         verifyRemovedParameter( "proxyPort" );
-        verifyReplacedParameter( "additionalparam", "additionalOptions" );
+        verifyReplacedParameter( additionalparam, "additionalparam", "additionalOptions" );
 
         doExecute();
     }
@@ -2056,16 +2065,12 @@ public abstract class AbstractJavadocMojo
         }
     }
 
-    private void verifyReplacedParameter( String oldParamName, String newParamNew )
+    static void verifyReplacedParameter( String oldParam, String oldParamName, String newParamName )
     {
-        Xpp3Dom configDom = mojo.getConfiguration();
-        if ( configDom != null )
+        if ( StringUtils.isNotEmpty( oldParam ) )
         {
-            if ( configDom.getChild( oldParamName ) != null )
-            {
-                throw new IllegalArgumentException( "parameter '" + oldParamName
-                    + "' has been replaced with " + newParamNew + ", please verify documentation." );
-            }
+            throw new IllegalArgumentException( "parameter '" + oldParamName
+                + "' has been replaced with " + newParamName + ", please verify documentation." );
         }
     }
 
