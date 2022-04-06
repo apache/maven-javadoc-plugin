@@ -100,4 +100,19 @@ public class AbstractJavadocMojoTest
     public void shouldNotThrowOnNullReplacedParameter() {
         AbstractJavadocMojo.verifyReplacedParameter( null, "name", "name" );
     }
+
+    @Test( expected = IllegalArgumentException.class )
+    public void shouldThrowIAExOnNonEmptyRemovedParameter() {
+        AbstractJavadocMojo.verifyRemovedParameter( "value", "name" );
+    }
+
+    @Test
+    public void shouldNotThrowOnEmptyRemovedParameter() {
+        AbstractJavadocMojo.verifyRemovedParameter( "", "name" );
+    }
+
+    @Test
+    public void shouldNotThrowOnNullRemovedParameter() {
+        AbstractJavadocMojo.verifyRemovedParameter( null, "name" );
+    }
 }

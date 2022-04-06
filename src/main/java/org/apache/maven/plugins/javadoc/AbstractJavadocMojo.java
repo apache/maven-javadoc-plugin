@@ -371,6 +371,33 @@ public abstract class AbstractJavadocMojo
     private String additionalparam;
 
     /**
+     * Not only deprecated, but using this param will cause build failure.
+     *
+     * @deprecated since 3.0.0, replaced with additionalOptions
+     */
+    @Deprecated
+    @Parameter
+    private String aggregator;
+
+    /**
+     * Not only deprecated, but using this param will cause build failure.
+     *
+     * @deprecated since 3.0.0, replaced with additionalOptions
+     */
+    @Deprecated
+    @Parameter
+    private String proxyHost;
+
+    /**
+     * Not only deprecated, but using this param will cause build failure.
+     *
+     * @deprecated since 3.0.0, replaced with additionalOptions
+     */
+    @Deprecated
+    @Parameter
+    private String proxyPort;
+
+    /**
      * Set an additional option(s) on the command line. All input will be passed as-is to the
      * {@code @options} file. You must take care of quoting and escaping. Useful for a custom doclet.
      *
@@ -2042,9 +2069,9 @@ public abstract class AbstractJavadocMojo
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {
-        verifyRemovedParameter( "aggregator" );
-        verifyRemovedParameter( "proxyHost" );
-        verifyRemovedParameter( "proxyPort" );
+        verifyRemovedParameter( aggregator, "aggregator" );
+        verifyRemovedParameter( proxyHost, "proxyHost" );
+        verifyRemovedParameter( proxyPort, "proxyPort" );
         verifyReplacedParameter( additionalparam, "additionalparam", "additionalOptions" );
 
         doExecute();
@@ -2062,6 +2089,15 @@ public abstract class AbstractJavadocMojo
                 throw new IllegalArgumentException( "parameter '" + paramName
                     + "' has been removed from the plugin, please verify documentation." );
             }
+        }
+    }
+
+    static void verifyRemovedParameter( String param, String paramName )
+    {
+        if ( StringUtils.isNotEmpty( param ) )
+        {
+            throw new IllegalArgumentException( "parameter '" + paramName
+                + "' has been removed from the plugin, please verify documentation." );
         }
     }
 
