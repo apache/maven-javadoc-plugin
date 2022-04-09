@@ -15,16 +15,5 @@
 # specific language governing permissions and limitations
 # under the License.
 
-name: Verify
-
-on:
-  push:
-  pull_request:
-
-jobs:
-  build:
-    name: Verify
-    uses: apache/maven-gh-actions-shared/.github/workflows/maven-verify.yml@v2
-    with:
-      jdk-distribution-matrix: '[ "temurin", "zulu", "microsoft", "liberica", "adopt-openj9" ]'
-      matrix-exclude: '[{ "jdk": "8", "distribution": "microsoft"}]'
+_extends: maven-gh-actions-shared
+tag-template: maven-javadoc-plugin-$NEXT_MINOR_VERSION

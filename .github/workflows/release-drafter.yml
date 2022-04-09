@@ -14,17 +14,12 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-
-name: Verify
-
+   
+name: Release Drafter
 on:
   push:
-  pull_request:
-
+    branches:
+      - master
 jobs:
-  build:
-    name: Verify
-    uses: apache/maven-gh-actions-shared/.github/workflows/maven-verify.yml@v2
-    with:
-      jdk-distribution-matrix: '[ "temurin", "zulu", "microsoft", "liberica", "adopt-openj9" ]'
-      matrix-exclude: '[{ "jdk": "8", "distribution": "microsoft"}]'
+   update_release_draft:
+      uses: apache/maven-gh-actions-shared/.github/workflows/release-drafter.yml@v2
