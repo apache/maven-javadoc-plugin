@@ -123,12 +123,6 @@ public class JavadocReport
         return description;
     }
 
-    public void generate( org.codehaus.doxia.sink.Sink sink, Locale locale )
-        throws MavenReportException
-    {
-        generate( (Sink) sink, locale );
-    }
-
     /** {@inheritDoc} */
     @Override
     public void generate( Sink sink, Locale locale )
