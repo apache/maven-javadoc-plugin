@@ -75,8 +75,8 @@ under the License.
     <plexus-java.version>1.1.0</plexus-java.version>
     <jetty.version>9.4.43.v20210629</jetty.version>
     <!-- for ITs -->
-    <sitePluginVersion>3.3</sitePluginVersion>
-    <projectInfoReportsPluginVersion>2.7</projectInfoReportsPluginVersion>
+    <sitePluginVersion>3.11.0</sitePluginVersion>
+    <projectInfoReportsPluginVersion>3.2.2</projectInfoReportsPluginVersion>
     <project.build.outputTimestamp>2022-02-07T20:54:37Z</project.build.outputTimestamp>
     <slf4j.version>1.7.32</slf4j.version>
   </properties>
