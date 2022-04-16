@@ -539,7 +539,7 @@ public abstract class AbstractJavadocMojo
     /**
      * Detect the links for all modules defined in the project.
      * <br/>
-     * If {@link #reactorProjects} is defined in a non-aggregator way, it generates default offline links
+     * If {@code reactorProjects} is defined in a non-aggregator way, it generates default offline links
      * between modules based on the defined project's urls. For instance, if a parent project has two projects
      * <code>module1</code> and <code>module2</code>, the <code>-linkoffline</code> will be:
      * <br/>
@@ -562,12 +562,7 @@ public abstract class AbstractJavadocMojo
      * By default, the goal detects the Javadoc API link depending the value of the <code>source</code>
      * parameter in the <code>org.apache.maven.plugins:maven-compiler-plugin</code>
      * (defined in <code>${project.build.plugins}</code> or in <code>${project.build.pluginManagement}</code>),
-     * or try to compute it from the {@link #javadocExecutable} version.
-     * <br/>
-     * See
-     * <a href="./apidocs/org/apache/maven/plugins/javadoc/AbstractJavadocMojo.html#DEFAULT_JAVA_API_LINKS">Javadoc</a>
-     * for the default values.
-     * <br/>
+     * or try to compute it from the {@code javadocExecutable} version.
      *
      * @see #links
      * @see #javaApiLinks
@@ -1132,7 +1127,7 @@ public abstract class AbstractJavadocMojo
      * <br>
      * <b>Notes</b>:
      * <ol>
-     * <li>only used if {@link #isOffline} is set to <code>false</code>.</li>
+     * <li>only used if {@code isOffline} is set to <code>false</code>.</li>
      * <li>all given links should have a fetchable <code>/package-list</code> file. For instance:
      * <pre>
      * &lt;links&gt;
@@ -1140,35 +1135,31 @@ public abstract class AbstractJavadocMojo
      * &lt;links&gt;
      * </pre>
      * will be used because <code>https://docs.oracle.com/javase/1.4.2/docs/api/package-list</code> exists.</li>
-     * <li>if {@link #detectLinks} is defined, the links between the project dependencies are
+     * <li>if {@code detectLinks} is defined, the links between the project dependencies are
      * automatically added.</li>
-     * <li>if {@link #detectJavaApiLink} is defined, a Java API link, based on the Java version of the
+     * <li>if {@code detectJavaApiLink} is defined, a Java API link, based on the Java version of the
      * project's sources, will be added automatically.</li>
      * </ol>
      * See <a href="https://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#link">link</a>.
-     *
-     * @see #detectLinks
-     * @see #detectJavaApiLink
-     * @see #dependencyLinks
      */
     @Parameter( property = "links" )
     protected ArrayList<String> links;
-    
+
 
     /**
-     * Redefine the apidoc URL for specific dependencies when using {@link #detectLinks}.
+     * Redefine the apidoc URL for specific dependencies when using {@code detectLinks}.
      * Useful if the dependency wasn't build with Maven or when the apidocs have been moved.
      * <pre>
      * &lt;dependencyLinks&gt;
      *   &lt;dependencyLink&gt;
      *     &lt;groupId&gt;groupId&lt;/groupId&gt;
      *     &lt;artifactId&gt;artifactId&lt;/artifactId&gt;
-     *     &lt;classifier&gt;classifier&lt;/classifier&gt; &lt;!-- optional --&gt; 
+     *     &lt;classifier&gt;classifier&lt;/classifier&gt; &lt;!-- optional --&gt;
      *     &lt;url&gt;version&lt;/url&gt;
      *   &lt;/dependencyLink&gt;
      * &lt;/dependencyLinks&gt;
      * </pre>
-     * 
+     *
      * @see #detectLinks
      * @since 3.3.0
      */
@@ -1334,7 +1325,7 @@ public abstract class AbstractJavadocMojo
      * &lt;/offlineLinks&gt;
      * </pre>
      * <br/>
-     * <b>Note</b>: if {@link #detectOfflineLinks} is defined, the offline links between the project modules are
+     * <b>Note</b>: if {@code detectOfflineLinks} is defined, the offline links between the project modules are
      * automatically added if the goal is calling in a non-aggregator way.
      * <br>
      * @see <a href="./apidocs/org/apache/maven/plugins/javadoc/options/OfflineLink.html">Javadoc</a>.
@@ -1454,9 +1445,9 @@ public abstract class AbstractJavadocMojo
      */
     @Parameter( property = "stylesheetfile" )
     private String stylesheetfile;
-    
+
     /**
-     * Specifies the path of an additional HTML stylesheet file relative to the {@link #javadocDirectory}
+     * Specifies the path of an additional HTML stylesheet file relative to the {@code javadocDirectory}
      * Example:
      * <pre>
      *     &lt;addStylesheets&gt;
@@ -1467,7 +1458,7 @@ public abstract class AbstractJavadocMojo
      */
     @Parameter
     private String[] addStylesheets;
-    
+
     /**
      * Specifies the class file that starts the taglet used in generating the documentation for that tag.
      * <br/>
@@ -1796,7 +1787,7 @@ public abstract class AbstractJavadocMojo
      *    </configuration>
      *    }
      * </pre>
-     * 
+     *
      * <strong>note:</strong> requires at least Maven 3.3.1
      *
      * @since 3.0.0
@@ -1893,7 +1884,7 @@ public abstract class AbstractJavadocMojo
 
     /**
      * Either returns the attached artifact file or outputDirectory
-     * 
+     *
      * @param project
      * @return
      */
@@ -1912,7 +1903,7 @@ public abstract class AbstractJavadocMojo
                 return artifactFile;
             }
         }
-        else if ( project.getExecutionProject() != null 
+        else if ( project.getExecutionProject() != null
                         && project.getExecutionProject().getArtifact() != null
                         && project.getExecutionProject().getArtifact().getFile() != null )
         {
@@ -1922,10 +1913,10 @@ public abstract class AbstractJavadocMojo
                 return artifactFile;
             }
         }
-        
+
         if ( project.getBuild().getOutputDirectory() != null )
         {
-            return new File( project.getBuild().getOutputDirectory() );    
+            return new File( project.getBuild().getOutputDirectory() );
         }
         else
         {
@@ -2348,7 +2339,7 @@ public abstract class AbstractJavadocMojo
         if ( StringUtils.isEmpty( subpackages ) )
         {
             Collection<String> excludedPackages = getExcludedPackages();
-            
+
             final boolean autoExclude;
             if ( release != null )
             {
@@ -2462,7 +2453,7 @@ public abstract class AbstractJavadocMojo
                                 additionalSourcePaths.addAll( l );
                             }
                         }
-                        
+
                         if ( !additionalSourcePaths.isEmpty() )
                         {
                             mappedSourcePaths.add( buildJavadocModule( subProject , additionalSourcePaths ) );
@@ -2487,7 +2478,7 @@ public abstract class AbstractJavadocMojo
                     getJavadocDirectory().getAbsolutePath() ) );
                 sourcePaths.addAll( l );
             }
-            
+
             if ( !sourcePaths.isEmpty() )
             {
                 mappedSourcePaths.add( new JavadocModule( ArtifactUtils.versionlessKey( project.getGroupId(),
@@ -2499,7 +2490,7 @@ public abstract class AbstractJavadocMojo
 
         return mappedSourcePaths;
     }
-    
+
     private JavadocModule buildJavadocModule( MavenProject project, Collection<Path> sourcePaths )
     {
         File classessFile = getClassesFile( project );
@@ -2507,14 +2498,14 @@ public abstract class AbstractJavadocMojo
         if ( resolvePathResult == null )
         {
             return new JavadocModule( ArtifactUtils.versionlessKey( project.getGroupId(), project.getArtifactId() ),
-                                      classessFile, 
+                                      classessFile,
                                       sourcePaths );
         }
         else
         {
             return new JavadocModule( ArtifactUtils.versionlessKey( project.getGroupId(), project.getArtifactId() ),
-                                      classessFile, 
-                                      sourcePaths, 
+                                      classessFile,
+                                      sourcePaths,
                                       resolvePathResult.getModuleDescriptor(),
                                       resolvePathResult.getModuleNameSource() );
         }
@@ -2657,15 +2648,15 @@ public abstract class AbstractJavadocMojo
                 andFilters.add( new PatternExclusionsFilter( dependencyExcludes ) );
             }
         }
-        
+
         return configureDependencySourceResolution( new SourceResolverConfig( project,
                                                   getProjectBuildingRequest( project ),
                                                   sourceDependencyCacheDir )
                                                   .withReactorProjects( this.reactorProjects ) )
                                                   .withFilter( new AndFilter( andFilters ) );
-        
+
     }
-    
+
     private ProjectBuildingRequest getProjectBuildingRequest( MavenProject currentProject )
     {
         return new DefaultProjectBuildingRequest( session.getProjectBuildingRequest() )
@@ -3098,11 +3089,11 @@ public abstract class AbstractJavadocMojo
     /**
      * Method to get the stylesheet path file to be used by the Javadoc Tool.
      * <br/>
-     * If the {@link #stylesheetfile} is empty, return the file as String definded by {@link #stylesheet} value.
+     * If the {@code stylesheetfile} is empty, return the file as String definded by {@code stylesheet} value.
      * <br/>
-     * If the {@link #stylesheetfile} is defined, return the file as String.
+     * If the {@code stylesheetfile} is defined, return the file as String.
      * <br/>
-     * Note: since 2.6, the {@link #stylesheetfile} could be a path from a resource in the project source
+     * Note: since 2.6, the {@code stylesheetfile} could be a path from a resource in the project source
      * directories (i.e. <code>src/main/java</code>, <code>src/main/resources</code> or <code>src/main/javadoc</code>)
      * or from a resource in the Javadoc plugin dependencies.
      *
@@ -3131,18 +3122,18 @@ public abstract class AbstractJavadocMojo
 
         return getResource( new File( javadocOutputDirectory, DEFAULT_CSS_NAME ), stylesheetfile );
     }
-    
+
     private void addAddStyleSheets( List<String> arguments ) throws MavenReportException
     {
         if ( addStylesheets == null )
         {
             return;
         }
-        
+
         for ( String addStylesheet : addStylesheets )
         {
             Optional<File> styleSheet = getAddStylesheet( getJavadocDirectory(), addStylesheet );
-            
+
             if ( styleSheet.isPresent() )
             {
                 addArgIfNotEmpty( arguments, "--add-stylesheet",
@@ -3151,8 +3142,8 @@ public abstract class AbstractJavadocMojo
             }
         }
     }
-    
-    
+
+
     private Optional<File> getAddStylesheet( final File javadocOutputDirectory, final String stylesheet )
             throws MavenReportException
     {
@@ -3160,7 +3151,7 @@ public abstract class AbstractJavadocMojo
         {
             return Optional.empty();
         }
-        
+
         File addstylesheetfile = new File( getJavadocDirectory(), stylesheet );
         if ( addstylesheetfile.exists() )
         {
@@ -3173,18 +3164,18 @@ public abstract class AbstractJavadocMojo
                                                         + "than stylesheetfile: " + stylesheetfile.get().getName() );
                 }
             }
-            
+
             return Optional.of( addstylesheetfile );
         }
 
-        throw new MavenReportException( "additional stylesheet file does not exist: " 
+        throw new MavenReportException( "additional stylesheet file does not exist: "
                                             + addstylesheetfile.getAbsolutePath() );
     }
 
     /**
      * Method to get the help file to be used by the Javadoc Tool.
      * <br/>
-     * Since 2.6, the {@link #helpfile} could be a path from a resource in the project source
+     * Since 2.6, the {@code helpfile} could be a path from a resource in the project source
      * directories (i.e. <code>src/main/java</code>, <code>src/main/resources</code> or <code>src/main/javadoc</code>)
      * or from a resource in the Javadoc plugin dependencies.
      *
@@ -4324,10 +4315,10 @@ public abstract class AbstractJavadocMojo
     }
 
     /**
-     * Convenience method to process {@link #offlineLinks} values as individual <code>-linkoffline</code>
+     * Convenience method to process {@code offlineLinks} values as individual <code>-linkoffline</code>
      * javadoc options.
      * <br/>
-     * If {@link #detectOfflineLinks}, try to add javadoc apidocs according Maven conventions for all modules given
+     * If {@code detectOfflineLinks}, try to add javadoc apidocs according Maven conventions for all modules given
      * in the project.
      *
      * @param arguments a list of arguments, not null
@@ -4373,7 +4364,7 @@ public abstract class AbstractJavadocMojo
 
     /**
      * Convenience method to process {@link #links} values as individual <code>-link</code> javadoc options.
-     * If {@link #detectLinks}, try to add javadoc apidocs according Maven conventions for all dependencies given
+     * If {@code detectLinks}, try to add javadoc apidocs according Maven conventions for all dependencies given
      * in the project.
      * <br/>
      * According the Javadoc documentation, all defined link should have <code>${link}/package-list</code> fetchable.
@@ -4469,9 +4460,9 @@ public abstract class AbstractJavadocMojo
     }
 
     /**
-     * Copies the {@link #DEFAULT_CSS_NAME} css file from the current class
-     * loader to the <code>outputDirectory</code> only if {@link #stylesheetfile} is empty and
-     * {@link #stylesheet} is equals to <code>maven</code>.
+     * Copies the {@code DEFAULT_CSS_NAME} css file from the current class
+     * loader to the <code>outputDirectory</code> only if {@code stylesheetfile} is empty and
+     * {@code stylesheet} is equals to <code>maven</code>.
      *
      * @param anOutputDirectory the output directory
      * @throws java.io.IOException if any
@@ -5168,7 +5159,7 @@ public abstract class AbstractJavadocMojo
         Map<String, JavaModuleDescriptor> allModuleDescriptors = new HashMap<>();
 
         boolean supportModulePath = javadocRuntimeVersion.isAtLeast( "9" );
-        if ( release != null ) 
+        if ( release != null )
         {
             supportModulePath &= JavaVersion.parse( release ).isAtLeast( "9" );
         }
@@ -5682,14 +5673,14 @@ public abstract class AbstractJavadocMojo
         addArgIf( arguments, splitindex, "-splitindex" );
 
         Optional<File> stylesheetfile = getStylesheetFile( javadocOutputDirectory );
-        
+
         if ( stylesheetfile.isPresent() )
         {
             addArgIfNotEmpty( arguments, "-stylesheetfile",
                               JavadocUtil.quotedPathArgument( stylesheetfile.get().getAbsolutePath() ) );
         }
-        
-        addAddStyleSheets( arguments ); 
+
+        addAddStyleSheets( arguments );
 
         if ( StringUtils.isNotEmpty( sourcepath ) && !isJavaDocVersionAtLeast( SINCE_JAVADOC_1_5 ) )
         {
@@ -6348,7 +6339,7 @@ public abstract class AbstractJavadocMojo
     {
         String javadocPluginVersion = null;
         String resource = "META-INF/maven/org.apache.maven.plugins/maven-javadoc-plugin/pom.properties";
-        try ( InputStream resourceAsStream 
+        try ( InputStream resourceAsStream
                         = AbstractJavadocMojo.class.getClassLoader().getResourceAsStream( resource ) )
         {
             if ( resourceAsStream != null )
@@ -6497,7 +6488,7 @@ public abstract class AbstractJavadocMojo
      * @return the detected Javadoc links using the Maven conventions for all dependencies defined in the current
      *         project or an empty list.
      * @see #detectLinks
-     * @see #isValidJavadocLink
+     * @see #isValidJavadocLink(String, boolean)
      * @since 2.6
      */
     private List<String> getDependenciesLinks()
@@ -6521,7 +6512,7 @@ public abstract class AbstractJavadocMojo
 
             Optional<DependencyLink> depLink =
                 this.dependencyLinks.stream().filter( d -> matches( d, artifact ) ).findAny();
-            
+
             final String url;
             final boolean detected;
             if ( depLink.isPresent() )
@@ -6545,7 +6536,7 @@ public abstract class AbstractJavadocMojo
                     continue;
                 }
             }
-            
+
             if ( url != null && isValidJavadocLink( url, detected ) )
             {
                 getLog().debug( "Added Javadoc link: " + url + " for " + artifact.getId() );
@@ -6575,13 +6566,11 @@ public abstract class AbstractJavadocMojo
     }
 
     /**
-     * @return if {@link #detectJavaApiLink}, the Java API link based on the {@link #javaApiLinks} properties and the
+     * @return if {@code detectJavaApiLink}, the Java API link based on the {@code javaApiLinks} properties and the
      *         value of the <code>source</code> parameter in the
      *         <code>org.apache.maven.plugins:maven-compiler-plugin</code>
      *         defined in <code>${project.build.plugins}</code> or in <code>${project.build.pluginManagement}</code>,
-     *         or the {@link #javadocRuntimeVersion}, or <code>null</code> if not defined.
-     * @see #detectJavaApiLink
-     * @see #javaApiLinks
+     *         or the {@code javadocRuntimeVersion}, or <code>null</code> if not defined.
      * @see <a href="http://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#source">source parameter</a>
      * @since 2.6
      */
