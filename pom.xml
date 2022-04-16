@@ -67,11 +67,11 @@ under the License.
 
   <properties>
     <javaVersion>8</javaVersion>
-    <mavenVersion>3.0</mavenVersion>
+    <mavenVersion>3.2.5</mavenVersion>
     <doxiaVersion>1.11.1</doxiaVersion>
     <doxia-sitetoolsVersion>1.11.1</doxia-sitetoolsVersion>
     <wagonVersion>2.4</wagonVersion>
-    <sonatypeAetherVersion>1.13.1</sonatypeAetherVersion>
+    <aetherVersion>1.0.0.v20140518</aetherVersion>
     <plexus-java.version>1.1.0</plexus-java.version>
     <jetty.version>9.4.43.v20210629</jetty.version>
     <!-- for ITs -->
@@ -132,33 +132,33 @@ under the License.
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.sonatype.aether</groupId>
+        <groupId>org.eclipse.aether</groupId>
         <artifactId>aether-api</artifactId>
-        <version>${sonatypeAetherVersion}</version>
+        <version>${aetherVersion}</version>
       </dependency>
       <dependency>
-        <groupId>org.sonatype.aether</groupId>
-        <artifactId>aether-connector</artifactId>
-        <version>${sonatypeAetherVersion}</version>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-connector-basic</artifactId>
+        <version>${aetherVersion}</version>
       </dependency>
       <dependency>
-        <groupId>org.sonatype.aether</groupId>
-        <artifactId>aether-connector-wagon</artifactId>
-        <version>${sonatypeAetherVersion}</version>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-transport-wagon</artifactId>
+        <version>${aetherVersion}</version>
       </dependency>
       <dependency>
-        <groupId>org.sonatype.aether</groupId>
+        <groupId>org.eclipse.aether</groupId>
         <artifactId>aether-impl</artifactId>
-        <version>${sonatypeAetherVersion}</version>
+        <version>${aetherVersion}</version>
       </dependency>
       <dependency>
-        <groupId>org.sonatype.aether</groupId>
+        <groupId>org.eclipse.aether</groupId>
         <artifactId>aether-util</artifactId>
-        <version>${sonatypeAetherVersion}</version>
+        <version>${aetherVersion}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
-  
+
   <dependencies>
     <dependency> <!-- @TODO remove!! -->
       <groupId>org.apache.maven</groupId>
@@ -331,7 +331,7 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.plugin-testing</groupId>
       <artifactId>maven-plugin-testing-harness</artifactId>
-      <version>2.1</version>
+      <version>3.3.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -365,8 +365,13 @@ under the License.
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.sonatype.aether</groupId>
-      <artifactId>aether-connector-wagon</artifactId>
+      <groupId>org.eclipse.aether</groupId>
+      <artifactId>aether-connector-basic</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.aether</groupId>
+      <artifactId>aether-transport-wagon</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -468,7 +473,7 @@ under the License.
           <systemPropertyVariables>
             <maven.home>${maven.home}</maven.home>
             <https.protocols>${https.protocols}</https.protocols>
-          </systemPropertyVariables> 
+          </systemPropertyVariables>
           <environmentVariables>
             <JENKINS_MAVEN_AGENT_DISABLED>true</JENKINS_MAVEN_AGENT_DISABLED>
           </environmentVariables>

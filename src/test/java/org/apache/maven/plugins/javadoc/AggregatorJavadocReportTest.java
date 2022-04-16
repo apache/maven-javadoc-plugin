@@ -34,8 +34,9 @@ import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.FileUtils;
-import org.sonatype.aether.impl.internal.SimpleLocalRepositoryManager;
-import org.sonatype.aether.util.DefaultRepositorySystemSession;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
+import org.eclipse.aether.repository.LocalRepository;
 
 public class AggregatorJavadocReportTest
     extends AbstractMojoTestCase
@@ -70,14 +71,14 @@ public class AggregatorJavadocReportTest
 
         MojoExecution mojoExec = new MojoExecution( new Plugin(), "aggregate", null );
         setVariableValueToObject( mojo, "mojo", mojoExec );
-        
+
         MavenProject currentProject = new MavenProjectStub();
         currentProject.setGroupId( "GROUPID" );
         currentProject.setArtifactId( "ARTIFACTID" );
-        
+
         MavenSession session = newMavenSession( currentProject );
         DefaultRepositorySystemSession repoSysSession = (DefaultRepositorySystemSession) session.getRepositorySession();
-        repoSysSession.setLocalRepositoryManager( new SimpleLocalRepositoryManager( localRepo ) );
+        repoSysSession.setLocalRepositoryManager( new SimpleLocalRepositoryManagerFactory().newInstance( repoSysSession, new LocalRepository( localRepo ) ) );
         setVariableValueToObject( mojo, "session", session );
 
         return mojo;
@@ -227,7 +228,7 @@ public class AggregatorJavadocReportTest
 
         // Test overview
         File overviewSummary = getOverviewSummary(apidocs);
-        
+
         assertTrue( overviewSummary.exists() );
         String overview = readFile( overviewSummary ).toLowerCase( Locale.ENGLISH );
         assertTrue( overview.contains( "<a href=\"resources/test/package-summary.html\">resources.test</a>" ) );
@@ -249,12 +250,12 @@ public class AggregatorJavadocReportTest
       File testPom = new File( unit, "aggregate-modules-not-in-subfolders-test/all/pom.xml");
       JavadocReport mojo = lookupMojo( testPom );
       mojo.execute();
-      
+
       File apidocs = new File( getBasedir(), "target/test/unit/aggregate-modules-not-in-subfolders-test/target/site/apidocs" );
       assertTrue( apidocs.isDirectory() );
       assertTrue( getOverviewSummary( apidocs ).isFile() );
     }
-    
+
     private static File getOverviewSummary(File apidocs)
     {
       if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "11" ) )

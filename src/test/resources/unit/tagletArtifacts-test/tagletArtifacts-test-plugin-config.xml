@@ -66,11 +66,6 @@ under the License.
           <failOnError>true</failOnError>
           <tagletArtifacts>
             <tagletArtifact>
-              <groupId>org.apache.maven.plugin-tools</groupId>
-              <artifactId>maven-plugin-tools-javadoc</artifactId>
-              <version>3.5</version>
-            </tagletArtifact>
-            <tagletArtifact>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-javadoc</artifactId>
               <version>1.0</version>
