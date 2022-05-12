@@ -1828,6 +1828,15 @@ public abstract class AbstractJavadocMojo
     @Parameter( defaultValue = "${project.build.outputTimestamp}" )
     protected String outputTimestamp;
 
+    /**
+     * Forcibly disable support for using Java 9 module paths when building Javadoc
+     * options. Default is false i.e. allow module paths if running in a suitable environment.
+     *
+     * @since 3.4.1
+     */
+    @Parameter( property = "disableModulePath", defaultValue = "false" )
+    private boolean disableSupportForModulePath;
+
     // ----------------------------------------------------------------------
     // protected methods
     // ----------------------------------------------------------------------
@@ -5158,14 +5167,21 @@ public abstract class AbstractJavadocMojo
 
         Map<String, JavaModuleDescriptor> allModuleDescriptors = new HashMap<>();
 
-        boolean supportModulePath = javadocRuntimeVersion.isAtLeast( "9" );
-        if ( release != null )
-        {
-            supportModulePath &= JavaVersion.parse( release ).isAtLeast( "9" );
-        }
-        else if ( source != null )
-        {
-            supportModulePath &= JavaVersion.parse( source ).isAtLeast( "9" );
+        boolean supportModulePath = false;
+
+        if ( !disableSupportForModulePath )
+            {
+
+            supportModulePath = javadocRuntimeVersion.isAtLeast( "9" );
+
+            if ( release != null )
+            {
+                supportModulePath &= JavaVersion.parse( release ).isAtLeast( "9" );
+            }
+            else if ( source != null )
+            {
+                supportModulePath &= JavaVersion.parse( source ).isAtLeast( "9" );
+            }
         }
 
         if ( supportModulePath )
