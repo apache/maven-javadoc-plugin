@@ -5083,11 +5083,11 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      */
     private boolean isUpToDate(Commandline cmd) throws MavenReportException {
         try {
-            String curdata = StaleHelper.getStaleData(cmd);
+            List<String> curdata = StaleHelper.getStaleData(cmd);
             Path cacheData = staleDataPath.toPath();
-            String prvdata;
+            List<String> prvdata;
             if (Files.isRegularFile(cacheData)) {
-                prvdata = new String(Files.readAllBytes(cacheData), StandardCharsets.UTF_8);
+                prvdata = Files.lines(cacheData, StandardCharsets.UTF_8).collect(Collectors.toList());
             } else {
                 prvdata = null;
             }
@@ -5099,6 +5099,18 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                     getLog().info("No previous run data found, generating javadoc.");
                 } else {
                     getLog().info("Configuration changed, re-generating javadoc.");
+                    if (getLog().isDebugEnabled()) {
+                        List<String> newStrings = new ArrayList<>(curdata);
+                        List<String> remStrings = new ArrayList<>(prvdata);
+                        newStrings.removeAll(prvdata);
+                        remStrings.removeAll(curdata);
+                        if (!remStrings.isEmpty()) {
+                            getLog().debug("     Removed: " + String.join(", ", remStrings));
+                        }
+                        if (!newStrings.isEmpty()) {
+                            getLog().debug("     Added: " + String.join(", ", newStrings));
+                        }
+                    }
                 }
             }
         } catch (IOException e) {

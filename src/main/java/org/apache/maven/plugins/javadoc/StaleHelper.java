@@ -32,7 +32,6 @@ import java.util.List;
 
 import org.apache.maven.reporting.MavenReportException;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
-import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
 /**
@@ -48,7 +47,7 @@ public class StaleHelper {
      * @return the stale data
      * @throws MavenReportException if an error occurs
      */
-    public static String getStaleData(Commandline cmd) throws MavenReportException {
+    public static List<String> getStaleData(Commandline cmd) throws MavenReportException {
         try {
             List<String> ignored = new ArrayList<>();
             List<String> options = new ArrayList<>();
@@ -101,7 +100,7 @@ public class StaleHelper {
                     state.add(p + " = " + lastmod(p));
                 }
             }
-            return StringUtils.join(state.iterator(), SystemUtils.LINE_SEPARATOR);
+            return state;
         } catch (Exception e) {
             throw new MavenReportException("Unable to compute stale date", e);
         }
@@ -116,9 +115,9 @@ public class StaleHelper {
      */
     public static void writeStaleData(Commandline cmd, Path path) throws MavenReportException {
         try {
-            String curdata = getStaleData(cmd);
+            List<String> curdata = getStaleData(cmd);
             Files.createDirectories(path.getParent());
-            Files.write(path, Collections.singleton(curdata), Charset.defaultCharset());
+            Files.write(path, curdata, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new MavenReportException("Error checking stale data", e);
         }
