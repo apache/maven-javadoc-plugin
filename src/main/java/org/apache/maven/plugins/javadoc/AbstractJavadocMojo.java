@@ -119,12 +119,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -3037,14 +3037,12 @@ public abstract class AbstractJavadocMojo
     {
         final String inceptionYear = project.getInceptionYear();
 
-        // get Reproducible Builds outputTimestamp value
-        final Calendar currentYearCal = Calendar.getInstance();
-        final Date reproducibleDate = new MavenArchiver().parseOutputTimestamp( outputTimestamp );
-        if ( reproducibleDate != null )
-        {
-            currentYearCal.setTime( reproducibleDate );
-        }
-        final String currentYear = String.valueOf( currentYearCal.get( Calendar.YEAR ) );
+        // get Reproducible Builds outputTimestamp date value or the current local date.
+        final LocalDate localDate = MavenArchiver.parseBuildOutputTimestamp( outputTimestamp )
+            .map( instant -> instant.atZone( ZoneOffset.UTC ).toLocalDate() )
+            .orElseGet( LocalDate::now );
+
+        final String currentYear = Integer.toString( localDate.getYear() );
 
         String theBottom = StringUtils.replace( this.bottom, "{currentYear}", currentYear );
 
@@ -5655,6 +5653,12 @@ public abstract class AbstractJavadocMojo
         addArgIfNotEmpty( arguments, "-noqualifier", JavadocUtil.quotedArgument( noqualifier ), SINCE_JAVADOC_1_4 );
 
         addArgIf( arguments, nosince, "-nosince" );
+
+        if ( MavenArchiver.parseBuildOutputTimestamp( outputTimestamp ).isPresent() )
+        {
+            // Override the notimestamp option if a Reproducible Build is requested.
+            notimestamp = true;
+        }
 
         addArgIf( arguments, notimestamp, "-notimestamp", SINCE_JAVADOC_1_5 );
 
