@@ -270,7 +270,7 @@ public class JavadocJar
         archiver.setOutputFile( javadocJar );
 
         // configure for Reproducible Builds based on outputTimestamp value
-        archiver.configureReproducible( outputTimestamp );
+        archiver.configureReproducibleBuild( outputTimestamp );
 
         if ( !javadocFiles.exists() )
         {
