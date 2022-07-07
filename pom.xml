@@ -73,7 +73,7 @@ under the License.
     <wagonVersion>2.4</wagonVersion>
     <aetherVersion>1.0.0.v20140518</aetherVersion>
     <plexus-java.version>1.1.0</plexus-java.version>
-    <jetty.version>9.4.43.v20210629</jetty.version>
+    <jetty.version>10.0.10</jetty.version>
     <!-- for ITs -->
     <sitePluginVersion>3.11.0</sitePluginVersion>
     <projectInfoReportsPluginVersion>3.2.2</projectInfoReportsPluginVersion>
