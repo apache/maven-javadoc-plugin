@@ -1286,14 +1286,16 @@ public abstract class AbstractJavadocMojo
 
     /**
      * Suppresses the timestamp, which is hidden in an HTML comment in the generated HTML near the top of each page.
-     * <br/>
+     * <br><br>
+     * <strong>Note:</strong> If the project has the property <code>project.build.outputTimestamp</code>, the value
+     * will be overwritten to true. This way it is possible to generate reproducible javadoc jars.
+     * <br><br>
      * See
      * <a href="https://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#notimestamp">notimestamp</a>.
-     * <br/>
+     * <br>
      * Since
      * <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/whatsnew-1.5.0.html#commandlineoptions">
      * Java 5.0</a>.
-     * <br/>
      *
      * @since 2.1
      */
@@ -5654,7 +5656,7 @@ public abstract class AbstractJavadocMojo
 
         addArgIf( arguments, nosince, "-nosince" );
 
-        if ( MavenArchiver.parseBuildOutputTimestamp( outputTimestamp ).isPresent() )
+        if ( !notimestamp && MavenArchiver.parseBuildOutputTimestamp( outputTimestamp ).isPresent() )
         {
             // Override the notimestamp option if a Reproducible Build is requested.
             notimestamp = true;
