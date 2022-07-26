@@ -6081,7 +6081,25 @@ public abstract class AbstractJavadocMojo
                 msg.append( exitCode );
                 if ( StringUtils.isNotEmpty( err.getOutput() ) )
                 {
-                    msg.append( " - " ).append( err.getOutput() );
+                    // parse stderr, log informational output, add all other to exception message
+                    List<String> nonInfoLines = new ArrayList<>();
+                    for ( String str : err.getOutput().split( "\\R" ) )
+                    {
+                        if ( isInformationalOutput( str ) )
+                        {
+                            getLog().debug( str );
+                        }
+                        else
+                        {
+                            nonInfoLines.add( str );
+                        }
+                    }
+                    if ( !nonInfoLines.isEmpty() )
+                    {
+                        msg.append( '\n' ); // new line between exit code and warnings/errors
+                        msg.append( String.join( "\n" , nonInfoLines ) );
+                    }
+
                 }
                 msg.append( '\n' );
                 msg.append( "Command line was: " ).append( cmdLine ).append( '\n' ).append( '\n' );
@@ -6117,7 +6135,16 @@ public abstract class AbstractJavadocMojo
                 {
                     String current = token.nextToken().trim();
 
-                    getLog().warn( current );
+                    // log informational output at debug level only
+                    if ( isInformationalOutput( current ) )
+                    {
+                        getLog().debug( current );
+                    }
+                    else
+                    {
+                        getLog().warn( current );
+                    }
+
                 }
             }
 
@@ -6142,6 +6169,31 @@ public abstract class AbstractJavadocMojo
                             .filter( line -> line.matches( "\\d+ warnings?" ) )
                             .isPresent();
         }
+    }
+
+    /**
+     * Determines whether the specified string is informational output of the Javadoc tool.<br/>
+     * Such output should not be included as exception message or logged as warning or error.
+     * <p>
+     * The following texts are either hardcoded in the tool or can be found in versions of the
+     * javadoc tool's English resource bundle of JDK 11 (and presumably later versions).<br/>
+     * This method will neither help nor harm for localized (non-English) versions of the tool.
+     * </p>
+     *
+     * @param str string to check
+     * @return true if informational output, false if not or cannot be determined
+     */
+    private boolean isInformationalOutput( String str )
+    {
+        return str == null
+                || str.trim().isEmpty()
+                || str.startsWith( "Loading source files for package " ) // main.Loading_source_files_for_package
+                || str.startsWith( "Loading source file " ) // main.Loading_source_file
+                || str.startsWith( "Generating " )
+                || str.startsWith( "Constructing Javadoc information" ) // main.Building_tree
+                || str.startsWith( "Building index for " )
+                || str.startsWith( "Building tree for " )
+                || str.startsWith( "Standard Doclet version " );
     }
 
     /**
