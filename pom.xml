@@ -75,7 +75,7 @@ under the License.
     <plexus-java.version>1.1.0</plexus-java.version>
     <jetty.version>9.4.43.v20210629</jetty.version>
     <!-- for ITs -->
-    <sitePluginVersion>3.11.0</sitePluginVersion>
+    <sitePluginVersion>3.12.1</sitePluginVersion>
     <projectInfoReportsPluginVersion>3.2.2</projectInfoReportsPluginVersion>
     <project.build.outputTimestamp>2022-04-17T07:43:18Z</project.build.outputTimestamp>
     <slf4j.version>1.7.32</slf4j.version>
@@ -207,7 +207,7 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-api</artifactId>
-      <version>3.1.0</version>
+      <version>3.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>

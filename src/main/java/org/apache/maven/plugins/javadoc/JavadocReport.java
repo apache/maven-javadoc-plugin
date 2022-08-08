@@ -28,6 +28,7 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import org.apache.maven.doxia.sink.Sink;
+import org.apache.maven.doxia.sink.SinkFactory;
 import org.apache.maven.doxia.siterenderer.RenderingContext;
 import org.apache.maven.doxia.siterenderer.sink.SiteRendererSink;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -37,7 +38,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.reporting.MavenReport;
+import org.apache.maven.reporting.MavenMultiPageReport;
 import org.apache.maven.reporting.MavenReportException;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -55,7 +56,7 @@ import org.codehaus.plexus.util.StringUtils;
 @Execute( phase = LifecyclePhase.GENERATE_SOURCES )
 public class JavadocReport
     extends AbstractJavadocMojo
-    implements MavenReport
+    implements MavenMultiPageReport
 {
     // ----------------------------------------------------------------------
     // Report Mojo Parameters
@@ -125,7 +126,21 @@ public class JavadocReport
 
     /** {@inheritDoc} */
     @Override
+    public void generate( org.codehaus.doxia.sink.Sink sink, Locale locale )
+        throws MavenReportException
+    {
+        generate( sink, null, locale );
+    }
+
     public void generate( Sink sink, Locale locale )
+        throws MavenReportException
+    {
+        generate( sink, null, locale );
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void generate( Sink sink, SinkFactory sinkFactory, Locale locale )
         throws MavenReportException
     {
         outputDirectory = getReportOutputDirectory();
@@ -316,12 +331,21 @@ public class JavadocReport
             return;
         }
 
+        File outputDirectory = new File( getOutputDirectory() );
+
+        String filename = getOutputName() + ".html";
+
+        Locale locale = Locale.getDefault();
+
         try
         {
-            RenderingContext context = new RenderingContext( outputDirectory, getOutputName() + ".html" );
-            SiteRendererSink sink = new SiteRendererSink( context );
-            Locale locale = Locale.getDefault();
-            generate( sink, locale );
+            // TODO Replace null with real value
+            RenderingContext docRenderingContext = new RenderingContext( outputDirectory, filename, null );
+
+            SiteRendererSink sink = new SiteRendererSink( docRenderingContext );
+
+            generate( sink, null, locale );
+
         }
         catch ( MavenReportException | RuntimeException e )
         {
