@@ -6895,7 +6895,7 @@ public abstract class AbstractJavadocMojo
      *
      * @param errorsAndWarnings      the javadoc errors and warnings as string, not null.
      * @param javadocOutputDirectory the output dir, not null.
-     * @since 3.4.1-SNAPSHOT
+     * @since 3.4.2-SNAPSHOT
      */
     private void writeErrorFile( String errorsAndWarnings, File javadocOutputDirectory )
     {
