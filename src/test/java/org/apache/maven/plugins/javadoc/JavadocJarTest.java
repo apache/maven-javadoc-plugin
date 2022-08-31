@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JavadocJarTest
     extends AbstractMojoTestCase
 {
-    
+
     private JavadocJar lookupMojo( File testPom )
                     throws Exception
     {
@@ -51,13 +51,13 @@ public class JavadocJarTest
         MojoExecution mojoExec = new MojoExecution( new Plugin(), "javadoc", null );
 
         setVariableValueToObject( mojo, "mojo", mojoExec );
-        
+
         MavenProject currentProject = new MavenProjectStub();
         currentProject.setGroupId( "GROUPID" );
         currentProject.setArtifactId( "ARTIFACTID" );
-        
+
         setVariableValueToObject( mojo, "session", newMavenSession( currentProject ) );
-        
+
         return mojo;
     }
 
@@ -126,6 +126,7 @@ public class JavadocJarTest
         assertFalse( set.contains( AbstractJavadocMojo.FILES_FILE_NAME ) );
         assertFalse( set.contains( AbstractJavadocMojo.OPTIONS_FILE_NAME ) );
         assertFalse( set.contains( AbstractJavadocMojo.PACKAGES_FILE_NAME ) );
+        assertFalse( set.contains( AbstractJavadocMojo.ERRORS_FILE_NAME ) );
 
         //check if the javadoc files were created
         generatedFile =

@@ -183,27 +183,33 @@ public abstract class AbstractJavadocMojo
 
     /**
      * The <code>options</code> file name in the output directory when calling:
-     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files</code>
+     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files | &#x40;errors</code>
      */
     protected static final String OPTIONS_FILE_NAME = "options";
 
     /**
      * The <code>packages</code> file name in the output directory when calling:
-     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files</code>
+     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files | &#x40;errors</code>
      */
     protected static final String PACKAGES_FILE_NAME = "packages";
 
     /**
      * The <code>argfile</code> file name in the output directory when calling:
-     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files</code>
+     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files | &#x40;errors</code>
      */
     protected static final String ARGFILE_FILE_NAME = "argfile";
 
     /**
      * The <code>files</code> file name in the output directory when calling:
-     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files</code>
+     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files | &#x40;errors</code>
      */
     protected static final String FILES_FILE_NAME = "files";
+
+    /**
+     * The <code>errors</code> file name in the output directory when calling:
+     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files | &#x40;errors</code>
+     */
+    protected static final String ERRORS_FILE_NAME = "errors";
 
     /**
      * The current class directory
@@ -6077,6 +6083,11 @@ public abstract class AbstractJavadocMojo
                     getLog().info( output );
                 }
 
+                if ( StringUtils.isNotEmpty( err.getOutput() ) )
+                {
+                    writeErrorFile( err.getOutput(), javadocOutputDirectory );
+                }
+
                 StringBuilder msg = new StringBuilder( "\nExit code: " );
                 msg.append( exitCode );
                 if ( StringUtils.isNotEmpty( err.getOutput() ) )
@@ -6876,6 +6887,33 @@ public abstract class AbstractJavadocMojo
         catch ( IOException e )
         {
             logError( "Unable to write '" + commandLineFile.getName() + "' debug script file", e );
+        }
+    }
+
+    /**
+     * Write a files containing the javadoc errors and warnings.
+     *
+     * @param errorsAndWarnings      the javadoc errors and warnings as string, not null.
+     * @param javadocOutputDirectory the output dir, not null.
+     * @since 3.4.1-SNAPSHOT
+     */
+    private void writeErrorFile( String errorsAndWarnings, File javadocOutputDirectory )
+    {
+        File commandLineFile = new File( javadocOutputDirectory, ERRORS_FILE_NAME );
+        commandLineFile.getParentFile().mkdirs();
+
+        try
+        {
+            FileUtils.fileWrite( commandLineFile.getAbsolutePath(), null /* platform encoding */, errorsAndWarnings );
+
+            if ( !SystemUtils.IS_OS_WINDOWS )
+            {
+                Runtime.getRuntime().exec( new String[]{ "chmod", "a+x", commandLineFile.getAbsolutePath() } );
+            }
+        }
+        catch ( IOException e )
+        {
+            logError( "Unable to write '" + commandLineFile.getName() + "' errors file", e );
         }
     }
 
