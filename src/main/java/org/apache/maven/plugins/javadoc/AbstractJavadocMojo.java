@@ -183,31 +183,33 @@ public abstract class AbstractJavadocMojo
 
     /**
      * The <code>options</code> file name in the output directory when calling:
-     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files | &#x40;errors</code>
+     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files</code>
      */
     protected static final String OPTIONS_FILE_NAME = "options";
 
     /**
      * The <code>packages</code> file name in the output directory when calling:
-     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files | &#x40;errors</code>
+     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files</code>
      */
     protected static final String PACKAGES_FILE_NAME = "packages";
 
     /**
      * The <code>argfile</code> file name in the output directory when calling:
-     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files | &#x40;errors</code>
+     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files</code>
      */
     protected static final String ARGFILE_FILE_NAME = "argfile";
 
     /**
      * The <code>files</code> file name in the output directory when calling:
-     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files | &#x40;errors</code>
+     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files</code>
      */
     protected static final String FILES_FILE_NAME = "files";
 
     /**
-     * The <code>errors</code> file name in the output directory when calling:
-     * <code>javadoc.exe(or .sh) &#x40;options &#x40;packages | &#x40;argfile | &#x40;files | &#x40;errors</code>
+     * The <code>errors</code> file name in the output directory containing the errors and warnings returned by
+     * <code>javadoc.exe(or .sh)</code>.
+     * <br />
+     * This won't exist if <code>javadoc.exe(or .sh)</code> didn't return any warnings or errors.
      */
     protected static final String ERRORS_FILE_NAME = "errors";
 
