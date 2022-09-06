@@ -6907,11 +6907,6 @@ public abstract class AbstractJavadocMojo
         try
         {
             FileUtils.fileWrite( commandLineFile.getAbsolutePath(), null /* platform encoding */, errorsAndWarnings );
-
-            if ( !SystemUtils.IS_OS_WINDOWS )
-            {
-                Runtime.getRuntime().exec( new String[]{ "chmod", "a+x", commandLineFile.getAbsolutePath() } );
-            }
         }
         catch ( IOException e )
         {
