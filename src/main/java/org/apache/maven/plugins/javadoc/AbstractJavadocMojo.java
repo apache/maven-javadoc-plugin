@@ -1140,7 +1140,7 @@ public abstract class AbstractJavadocMojo
      * <li>if {@code detectJavaApiLink} is defined, a Java API link, based on the Java version of the
      * project's sources, will be added automatically.</li>
      * </ol>
-     * See <a href="https://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#link">link</a>.
+     * See <a href="https://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#linkTag">link</a>.
      */
     @Parameter( property = "links" )
     protected ArrayList<String> links;
