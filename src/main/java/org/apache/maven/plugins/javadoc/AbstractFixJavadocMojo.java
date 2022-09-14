@@ -351,8 +351,7 @@ public abstract class AbstractFixJavadocMojo
      * <li>package (shows all classes and members not marked private)</li>
      * <li>private (shows all classes and members)</li>
      * </ul>
-     * See <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#options-for-javadoc">Options for Javadoc</a>
-     * </ul>
+     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#options-for-javadoc">private, protected, public, package options for Javadoc</a>
      */
     @Parameter ( property = "level", defaultValue = "protected" )
     private String level;
