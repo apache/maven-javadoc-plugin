@@ -370,17 +370,17 @@ public abstract class AbstractJavadocMojo
     private String[] additionalOptions;
 
     /**
-     * Set an additional Javadoc option(s) (e.g. JVM options) on the command line.
+     * Sets additional Javadoc options (e.g. JVM options) on the command line.
      * Example:
      * <pre>
      * &lt;additionalJOption&gt;-J-Xss128m&lt;/additionalJOption&gt;
      * </pre>
-     * See <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#options-for-javadoc">Javadoc Options</a>.
-     * <br/>
-     * See <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html#overview-of-java-options">VM Options</a>.
-     * <br/>
-     * See <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/doc-files/net-properties.html">Networking
-     * Properties</a>.
+     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#options-for-javadoc">
+     * Javadoc Options</a>
+     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html#overview-of-java-options">
+     * VM Options</a>
+     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/doc-files/net-properties.html">
+     * Networking Properties</a>
      *
      * @since 2.3
      */
@@ -388,7 +388,7 @@ public abstract class AbstractJavadocMojo
     private String additionalJOption;
 
     /**
-     * Set additional JVM options for the execution of the javadoc command via the '-J' option to javadoc.
+     * Sets additional Javadoc options for the execution of the javadoc command via the '-J' option to javadoc.
      * Example:
      * <pre>
      *     &lt;additionalJOptions&gt;
@@ -396,6 +396,7 @@ public abstract class AbstractJavadocMojo
      *     &lt;/additionalJOptions&gt;
      * </pre>
      * @since 2.9
+     * @see #additionalJOption
      */
     @Parameter
     private String[] additionalJOptions;
@@ -606,7 +607,8 @@ public abstract class AbstractJavadocMojo
      * Specifies the paths where the boot classes reside. The <code>bootclasspath</code> can contain multiple paths
      * by separating them with a colon (<code>:</code>) or a semicolon (<code>;</code>).
      * @see <a href=
-     *    "https://docs.oracle.com/en/java/javase/17/docs/specs/man/javac.html#option-boot-class-path">Javadoc option bootclasspath</a>.
+     *    "https://docs.oracle.com/en/java/javase/17/docs/specs/man/javac.html#option-boot-class-path">
+     *    Javadoc option bootclasspath</a>.
      * @since 2.5
      */
     @Parameter( property = "bootclasspath" )
@@ -629,7 +631,8 @@ public abstract class AbstractJavadocMojo
      * See <a href="./apidocs/org/apache/maven/plugins/javadoc/options/BootclasspathArtifact.html">Javadoc</a>.
      *
      * @see <a href=
-     *   "https://docs.oracle.com/en/java/javase/17/docs/specs/man/javac.html#option-boot-class-path">Javadoc option bootclasspath</a>
+     *   "https://docs.oracle.com/en/java/javase/17/docs/specs/man/javac.html#option-boot-class-path">
+     *   Javadoc option bootclasspath</a>
      * @since 2.5
      */
     @Parameter( property = "bootclasspathArtifacts" )
@@ -638,7 +641,8 @@ public abstract class AbstractJavadocMojo
     /**
      * Uses the sentence break iterator to determine the end of the first sentence.
      * @see <a href=
-     * "https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#options-for-javadoc">Javadoc option breakiterator</a>.
+     * "https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#options-for-javadoc">
+     * Javadoc option breakiterator</a>.
      */
     @Parameter( property = "breakiterator", defaultValue = "false" )
     private boolean breakiterator;
@@ -1035,7 +1039,8 @@ public abstract class AbstractJavadocMojo
      * <b>Notes</b>:
      * <ol>
      * <li>only used if {@code isOffline} is set to <code>false</code>.</li>
-     * <li>all given links should have a fetchable <code>/package-list</code> or <code>/element-list</code> (since Java 10). For instance:
+     * <li>all given links should have a fetchable <code>/package-list</code> or <code>/element-list</code> 
+     * (since Java 10). For instance:
      * <pre>
      * &lt;links&gt;
      *   &lt;link&gt;https://docs.oracle.com/en/java/javase/17/docs/api&lt;/link&gt;
@@ -1568,7 +1573,8 @@ public abstract class AbstractJavadocMojo
     private List<String> sourceFileExcludes;
 
     /**
-     * To apply a security fix on generated javadoc, see <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-1571>CVE-2013-157</a>
+     * To apply a security fix on generated javadoc, see 
+     * <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-1571>CVE-2013-157</a>.
      * @since 2.9.1
      */
     @Parameter( defaultValue = "true", property = "maven.javadoc.applyJavadocSecurityFix" )

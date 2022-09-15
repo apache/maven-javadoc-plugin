@@ -34,9 +34,8 @@ import java.util.List;
 
 /**
  * Fix Javadoc documentation and tags for the <code>Test Java code</code> for the project.
- * See <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#wheretags">Where Tags Can
+ * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/javadoc/doc-comment-spec.html#where-tags-can-be-used">Where Tags Can
  * Be Used</a>.
- *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @since 2.6
  */

@@ -36,7 +36,8 @@ import java.util.List;
 
 /**
  * Bundles the Javadoc documentation for <code>test Java code</code> in an <b>NON aggregator</b> project into
- * a jar using the standard <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/">Javadoc Tool</a>.
+ * a jar using the standard <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">
+ * Javadoc Tool</a>.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @since 2.5
@@ -52,19 +53,14 @@ public class TestJavadocJar
 
     /**
      * Specifies the destination directory where Javadoc saves the generated HTML files.
-     * <br/>
-     * See <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#d">d</a>.
-     * <br/>
+     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option d</a>.
      */
     @Parameter( defaultValue = "${project.build.directory}/testapidocs", required = true )
     private File outputDirectory;
 
     /**
      * Specifies the Test title to be placed near the top of the overview summary file.
-     * <br/>
-     * See <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#doctitle">doctitle</a>.
-     * <br/>
-     *
+     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option doctitle</a>.
      * @since 2.5
      */
     @Parameter( property = "testDoctitle", alias = "doctitle",
@@ -74,10 +70,7 @@ public class TestJavadocJar
     /**
      * Specifies that Javadoc should retrieve the text for the Test overview documentation from the "source" file
      * specified by path/filename and place it on the Overview page (overview-summary.html).
-     * <br/>
-     * See <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#overview">overview</a>.
-     * <br/>
-     *
+     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option overview</a>.
      * @since 2.5
      */
     @Parameter( property = "testOverview", alias = "overview",
@@ -86,11 +79,7 @@ public class TestJavadocJar
 
     /**
      * Specifies the Test title to be placed in the HTML title tag.
-     * <br/>
-     * See
-     * <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#windowtitle">windowtitle</a>.
-     * <br/>
-     *
+     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option windowtitle</a>.
      * @since 2.5
      */
     @Parameter( property = "testWindowtitle", alias = "windowtitle",
