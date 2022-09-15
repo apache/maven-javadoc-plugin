@@ -1052,7 +1052,7 @@ public abstract class AbstractJavadocMojo
      * <li>if {@link #detectJavaApiLink} is defined, a Java API link, based on the Java version of the
      * project's sources, will be added automatically.</li>
      * </ol>
-     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html##standard-doclet-options">Doclet option link</a>.
+     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option link</a>.
      */
     @Parameter( property = "links" )
     protected ArrayList<String> links;
