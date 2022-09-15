@@ -20,7 +20,6 @@ package org.apache.maven.plugins.javadoc;
  */
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.Artifact;
@@ -205,19 +204,10 @@ public abstract class AbstractJavadocMojo
     protected static final String FILES_FILE_NAME = "files";
 
     /**
-     * The current class directory
-     */
-    private static final String RESOURCE_DIR = ClassUtils.getPackageName( JavadocReport.class ).replace( '.', '/' );
-
-    /**
-     * Default css file name
+     * Default css file name, used as file name in the output directory for the temporary custom stylesheet file
+     * loaded from classloader resources.
      */
     private static final String DEFAULT_CSS_NAME = "stylesheet.css";
-
-    /**
-     * Default location for css
-     */
-    private static final String RESOURCE_CSS_DIR = RESOURCE_DIR + "/css";
 
     private static final String PACKAGE_LIST = "package-list";
     private static final String ELEMENT_LIST = "element-list";
@@ -1255,12 +1245,13 @@ public abstract class AbstractJavadocMojo
 
     /**
      * Specifies whether the stylesheet to be used is the <code>maven</code>'s javadoc stylesheet or
-     * <code>java</code>'s default stylesheet when a <i>stylesheetfile</i> parameter is not specified.
+     * <code>java</code>'s default stylesheet when a {@link #stylesheetfile} parameter is not specified.
      * <br/>
      * Possible values: <code>maven<code> or <code>java</code>.
-     * <br/>
+     * @deprecated This is no longer evalued, instead use {@link #addStylesheets} to customiz
      */
     @Parameter( property = "stylesheet", defaultValue = "java" )
+    @Deprecated
     private String stylesheet;
 
     /**
@@ -2908,11 +2899,11 @@ public abstract class AbstractJavadocMojo
     /**
      * Method to get the stylesheet path file to be used by the Javadoc Tool.
      * <br/>
-     * If the {@code stylesheetfile} is empty, return the file as String definded by {@code stylesheet} value.
+     * If the {@link #stylesheetfile} is empty, return the file as String defined by {@link #stylesheet} value.
      * <br/>
-     * If the {@code stylesheetfile} is defined, return the file as String.
+     * If the {@link #stylesheetfile} is defined, return the file as String.
      * <br/>
-     * Note: since 2.6, the {@code stylesheetfile} could be a path from a resource in the project source
+     * Note: since 2.6, the {@link #stylesheetfile} could be a path from a resource in the project source
      * directories (i.e. <code>src/main/java</code>, <code>src/main/resources</code> or <code>src/main/javadoc</code>)
      * or from a resource in the Javadoc plugin dependencies.
      *
@@ -2930,8 +2921,9 @@ public abstract class AbstractJavadocMojo
                 return Optional.empty();
             }
 
-            // maven, see #copyDefaultStylesheet(File)
-            return Optional.of( new File( javadocOutputDirectory, DEFAULT_CSS_NAME ) );
+            getLog().warn( "Parameter 'stylesheet' is no longer evaluated, rather use 'addStylesheets'"
+                + " to customize the CSS!" );
+            return Optional.empty();
         }
 
         if ( new File( stylesheetfile ).exists() )
@@ -4238,18 +4230,6 @@ public abstract class AbstractJavadocMojo
     private void copyAllResources( File javadocOutputDirectory )
         throws MavenReportException
     {
-        // ----------------------------------------------------------------------
-        // Copy default resources
-        // ----------------------------------------------------------------------
-
-        try
-        {
-            copyDefaultStylesheet( javadocOutputDirectory );
-        }
-        catch ( IOException e )
-        {
-            throw new MavenReportException( "Unable to copy default stylesheet: " + e.getMessage(), e );
-        }
 
         // ----------------------------------------------------------------------
         // Copy javadoc resources
@@ -4276,34 +4256,6 @@ public abstract class AbstractJavadocMojo
         // ----------------------------------------------------------------------
 
         copyAdditionalJavadocResources( javadocOutputDirectory );
-    }
-
-    /**
-     * Copies the {@code DEFAULT_CSS_NAME} css file from the current class
-     * loader to the <code>outputDirectory</code> only if {@code stylesheetfile} is empty and
-     * {@code stylesheet} is equals to <code>maven</code>.
-     *
-     * @param anOutputDirectory the output directory
-     * @throws java.io.IOException if any
-     * @see #DEFAULT_CSS_NAME
-     * @see JavadocUtil#copyResource(java.net.URL, java.io.File)
-     */
-    private void copyDefaultStylesheet( File anOutputDirectory )
-        throws IOException
-    {
-        if ( StringUtils.isNotEmpty( stylesheetfile ) )
-        {
-            return;
-        }
-
-        if ( !stylesheet.equalsIgnoreCase( "maven" ) )
-        {
-            return;
-        }
-
-        URL url = getClass().getClassLoader().getResource( RESOURCE_CSS_DIR + "/" + DEFAULT_CSS_NAME );
-        File outFile = new File( anOutputDirectory, DEFAULT_CSS_NAME );
-        JavadocUtil.copyResource( url, outFile );
     }
 
     /**

@@ -1284,18 +1284,6 @@ public class JavadocReportTest
         String optionsContent = readFile( options );
         assertFalse( optionsContent.contains( "-stylesheetfile" ) );
 
-        // stylesheet == maven
-        setVariableValueToObject( mojo, "stylesheet", "maven" );
-        mojo.execute();
-
-        content = readFile( stylesheetfile );
-        assertTrue( content.contains( "/* Javadoc style sheet */" )
-            && content.contains( "Licensed to the Apache Software Foundation (ASF) under one" ) );
-
-        optionsContent = readFile( options );
-        assertTrue( optionsContent.contains( "-stylesheetfile" ) );
-        assertTrue( optionsContent.contains( "'" + stylesheetfile.toFile().getAbsolutePath().replaceAll( "\\\\", "/" ) + "'" ) );
-
         // stylesheetfile defined as a project resource
         setVariableValueToObject( mojo, "stylesheet", null );
         setVariableValueToObject( mojo, "stylesheetfile", "com/mycompany/app/javadoc/css/stylesheet.css" );
