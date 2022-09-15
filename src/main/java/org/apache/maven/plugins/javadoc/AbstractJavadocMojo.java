@@ -1248,7 +1248,7 @@ public abstract class AbstractJavadocMojo
      * <code>java</code>'s default stylesheet when a {@link #stylesheetfile} parameter is not specified.
      * <br/>
      * Possible values: <code>maven<code> or <code>java</code>.
-     * @deprecated This is no longer evalued, instead use {@link #addStylesheets} to customiz
+     * @deprecated This is no longer evaluated, instead use {@link #addStylesheets} to customize the CSS.
      */
     @Parameter( property = "stylesheet", defaultValue = "java" )
     @Deprecated
