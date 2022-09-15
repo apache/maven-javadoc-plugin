@@ -44,13 +44,12 @@ import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Generates documentation for the <code>Java code</code> in an <b>NON aggregator</b> project using the standard
- * <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/">Javadoc Tool</a>.
+ * <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">Javadoc Tool</a>.
  *
  * @author <a href="mailto:evenisse@apache.org">Emmanuel Venisse</a>
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @since 2.0
- * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/">Javadoc Tool</a>
- * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#options">Javadoc Options</a>
+ * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">Javadoc Tool</a>
  */
 @Mojo( name = "javadoc", requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true )
 @Execute( phase = LifecyclePhase.GENERATE_SOURCES )

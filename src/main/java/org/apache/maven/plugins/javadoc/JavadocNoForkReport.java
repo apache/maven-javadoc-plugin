@@ -26,12 +26,12 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
  * Generates documentation for the <code>Java code</code> in an <b>NON aggregator</b> project using the standard
- * <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/">Javadoc Tool</a>. Note that this
+ * <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">Javadoc Tool</a>. Note that this
  * goal does require generation of sources before site generation, e.g. by invoking {@code mvn clean deploy site}.
  *
  * @author <a href="mailto:mfriedenhagen@apache.org">Mirko Friedenhagen</a>
  * @since 2.10
- * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/">Javadoc Tool</a>
+ * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">Javadoc Tool</a>
  * @see <a href="http://docs.oracle.com/javase/1.4.2/docs/tooldocs/windows/javadoc.html#options">Javadoc Options</a>
  */
 @Mojo( name = "javadoc-no-fork", requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true )

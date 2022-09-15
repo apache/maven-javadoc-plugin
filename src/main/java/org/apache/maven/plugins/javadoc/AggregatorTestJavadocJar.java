@@ -26,7 +26,8 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
  * <p>Bundles the Javadoc documentation for <code>Java Test code</code> in an <b>aggregator</b> project into a jar
- * using the standard <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/">Javadoc Tool</a>.</p>
+ * using the standard <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">Javadoc Tool</a>.
+ * </p>
  * 
  * <p>Since version 3.1.0 an aggregated jar is created for every module of a Maven multimodule project.</p>
  * 
