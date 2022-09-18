@@ -19,6 +19,10 @@ package org.apache.maven.plugins.javadoc.resolver;
  * under the License.
  */
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -26,19 +30,17 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.plugins.javadoc.AbstractJavadocMojo;
 import org.apache.maven.plugins.javadoc.JavadocModule;
 import org.apache.maven.plugins.javadoc.JavadocUtil;
@@ -47,37 +49,31 @@ import org.apache.maven.plugins.javadoc.options.JavadocOptions;
 import org.apache.maven.plugins.javadoc.options.io.xpp3.JavadocOptionsXpp3Reader;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.resolve.transform.ArtifactIncludeFilterTransformer;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolverException;
-import org.apache.maven.shared.transfer.dependencies.resolve.DependencyResolver;
+import org.apache.maven.shared.artifact.filter.resolve.transform.EclipseAetherFilterTransformer;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.graph.DefaultDependencyNode;
+import org.eclipse.aether.graph.DependencyFilter;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.ArtifactResult;
 
 /**
  * 
  */
-@Component( role = ResourceResolver.class )
+@Named
+@Singleton
 public final class ResourceResolver extends AbstractLogEnabled
 {
-    @Requirement
-    private ArtifactFactory artifactFactory;
-    
-    @Requirement
-    private ArtifactResolver resolver;
-    
-    @Requirement
-    private DependencyResolver dependencyResolver;
+    @Inject
+    private RepositorySystem repoSystem;
 
-    @Requirement
-    private ArtifactMetadataSource artifactMetadataSource;
-    
-    @Requirement
+    @Inject
     private ArchiverManager archiverManager;
 
     /**
@@ -233,7 +229,7 @@ public final class ResourceResolver extends AbstractLogEnabled
                                                                     final List<Artifact> artifacts )
         throws IOException
     {
-        final List<Artifact> toResolve = new ArrayList<>( artifacts.size() );
+        final List<org.eclipse.aether.artifact.Artifact> toResolve = new ArrayList<>( artifacts.size() );
 
         for ( final Artifact artifact : artifacts )
         {
@@ -303,7 +299,7 @@ public final class ResourceResolver extends AbstractLogEnabled
                                                       final Artifact artifact )
         throws ArtifactResolutionException, ArtifactNotFoundException
     {
-        final List<Artifact> toResolve = new ArrayList<>( 2 );
+        final List<org.eclipse.aether.artifact.Artifact> toResolve = new ArrayList<>( 2 );
 
         if ( config.filter() != null
             && !new ArtifactIncludeFilterTransformer().transform( config.filter() ).include( artifact ) )
@@ -328,18 +324,15 @@ public final class ResourceResolver extends AbstractLogEnabled
                                   sourcePaths );
     }
 
-    private Artifact createResourceArtifact( final Artifact artifact, final String classifier,
-                                                    final SourceResolverConfig config )
+    private org.eclipse.aether.artifact.Artifact createResourceArtifact( final Artifact artifact, 
+                                                                         final String classifier,
+                                                                         final SourceResolverConfig config )
     {
-        final DefaultArtifact a =
-            (DefaultArtifact) artifactFactory.createArtifactWithClassifier( artifact.getGroupId(),
-                                                                                     artifact.getArtifactId(),
-                                                                                     artifact.getVersion(), "jar",
-                                                                                     classifier );
-
-        a.setRepository( artifact.getRepository() );
-
-        return a;
+        return new org.eclipse.aether.artifact.DefaultArtifact( artifact.getGroupId(),
+                                                                artifact.getArtifactId(),
+                                                                classifier,
+                                                                "jar",
+                                                                artifact.getVersion() );
     }
 
     /**
@@ -352,7 +345,7 @@ public final class ResourceResolver extends AbstractLogEnabled
      * @throws ArtifactResolutionException if an exception occurs
      * @throws ArtifactNotFoundException if an exception occurs
      */
-    private Collection<Path> resolveAndUnpack( final List<Artifact> artifacts,
+    private Collection<Path> resolveAndUnpack( final List<org.eclipse.aether.artifact.Artifact> artifacts,
                                                                     final SourceResolverConfig config,
                                                                     final List<String> validClassifiers,
                                                                     final boolean propagateErrors )
@@ -361,12 +354,12 @@ public final class ResourceResolver extends AbstractLogEnabled
         // NOTE: Since these are '-sources' and '-test-sources' artifacts, they won't actually 
         // resolve transitively...this is just used to aggregate resolution failures into a single 
         // exception.
-        final Set<Artifact> artifactSet = new LinkedHashSet<>( artifacts );
+        final Set<org.eclipse.aether.artifact.Artifact> artifactSet = new LinkedHashSet<>( artifacts );
 
-        final ArtifactFilter filter;
+        final DependencyFilter filter;
         if ( config.filter() != null )
         {
-            filter = new ArtifactIncludeFilterTransformer().transform( config.filter() );
+            filter = new EclipseAetherFilterTransformer().transform( config.filter() );
         }
         else
         {
@@ -374,23 +367,26 @@ public final class ResourceResolver extends AbstractLogEnabled
         }
         
         final List<Path> result = new ArrayList<>( artifacts.size() );
-        for ( final Artifact a : artifactSet )
+        for ( final org.eclipse.aether.artifact.Artifact a : artifactSet )
         {
-            if ( !validClassifiers.contains( a.getClassifier() ) || ( filter != null && !filter.include( a ) ) )
+            if ( !validClassifiers.contains( a.getClassifier() ) || ( filter != null 
+                            && !filter.accept( new DefaultDependencyNode( a ), Collections.emptyList() ) ) )
             {
                 continue;
             }
             
             Artifact resolvedArtifact;
-            try
+            ArtifactRequest req = new ArtifactRequest( a, config.project().getRemoteProjectRepositories(), null );
+            try 
             {
-                resolvedArtifact = resolver.resolveArtifact( config.getBuildingRequest(), a ).getArtifact();
+                RepositorySystemSession repoSession = config.getBuildingRequest().getRepositorySession();
+                ArtifactResult resolutionResult = repoSystem.resolveArtifact( repoSession, req );
+                resolvedArtifact = RepositoryUtils.toArtifact( resolutionResult.getArtifact() );
             }
-            catch ( ArtifactResolverException e1 )
+            catch ( org.eclipse.aether.resolution.ArtifactResolutionException e )
             {
                 continue;
             }
-
             final File d =
                 new File( config.outputBasedir(), a.getArtifactId() + "-" + a.getVersion() + "-" + a.getClassifier() );
 
@@ -401,7 +397,7 @@ public final class ResourceResolver extends AbstractLogEnabled
 
             try
             {
-                final UnArchiver unArchiver = archiverManager.getUnArchiver( a.getType() );
+                final UnArchiver unArchiver = archiverManager.getUnArchiver( a.getExtension() );
 
                 unArchiver.setDestDirectory( d );
                 unArchiver.setSourceFile( resolvedArtifact.getFile() );
@@ -415,14 +411,15 @@ public final class ResourceResolver extends AbstractLogEnabled
                 if ( propagateErrors )
                 {
                     throw new ArtifactResolutionException( "Failed to retrieve valid un-archiver component: "
-                        + a.getType(), a, e );
+                        + a.getExtension(), RepositoryUtils.toArtifact( a ), e );
                 }
             }
             catch ( final ArchiverException e )
             {
                 if ( propagateErrors )
                 {
-                    throw new ArtifactResolutionException( "Failed to unpack: " + a.getId(), a, e );
+                    throw new ArtifactResolutionException( "Failed to unpack: " + a,
+                                                           RepositoryUtils.toArtifact( a ), e );
                 }
             }
         }

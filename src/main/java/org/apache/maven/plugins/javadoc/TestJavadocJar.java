@@ -26,11 +26,12 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.plugins.javadoc.resolver.SourceResolverConfig;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.shared.artifact.filter.resolve.ScopeFilter;
 import org.codehaus.plexus.util.StringUtils;
+import org.eclipse.aether.util.filter.ScopeDependencyFilter;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -187,10 +188,13 @@ public class TestJavadocJar
     }
 
     @Override
-    protected ScopeFilter getDependencyScopeFilter()
+    protected ScopeDependencyFilter getDependencyScopeFilter()
     {
-        return ScopeFilter.including( Artifact.SCOPE_COMPILE, Artifact.SCOPE_PROVIDED, Artifact.SCOPE_SYSTEM,
-                                      Artifact.SCOPE_TEST );
+        return new ScopeDependencyFilter( Arrays.asList( 
+                                      Artifact.SCOPE_COMPILE,
+                                      Artifact.SCOPE_PROVIDED,
+                                      Artifact.SCOPE_SYSTEM,
+                                      Artifact.SCOPE_TEST ), null );
     }
     
     /**

@@ -80,7 +80,7 @@ public class AggregatorJavadocReportTest
         DefaultRepositorySystemSession repoSysSession = (DefaultRepositorySystemSession) session.getRepositorySession();
         repoSysSession.setLocalRepositoryManager( new SimpleLocalRepositoryManagerFactory().newInstance( repoSysSession, new LocalRepository( localRepo ) ) );
         setVariableValueToObject( mojo, "session", session );
-
+        setVariableValueToObject( mojo, "repoSession", repoSysSession );
         return mojo;
     }
 
