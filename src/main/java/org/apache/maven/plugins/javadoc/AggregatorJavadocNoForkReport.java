@@ -26,7 +26,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
  * Generates documentation for the <code>Java code</code> in an <b>aggregator</b> project using the standard
- * <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/">Javadoc Tool</a>.
+ * <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">Javadoc Tool</a>.
  *
  * @since 3.1.0
  */

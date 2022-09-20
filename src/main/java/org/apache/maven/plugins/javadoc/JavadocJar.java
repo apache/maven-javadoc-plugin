@@ -44,7 +44,8 @@ import java.util.Locale;
 
 /**
  * Bundles the Javadoc documentation for <code>main Java code</code> in an <b>NON aggregator</b> project into
- * a jar using the standard <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/">Javadoc Tool</a>.
+ * a jar using the standard <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">
+ * Javadoc Tool</a>.
  *
  * @since 2.0
  */
@@ -96,8 +97,7 @@ public class JavadocJar
 
     /**
      * Specifies the destination directory where javadoc saves the generated HTML files.
-     * See <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#d">d</a>.
-     *
+     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option d</a>.
      * @deprecated
      */
     @Deprecated

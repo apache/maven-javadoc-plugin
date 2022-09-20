@@ -78,7 +78,7 @@ under the License.
     <sitePluginVersion>3.12.1</sitePluginVersion>
     <projectInfoReportsPluginVersion>3.2.2</projectInfoReportsPluginVersion>
     <project.build.outputTimestamp>2022-08-10T19:51:10Z</project.build.outputTimestamp>
-    <slf4j.version>1.7.32</slf4j.version>
+    <slf4jVersion>1.7.36</slf4jVersion>
   </properties>
 
   <contributors>
@@ -375,6 +375,12 @@ under the License.
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <version>3.23.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>${slf4jVersion}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

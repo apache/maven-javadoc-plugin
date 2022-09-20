@@ -89,10 +89,8 @@ import java.util.regex.Pattern;
 
 /**
  * Abstract class to fix Javadoc documentation and tags in source files.
- * <br>
- * See <a href="https://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#wheretags">Where Tags
+ * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/javadoc/doc-comment-spec.html#where-tags-can-be-used">Where Tags
  * Can Be Used</a>.
- *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @since 2.6
  */
@@ -346,15 +344,12 @@ public abstract class AbstractFixJavadocMojo
      * Specifies the access level for classes and members to show in the Javadocs.
      * Possible values are:
      * <ul>
-     * <li><a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#public">public</a>
-     * (shows only public classes and members)</li>
-     * <li><a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#protected">protected</a>
-     * (shows only public and protected classes and members)</li>
-     * <li><a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#package">package</a>
-     * (shows all classes and members not marked private)</li>
-     * <li><a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#private">private</a>
-     * (shows all classes and members)</li>
+     * <li>public (shows only public classes and members)</li>
+     * <li>protected (shows only public and protected classes and members)</li>
+     * <li>package (shows all classes and members not marked private)</li>
+     * <li>private (shows all classes and members)</li>
      * </ul>
+     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#options-for-javadoc">private, protected, public, package options for Javadoc</a>
      */
     @Parameter ( property = "level", defaultValue = "protected" )
     private String level;
