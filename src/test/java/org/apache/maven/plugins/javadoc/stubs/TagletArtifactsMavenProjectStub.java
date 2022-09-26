@@ -24,11 +24,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.DefaultArtifactRepository;
-import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
+import org.eclipse.aether.repository.RemoteRepository;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
@@ -61,15 +59,15 @@ public class TagletArtifactsMavenProjectStub
         setCompileSourceRoots( compileSourceRoots );
     }
 
-    /** {@inheritDoc} */
+    /*
+     * Allow to retrieve some dependencies from Maven Central
+     */
     @Override
-    public List<ArtifactRepository> getRemoteArtifactRepositories()
+    public List<RemoteRepository> getRemoteProjectRepositories()
     {
-        ArtifactRepository repository =
-            new DefaultArtifactRepository( "central", "https://repo.maven.apache.org/maven2",
-                                           new DefaultRepositoryLayout() );
-
-        return Collections.singletonList( repository );
+        RemoteRepository.Builder builder = new RemoteRepository.Builder( "central", "default",
+                "https://repo.maven.apache.org/maven2" );
+        return Collections.singletonList( builder.build() );
     }
 
     /** {@inheritDoc} */
