@@ -29,37 +29,11 @@
 
 Configuring Stylesheets
 
- If no custom stylesheet is specified in the {{{../javadoc-mojo.html#stylesheetfile}\<stylesheetfile/\>}} parameter,
- the {{{../javadoc-mojo.html#stylesheet}\<stylesheet/\>}} parameter will indicate
- which stylesheet will be used -- the stylesheet included in the maven javadoc plugin or the default stylesheet used by
- the javadoc tool. <<maven>> value indicates the maven javadoc plugin stylesheet, while <<java>> value indicates the
- default javadoc tool stylesheet. The default is <<java>> value if not specified.
+ To apply minor styling adjustments it is recommended to just configure additional stylesheets (in addition to the javadoc generated CSS) via 
+ {{{../javadoc-mojo.html#addstylesheets}\<addStylesheets/\>}} (supported since 3.3.0).
 
-+-----+
-<project>
-  ...
-  <reporting> (or <build>)
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${project.version}</version>
-        <configuration>
-          <stylesheet>maven</stylesheet>
-          ...
-        </configuration>
-      </plugin>
-    </plugins>
-    ...
-  </reporting> (or </build>)
-  ...
-</project>
-+-----+
-
-Configuring Stylesheets File
-
- If a custom {{{../javadoc-mojo.html#stylesheetfile}\<stylesheetfile/\>}} parameter is specified, you will be able to
- use it:
+ If a custom {{{../javadoc-mojo.html#stylesheetfile}\<stylesheetfile/\>}} parameter is specified the javadoc generated CSS is completely replaced with
+ just the given CSS:
 
  * if {{{../javadoc-mojo.html#stylesheetfile}\<stylesheetfile/\>}} is a given file, you could use an absolute or a
  relative path, for instance:
