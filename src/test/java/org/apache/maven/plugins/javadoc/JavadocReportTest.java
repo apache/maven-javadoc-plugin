@@ -118,8 +118,9 @@ public class JavadocReportTest
         currentProject.setGroupId( "GROUPID" );
         currentProject.setArtifactId( "ARTIFACTID" );
 
-        setVariableValueToObject( mojo, "session", newMavenSession( currentProject ) );
-
+        MavenSession session = newMavenSession( currentProject );
+        setVariableValueToObject( mojo, "session", session );
+        setVariableValueToObject( mojo,  "repoSession", session.getRepositorySession() );
         return mojo;
     }
 
@@ -514,7 +515,7 @@ public class JavadocReportTest
         legacySupport.setSession( session );
 
         setVariableValueToObject( mojo, "session", session );
-
+        setVariableValueToObject( mojo, "repoSession", repositorySession );
         mojo.execute();
 
         Path generatedFile = new File( getBasedir(), "target/test/unit/doclet-test/target/site/apidocs/graph.dot" ).toPath();
@@ -533,6 +534,7 @@ public class JavadocReportTest
         testPom = unit.resolve( "doclet-path-test/doclet-path-test-plugin-config.xml" );
         mojo = lookupMojo( testPom );
         setVariableValueToObject( mojo, "session", session );
+        setVariableValueToObject( mojo, "repoSession", repositorySession );
         mojo.execute();
 
         generatedFile = new File( getBasedir(), "target/test/unit/doclet-test/target/site/apidocs/graph.dot" ).toPath();
@@ -696,6 +698,7 @@ public class JavadocReportTest
         legacySupport.setSession( session );
 
         setVariableValueToObject( mojo, "session", session );
+        setVariableValueToObject( mojo, "repoSession", repositorySession );
 
         mojo.execute();
 
@@ -992,6 +995,7 @@ public class JavadocReportTest
 
         setVariableValueToObject( mojo, "settings", settings );
         setVariableValueToObject( mojo, "session", session );
+        setVariableValueToObject( mojo, "repoSession", repositorySession );
         mojo.execute();
 
         Path commandLine = new File( getBasedir(), "target/test/unit/proxy-test/target/site/apidocs/javadoc." + ( SystemUtils.IS_OS_WINDOWS ? "bat" : "sh" ) ).toPath();
@@ -1033,6 +1037,7 @@ public class JavadocReportTest
             mojo = lookupMojo( testPom );
             setVariableValueToObject( mojo, "settings", settings );
             setVariableValueToObject( mojo, "session", session );
+            setVariableValueToObject( mojo, "repoSession", repositorySession );
             mojo.execute();
             readed = readFile( commandLine );
             assertTrue( readed.contains( "-J-Dhttp.proxyHost=" + proxyServer.getHostName() ) );
@@ -1080,6 +1085,7 @@ public class JavadocReportTest
             mojo = lookupMojo( testPom );
             setVariableValueToObject( mojo, "settings", settings );
             setVariableValueToObject( mojo, "session", session );
+            setVariableValueToObject( mojo, "repoSession", repositorySession );
             mojo.execute();
             readed = readFile( commandLine );
             assertThat( readed ).contains( "-J-Dhttp.proxyHost=" + proxyServer.getHostName() )
@@ -1202,7 +1208,7 @@ public class JavadocReportTest
         LegacySupport legacySupport = lookup( LegacySupport.class );
         legacySupport.setSession( session );
         setVariableValueToObject( mojo, "session", session );
-
+        setVariableValueToObject( mojo, "repoSession", repositorySession );
         mojo.execute();
 
         Path optionsFile = new File( mojo.getOutputDirectory(), "options" ).toPath();
@@ -1240,6 +1246,7 @@ public class JavadocReportTest
         LegacySupport legacySupport = lookup( LegacySupport.class );
         legacySupport.setSession( session );
         setVariableValueToObject( mojo, "session", session );
+        setVariableValueToObject( mojo, "repoSession", repositorySession );
 
         Path apidocs = new File( getBasedir(), "target/test/unit/stylesheetfile-test/target/site/apidocs" ).toPath();
 
@@ -1350,6 +1357,7 @@ public class JavadocReportTest
         LegacySupport legacySupport = lookup( LegacySupport.class );
         legacySupport.setSession( session );
         setVariableValueToObject( mojo, "session", session );
+        setVariableValueToObject( mojo, "repoSession", repositorySession );
 
         Path apidocs = new File( getBasedir(), "target/test/unit/helpfile-test/target/site/apidocs" ).toPath();
 
@@ -1369,6 +1377,7 @@ public class JavadocReportTest
         setVariableValueToObject( mojo, "helpfile", "com/mycompany/app/javadoc/helpfile/help-doc.html" );
 
         setVariableValueToObject( mojo, "session", session );
+        setVariableValueToObject( mojo, "repoSession", repositorySession );
 
         mojo.execute();
 

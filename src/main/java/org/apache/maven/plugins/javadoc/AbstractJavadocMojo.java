@@ -19,89 +19,6 @@ package org.apache.maven.plugins.javadoc;
  * under the License.
  */
 
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.archiver.MavenArchiver;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.ArtifactUtils;
-import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.versioning.ArtifactVersion;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.model.Plugin;
-import org.apache.maven.model.Resource;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecution;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.javadoc.options.BootclasspathArtifact;
-import org.apache.maven.plugins.javadoc.options.DocletArtifact;
-import org.apache.maven.plugins.javadoc.options.Group;
-import org.apache.maven.plugins.javadoc.options.JavadocOptions;
-import org.apache.maven.plugins.javadoc.options.JavadocPathArtifact;
-import org.apache.maven.plugins.javadoc.options.OfflineLink;
-import org.apache.maven.plugins.javadoc.options.ResourcesArtifact;
-import org.apache.maven.plugins.javadoc.options.Tag;
-import org.apache.maven.plugins.javadoc.options.Taglet;
-import org.apache.maven.plugins.javadoc.options.TagletArtifact;
-import org.apache.maven.plugins.javadoc.options.io.xpp3.JavadocOptionsXpp3Writer;
-import org.apache.maven.plugins.javadoc.resolver.JavadocBundle;
-import org.apache.maven.plugins.javadoc.resolver.ResourceResolver;
-import org.apache.maven.plugins.javadoc.resolver.SourceResolverConfig;
-import org.apache.maven.project.DefaultProjectBuildingRequest;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.ProjectBuilder;
-import org.apache.maven.project.ProjectBuildingException;
-import org.apache.maven.project.ProjectBuildingRequest;
-import org.apache.maven.reporting.MavenReportException;
-import org.apache.maven.settings.Proxy;
-import org.apache.maven.settings.Settings;
-import org.apache.maven.shared.transfer.artifact.DefaultArtifactCoordinate;
-import org.apache.maven.shared.artifact.filter.resolve.AndFilter;
-import org.apache.maven.shared.artifact.filter.resolve.PatternExclusionsFilter;
-import org.apache.maven.shared.artifact.filter.resolve.PatternInclusionsFilter;
-import org.apache.maven.shared.artifact.filter.resolve.ScopeFilter;
-import org.apache.maven.shared.artifact.filter.resolve.TransformableFilter;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolverException;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResult;
-import org.apache.maven.shared.transfer.dependencies.DefaultDependableCoordinate;
-import org.apache.maven.shared.transfer.dependencies.resolve.DependencyResolver;
-import org.apache.maven.shared.transfer.dependencies.resolve.DependencyResolverException;
-import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.apache.maven.toolchain.Toolchain;
-import org.apache.maven.toolchain.ToolchainManager;
-import org.apache.maven.wagon.PathUtils;
-import org.codehaus.plexus.archiver.ArchiverException;
-import org.codehaus.plexus.archiver.UnArchiver;
-import org.codehaus.plexus.archiver.manager.ArchiverManager;
-import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
-import org.codehaus.plexus.components.io.fileselectors.IncludeExcludeFileSelector;
-import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
-import org.codehaus.plexus.languages.java.jpms.LocationManager;
-import org.codehaus.plexus.languages.java.jpms.ModuleNameSource;
-import org.codehaus.plexus.languages.java.jpms.ResolvePathRequest;
-import org.codehaus.plexus.languages.java.jpms.ResolvePathResult;
-import org.codehaus.plexus.languages.java.jpms.ResolvePathsRequest;
-import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
-import org.codehaus.plexus.languages.java.version.JavaVersion;
-import org.codehaus.plexus.util.DirectoryScanner;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.ReaderFactory;
-import org.codehaus.plexus.util.WriterFactory;
-import org.codehaus.plexus.util.cli.CommandLineException;
-import org.codehaus.plexus.util.cli.CommandLineUtils;
-import org.codehaus.plexus.util.cli.Commandline;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -139,11 +56,100 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.RepositoryUtils;
+import org.apache.maven.archiver.MavenArchiver;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.ArtifactUtils;
+import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
+import org.apache.maven.execution.MavenSession;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Plugin;
+import org.apache.maven.model.Resource;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecution;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.javadoc.options.BootclasspathArtifact;
+import org.apache.maven.plugins.javadoc.options.DocletArtifact;
+import org.apache.maven.plugins.javadoc.options.Group;
+import org.apache.maven.plugins.javadoc.options.JavadocOptions;
+import org.apache.maven.plugins.javadoc.options.JavadocPathArtifact;
+import org.apache.maven.plugins.javadoc.options.OfflineLink;
+import org.apache.maven.plugins.javadoc.options.ResourcesArtifact;
+import org.apache.maven.plugins.javadoc.options.Tag;
+import org.apache.maven.plugins.javadoc.options.Taglet;
+import org.apache.maven.plugins.javadoc.options.TagletArtifact;
+import org.apache.maven.plugins.javadoc.options.io.xpp3.JavadocOptionsXpp3Writer;
+import org.apache.maven.plugins.javadoc.resolver.JavadocBundle;
+import org.apache.maven.plugins.javadoc.resolver.ResourceResolver;
+import org.apache.maven.plugins.javadoc.resolver.SourceResolverConfig;
+import org.apache.maven.project.DefaultProjectBuildingRequest;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuilder;
+import org.apache.maven.project.ProjectBuildingException;
+import org.apache.maven.project.ProjectBuildingRequest;
+import org.apache.maven.reporting.MavenReportException;
+import org.apache.maven.settings.Proxy;
+import org.apache.maven.settings.Settings;
+import org.apache.maven.shared.artifact.filter.resolve.AndFilter;
+import org.apache.maven.shared.artifact.filter.resolve.PatternExclusionsFilter;
+import org.apache.maven.shared.artifact.filter.resolve.PatternInclusionsFilter;
+import org.apache.maven.shared.artifact.filter.resolve.TransformableFilter;
+import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.apache.maven.toolchain.Toolchain;
+import org.apache.maven.toolchain.ToolchainManager;
+import org.apache.maven.wagon.PathUtils;
+import org.codehaus.plexus.archiver.ArchiverException;
+import org.codehaus.plexus.archiver.UnArchiver;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
+import org.codehaus.plexus.components.io.fileselectors.IncludeExcludeFileSelector;
+import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
+import org.codehaus.plexus.languages.java.jpms.LocationManager;
+import org.codehaus.plexus.languages.java.jpms.ModuleNameSource;
+import org.codehaus.plexus.languages.java.jpms.ResolvePathRequest;
+import org.codehaus.plexus.languages.java.jpms.ResolvePathResult;
+import org.codehaus.plexus.languages.java.jpms.ResolvePathsRequest;
+import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
+import org.codehaus.plexus.languages.java.version.JavaVersion;
+import org.codehaus.plexus.util.DirectoryScanner;
+import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.IOUtil;
+import org.codehaus.plexus.util.ReaderFactory;
+import org.codehaus.plexus.util.WriterFactory;
+import org.codehaus.plexus.util.cli.CommandLineException;
+import org.codehaus.plexus.util.cli.CommandLineUtils;
+import org.codehaus.plexus.util.cli.Commandline;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.ArtifactTypeRegistry;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.graph.DefaultDependencyNode;
+import org.eclipse.aether.graph.DependencyFilter;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.resolution.DependencyRequest;
+import org.eclipse.aether.resolution.DependencyResolutionException;
+import org.eclipse.aether.util.filter.AndDependencyFilter;
+import org.eclipse.aether.util.filter.PatternExclusionsDependencyFilter;
+import org.eclipse.aether.util.filter.ScopeDependencyFilter;
+
 import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtLeast;
-import static org.apache.maven.plugins.javadoc.JavadocUtil.toRelative;
-import static org.apache.maven.plugins.javadoc.JavadocUtil.toList;
 import static org.apache.maven.plugins.javadoc.JavadocUtil.isEmpty;
 import static org.apache.maven.plugins.javadoc.JavadocUtil.isNotEmpty;
+import static org.apache.maven.plugins.javadoc.JavadocUtil.toList;
+import static org.apache.maven.plugins.javadoc.JavadocUtil.toRelative;
 
 /**
  * Base class with majority of Javadoc functionalities.
@@ -281,13 +287,13 @@ public abstract class AbstractJavadocMojo
     private ResourceResolver resourceResolver;
 
     @Component
-    private ArtifactResolver artifactResolver;
+    private RepositorySystem repoSystem;
+
+    @Parameter( defaultValue = "${repositorySystemSession}", readonly = true, required = true )
+    private RepositorySystemSession repoSession;
 
     @Component
     private ArtifactHandlerManager artifactHandlerManager;
-
-    @Component
-    private DependencyResolver dependencyResolver;
 
     /**
      * Project builder
@@ -2403,7 +2409,8 @@ public abstract class AbstractJavadocMojo
         {
             return resourceResolver.resolveDependencySourcePaths( config );
         }
-        catch ( final ArtifactResolutionException | ArtifactNotFoundException e )
+        catch ( org.apache.maven.artifact.resolver.ArtifactResolutionException 
+                | org.apache.maven.artifact.resolver.ArtifactNotFoundException e )
         {
             throw new MavenReportException(
                 "Failed to resolve one or more javadoc source/resource artifacts:\n\n" + e.getMessage(), e );
@@ -2611,6 +2618,18 @@ public abstract class AbstractJavadocMojo
         return result;
     }
 
+    private List<org.eclipse.aether.graph.Dependency> toResolverDependencies( List<Dependency> dependencies )
+    {
+        if ( dependencies == null )
+        {
+            return null;
+        }
+        ArtifactTypeRegistry registry = RepositoryUtils.newArtifactTypeRegistry( artifactHandlerManager );
+        return dependencies.stream()
+                        .map( d -> RepositoryUtils.toDependency( d, registry ) )
+                        .collect( Collectors.toList() );
+    }
+
     /**
      * Method that gets the classpath and modulepath elements that will be specified in the javadoc
      * <code>-classpath</code> and <code>--module-path</code> parameter.
@@ -2644,9 +2663,9 @@ public abstract class AbstractJavadocMojo
                 reactorArtifacts.add( p.getGroupId() + ':' + p.getArtifactId() );
             }
 
-            TransformableFilter dependencyFilter = new AndFilter( Arrays.asList(
-                                                                     new PatternExclusionsFilter( reactorArtifacts ),
-                                                                     getDependencyScopeFilter() ) );
+            DependencyFilter dependencyFilter = new AndDependencyFilter( 
+                new PatternExclusionsDependencyFilter( reactorArtifacts ),
+                getDependencyScopeFilter() );
 
             for ( MavenProject subProject : aggregatorProjects )
             {
@@ -2671,22 +2690,23 @@ public abstract class AbstractJavadocMojo
                         sb.append( subProject.getArtifactId() ).append( ":" );
                         sb.append( subProject.getVersion() ).append( '\n' );
 
-                        ProjectBuildingRequest buildingRequest = getProjectBuildingRequest( subProject );
-
                         List<Dependency> managedDependencies = null;
                         if ( subProject.getDependencyManagement() != null )
                         {
                             managedDependencies = subProject.getDependencyManagement().getDependencies();
                         }
 
+                        CollectRequest collRequest = new CollectRequest( 
+                            toResolverDependencies( subProject.getDependencies() ),
+                            toResolverDependencies( managedDependencies ),
+                            subProject.getRemoteProjectRepositories() );
+                        DependencyRequest depRequest = new DependencyRequest( collRequest, dependencyFilter );
                         for ( ArtifactResult artifactResult
-                                    : dependencyResolver.resolveDependencies( buildingRequest,
-                                                                              subProject.getDependencies(),
-                                                                              managedDependencies,
-                                                                              dependencyFilter ) )
+                                    : repoSystem.resolveDependencies( repoSession, depRequest ).getArtifactResults() )
                         {
-                            populateCompileArtifactMap( compileArtifactMap,
-                                                        Collections.singletonList( artifactResult.getArtifact() ) );
+                            List<Artifact> artifacts = Collections.singletonList( 
+                                                      RepositoryUtils.toArtifact( artifactResult.getArtifact() ) );
+                            populateCompileArtifactMap( compileArtifactMap, artifacts );
 
                             sb.append( artifactResult.getArtifact().getFile() ).append( '\n' );
                         }
@@ -2697,7 +2717,7 @@ public abstract class AbstractJavadocMojo
                         }
 
                     }
-                    catch ( DependencyResolverException e )
+                    catch ( DependencyResolutionException e )
                     {
                         throw new MavenReportException( e.getMessage(), e );
                     }
@@ -2723,9 +2743,11 @@ public abstract class AbstractJavadocMojo
         return classpathElements;
     }
 
-    protected ScopeFilter getDependencyScopeFilter()
+    protected ScopeDependencyFilter getDependencyScopeFilter()
     {
-        return ScopeFilter.including( Artifact.SCOPE_COMPILE, Artifact.SCOPE_PROVIDED, Artifact.SCOPE_SYSTEM );
+        return new ScopeDependencyFilter( Arrays.asList( Artifact.SCOPE_COMPILE,
+                                                         Artifact.SCOPE_PROVIDED,
+                                                         Artifact.SCOPE_SYSTEM ), null );
     }
 
     /**
@@ -2736,18 +2758,15 @@ public abstract class AbstractJavadocMojo
     public Artifact resolveDependency( Dependency dependency )
         throws MavenReportException
     {
-        DefaultArtifactCoordinate coordinate = new DefaultArtifactCoordinate();
-        coordinate.setGroupId( dependency.getGroupId() );
-        coordinate.setArtifactId( dependency.getArtifactId() );
-        coordinate.setVersion( dependency.getVersion() );
-        coordinate.setClassifier( dependency.getClassifier() );
-        coordinate.setExtension( artifactHandlerManager.getArtifactHandler( dependency.getType() ).getExtension() );
-
-        try
+        ArtifactTypeRegistry registry = RepositoryUtils.newArtifactTypeRegistry( artifactHandlerManager );
+        ArtifactRequest req = new ArtifactRequest( RepositoryUtils.toDependency( dependency, registry ).getArtifact(),
+                project.getRemoteProjectRepositories(), null );
+        try 
         {
-            return artifactResolver.resolveArtifact( getProjectBuildingRequest( project ), coordinate ).getArtifact();
-        }
-        catch ( ArtifactResolverException e )
+            ArtifactResult resolutionResult = repoSystem.resolveArtifact( repoSession, req );
+            return RepositoryUtils.toArtifact( resolutionResult.getArtifact( ) );
+        } 
+        catch ( ArtifactResolutionException e )
         {
             throw new MavenReportException( "artifact resolver problem - " + e.getMessage(), e );
         }
@@ -3576,14 +3595,13 @@ public abstract class AbstractJavadocMojo
             Artifact artifact = createAndResolveArtifact( javadocArtifact );
             path.add( artifact.getFile().getAbsolutePath() );
 
-            DefaultDependableCoordinate coordinate = new DefaultDependableCoordinate();
-            coordinate.setGroupId( javadocArtifact.getGroupId() );
-            coordinate.setArtifactId( javadocArtifact.getArtifactId() );
-            coordinate.setVersion( javadocArtifact.getVersion() );
-
+            DependencyFilter filter = new ScopeDependencyFilter(
+                                             Arrays.asList( Artifact.SCOPE_COMPILE, Artifact.SCOPE_PROVIDED ),
+                                             Collections.emptySet() );
+            DependencyRequest req = new DependencyRequest(
+                                        new DefaultDependencyNode( RepositoryUtils.toArtifact( artifact ) ), filter );
             Iterable<ArtifactResult> deps =
-                dependencyResolver.resolveDependencies( getProjectBuildingRequest( project ), coordinate,
-                                                        ScopeFilter.including( "compile", "provided" ) );
+                repoSystem.resolveDependencies( repoSession, req ).getArtifactResults();
             for ( ArtifactResult a : deps )
             {
                 path.add( a.getArtifact().getFile().getAbsolutePath() );
@@ -3591,11 +3609,11 @@ public abstract class AbstractJavadocMojo
 
             return path;
         }
-        catch ( ArtifactResolverException e )
+        catch ( ArtifactResolutionException e )
         {
             throw new MavenReportException( "Unable to resolve artifact:" + javadocArtifact, e );
         }
-        catch ( DependencyResolverException e )
+        catch ( DependencyResolutionException e )
         {
             throw new MavenReportException( "Unable to resolve dependencies for:" + javadocArtifact, e );
         }
@@ -3606,18 +3624,20 @@ public abstract class AbstractJavadocMojo
      *
      * @param javadocArtifact the {@link JavadocPathArtifact} to resolve
      * @return a resolved {@link Artifact}
+     * @throws org.eclipse.aether.resolution.ArtifactResolutionException 
      * @throws ArtifactResolverException issue while resolving artifact
      */
-    private Artifact createAndResolveArtifact( JavadocPathArtifact javadocArtifact )
-        throws ArtifactResolverException
+    private Artifact createAndResolveArtifact( JavadocPathArtifact javadocArtifact ) 
+                    throws org.eclipse.aether.resolution.ArtifactResolutionException
     {
-        DefaultArtifactCoordinate coordinate = new DefaultArtifactCoordinate();
-        coordinate.setGroupId( javadocArtifact.getGroupId() );
-        coordinate.setArtifactId( javadocArtifact.getArtifactId() );
-        coordinate.setVersion( javadocArtifact.getVersion() );
-        coordinate.setClassifier( javadocArtifact.getClassifier() );
-
-        return artifactResolver.resolveArtifact( getProjectBuildingRequest( project ), coordinate ).getArtifact();
+        org.eclipse.aether.artifact.Artifact artifact = 
+                        new DefaultArtifact( javadocArtifact.getGroupId(),
+                                             javadocArtifact.getArtifactId(),
+                                             javadocArtifact.getClassifier(),
+                                             "jar",
+                                             javadocArtifact.getVersion() );
+        ArtifactRequest req = new ArtifactRequest( artifact, project.getRemoteProjectRepositories(), null );
+        return RepositoryUtils.toArtifact( repoSystem.resolveArtifact( repoSession, req ).getArtifact() );
     }
 
     /**
@@ -4363,7 +4383,7 @@ public abstract class AbstractJavadocMojo
             {
                 artifact = createAndResolveArtifact( item );
             }
-            catch ( ArtifactResolverException e )
+            catch ( ArtifactResolutionException e )
             {
                 throw new MavenReportException( "Unable to resolve artifact:" + item, e );
             }
@@ -5648,7 +5668,7 @@ public abstract class AbstractJavadocMojo
                 {
                     artifact = createAndResolveArtifact( aTagletArtifact );
                 }
-                catch ( ArtifactResolverException e )
+                catch ( ArtifactResolutionException e )
                 {
                     throw new MavenReportException( "Unable to resolve artifact:" + aTagletArtifact, e );
                 }
