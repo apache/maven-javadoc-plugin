@@ -29,8 +29,8 @@
 Configuring <<<links>>> Parameter
 
 ~~ Using anchor links produces a Velocity error.
-  You could add cross reference links to external projects using the {{{../javadoc-mojo.html}\<links/\>}}
-  parameters. For instance:
+  You can add cross reference links to external projects using the {{{../javadoc-mojo.html}\<links/\>}}
+  parameter. For instance:
 
 +-----+
 <project>
@@ -59,10 +59,10 @@ Configuring <<<links>>> Parameter
   {{{http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#package-list}Javadoc specifications}},
   all given links <<should>> have a fetchable <<</package-list>>> file.
 
-  Since 2.6, you could try to detect all Javadoc links for the project's dependencies. You need to use the
-  {{{../javadoc-mojo.html#detectLinks}\<detectLinks/\>}} parameter. All detected links are based on the default Maven
-  conventions. For instance, if your project has a dependency to
-  {{{http://commons.apache.org/lang/}Apache Commons Lang}} i.e.:
+  You can try to detect all Javadoc links for the project's dependencies. You need to use the
+  {{{../javadoc-mojo.html#detectLinks}\<detectLinks/\>}} parameter. Detected links are based on the default Maven
+  conventions. For instance, if your project has a dependency on
+  {{{https://commons.apache.org/lang/}Apache Commons Lang}} such as:
 
 +-----+
 <project>
@@ -78,17 +78,17 @@ Configuring <<<links>>> Parameter
 </project>
 +-----+
 
-  The added Javadoc link will be {{http://commons.apache.org/lang/apidocs}}.
+  The added Javadoc link will be {{https://commons.apache.org/lang/apidocs}}.
 
-  Since 2.6, a {{{http://java.sun.com/reference/api/index.html}Javadoc API}} link, depending the JDK version used by
+  A Javadoc API link, depending the JDK version used by
   your project, will be added. The version of the Javadoc API is detected from the value of the
-  {{{http://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#source}\<source/\>}}
+  {{{https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#source}\<source/\>}}
   parameter in the <<<{{{http://maven.apache.org/plugins/maven-compiler-plugin}org.apache.maven.plugins:maven-compiler-plugin}}>>>
   (defined in $\{project.build.plugins\} or in $\{project.build.pluginManagement\}), or computed via the Javadoc Tool
-  executable. If you want to skip this link, you need to configure
+  executable. To skip this link, you need to configure
   {{{../javadoc-mojo.html#detectJavaApiLink}\<detectJavaApiLink/\>}} to <<<false>>>.
 
-  <<Note>>: if you are using an unsupported JDK like 7.0, you could add its Javadoc API url using the
+  <<Note>>: if you are using an unsupported JDK like 7.0, you can add its Javadoc API url using the
   {{{../javadoc-mojo.html#javaApiLinks}\<javaApiLinks/\>}} parameter, i.e.:
 
 +-----+
@@ -108,7 +108,7 @@ Configuring <<<links>>> Parameter
 
 Configuring <<<offlineLinks>>> Parameter
 
-  If your project has modules, you could add cross reference links to your modules when your goals are not aggregator
+  If your project has modules, you can add cross reference links to your modules when your goals are not aggregator
   goals. For instance, if your project has two modules i.e.:
 
 +-----+
@@ -127,7 +127,7 @@ Configuring <<<offlineLinks>>> Parameter
 
   <<Important Note>>: all offlinelinks are based on the $\{project.url\} if present.
 
-  Since 2.6, you could disable the cross reference for <<<offlineLinks>>> using the
+  You can disable the cross reference for <<<offlineLinks>>> using the
   {{{../javadoc-mojo.html#detectOfflineLinks}\<detectOfflineLinks/>}} parameter.
 
   Refer to {{{../javadoc-mojo.html#offlineLinks}\<offlineLinks/\>}} parameter for more information.
