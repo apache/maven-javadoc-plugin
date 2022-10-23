@@ -147,7 +147,7 @@ mvn javadoc:test-aggregate-jar
 +-----+
 
  [<<<mvn site>>>] It will generate the Javadoc for public members (defined in \<reporting/\>) using the given
- stylesheet (defined in \<reporting/\>), and with an help page (default value for
+ stylesheet (defined in \<reporting/\>), and with a help page (default value for
  {{{./javadoc-mojo.html#nohelp}nohelp}} is true).
 
  [<<<mvn javadoc:javadoc>>>] It will generate the Javadoc for private members (defined in \<build/\>) using the
