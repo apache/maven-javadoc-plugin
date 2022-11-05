@@ -35,7 +35,7 @@ Fixing Javadoc Comments
  <mvn javadoc:test-fix> to fix test Java source files (i.e. inside src/test/java directory).
 
  <<Important Note>>: Since the changes are done <<directly>> in the source code by default, we <<strongly>> recommend using
- a SCM, so you cab revert if a problem occurs. You can also add <<<-DoutputDirectory=/path/to/dir>>>
+ a SCM, so you can revert if a problem occurs. You can also add <<<-DoutputDirectory=/path/to/dir>>>
  to change the directory where classes will be generated and avoid overwriting the existing source code.
 
 * Features Summary
