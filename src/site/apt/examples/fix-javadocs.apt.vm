@@ -59,7 +59,7 @@ Fixing Javadoc Comments
 
 ** Current limitations
 
- The <fix> and <test-fix> goals use {{{https://github.com/paul-hammant/qdox}} to extract class/interface/method
+ The <fix> and <test-fix> goals use {{{https://github.com/paul-hammant/qdox}qdox}} to extract class/interface/method
  Javadoc from source files.
 
 * Example Call
