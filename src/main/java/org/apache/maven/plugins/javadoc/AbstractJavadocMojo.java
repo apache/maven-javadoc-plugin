@@ -3807,7 +3807,7 @@ public abstract class AbstractJavadocMojo
         // to the javadoc command is ../bin/javadoc.
         //
         // In Java 9 and above the JRE is no longer in a subdirectory of the
-        // JDK, i.e. the JDK and the JDK are merged. In this case the java
+        // JDK, i.e. the JRE and the JDK are merged. In this case the java
         // command is installed to my-dir/bin/java along side the javadoc
         // command. So the relative path from "java.home" to the javadoc
         // command is bin/javadoc.
