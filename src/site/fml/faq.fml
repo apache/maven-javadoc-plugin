@@ -29,8 +29,8 @@ under the License.
       <question>What are the Javadoc options supported by the Maven Javadoc Plugin?</question>
       <answer>
         <p>
-          All options provided by Sun on the Javadoc homepages are wrapped in the Maven Javadoc Plugin. This
-          plugin supports Javadoc 1.4, 1.5 and 6.0 options. Refer you to the
+          All options provided by Oracle on the Javadoc homepages are wrapped in the Maven Javadoc Plugin. This
+          plugin supports Javadoc 1.4, 1.5 and 6.0 options. Refer to the
           <a href="./apidocs/org/apache/maven/plugins/javadoc/package-summary.html">Javadoc Package Summary</a>
           for more information and to the <a href="./javadoc-mojo.html">Javadoc Plugin Documentation</a>.
         </p>
@@ -73,7 +73,7 @@ under the License.
       <answer>
         <p>
           The Javadoc Plugin calls the Javadoc tool with
-          <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#argumentfiles">argument files</a>,
+          <a href="https://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#argumentfiles">argument files</a>,
           i.e. files called 'options', 'packages' and 'argfile' (or 'files' with Jdk &lt; 1.4):
           <source><![CDATA[
 javadoc.exe(or .sh) @options @packages | @argfile]]></source>
@@ -190,7 +190,7 @@ ${project.reporting.outputDirectory}/apidocs/javadoc.exe(or .sh) \
         </p>
         <p>
           <b>Note</b>: If your proxy needs more JVM
-          <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/net/properties.html">networking properties</a>
+          <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/net/properties.html">networking properties</a>
           (like NTLM), you could always add JVM options using the <i>&lt;additionalJOption/&gt;</i> parameter
           in your Javadoc Plugin configuration, i.e.:
           <source><![CDATA[
@@ -273,7 +273,7 @@ mvn deploy:deploy-file \
         <p>
           If you use the Javadoc report in the aggregate mode, i.e. using the <code>aggregate</code> parameter, and if the
           Javadoc report does not include additional source code directories defined using the
-          <a href="http://mojo.codehaus.org/build-helper-maven-plugin/add-source-mojo.html">build-helper:add-source</a> goal,
+          <a href="https://www.mojohaus.org/build-helper-maven-plugin/add-source-mojo.html">build-helper:add-source</a> goal,
           you need to use the <code>javadoc:aggregate</code> goal instead of <code>javadoc:javadoc</code> goal. Read the
           <a href="examples/aggregate.html">Aggregating Javadocs for Multi-Projects</a> part for more information.
         </p>
@@ -301,11 +301,11 @@ mvn deploy:deploy-file \
         </p>
       </answer>
     </faq>
-    <faq id="On Windows with Sun JDK, why javadoc:javadoc goal blows up due to an IllegalArgumentException in sun.net.www.ParseUtil.decode()">
-      <question>On Windows with Sun JDK, why <i>javadoc:javadoc</i> goal blows up due to an IllegalArgumentException in <i>sun.net.www.ParseUtil.decode()</i>?</question>
+    <faq id="On Windows with Oracle JDK, why javadoc:javadoc goal blows up due to an IllegalArgumentException in sun.net.www.ParseUtil.decode()">
+      <question>On Windows with Oracle JDK, why <i>javadoc:javadoc</i> goal blows up due to an IllegalArgumentException in <i>sun.net.www.ParseUtil.decode()</i>?</question>
       <answer>
         <p>
-          You are on Windows XP with Sun JDK 5 or JDK 6 freshly installed, and when you run <i>mvn javadoc:javadoc</i>,
+          You are on Windows XP with Oracle JDK 5 or JDK 6 freshly installed, and when you run <i>mvn javadoc:javadoc</i>,
           you are stick by an <i>sun.net.www.ParseUtil.decode()</i> exception like this
           <a href="javascript:;" onclick="toggleException( '_6219854' );" style="cursor: pointer;vertical-align:text-bottom;">one</a>.
         </p>
@@ -404,9 +404,9 @@ mvn deploy:deploy-file \
           or fix the wrong environment variable.
         </p>
         <p>
-          Refer you to
-          <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6219854">http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6219854</a>
-          from Sun for more details.
+          Refer to
+          <a href="https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6219854">Javs Bug 6219854</a>
+          for more details.
         </p>
 
         <script language="javascript" type="text/javascript">
@@ -425,8 +425,8 @@ mvn deploy:deploy-file \
         </script>
       </answer>
     </faq>
-    <faq id="What are the values of encoding, docencoding and charset parameters">
-      <question>What are the values of <code>&lt;encoding/&gt;</code>, <code>&lt;docencoding/&gt;</code> and <code>&lt;charset/&gt;</code> parameters?</question>
+    <faq id="What are the values of encoding, docencoding, and charset parameters">
+      <question>What are the values of <code>&lt;encoding/&gt;</code>, <code>&lt;docencoding/&gt;</code>, and <code>&lt;charset/&gt;</code> parameters?</question>
       <answer>
         <p>
           By default, these parameters have the following values:
