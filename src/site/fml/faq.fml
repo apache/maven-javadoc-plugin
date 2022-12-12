@@ -405,7 +405,7 @@ mvn deploy:deploy-file \
         </p>
         <p>
           Refer to
-          <a href="https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6219854">Javs Bug 6219854</a>
+          <a href="https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6219854">Java Bug 6219854</a>
           for more details.
         </p>
 
