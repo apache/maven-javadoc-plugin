@@ -301,12 +301,12 @@ mvn deploy:deploy-file \
         </p>
       </answer>
     </faq>
-    <faq id="On Windows with Oracle JDK, why javadoc:javadoc goal blows up due to an IllegalArgumentException in sun.net.www.ParseUtil.decode()">
-      <question>On Windows with Oracle JDK, why <i>javadoc:javadoc</i> goal blows up due to an IllegalArgumentException in <i>sun.net.www.ParseUtil.decode()</i>?</question>
+    <faq id="On Windows with Oracle JDK, why does javadoc:javadoc goal blow up due to an IllegalArgumentException in sun.net.www.ParseUtil.decode()">
+      <question>On Windows with Oracle JDK, why does <i>javadoc:javadoc</i> goal blow up due to an IllegalArgumentException in <i>sun.net.www.ParseUtil.decode()</i>?</question>
       <answer>
         <p>
           You are on Windows XP with Oracle JDK 5 or JDK 6 freshly installed, and when you run <i>mvn javadoc:javadoc</i>,
-          you are stick by an <i>sun.net.www.ParseUtil.decode()</i> exception like this
+          you encounter a <i>sun.net.www.ParseUtil.decode()</i> exception like this
           <a href="javascript:;" onclick="toggleException( '_6219854' );" style="cursor: pointer;vertical-align:text-bottom;">one</a>.
         </p>
         <div id="_6219854" style="display:none">
@@ -398,7 +398,7 @@ mvn deploy:deploy-file \
           with <code>%JAVAHOME%</code> not a valid environment variable.
         </p>
         <p>
-          To resolve it, just reset the <i>CLASSPATH</i> environement variable, i.e.: <source>set CLASSPATH=</source>
+          To resolve it, just reset the <i>CLASSPATH</i> environment variable, i.e.: <source>set CLASSPATH=</source>
           or set a new <i>CLASSPATH</i> environement variable, i.e.:
           <source>set CLASSPATH=C:\Java\jdk1.6.0_03\jre\lib\ext\QTJava.zip</source>
           or fix the wrong environment variable.
