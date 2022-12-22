@@ -210,6 +210,14 @@ public abstract class AbstractJavadocMojo
     protected static final String FILES_FILE_NAME = "files";
 
     /**
+     * The <code>errors</code> file name in the output directory containing the errors and warnings returned by
+     * <code>javadoc.exe(or .sh)</code>.
+     * <br />
+     * This won't exist if <code>javadoc.exe(or .sh)</code> didn't return any warnings or errors.
+     */
+    protected static final String ERRORS_FILE_NAME = "errors";
+
+    /**
      * Default css file name, used as file name in the output directory for the temporary custom stylesheet file
      * loaded from classloader resources.
      */
@@ -5868,6 +5876,11 @@ public abstract class AbstractJavadocMojo
                     getLog().info( output );
                 }
 
+                if ( StringUtils.isNotEmpty( err.getOutput() ) )
+                {
+                    writeErrorFile( err.getOutput(), javadocOutputDirectory );
+                }
+
                 StringBuilder msg = new StringBuilder( "\nExit code: " );
                 msg.append( exitCode );
                 if ( StringUtils.isNotEmpty( err.getOutput() ) )
@@ -6719,6 +6732,28 @@ public abstract class AbstractJavadocMojo
         catch ( IOException e )
         {
             logError( "Unable to write '" + commandLineFile.getName() + "' debug script file", e );
+        }
+    }
+
+    /**
+     * Write a files containing the javadoc errors and warnings.
+     *
+     * @param errorsAndWarnings      the javadoc errors and warnings as string, not null.
+     * @param javadocOutputDirectory the output dir, not null.
+     * @since 3.4.2-SNAPSHOT
+     */
+    private void writeErrorFile( String errorsAndWarnings, File javadocOutputDirectory )
+    {
+        File commandLineFile = new File( javadocOutputDirectory, ERRORS_FILE_NAME );
+        commandLineFile.getParentFile().mkdirs();
+
+        try
+        {
+            FileUtils.fileWrite( commandLineFile.getAbsolutePath(), null /* platform encoding */, errorsAndWarnings );
+        }
+        catch ( IOException e )
+        {
+            logError( "Unable to write '" + commandLineFile.getName() + "' errors file", e );
         }
     }
 

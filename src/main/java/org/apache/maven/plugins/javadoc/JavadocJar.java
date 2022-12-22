@@ -67,10 +67,11 @@ public class JavadocJar
      * @see AbstractJavadocMojo#PACKAGES_FILE_NAME
      * @see AbstractJavadocMojo#ARGFILE_FILE_NAME
      * @see AbstractJavadocMojo#FILES_FILE_NAME
+     * @see AbstractJavadocMojo#ERRORS_FILE_NAME
      */
     private static final String[] DEFAULT_EXCLUDES =
         new String[]{ DEBUG_JAVADOC_SCRIPT_NAME, OPTIONS_FILE_NAME, PACKAGES_FILE_NAME, ARGFILE_FILE_NAME,
-            FILES_FILE_NAME };
+            FILES_FILE_NAME, ERRORS_FILE_NAME };
 
     // ----------------------------------------------------------------------
     // Mojo components
