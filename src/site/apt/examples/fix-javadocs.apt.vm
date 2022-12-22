@@ -28,39 +28,39 @@
 
 Fixing Javadoc Comments
 
- When developers write code, they could forget to create (or update) the Javadoc comments. The <fix> and <test-fix>
+ When developers write code, they often forget to create (or update) the Javadoc comments. The <fix> and <test-fix>
  goals are interactive goals (i.e. used generally in command line) to fix the actual Javadoc comments in your classes.
 
  You need to call <mvn javadoc:fix> to fix main Java source files (i.e. inside src/main/java directory) or
  <mvn javadoc:test-fix> to fix test Java source files (i.e. inside src/test/java directory).
 
- <<Important Note>>: Since the changes are done <<directly>> in the source code, we recommend <<strongly>> the use of
- a SCM, so you could always do a revert if a problem occurs. You could always add <<<-DoutputDirectory=/path/to/dir>>>
- to specify a target directory where classes will be generated.
+ <<Important Note>>: Since the changes are done <<directly>> in the source code by default, we <<strongly>> recommend using
+ a SCM, so you can revert if a problem occurs. You can also add <<<-DoutputDirectory=/path/to/dir>>>
+ to change the directory where classes will be generated and avoid overwriting the existing source code.
 
 * Features Summary
 
- The user could skip the class/field/method Javadoc fixing using specific parameters, i.e.
+ The user can skip the class/field/method Javadoc fixing using specific parameters, i.e.
  {{{../fix-mojo.html#fixClassComment}\<fixClassComment/\>}}.
- Also, the user could specify a {{{../fix-mojo.html#level}\<level/\>}}, i.e. public, to fix only class/field/method with
+ Also, the user can specify a {{{../fix-mojo.html#level}\<level/\>}}, i.e. public, to fix only class/field/method with
  the given level.
 
- These goals could fix dynamically all Javadoc tags (by default, see {{{../fix-mojo.html#fixTags}\<fixTags/\>}}) or
- selective tags like author, version...
- Also, the user could specify default value for some tags, i.e. {{{../fix-mojo.html#defaultAuthor}\<defaultAuthor/\>}}.
+ These goals can fix all Javadoc tags (by default, see {{{../fix-mojo.html#fixTags}\<fixTags/\>}}) or
+ selective tags like author, version, etc.
+ You specify default value for some tags, for example, {{{../fix-mojo.html#defaultAuthor}\<defaultAuthor/\>}}.
 
- The <javadoc:fix> goal could use Clirr ({{{http://clirr.sourceforge.net}}} via the
- {{{http://mojo.codehaus.org/clirr-maven-plugin/}clirr-maven-plugin}}, a tool that checks Java libraries for
- binary and source compatibility with older releases. So, the <@since> tags will be dynamically added for the current
+ The <javadoc:fix> goal can use Clirr ({{{http://clirr.sourceforge.net}}} via the
+ {{{http://mojo.codehaus.org/clirr-maven-plugin/}clirr-maven-plugin}} to add
+ <@since> tags will be dynamically added for the current
  project version. You need to add the <comparisonVersion> parameter (see below).
 
- Finally, the user could process specific Java files using the
+ Finally, the user can process specific Java files using the
  {{{../fix-mojo.html#includes}includes}}/{{{../fix-mojo.html#excludes}excludes}} parameters.
 
 ** Current limitations
 
- The <fix> and <test-fix> goals use intensively {{{http://qdox.codehaus.org/}Qdox}} to extract class/interface/method
- Javadoc from source files. Unfortunately, Qdox has {{{https://issues.apache.org/jira/browse/QDOX}some known issues}}.
+ The <fix> and <test-fix> goals use {{{https://github.com/paul-hammant/qdox}qdox}} to extract class/interface/method
+ Javadoc from source files.
 
 * Example Call
 
@@ -86,16 +86,14 @@ y
 ...
 +-----+
 
-  You could review the changes and commit.
+  You can then review the changes and commit.
 
 * Using Clirr Integration
 
-  <<Note>>: a previous artifact should be deployed firstly.
-
 ** Comparing against a specific version
 
-  By default, the goals compare the current code against the latest released version, which is lower than the current
-  version. If you want to use another version, you need to specify it similar to the Maven Clirr Plugin:
+  By default, the goals compare the current code against the latest released version which is lower than the current
+  version. If you want to use another version, you need to specify it like so:
 
 +-----+
 mvn javadoc:fix -DcomparisonVersion=1.0
@@ -107,9 +105,8 @@ mvn javadoc:fix -DcomparisonVersion=1.0
 
 ** Using another Clirr version
 
-  By default, the <fix> and <test-fix> goals use the {{{http://mojo.codehaus.org/clirr-maven-plugin/}clirr-maven-plugin}},
-  version <<<2.2.2>>>. To use another version, you need to add a dependency in the Javadoc plugin, similar to the
-  following:
+  By default, the <fix> and <test-fix> goals use the {{{https://www.mojohaus.org/clirr-maven-plugin}clirr-maven-plugin}},
+  version <<<2.2.2>>>. To use another version, you need to add a dependency in the Javadoc plugin as shown here:
 
 +-----+
 <project>
