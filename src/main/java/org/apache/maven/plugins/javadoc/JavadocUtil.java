@@ -1006,27 +1006,17 @@ public class JavadocUtil {
 
     /**
      * @param log a logger could be null
-     * @return the Maven home defined in the <code>maven.home</code> system property or defined in <code>M2_HOME</code>
-     *         system env variables or null if never set.
+     * @return the Maven home defined in the <code>maven.home</code> system property
+     *         or null if never set.
      * @since 2.6
      */
     private static String getMavenHome(Log log) {
         String mavenHome = System.getProperty("maven.home");
-        if (mavenHome == null) {
-            try {
-                mavenHome = CommandLineUtils.getSystemEnvVars().getProperty("M2_HOME");
-            } catch (IOException e) {
-                if (log != null && log.isDebugEnabled()) {
-                    log.debug("IOException: " + e.getMessage());
-                }
-            }
-        }
 
         File m2Home = new File(mavenHome);
         if (!m2Home.exists()) {
             if (log != null && log.isErrorEnabled()) {
-                log.error("Cannot find Maven application directory. Either specify 'maven.home' system property, or "
-                        + "M2_HOME environment variable.");
+                log.error("Cannot find Maven application directory. Either specify 'maven.home' system property.");
             }
         }
 
@@ -1039,16 +1029,7 @@ public class JavadocUtil {
      * @since 2.6
      */
     private static String getMavenOpts(Log log) {
-        String mavenOpts = null;
-        try {
-            mavenOpts = CommandLineUtils.getSystemEnvVars().getProperty("MAVEN_OPTS");
-        } catch (IOException e) {
-            if (log != null && log.isDebugEnabled()) {
-                log.debug("IOException: " + e.getMessage());
-            }
-        }
-
-        return mavenOpts;
+        return CommandLineUtils.getSystemEnvVars().getProperty("MAVEN_OPTS");
     }
 
     /**
@@ -1061,14 +1042,7 @@ public class JavadocUtil {
     private static File getJavaHome(Log log) {
         File javaHome = null;
 
-        String javaHomeValue = null;
-        try {
-            javaHomeValue = CommandLineUtils.getSystemEnvVars().getProperty("JAVA_HOME");
-        } catch (IOException e) {
-            if (log != null && log.isDebugEnabled()) {
-                log.debug("IOException: " + e.getMessage());
-            }
-        }
+        String javaHomeValue = CommandLineUtils.getSystemEnvVars().getProperty("JAVA_HOME");
 
         // if maven.home is set, we can assume JAVA_HOME must be used for testing
         if (System.getProperty("maven.home") == null || javaHomeValue == null) {
@@ -1100,16 +1074,7 @@ public class JavadocUtil {
      * @since 2.6
      */
     private static String getJavaOpts(Log log) {
-        String javaOpts = null;
-        try {
-            javaOpts = CommandLineUtils.getSystemEnvVars().getProperty("JAVA_OPTS");
-        } catch (IOException e) {
-            if (log != null && log.isDebugEnabled()) {
-                log.debug("IOException: " + e.getMessage());
-            }
-        }
-
-        return javaOpts;
+        return CommandLineUtils.getSystemEnvVars().getProperty("JAVA_OPTS");
     }
 
     /**
