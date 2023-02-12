@@ -4550,7 +4550,7 @@ public abstract class AbstractJavadocMojo
                     continue;
                 }
 
-                if ( currentFile.indexOf( File.separatorChar ) == -1 )
+                if ( currentFile.indexOf( '/' ) == -1 )
                 {
                     returnList.add( currentSourcePath.resolve( currentFile ).toAbsolutePath().toString() );
                 }

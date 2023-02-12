@@ -306,8 +306,12 @@ public class JavadocReportTest
         if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "11" ) )
         {
             assertThat( apidocs.resolve( "def/configuration/package-frame.html" )).exists();
-            assertThat( apidocs.resolve( "allclasses-frame.html" )).exists();
-            assertThat( apidocs.resolve( "allclasses-noframe.html" )).exists();
+            assertThat( apidocs.resolve( "allclasses-frame.html" )).exists()
+                                                                   .content().containsOnlyOnce("def/configuration/App.html")
+                                                                             .containsOnlyOnce("def/configuration/AppSample.html");
+            assertThat( apidocs.resolve( "allclasses-noframe.html" )).exists()
+                                                                     .content().containsOnlyOnce("def/configuration/App.html")
+                                                                               .containsOnlyOnce("def/configuration/AppSample.html");
         }
 
         // class level generated javadoc files
