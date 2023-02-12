@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.javadoc.stubs;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.javadoc.stubs;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc.stubs;
 
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.versioning.VersionRange;
@@ -26,9 +25,7 @@ import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
-public class JavadocPluginArtifactStub
-    extends ArtifactStub
-{
+public class JavadocPluginArtifactStub extends ArtifactStub {
     private String groupId;
 
     private String artifactId;
@@ -43,112 +40,97 @@ public class JavadocPluginArtifactStub
 
     private ArtifactHandler handler;
 
-    public JavadocPluginArtifactStub( String groupId, String artifactId, String version, String packaging )
-    {
+    public JavadocPluginArtifactStub(String groupId, String artifactId, String version, String packaging) {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
         this.packaging = packaging;
-        versionRange = VersionRange.createFromVersion( version );
+        versionRange = VersionRange.createFromVersion(version);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setGroupId( String groupId )
-    {
+    public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
     /** {@inheritDoc} */
     @Override
-    public String getGroupId()
-    {
+    public String getGroupId() {
         return groupId;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setArtifactId( String artifactId )
-    {
+    public void setArtifactId(String artifactId) {
         this.artifactId = artifactId;
     }
 
     /** {@inheritDoc} */
     @Override
-    public String getArtifactId()
-    {
+    public String getArtifactId() {
         return artifactId;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setVersion( String version )
-    {
+    public void setVersion(String version) {
         this.version = version;
     }
 
     /** {@inheritDoc} */
     @Override
-    public String getVersion()
-    {
+    public String getVersion() {
         return version;
     }
 
     /**
      * @param packaging
      */
-    public void setPackaging( String packaging )
-    {
+    public void setPackaging(String packaging) {
         this.packaging = packaging;
     }
 
     /**
      * @return
      */
-    public String getPackaging()
-    {
+    public String getPackaging() {
         return packaging;
     }
 
     /** {@inheritDoc} */
     @Override
-    public VersionRange getVersionRange()
-    {
+    public VersionRange getVersionRange() {
         return versionRange;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setVersionRange( VersionRange versionRange )
-    {
+    public void setVersionRange(VersionRange versionRange) {
         this.versionRange = versionRange;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactHandler getArtifactHandler()
-    {
+    public ArtifactHandler getArtifactHandler() {
         return handler;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setArtifactHandler( ArtifactHandler handler )
-    {
+    public void setArtifactHandler(ArtifactHandler handler) {
         this.handler = handler;
     }
 
     /** {@inheritDoc} */
     @Override
-    public String getBaseVersion()
-    {
+    public String getBaseVersion() {
         return baseVersion;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setBaseVersion( String string )
-    {
+    public void setBaseVersion(String string) {
         this.baseVersion = string;
     }
 }

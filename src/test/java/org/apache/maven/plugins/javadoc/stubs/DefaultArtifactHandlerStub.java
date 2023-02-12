@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.javadoc.stubs;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,23 +16,20 @@ package org.apache.maven.plugins.javadoc.stubs;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc.stubs;
 
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
-public class DefaultArtifactHandlerStub
-    extends DefaultArtifactHandler
-{
+public class DefaultArtifactHandlerStub extends DefaultArtifactHandler {
     private String language;
 
     /** {@inheritDoc} */
     @Override
-    public String getLanguage()
-    {
-        if ( language == null )
-        {
+    public String getLanguage() {
+        if (language == null) {
             language = "java";
         }
 
@@ -45,8 +40,7 @@ public class DefaultArtifactHandlerStub
      * @param language
      */
     @Override
-    public void setLanguage( String language )
-    {
+    public void setLanguage(String language) {
         this.language = language;
     }
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc.resolver;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,16 +16,16 @@ package org.apache.maven.plugins.javadoc.resolver;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import org.apache.maven.plugins.javadoc.options.JavadocOptions;
+package org.apache.maven.plugins.javadoc.resolver;
 
 import java.io.File;
 
+import org.apache.maven.plugins.javadoc.options.JavadocOptions;
+
 /**
- * 
+ *
  */
-public class JavadocBundle
-{
+public class JavadocBundle {
 
     private final File resourcesDirectory;
 
@@ -37,8 +35,7 @@ public class JavadocBundle
      * @param options {@link JavadocOptions}
      * @param resourcesDirectory The resources directory.
      */
-    public JavadocBundle( final JavadocOptions options, final File resourcesDirectory )
-    {
+    public JavadocBundle(final JavadocOptions options, final File resourcesDirectory) {
         this.options = options;
         this.resourcesDirectory = resourcesDirectory;
     }
@@ -46,17 +43,14 @@ public class JavadocBundle
     /**
      * @return {@link #resourcesDirectory}
      */
-    public File getResourcesDirectory()
-    {
+    public File getResourcesDirectory() {
         return resourcesDirectory;
     }
 
     /**
      * @return {@link #options}
      */
-    public JavadocOptions getOptions()
-    {
+    public JavadocOptions getOptions() {
         return options;
     }
-
 }

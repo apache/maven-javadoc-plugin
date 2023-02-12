@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,18 +16,18 @@ package org.apache.maven.plugins.javadoc;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
 
 /**
  * Contains several OS-specific methods from Commons-Lang3's SystemUtils. We don't want to use that class because it
  * uses enums for Java versions, which implies that with every new Java version a new commons-lang3 is required.
- * 
+ *
  * @author Robert Scholte
  * @since 3.0.1
  */
-class SystemUtils
-{
+class SystemUtils {
     /**
      * <p>
      * The {@code os.name} System Property. Operating system name.
@@ -46,7 +44,7 @@ class SystemUtils
      *
      * @since Java 1.1
      */
-    public static final String OS_NAME = getSystemProperty( "os.name" );
+    public static final String OS_NAME = getSystemProperty("os.name");
 
     /**
      * The prefix String for all Windows OS.
@@ -61,7 +59,7 @@ class SystemUtils
      * The field will return {@code false} if {@code OS_NAME} is {@code null}.
      * </p>
      */
-    public static final boolean IS_OS_AIX = getOSMatchesName( "AIX" );
+    public static final boolean IS_OS_AIX = getOSMatchesName("AIX");
 
     /**
      * <p>
@@ -71,7 +69,7 @@ class SystemUtils
      * The field will return {@code false} if {@code OS_NAME} is {@code null}.
      * </p>
      */
-    public static final boolean IS_OS_MAC_OSX = getOSMatchesName( "Mac OS X" );
+    public static final boolean IS_OS_MAC_OSX = getOSMatchesName("Mac OS X");
 
     /**
      * <p>
@@ -81,7 +79,7 @@ class SystemUtils
      * The field will return {@code false} if {@code OS_NAME} is {@code null}.
      * </p>
      */
-    public static final boolean IS_OS_WINDOWS = getOSMatchesName( OS_NAME_WINDOWS_PREFIX );
+    public static final boolean IS_OS_WINDOWS = getOSMatchesName(OS_NAME_WINDOWS_PREFIX);
 
     /**
      * The System property key for the Java home directory.
@@ -104,7 +102,7 @@ class SystemUtils
      *
      * @since Java 1.1
      */
-    public static final String LINE_SEPARATOR = getSystemProperty( "line.separator" );
+    public static final String LINE_SEPARATOR = getSystemProperty("line.separator");
 
     /**
      * Decides if the operating system matches.
@@ -112,9 +110,8 @@ class SystemUtils
      * @param osNamePrefix the prefix for the os name
      * @return true if matches, or false if not or can't determine
      */
-    private static boolean getOSMatchesName( final String osNamePrefix )
-    {
-        return isOSNameMatch( OS_NAME, osNamePrefix );
+    private static boolean getOSMatchesName(final String osNamePrefix) {
+        return isOSNameMatch(OS_NAME, osNamePrefix);
     }
 
     /**
@@ -127,13 +124,11 @@ class SystemUtils
      * @param osNamePrefix the prefix for the expected OS name
      * @return true if matches, or false if not or can't determine
      */
-    static boolean isOSNameMatch( final String osName, final String osNamePrefix )
-    {
-        if ( osName == null )
-        {
+    static boolean isOSNameMatch(final String osName, final String osNamePrefix) {
+        if (osName == null) {
             return false;
         }
-        return osName.startsWith( osNamePrefix );
+        return osName.startsWith(osNamePrefix);
     }
 
     /**
@@ -147,9 +142,8 @@ class SystemUtils
      * @see System#getProperty(String)
      * @since 2.1
      */
-    public static File getJavaHome()
-    {
-        return new File( System.getProperty( JAVA_HOME_KEY ) );
+    public static File getJavaHome() {
+        return new File(System.getProperty(JAVA_HOME_KEY));
     }
 
     /**
@@ -164,17 +158,13 @@ class SystemUtils
      * @param property the system property name
      * @return the system property value or {@code null} if a security problem occurs
      */
-    private static String getSystemProperty( final String property )
-    {
-        try
-        {
-            return System.getProperty( property );
-        }
-        catch ( final SecurityException ex )
-        {
+    private static String getSystemProperty(final String property) {
+        try {
+            return System.getProperty(property);
+        } catch (final SecurityException ex) {
             // we are not allowed to look at this property
-            System.err.println( "Caught a SecurityException reading the system property '" + property
-                + "'; the SystemUtils property value will default to null." );
+            System.err.println("Caught a SecurityException reading the system property '" + property
+                    + "'; the SystemUtils property value will default to null.");
             return null;
         }
     }

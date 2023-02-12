@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.javadoc.stubs;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,90 +16,82 @@ package org.apache.maven.plugins.javadoc.stubs;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import org.apache.maven.model.Build;
-import org.apache.maven.model.Scm;
-import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
+package org.apache.maven.plugins.javadoc.stubs;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.maven.model.Build;
+import org.apache.maven.model.Scm;
+import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
+
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
-public class CustomConfigurationMavenProjectStub
-    extends MavenProjectStub
-{
+public class CustomConfigurationMavenProjectStub extends MavenProjectStub {
 
     private Scm scm;
 
     private Build build;
 
-    public CustomConfigurationMavenProjectStub()
-    {
-        readModel( new File( getBasedir(), "custom-configuration-plugin-config.xml" ) );
+    public CustomConfigurationMavenProjectStub() {
+        readModel(new File(getBasedir(), "custom-configuration-plugin-config.xml"));
 
-        setGroupId( "org.apache.maven.plugins.maven-javadoc-plugin.unit" );
-        setArtifactId( "custom-configuration" );
-        setVersion( "1.0-SNAPSHOT" );
-        setName( "Maven Javadoc Plugin Custom configuration Test" );
-        setUrl( "http://maven.apache.org" );
-        setPackaging( "jar" );
-        //setExecutionRoot( true );
-        //setDescription( "Sample Maven Project" );
+        setGroupId("org.apache.maven.plugins.maven-javadoc-plugin.unit");
+        setArtifactId("custom-configuration");
+        setVersion("1.0-SNAPSHOT");
+        setName("Maven Javadoc Plugin Custom configuration Test");
+        setUrl("http://maven.apache.org");
+        setPackaging("jar");
+        // setExecutionRoot( true );
+        // setDescription( "Sample Maven Project" );
 
         Scm scm = new Scm();
-        scm.setConnection( "scm:svn:http://svn.apache.org/maven/sample/trunk" );
-        setScm( scm );
+        scm.setConnection("scm:svn:http://svn.apache.org/maven/sample/trunk");
+        setScm(scm);
 
         Build build = new Build();
-        build.setFinalName( "default-configuration" );
-        build.setDirectory( super.getBasedir() + "/target/test/unit/custom-configuration/target" );
-        setBuild( build );
+        build.setFinalName("default-configuration");
+        build.setDirectory(super.getBasedir() + "/target/test/unit/custom-configuration/target");
+        setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
-        String temp =  getBasedir().getAbsolutePath();
-        if( !temp.startsWith( "/" ) )
-        {
-            temp = temp.replace( '/', '\\' );
+        String temp = getBasedir().getAbsolutePath();
+        if (!temp.startsWith("/")) {
+            temp = temp.replace('/', '\\');
         }
-        compileSourceRoots.add( temp );
-        setCompileSourceRoots( compileSourceRoots );
+        compileSourceRoots.add(temp);
+        setCompileSourceRoots(compileSourceRoots);
     }
 
     /** {@inheritDoc} */
     @Override
-    public Scm getScm()
-    {
+    public Scm getScm() {
         return scm;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setScm( Scm scm )
-    {
+    public void setScm(Scm scm) {
         this.scm = scm;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Build getBuild()
-    {
+    public Build getBuild() {
         return build;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setBuild( Build build )
-    {
+    public void setBuild(Build build) {
         this.build = build;
     }
 
     /** {@inheritDoc} */
     @Override
-    public File getBasedir()
-    {
-        return new File( super.getBasedir() + "/src/test/resources/unit/custom-configuration/" );
+    public File getBasedir() {
+        return new File(super.getBasedir() + "/src/test/resources/unit/custom-configuration/");
     }
 }

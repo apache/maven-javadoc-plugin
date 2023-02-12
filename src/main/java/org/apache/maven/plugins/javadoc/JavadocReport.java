@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.javadoc;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.javadoc;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -51,12 +50,9 @@ import org.codehaus.plexus.util.StringUtils;
  * @since 2.0
  * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">Javadoc Tool</a>
  */
-@Mojo( name = "javadoc", requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true )
-@Execute( phase = LifecyclePhase.GENERATE_SOURCES )
-public class JavadocReport
-    extends AbstractJavadocMojo
-    implements MavenMultiPageReport
-{
+@Mojo(name = "javadoc", requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
+@Execute(phase = LifecyclePhase.GENERATE_SOURCES)
+public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPageReport {
     // ----------------------------------------------------------------------
     // Report Mojo Parameters
     // ----------------------------------------------------------------------
@@ -64,8 +60,10 @@ public class JavadocReport
     /**
      * Specifies the destination directory where javadoc saves the generated HTML files.
      */
-    @Parameter( property = "reportOutputDirectory", defaultValue = "${project.reporting.outputDirectory}/apidocs",
-                required = true )
+    @Parameter(
+            property = "reportOutputDirectory",
+            defaultValue = "${project.reporting.outputDirectory}/apidocs",
+            required = true)
     private File reportOutputDirectory;
 
     /**
@@ -74,7 +72,7 @@ public class JavadocReport
      *
      * @since 2.1
      */
-    @Parameter( property = "destDir", defaultValue = "apidocs" )
+    @Parameter(property = "destDir", defaultValue = "apidocs")
     private String destDir;
 
     /**
@@ -83,7 +81,7 @@ public class JavadocReport
      *
      * @since 2.1
      */
-    @Parameter( property = "name" )
+    @Parameter(property = "name")
     private String name;
 
     /**
@@ -92,7 +90,7 @@ public class JavadocReport
      *
      * @since 2.1
      */
-    @Parameter( property = "description" )
+    @Parameter(property = "description")
     private String description;
 
     // ----------------------------------------------------------------------
@@ -101,11 +99,9 @@ public class JavadocReport
 
     /** {@inheritDoc} */
     @Override
-    public String getName( Locale locale )
-    {
-        if ( StringUtils.isEmpty( name ) )
-        {
-            return getBundle( locale ).getString( "report.javadoc.name" );
+    public String getName(Locale locale) {
+        if (StringUtils.isEmpty(name)) {
+            return getBundle(locale).getString("report.javadoc.name");
         }
 
         return name;
@@ -113,11 +109,9 @@ public class JavadocReport
 
     /** {@inheritDoc} */
     @Override
-    public String getDescription( Locale locale )
-    {
-        if ( StringUtils.isEmpty( description ) )
-        {
-            return getBundle( locale ).getString( "report.javadoc.description" );
+    public String getDescription(Locale locale) {
+        if (StringUtils.isEmpty(description)) {
+            return getBundle(locale).getString("report.javadoc.description");
         }
 
         return description;
@@ -125,50 +119,38 @@ public class JavadocReport
 
     /** {@inheritDoc} */
     @Override
-    public void generate( org.codehaus.doxia.sink.Sink sink, Locale locale )
-        throws MavenReportException
-    {
-        generate( sink, null, locale );
+    public void generate(org.codehaus.doxia.sink.Sink sink, Locale locale) throws MavenReportException {
+        generate(sink, null, locale);
     }
 
-    public void generate( Sink sink, Locale locale )
-        throws MavenReportException
-    {
-        generate( sink, null, locale );
+    public void generate(Sink sink, Locale locale) throws MavenReportException {
+        generate(sink, null, locale);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void generate( Sink sink, SinkFactory sinkFactory, Locale locale )
-        throws MavenReportException
-    {
+    public void generate(Sink sink, SinkFactory sinkFactory, Locale locale) throws MavenReportException {
         outputDirectory = getReportOutputDirectory();
 
-        try
-        {
-            executeReport( locale );
-        }
-        catch ( MavenReportException | RuntimeException e )
-        {
-            if ( failOnError )
-            {
+        try {
+            executeReport(locale);
+        } catch (MavenReportException | RuntimeException e) {
+            if (failOnError) {
                 throw e;
             }
-            getLog().error( "Error while creating javadoc report: " + e.getMessage(), e );
+            getLog().error("Error while creating javadoc report: " + e.getMessage(), e);
         }
     }
 
     /** {@inheritDoc} */
     @Override
-    public String getOutputName()
-    {
+    public String getOutputName() {
         return destDir + "/index";
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean isExternalReport()
-    {
+    public boolean isExternalReport() {
         return true;
     }
 
@@ -237,49 +219,40 @@ public class JavadocReport
      *  </table>
      */
     @Override
-    public boolean canGenerateReport()
-    {
+    public boolean canGenerateReport() {
         boolean canGenerate = false;
 
-        if ( this.isAggregator() || !"pom".equals( this.project.getPackaging() ) )
-        {
+        if (this.isAggregator() || !"pom".equals(this.project.getPackaging())) {
             Collection<Path> sourcePaths;
             Map<Path, Collection<String>> files;
-            try
-            {
+            try {
                 sourcePaths = getSourcePaths().stream()
-                                .flatMap( e -> e.getSourcePaths().stream() )
-                                .collect( Collectors.toList() );
-                files = getFiles( sourcePaths );
-            }
-            catch ( MavenReportException e )
-            {
-                getLog().error( e.getMessage(), e );
+                        .flatMap(e -> e.getSourcePaths().stream())
+                        .collect(Collectors.toList());
+                files = getFiles(sourcePaths);
+            } catch (MavenReportException e) {
+                getLog().error(e.getMessage(), e);
                 return false;
             }
 
-            canGenerate = canGenerateReport( files );
+            canGenerate = canGenerateReport(files);
         }
-        if ( getLog().isDebugEnabled() )
-        {
-            getLog().debug( " canGenerateReport = " + canGenerate + " for project " + this.project );
+        if (getLog().isDebugEnabled()) {
+            getLog().debug(" canGenerateReport = " + canGenerate + " for project " + this.project);
         }
         return canGenerate;
     }
 
     /** {@inheritDoc} */
     @Override
-    public String getCategoryName()
-    {
+    public String getCategoryName() {
         return CATEGORY_PROJECT_REPORTS;
     }
 
     /** {@inheritDoc} */
     @Override
-    public File getReportOutputDirectory()
-    {
-        if ( reportOutputDirectory == null )
-        {
+    public File getReportOutputDirectory() {
+        if (reportOutputDirectory == null) {
             return outputDirectory;
         }
 
@@ -292,63 +265,52 @@ public class JavadocReport
      * @param reportOutputDirectory the directory file to be set
      */
     @Override
-    public void setReportOutputDirectory( File reportOutputDirectory )
-    {
-        updateReportOutputDirectory( reportOutputDirectory, destDir );
+    public void setReportOutputDirectory(File reportOutputDirectory) {
+        updateReportOutputDirectory(reportOutputDirectory, destDir);
     }
 
     /**
      * @param theDestDir The destination directory.
      */
-    public void setDestDir( String theDestDir )
-    {
+    public void setDestDir(String theDestDir) {
         this.destDir = theDestDir;
-        updateReportOutputDirectory( reportOutputDirectory, theDestDir );
+        updateReportOutputDirectory(reportOutputDirectory, theDestDir);
     }
 
-    private void updateReportOutputDirectory( File reportOutputDirectory, String destDir )
-    {
-        if ( reportOutputDirectory != null && destDir != null
-             && !reportOutputDirectory.getAbsolutePath().endsWith( destDir ) )
-        {
-            this.reportOutputDirectory = new File( reportOutputDirectory, destDir );
-        }
-        else
-        {
+    private void updateReportOutputDirectory(File reportOutputDirectory, String destDir) {
+        if (reportOutputDirectory != null
+                && destDir != null
+                && !reportOutputDirectory.getAbsolutePath().endsWith(destDir)) {
+            this.reportOutputDirectory = new File(reportOutputDirectory, destDir);
+        } else {
             this.reportOutputDirectory = reportOutputDirectory;
         }
     }
 
     /** {@inheritDoc} */
     @Override
-    public void doExecute()
-        throws MojoExecutionException, MojoFailureException
-    {
-        if ( skip )
-        {
-            getLog().info( "Skipping javadoc generation" );
+    public void doExecute() throws MojoExecutionException, MojoFailureException {
+        if (skip) {
+            getLog().info("Skipping javadoc generation");
             return;
         }
 
-        File outputDirectory = new File( getOutputDirectory() );
+        File outputDirectory = new File(getOutputDirectory());
 
         String filename = getOutputName() + ".html";
 
         Locale locale = Locale.getDefault();
 
-        try
-        {
+        try {
             // TODO Replace null with real value
-            RenderingContext docRenderingContext = new RenderingContext( outputDirectory, filename, null );
+            RenderingContext docRenderingContext = new RenderingContext(outputDirectory, filename, null);
 
-            SiteRendererSink sink = new SiteRendererSink( docRenderingContext );
+            SiteRendererSink sink = new SiteRendererSink(docRenderingContext);
 
-            generate( sink, null, locale );
+            generate(sink, null, locale);
 
-        }
-        catch ( MavenReportException | RuntimeException e )
-        {
-            failOnError( "An error has occurred in " + getName( Locale.ENGLISH ) + " report generation", e );
+        } catch (MavenReportException | RuntimeException e) {
+            failOnError("An error has occurred in " + getName(Locale.ENGLISH) + " report generation", e);
         }
     }
 
@@ -358,8 +320,7 @@ public class JavadocReport
      * @param locale The locale of the currently generated report.
      * @return The resource bundle for the requested locale.
      */
-    private ResourceBundle getBundle( Locale locale )
-    {
-        return ResourceBundle.getBundle( "javadoc-report", locale, getClass().getClassLoader() );
+    private ResourceBundle getBundle(Locale locale) {
+        return ResourceBundle.getBundle("javadoc-report", locale, getClass().getClassLoader());
     }
 }

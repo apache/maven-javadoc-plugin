@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.javadoc.stubs;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,63 +16,58 @@ package org.apache.maven.plugins.javadoc.stubs;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc.stubs;
 
-import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
-import org.apache.maven.model.Scm;
-import org.apache.maven.model.Build;
-
-import java.util.List;
-import java.util.ArrayList;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
-public class OptionsUmlautEncodingMavenProjectStub
-    extends MavenProjectStub
-{
-   private Scm scm;
+import org.apache.maven.model.Build;
+import org.apache.maven.model.Scm;
+import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 
-    public OptionsUmlautEncodingMavenProjectStub()
-    {
-        readModel( new File( getBasedir(), "optionsumlautencoding-test-plugin-config.xml" ) );
+public class OptionsUmlautEncodingMavenProjectStub extends MavenProjectStub {
+    private Scm scm;
 
-        setGroupId( "org.apache.maven.plugins.maven-javadoc-plugin.unit" );
-        setArtifactId( "optionsumlautencoding-test" );
-        setVersion( "1.0-SNAPSHOT" );
-        setName( "Maven Javadoc Plugin Options Umlaut Encoding Test" );
-        setUrl( "http://maven.apache.org" );
-        setPackaging( "jar" );
+    public OptionsUmlautEncodingMavenProjectStub() {
+        readModel(new File(getBasedir(), "optionsumlautencoding-test-plugin-config.xml"));
+
+        setGroupId("org.apache.maven.plugins.maven-javadoc-plugin.unit");
+        setArtifactId("optionsumlautencoding-test");
+        setVersion("1.0-SNAPSHOT");
+        setName("Maven Javadoc Plugin Options Umlaut Encoding Test");
+        setUrl("http://maven.apache.org");
+        setPackaging("jar");
 
         Scm scm = new Scm();
-        scm.setConnection( "scm:svn:http://svn.apache.org/maven/sample/trunk" );
-        setScm( scm );
+        scm.setConnection("scm:svn:http://svn.apache.org/maven/sample/trunk");
+        setScm(scm);
 
         Build build = new Build();
-        build.setFinalName( "optionsumlautencoding-test" );
-        build.setDirectory( super.getBasedir() + "/target/test/unit/optionsumlautencoding-test/target" );
-        setBuild( build );
+        build.setFinalName("optionsumlautencoding-test");
+        build.setDirectory(super.getBasedir() + "/target/test/unit/optionsumlautencoding-test/target");
+        setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
-        compileSourceRoots.add( getBasedir().getAbsolutePath() );
-        setCompileSourceRoots( compileSourceRoots );
+        compileSourceRoots.add(getBasedir().getAbsolutePath());
+        setCompileSourceRoots(compileSourceRoots);
     }
 
     /** {@inheritDoc} */
     @Override
-    public Scm getScm()
-    {
+    public Scm getScm() {
         return scm;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setScm( Scm scm )
-    {
+    public void setScm(Scm scm) {
         this.scm = scm;
     }
 
     /** {@inheritDoc} */
     @Override
-    public File getBasedir()
-    {
-        return new File( super.getBasedir() + "/src/test/resources/unit/optionsumlautencoding-test" );
+    public File getBasedir() {
+        return new File(super.getBasedir() + "/src/test/resources/unit/optionsumlautencoding-test");
     }
 }

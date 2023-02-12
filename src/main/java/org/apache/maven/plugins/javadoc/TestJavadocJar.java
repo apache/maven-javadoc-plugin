@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,13 @@ package org.apache.maven.plugins.javadoc;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -29,12 +34,6 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.StringUtils;
 import org.eclipse.aether.util.filter.ScopeDependencyFilter;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * Bundles the Javadoc documentation for <code>test Java code</code> in an <b>NON aggregator</b> project into
  * a jar using the standard <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">
@@ -43,11 +42,12 @@ import java.util.List;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @since 2.5
  */
-@Mojo( name = "test-jar", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.TEST,
-                threadSafe = true )
-public class TestJavadocJar
-    extends JavadocJar
-{
+@Mojo(
+        name = "test-jar",
+        defaultPhase = LifecyclePhase.PACKAGE,
+        requiresDependencyResolution = ResolutionScope.TEST,
+        threadSafe = true)
+public class TestJavadocJar extends JavadocJar {
     // ----------------------------------------------------------------------
     // Javadoc Options (should be inline with Javadoc options defined in TestJavadocReport)
     // ----------------------------------------------------------------------
@@ -56,7 +56,7 @@ public class TestJavadocJar
      * Specifies the destination directory where Javadoc saves the generated HTML files.
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option d</a>.
      */
-    @Parameter( defaultValue = "${project.build.directory}/testapidocs", required = true )
+    @Parameter(defaultValue = "${project.build.directory}/testapidocs", required = true)
     private File outputDirectory;
 
     /**
@@ -64,8 +64,10 @@ public class TestJavadocJar
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option doctitle</a>.
      * @since 2.5
      */
-    @Parameter( property = "testDoctitle", alias = "doctitle",
-                defaultValue = "${project.name} ${project.version} Test API" )
+    @Parameter(
+            property = "testDoctitle",
+            alias = "doctitle",
+            defaultValue = "${project.name} ${project.version} Test API")
     private String testDoctitle;
 
     /**
@@ -74,8 +76,10 @@ public class TestJavadocJar
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option overview</a>.
      * @since 2.5
      */
-    @Parameter( property = "testOverview", alias = "overview",
-                defaultValue = "${basedir}/src/test/javadoc/overview.html" )
+    @Parameter(
+            property = "testOverview",
+            alias = "overview",
+            defaultValue = "${basedir}/src/test/javadoc/overview.html")
     private File testOverview;
 
     /**
@@ -83,8 +87,10 @@ public class TestJavadocJar
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option windowtitle</a>.
      * @since 2.5
      */
-    @Parameter( property = "testWindowtitle", alias = "windowtitle",
-                defaultValue = "${project.name} ${project.version} Test API" )
+    @Parameter(
+            property = "testWindowtitle",
+            alias = "windowtitle",
+            defaultValue = "${project.name} ${project.version} Test API")
     private String testWindowtitle;
 
     // ----------------------------------------------------------------------
@@ -96,13 +102,13 @@ public class TestJavadocJar
      *
      * @since 2.5
      */
-    @Parameter( alias = "javadocDirectory", defaultValue = "${basedir}/src/test/javadoc" )
+    @Parameter(alias = "javadocDirectory", defaultValue = "${basedir}/src/test/javadoc")
     private File testJavadocDirectory;
 
     /**
      * @since 2.10
      */
-    @Parameter( property = "maven.javadoc.testClassifier", defaultValue = "test-javadoc", required = true )
+    @Parameter(property = "maven.javadoc.testClassifier", defaultValue = "test-javadoc", required = true)
     private String testClassifier;
 
     // ----------------------------------------------------------------------
@@ -110,8 +116,7 @@ public class TestJavadocJar
     // ----------------------------------------------------------------------
 
     @Override
-    protected String getClassifier()
-    {
+    protected String getClassifier() {
         return testClassifier;
     }
 
@@ -120,56 +125,46 @@ public class TestJavadocJar
     // ----------------------------------------------------------------------
 
     @Override
-    protected String getOutputDirectory()
-    {
+    protected String getOutputDirectory() {
         return outputDirectory.getAbsoluteFile().toString();
     }
 
     @Override
-    protected File getJavadocDirectory()
-    {
+    protected File getJavadocDirectory() {
         return testJavadocDirectory;
     }
 
     @Override
-    protected String getDoctitle()
-    {
+    protected String getDoctitle() {
         return testDoctitle;
     }
 
     @Override
-    protected File getOverview()
-    {
+    protected File getOverview() {
         return testOverview;
     }
 
     @Override
-    protected String getWindowtitle()
-    {
+    protected String getWindowtitle() {
         return testWindowtitle;
     }
 
     @Override
-    protected List<File> getProjectBuildOutputDirs( MavenProject p )
-    {
+    protected List<File> getProjectBuildOutputDirs(MavenProject p) {
         List<File> dirs = new ArrayList<>();
-        if ( StringUtils.isNotEmpty( p.getBuild().getOutputDirectory() ) )
-        {
-            dirs.add( new File( p.getBuild().getOutputDirectory() ) );
+        if (StringUtils.isNotEmpty(p.getBuild().getOutputDirectory())) {
+            dirs.add(new File(p.getBuild().getOutputDirectory()));
         }
-        if ( StringUtils.isNotEmpty( p.getBuild().getTestOutputDirectory() ) )
-        {
-            dirs.add( new File( p.getBuild().getTestOutputDirectory() ) );
+        if (StringUtils.isNotEmpty(p.getBuild().getTestOutputDirectory())) {
+            dirs.add(new File(p.getBuild().getTestOutputDirectory()));
         }
 
         return dirs;
     }
 
     @Override
-    protected List<String> getProjectSourceRoots( MavenProject p )
-    {
-        if ( "pom".equals( p.getPackaging().toLowerCase() ) )
-        {
+    protected List<String> getProjectSourceRoots(MavenProject p) {
+        if ("pom".equals(p.getPackaging().toLowerCase())) {
             return Collections.emptyList();
         }
 
@@ -177,10 +172,8 @@ public class TestJavadocJar
     }
 
     @Override
-    protected List<String> getExecutionProjectSourceRoots( MavenProject p )
-    {
-        if ( "pom".equals( p.getExecutionProject().getPackaging().toLowerCase() ) )
-        {
+    protected List<String> getExecutionProjectSourceRoots(MavenProject p) {
+        if ("pom".equals(p.getExecutionProject().getPackaging().toLowerCase())) {
             return Collections.emptyList();
         }
 
@@ -188,29 +181,27 @@ public class TestJavadocJar
     }
 
     @Override
-    protected ScopeDependencyFilter getDependencyScopeFilter()
-    {
-        return new ScopeDependencyFilter( Arrays.asList( 
-                                      Artifact.SCOPE_COMPILE,
-                                      Artifact.SCOPE_PROVIDED,
-                                      Artifact.SCOPE_SYSTEM,
-                                      Artifact.SCOPE_TEST ), null );
+    protected ScopeDependencyFilter getDependencyScopeFilter() {
+        return new ScopeDependencyFilter(
+                Arrays.asList(
+                        Artifact.SCOPE_COMPILE, Artifact.SCOPE_PROVIDED, Artifact.SCOPE_SYSTEM, Artifact.SCOPE_TEST),
+                null);
     }
-    
+
     /**
      * Overriden to enable the resolution of -test-sources jar files.
-     * 
+     *
      * {@inheritDoc}
      */
     @Override
-    protected SourceResolverConfig configureDependencySourceResolution( final SourceResolverConfig config )
-    {
-        return super.configureDependencySourceResolution( config ).withoutCompileSources().withTestSources();
+    protected SourceResolverConfig configureDependencySourceResolution(final SourceResolverConfig config) {
+        return super.configureDependencySourceResolution(config)
+                .withoutCompileSources()
+                .withTestSources();
     }
 
     @Override
-    protected boolean isTest()
-    {
+    protected boolean isTest() {
         return true;
     }
 }

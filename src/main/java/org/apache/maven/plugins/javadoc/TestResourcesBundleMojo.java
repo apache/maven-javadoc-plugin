@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,13 +16,14 @@ package org.apache.maven.plugins.javadoc;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc;
+
+import java.io.File;
 
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-
-import java.io.File;
 
 /**
  * Bundle {@link TestJavadocJar#testJavadocDirectory}, along with javadoc configuration options from
@@ -35,33 +34,31 @@ import java.io.File;
  *
  * @since 2.7
  */
-@Mojo( name = "test-resource-bundle", defaultPhase = LifecyclePhase.PACKAGE,
-       requiresDependencyResolution = ResolutionScope.TEST, threadSafe = true )
-public class TestResourcesBundleMojo
-    extends ResourcesBundleMojo
-{
+@Mojo(
+        name = "test-resource-bundle",
+        defaultPhase = LifecyclePhase.PACKAGE,
+        requiresDependencyResolution = ResolutionScope.TEST,
+        threadSafe = true)
+public class TestResourcesBundleMojo extends ResourcesBundleMojo {
 
     /**
      * Specifies the Test Javadoc resources directory to be included in the Javadoc (i.e. package.html, images...).
      */
-    @Parameter( alias = "javadocDirectory", defaultValue = "${basedir}/src/test/javadoc" )
+    @Parameter(alias = "javadocDirectory", defaultValue = "${basedir}/src/test/javadoc")
     private File testJavadocDirectory;
 
     @Override
-    protected String getAttachmentClassifier()
-    {
+    protected String getAttachmentClassifier() {
         return TEST_JAVADOC_RESOURCES_ATTACHMENT_CLASSIFIER;
     }
 
     @Override
-    protected File getJavadocDirectory()
-    {
+    protected File getJavadocDirectory() {
         return testJavadocDirectory;
     }
 
     @Override
-    protected boolean isTest()
-    {
+    protected boolean isTest() {
         return true;
     }
 }

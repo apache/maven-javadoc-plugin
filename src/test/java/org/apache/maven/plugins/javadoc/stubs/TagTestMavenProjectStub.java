@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.javadoc.stubs;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,45 +16,43 @@ package org.apache.maven.plugins.javadoc.stubs;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import org.apache.maven.model.Build;
-import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
+package org.apache.maven.plugins.javadoc.stubs;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.maven.model.Build;
+import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
+
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-public class TagTestMavenProjectStub extends MavenProjectStub
-{
-    public TagTestMavenProjectStub()
-    {
-        readModel( new File( getBasedir(), "tag-test-plugin-config.xml" ) );
+public class TagTestMavenProjectStub extends MavenProjectStub {
+    public TagTestMavenProjectStub() {
+        readModel(new File(getBasedir(), "tag-test-plugin-config.xml"));
 
-        setGroupId( getModel().getGroupId() );
-        setArtifactId( getModel().getArtifactId() );
-        setVersion( getModel().getVersion() );
-        setName( getModel().getName() );
-        setUrl( getModel().getUrl() );
-        setPackaging( getModel().getPackaging() );
+        setGroupId(getModel().getGroupId());
+        setArtifactId(getModel().getArtifactId());
+        setVersion(getModel().getVersion());
+        setName(getModel().getName());
+        setUrl(getModel().getUrl());
+        setPackaging(getModel().getPackaging());
 
         Build build = new Build();
-        build.setFinalName( getModel().getArtifactId() );
-        build.setSourceDirectory( getBasedir() + "/src/main/java" );
-        build.setDirectory( super.getBasedir() + "/target/test/unit/tag-test/target" );
-        setBuild( build );
+        build.setFinalName(getModel().getArtifactId());
+        build.setSourceDirectory(getBasedir() + "/src/main/java");
+        build.setDirectory(super.getBasedir() + "/target/test/unit/tag-test/target");
+        setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
-        compileSourceRoots.add( getBasedir() + "/src/main/java" );
-        setCompileSourceRoots( compileSourceRoots );
+        compileSourceRoots.add(getBasedir() + "/src/main/java");
+        setCompileSourceRoots(compileSourceRoots);
     }
 
     /** {@inheritDoc} */
     @Override
-    public File getBasedir()
-    {
-        return new File( super.getBasedir() + "/src/test/resources/unit/tag-test" );
+    public File getBasedir() {
+        return new File(super.getBasedir() + "/src/test/resources/unit/tag-test");
     }
 }

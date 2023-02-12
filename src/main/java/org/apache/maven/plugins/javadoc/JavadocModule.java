@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.javadoc;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -27,12 +26,11 @@ import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 import org.codehaus.plexus.languages.java.jpms.ModuleNameSource;
 
 /**
- * Represents a unit of Javadoc referring to the binary and java source paths  
- * 
+ * Represents a unit of Javadoc referring to the binary and java source paths
+ *
  * @since 3.3.0
  */
-public class JavadocModule
-{
+public class JavadocModule {
     private final String ga;
 
     private final File artifactFile;
@@ -43,14 +41,16 @@ public class JavadocModule
 
     private final ModuleNameSource moduleNameSource;
 
-    public JavadocModule( String ga, File artifactFile, Collection<Path> sourcePaths )
-    {
-        this( ga, artifactFile, sourcePaths, null, null );
+    public JavadocModule(String ga, File artifactFile, Collection<Path> sourcePaths) {
+        this(ga, artifactFile, sourcePaths, null, null);
     }
 
-    public JavadocModule( String ga, File artifactFile, Collection<Path> sourcePaths,
-                          JavaModuleDescriptor moduleDescriptor, ModuleNameSource moduleNameSource )
-    {
+    public JavadocModule(
+            String ga,
+            File artifactFile,
+            Collection<Path> sourcePaths,
+            JavaModuleDescriptor moduleDescriptor,
+            ModuleNameSource moduleNameSource) {
         this.ga = ga;
         this.artifactFile = artifactFile;
         this.sourcePaths = sourcePaths;
@@ -58,28 +58,23 @@ public class JavadocModule
         this.moduleNameSource = moduleNameSource;
     }
 
-    public String getGa()
-    {
+    public String getGa() {
         return ga;
     }
 
-    public Collection<Path> getSourcePaths()
-    {
+    public Collection<Path> getSourcePaths() {
         return sourcePaths;
     }
 
-    public File getArtifactFile()
-    {
+    public File getArtifactFile() {
         return artifactFile;
     }
 
-    public JavaModuleDescriptor getModuleDescriptor()
-    {
+    public JavaModuleDescriptor getModuleDescriptor() {
         return moduleDescriptor;
     }
 
-    public ModuleNameSource getModuleNameSource()
-    {
+    public ModuleNameSource getModuleNameSource() {
         return moduleNameSource;
     }
 }

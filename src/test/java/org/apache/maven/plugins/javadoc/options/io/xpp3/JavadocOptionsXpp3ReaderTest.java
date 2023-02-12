@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc.options.io.xpp3;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.javadoc.options.io.xpp3;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc.options.io.xpp3;
 
 import java.io.StringReader;
 
@@ -27,8 +26,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JavadocOptionsXpp3ReaderTest
-{
+public class JavadocOptionsXpp3ReaderTest {
 
     @Test
     public void testNameAndHead() throws Exception {
@@ -37,23 +35,23 @@ public class JavadocOptionsXpp3ReaderTest
         StringReader reader = new StringReader(testString);
 
         JavadocOptions options = parser.read(reader);
-        assertThat( options.getTags().size() ).isEqualTo( 1 );
+        assertThat(options.getTags().size()).isEqualTo(1);
         Tag tag = options.getTags().get(0);
-        assertThat( tag.getName() ).isEqualTo( "foo" );
-        assertThat( tag.getHead() ).isEqualTo( "bar" );
+        assertThat(tag.getName()).isEqualTo("foo");
+        assertThat(tag.getHead()).isEqualTo("bar");
     }
-    
+
     @Test
     public void testPlacement() throws Exception {
         JavadocOptionsXpp3Reader parser = new JavadocOptionsXpp3Reader();
-        String testString = "<javadocOptions><tags><tag><name>foo</name><placement>Xaoptcmf</placement><head>bar</head></tag></tags></javadocOptions>";
+        String testString =
+                "<javadocOptions><tags><tag><name>foo</name><placement>Xaoptcmf</placement><head>bar</head></tag></tags></javadocOptions>";
         StringReader reader = new StringReader(testString);
 
         JavadocOptions options = parser.read(reader);
-        assertThat( options.getTags().size() ).isEqualTo( 1 );
+        assertThat(options.getTags().size()).isEqualTo(1);
         Tag tag = options.getTags().get(0);
-        assertThat( tag.getName() ).isEqualTo( "foo" );
-        assertThat( tag.getPlacement() ).isEqualTo( "Xaoptcmf" );
+        assertThat(tag.getName()).isEqualTo("foo");
+        assertThat(tag.getPlacement()).isEqualTo("Xaoptcmf");
     }
-
 }

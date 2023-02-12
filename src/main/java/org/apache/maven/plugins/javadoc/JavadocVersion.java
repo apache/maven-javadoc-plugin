@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.javadoc;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc;
 
 import org.codehaus.plexus.util.StringUtils;
 
@@ -26,64 +25,56 @@ import org.codehaus.plexus.util.StringUtils;
  * <p>
  * <strong>Note: </strong> Ensure the methods match, although parse+compareTo+toString should be enough.
  * </p>
- * 
- * 
+ *
+ *
  * @author Robert Scholte
  * @since 3.0.0
  * @deprecated Use {@link org.codehaus.plexus.languages.java.version.JavaVersion} instead
  */
 @Deprecated
-public class JavadocVersion implements Comparable<JavadocVersion>
-{
+public class JavadocVersion implements Comparable<JavadocVersion> {
     private String rawVersion;
 
-    private JavadocVersion( String rawVersion )
-    {
-        if ( StringUtils.isEmpty( rawVersion ) )
-        {
-            throw new IllegalArgumentException( "The rawVersion could not be null." );
+    private JavadocVersion(String rawVersion) {
+        if (StringUtils.isEmpty(rawVersion)) {
+            throw new IllegalArgumentException("The rawVersion could not be null.");
         }
         this.rawVersion = rawVersion;
     }
 
     /**
      * Parser only the version-scheme.
-     * 
+     *
      * @param s the version string
      * @return the version wrapped in a JavadocVersion
      */
-    static JavadocVersion parse( String s ) 
-    {
-        return new JavadocVersion( s );
+    static JavadocVersion parse(String s) {
+        return new JavadocVersion(s);
     }
 
     @Override
-    public int compareTo( JavadocVersion other )
-    {
-        String[] thisSegments = this.rawVersion.split( "\\." );
-        String[] otherSegments = other.rawVersion.split( "\\." );
-        
-        int minSegments = Math.min( thisSegments.length, otherSegments.length );
-        
-        for ( int index = 0; index < minSegments; index++ )
-        {
-            int thisValue = Integer.parseInt( thisSegments[index] );
-            int otherValue = Integer.parseInt( otherSegments[index] );
-            
-            int compareValue = Integer.compare( thisValue, otherValue );
-            
-            if ( compareValue != 0 )
-            {
+    public int compareTo(JavadocVersion other) {
+        String[] thisSegments = this.rawVersion.split("\\.");
+        String[] otherSegments = other.rawVersion.split("\\.");
+
+        int minSegments = Math.min(thisSegments.length, otherSegments.length);
+
+        for (int index = 0; index < minSegments; index++) {
+            int thisValue = Integer.parseInt(thisSegments[index]);
+            int otherValue = Integer.parseInt(otherSegments[index]);
+
+            int compareValue = Integer.compare(thisValue, otherValue);
+
+            if (compareValue != 0) {
                 return compareValue;
             }
         }
-        
-        return ( thisSegments.length - otherSegments.length );
+
+        return (thisSegments.length - otherSegments.length);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return rawVersion;
     }
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.javadoc.stubs;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,12 @@ package org.apache.maven.plugins.javadoc.stubs;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc.stubs;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.DefaultArtifactRepository;
@@ -26,58 +30,48 @@ import org.apache.maven.model.Build;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-public class StylesheetFileMavenProjectStub extends MavenProjectStub
-{
-    public StylesheetFileMavenProjectStub()
-    {
-        readModel( new File( getBasedir(), "pom.xml" ) );
+public class StylesheetFileMavenProjectStub extends MavenProjectStub {
+    public StylesheetFileMavenProjectStub() {
+        readModel(new File(getBasedir(), "pom.xml"));
 
-        setGroupId( getModel().getGroupId() );
-        setArtifactId( getModel().getArtifactId() );
-        setVersion( getModel().getVersion() );
-        setName( getModel().getName() );
-        setUrl( getModel().getUrl() );
-        setPackaging( getModel().getPackaging() );
+        setGroupId(getModel().getGroupId());
+        setArtifactId(getModel().getArtifactId());
+        setVersion(getModel().getVersion());
+        setName(getModel().getName());
+        setUrl(getModel().getUrl());
+        setPackaging(getModel().getPackaging());
 
         Build build = new Build();
-        build.setFinalName( getModel().getArtifactId() );
-        build.setSourceDirectory( getBasedir() + "/src/main/java" );
-        build.setDirectory( super.getBasedir() + "/target/test/unit/stylesheetfile-test/target" );
+        build.setFinalName(getModel().getArtifactId());
+        build.setSourceDirectory(getBasedir() + "/src/main/java");
+        build.setDirectory(super.getBasedir() + "/target/test/unit/stylesheetfile-test/target");
         Resource resource = new Resource();
-        resource.setDirectory( getBasedir() + "/src/main/resources" );
-        build.addResource( resource );
+        resource.setDirectory(getBasedir() + "/src/main/resources");
+        build.addResource(resource);
 
-        build.setPlugins( getModel().getBuild().getPlugins() );
-        setBuild( build );
+        build.setPlugins(getModel().getBuild().getPlugins());
+        setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
-        compileSourceRoots.add( getBasedir() + "/src/main/java" );
-        setCompileSourceRoots( compileSourceRoots );
+        compileSourceRoots.add(getBasedir() + "/src/main/java");
+        setCompileSourceRoots(compileSourceRoots);
     }
 
     /** {@inheritDoc} */
     @Override
-    public File getBasedir()
-    {
-        return new File( super.getBasedir() + "/src/test/resources/unit/stylesheetfile-test" );
+    public File getBasedir() {
+        return new File(super.getBasedir() + "/src/test/resources/unit/stylesheetfile-test");
     }
 
     /** {@inheritDoc} */
     @Override
-    public List<ArtifactRepository> getRemoteArtifactRepositories()
-    {
-        ArtifactRepository repository =
-            new DefaultArtifactRepository( "central", "http://repo.maven.apache.org/maven2",
-                                           new DefaultRepositoryLayout() );
+    public List<ArtifactRepository> getRemoteArtifactRepositories() {
+        ArtifactRepository repository = new DefaultArtifactRepository(
+                "central", "http://repo.maven.apache.org/maven2", new DefaultRepositoryLayout());
 
-        return Collections.singletonList( repository );
+        return Collections.singletonList(repository);
     }
 }

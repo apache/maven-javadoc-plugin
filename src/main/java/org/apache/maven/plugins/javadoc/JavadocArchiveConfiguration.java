@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.javadoc;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc;
 
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 
@@ -26,11 +25,8 @@ import org.apache.maven.archiver.MavenArchiveConfiguration;
  *
  * @see <a href="https://issues.apache.org/browse/MJAVADOC-431">MJAVADOC-431</a>
  */
-public class JavadocArchiveConfiguration
-    extends MavenArchiveConfiguration
-{
-    public JavadocArchiveConfiguration()
-    {
-        setAddMavenDescriptor( false );
+public class JavadocArchiveConfiguration extends MavenArchiveConfiguration {
+    public JavadocArchiveConfiguration() {
+        setAddMavenDescriptor(false);
     }
 }

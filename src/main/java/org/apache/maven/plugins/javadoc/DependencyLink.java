@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,59 +16,51 @@ package org.apache.maven.plugins.javadoc;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc;
 
 /**
  * In case of autodetectLinks, this class can overwrite the url for that dependency
- * 
+ *
  * @since 3.3.0
  */
-public class DependencyLink
-{
+public class DependencyLink {
     private String groupId;
-    
+
     private String artifactId;
-    
+
     private String classifier;
-    
+
     private String url;
-    
-    public String getUrl()
-    {
+
+    public String getUrl() {
         return url;
     }
 
-    public void setUrl( String url )
-    {
+    public void setUrl(String url) {
         this.url = url;
     }
-    
-    public String getGroupId()
-    {
+
+    public String getGroupId() {
         return groupId;
     }
 
-    public void setGroupId( String groupId )
-    {
+    public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
-    public String getArtifactId()
-    {
+    public String getArtifactId() {
         return artifactId;
     }
 
-    public void setArtifactId( String artifactId )
-    {
+    public void setArtifactId(String artifactId) {
         this.artifactId = artifactId;
     }
-    
-    public String getClassifier()
-    {
+
+    public String getClassifier() {
         return classifier;
     }
-    
-    public void setClassifier( String classifier )
-    {
+
+    public void setClassifier(String classifier) {
         this.classifier = classifier;
     }
 }

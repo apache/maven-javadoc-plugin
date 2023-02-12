@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,10 @@ package org.apache.maven.plugins.javadoc;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc;
+
+import java.io.File;
+import java.io.IOException;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -33,9 +35,6 @@ import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
 
-import java.io.File;
-import java.io.IOException;
-
 /**
  * Bundle {@link AbstractJavadocMojo#javadocDirectory}, along with javadoc configuration options such
  * as taglet, doclet, and link information into a deployable artifact. This artifact can then be consumed
@@ -44,11 +43,12 @@ import java.io.IOException;
  *
  * @since 2.7
  */
-@Mojo( name = "resource-bundle", defaultPhase = LifecyclePhase.PACKAGE,
-       requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true )
-public class ResourcesBundleMojo
-extends AbstractJavadocMojo
-{
+@Mojo(
+        name = "resource-bundle",
+        defaultPhase = LifecyclePhase.PACKAGE,
+        requiresDependencyResolution = ResolutionScope.COMPILE,
+        threadSafe = true)
+public class ResourcesBundleMojo extends AbstractJavadocMojo {
 
     /**
      * Bundle options path.
@@ -65,7 +65,7 @@ extends AbstractJavadocMojo
      * {@link ResourcesBundleMojo#getAttachmentClassifier()} to produce the name for this bundle
      * jar.
      */
-    @Parameter( defaultValue = "${project.build.finalName}", readonly = true )
+    @Parameter(defaultValue = "${project.build.finalName}", readonly = true)
     private String finalName;
 
     /**
@@ -93,51 +93,39 @@ extends AbstractJavadocMojo
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     @Override
-    public void doExecute()
-        throws MojoExecutionException, MojoFailureException
-    {
-        try
-        {
+    public void doExecute() throws MojoExecutionException, MojoFailureException {
+        try {
             buildJavadocOptions();
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "Failed to generate javadoc-options file: " + e.getMessage(), e );
+        } catch (IOException e) {
+            throw new MojoExecutionException("Failed to generate javadoc-options file: " + e.getMessage(), e);
         }
 
         Archiver archiver;
-        try
-        {
-            archiver = archiverManager.getArchiver( "jar" );
-        }
-        catch ( NoSuchArchiverException e )
-        {
-            throw new MojoExecutionException( "Failed to retrieve jar archiver component from manager.", e );
+        try {
+            archiver = archiverManager.getArchiver("jar");
+        } catch (NoSuchArchiverException e) {
+            throw new MojoExecutionException("Failed to retrieve jar archiver component from manager.", e);
         }
 
         File optionsFile = getJavadocOptionsFile();
         File bundleFile =
-            new File( getProject().getBuild().getDirectory(), finalName + "-" + getAttachmentClassifier() + ".jar" );
-        try
-        {
-            archiver.addFile( optionsFile, BUNDLE_OPTIONS_PATH );
+                new File(getProject().getBuild().getDirectory(), finalName + "-" + getAttachmentClassifier() + ".jar");
+        try {
+            archiver.addFile(optionsFile, BUNDLE_OPTIONS_PATH);
 
             File javadocDir = getJavadocDirectory();
-            if ( javadocDir.isDirectory() )
-            {
-                DefaultFileSet fileSet = DefaultFileSet.fileSet( javadocDir ).prefixed( RESOURCES_DIR_PATH + "/" );
-                archiver.addFileSet( fileSet );
+            if (javadocDir.isDirectory()) {
+                DefaultFileSet fileSet = DefaultFileSet.fileSet(javadocDir).prefixed(RESOURCES_DIR_PATH + "/");
+                archiver.addFileSet(fileSet);
             }
 
-            archiver.setDestFile( bundleFile );
+            archiver.setDestFile(bundleFile);
             archiver.createArchive();
-        }
-        catch ( ArchiverException | IOException e )
-        {
-            throw new MojoExecutionException( "Failed to assemble javadoc-resources bundle archive. Reason: "
-                + e.getMessage(), e );
+        } catch (ArchiverException | IOException e) {
+            throw new MojoExecutionException(
+                    "Failed to assemble javadoc-resources bundle archive. Reason: " + e.getMessage(), e);
         }
 
-        projectHelper.attachArtifact( getProject(), bundleFile, getAttachmentClassifier() );
+        projectHelper.attachArtifact(getProject(), bundleFile, getAttachmentClassifier());
     }
 }

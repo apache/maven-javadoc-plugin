@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
 or more contributor license agreements.  See the NOTICE file
@@ -18,14 +17,13 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-plugins</artifactId>
-    <version>37</version>
+    <version>39</version>
     <relativePath />
   </parent>
 
@@ -34,52 +32,9 @@ under the License.
   <packaging>maven-plugin</packaging>
 
   <name>Apache Maven Javadoc Plugin</name>
-  <description>
-    The Apache Maven Javadoc Plugin is a plugin that uses the javadoc tool for
-    generating javadocs for the specified project.
-  </description>
+  <description>The Apache Maven Javadoc Plugin is a plugin that uses the javadoc tool for
+    generating javadocs for the specified project.</description>
   <inceptionYear>2004</inceptionYear>
-
-  <prerequisites>
-    <maven>${mavenVersion}</maven>
-  </prerequisites>
-
-  <scm>
-    <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-javadoc-plugin.git</connection>
-    <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/maven-javadoc-plugin.git</developerConnection>
-    <url>https://github.com/apache/maven-javadoc-plugin/tree/${project.scm.tag}</url>
-    <tag>HEAD</tag>
-  </scm>
-  <issueManagement>
-    <system>jira</system>
-    <url>https://issues.apache.org/jira/browse/MJAVADOC</url>
-  </issueManagement>
-  <ciManagement>
-    <system>Jenkins</system>
-    <url>https://ci-builds.apache.org/job/Maven/job/maven-box/job/maven-javadoc-plugin/</url>
-  </ciManagement>
-  <distributionManagement>
-    <site>
-      <id>apache.website</id>
-      <url>scm:svn:https://svn.apache.org/repos/asf/maven/website/components/${maven.site.path}</url>
-    </site>
-  </distributionManagement>
-
-  <properties>
-    <javaVersion>8</javaVersion>
-    <mavenVersion>3.2.5</mavenVersion>
-    <doxiaVersion>1.11.1</doxiaVersion>
-    <doxia-sitetoolsVersion>1.11.1</doxia-sitetoolsVersion>
-    <wagonVersion>2.4</wagonVersion>
-    <aetherVersion>1.0.0.v20140518</aetherVersion><!-- https://cwiki.apache.org/confluence/x/VIHOCg#MavenEcosystemCleanup-ResolverandMaven -->
-    <plexus-java.version>1.1.0</plexus-java.version>
-    <jetty.version>9.4.43.v20210629</jetty.version>
-    <!-- for ITs -->
-    <sitePluginVersion>3.12.1</sitePluginVersion>
-    <projectInfoReportsPluginVersion>3.2.2</projectInfoReportsPluginVersion>
-    <project.build.outputTimestamp>2022-08-10T19:51:10Z</project.build.outputTimestamp>
-    <slf4jVersion>1.7.36</slf4jVersion>
-  </properties>
 
   <contributors>
     <contributor>
@@ -129,6 +84,48 @@ under the License.
     </contributor>
   </contributors>
 
+  <prerequisites>
+    <maven>${mavenVersion}</maven>
+  </prerequisites>
+
+  <scm>
+    <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-javadoc-plugin.git</connection>
+    <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/maven-javadoc-plugin.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://github.com/apache/maven-javadoc-plugin/tree/${project.scm.tag}</url>
+  </scm>
+  <issueManagement>
+    <system>jira</system>
+    <url>https://issues.apache.org/jira/browse/MJAVADOC</url>
+  </issueManagement>
+  <ciManagement>
+    <system>Jenkins</system>
+    <url>https://ci-builds.apache.org/job/Maven/job/maven-box/job/maven-javadoc-plugin/</url>
+  </ciManagement>
+  <distributionManagement>
+    <site>
+      <id>apache.website</id>
+      <url>scm:svn:https://svn.apache.org/repos/asf/maven/website/components/${maven.site.path}</url>
+    </site>
+  </distributionManagement>
+
+  <properties>
+    <javaVersion>8</javaVersion>
+    <mavenVersion>3.2.5</mavenVersion>
+    <doxiaVersion>1.11.1</doxiaVersion>
+    <doxia-sitetoolsVersion>1.11.1</doxia-sitetoolsVersion>
+    <wagonVersion>2.4</wagonVersion>
+    <aetherVersion>1.0.0.v20140518</aetherVersion>
+    <!-- https://cwiki.apache.org/confluence/x/VIHOCg#MavenEcosystemCleanup-ResolverandMaven -->
+    <plexus-java.version>1.1.0</plexus-java.version>
+    <jetty.version>9.4.43.v20210629</jetty.version>
+    <!-- for ITs -->
+    <sitePluginVersion>3.12.1</sitePluginVersion>
+    <projectInfoReportsPluginVersion>3.2.2</projectInfoReportsPluginVersion>
+    <project.build.outputTimestamp>2022-08-10T19:51:10Z</project.build.outputTimestamp>
+    <slf4jVersion>1.7.36</slf4jVersion>
+  </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -160,7 +157,8 @@ under the License.
   </dependencyManagement>
 
   <dependencies>
-    <dependency> <!-- @TODO remove!! -->
+    <dependency>
+      <!-- @TODO remove!! -->
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-compat</artifactId>
       <version>${mavenVersion}</version>
@@ -433,6 +431,12 @@ under the License.
       <plugin>
         <groupId>org.codehaus.modello</groupId>
         <artifactId>modello-maven-plugin</artifactId>
+        <configuration>
+          <version>1.1.1</version>
+          <models>
+            <model>src/main/mdo/javadocOptions.mdo</model>
+          </models>
+        </configuration>
         <executions>
           <execution>
             <goals>
@@ -442,12 +446,6 @@ under the License.
             </goals>
           </execution>
         </executions>
-        <configuration>
-          <version>1.1.1</version>
-          <models>
-            <model>src/main/mdo/javadocOptions.mdo</model>
-          </models>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.eclipse.sisu</groupId>
@@ -486,7 +484,8 @@ under the License.
                 <pomInclude>examples/*/pom.xml</pomInclude>
               </pomIncludes>
               <pomExcludes>
-                <pomExclude>MJAVADOC-181/pom.xml</pomExclude> <!-- seems to be wrong, see comment in Jira issue  -->
+                <pomExclude>MJAVADOC-181/pom.xml</pomExclude>
+                <!-- seems to be wrong, see comment in Jira issue  -->
                 <pomExclude>output-encoding/pom.xml</pomExclude>
               </pomExcludes>
               <properties combine.self="override" />
@@ -571,7 +570,8 @@ under the License.
               <onlyCurrentVersion>true</onlyCurrentVersion>
               <resolutionIds>Fixed</resolutionIds>
               <sortColumnNames>Type,Key</sortColumnNames>
-              <maxEntries>1000</maxEntries> <!-- MCHANGES-124 -->
+              <maxEntries>1000</maxEntries>
+              <!-- MCHANGES-124 -->
             </configuration>
             <reportSets>
               <reportSet>

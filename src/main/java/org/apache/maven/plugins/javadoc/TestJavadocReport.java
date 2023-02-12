@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.javadoc;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,16 @@ package org.apache.maven.plugins.javadoc;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugins.annotations.Execute;
@@ -31,15 +39,6 @@ import org.apache.maven.reporting.MavenReportException;
 import org.codehaus.plexus.util.StringUtils;
 import org.eclipse.aether.util.filter.ScopeDependencyFilter;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 /**
  * Generates documentation for the <code>Java Test code</code> in an <b>NON aggregator</b> project using the standard
  * <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">Javadoc Tool</a>.
@@ -48,11 +47,9 @@ import java.util.ResourceBundle;
  * @since 2.3
  * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">Javadoc Tool</a>
  */
-@Mojo( name = "test-javadoc", requiresDependencyResolution = ResolutionScope.TEST, threadSafe = true )
-@Execute( phase = LifecyclePhase.GENERATE_TEST_SOURCES )
-public class TestJavadocReport
-    extends JavadocReport
-{
+@Mojo(name = "test-javadoc", requiresDependencyResolution = ResolutionScope.TEST, threadSafe = true)
+@Execute(phase = LifecyclePhase.GENERATE_TEST_SOURCES)
+public class TestJavadocReport extends JavadocReport {
     // ----------------------------------------------------------------------
     // Javadoc Options (should be inline with options defined in TestJavadocJar)
     // ----------------------------------------------------------------------
@@ -62,8 +59,10 @@ public class TestJavadocReport
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option doctitle</a>.
      * @since 2.5
      */
-    @Parameter( property = "testDoctitle", alias = "doctitle",
-                defaultValue = "${project.name} ${project.version} Test API" )
+    @Parameter(
+            property = "testDoctitle",
+            alias = "doctitle",
+            defaultValue = "${project.name} ${project.version} Test API")
     private String testDoctitle;
 
     /**
@@ -72,8 +71,10 @@ public class TestJavadocReport
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option overview</a>.
      * @since 2.5
      */
-    @Parameter( property = "testOverview", alias = "overview",
-                defaultValue = "${basedir}/src/test/javadoc/overview.html" )
+    @Parameter(
+            property = "testOverview",
+            alias = "overview",
+            defaultValue = "${basedir}/src/test/javadoc/overview.html")
     private File testOverview;
 
     /**
@@ -81,8 +82,10 @@ public class TestJavadocReport
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option windowtitle</a>.
      * @since 2.5
      */
-    @Parameter( property = "testWindowtitle", alias = "windowtitle",
-                defaultValue = "${project.name} ${project.version} Test API" )
+    @Parameter(
+            property = "testWindowtitle",
+            alias = "windowtitle",
+            defaultValue = "${project.name} ${project.version} Test API")
     private String testWindowtitle;
 
     // ----------------------------------------------------------------------
@@ -92,15 +95,17 @@ public class TestJavadocReport
     /**
      * Specifies the destination directory where test Javadoc saves the generated HTML files.
      */
-    @Parameter( property = "reportTestOutputDirectory",
-                defaultValue = "${project.reporting.outputDirectory}/testapidocs", required = true )
+    @Parameter(
+            property = "reportTestOutputDirectory",
+            defaultValue = "${project.reporting.outputDirectory}/testapidocs",
+            required = true)
     private File reportOutputDirectory;
 
     /**
      * The name of the destination directory.
      * <br/>
      */
-    @Parameter( property = "destDir", defaultValue = "testapidocs" )
+    @Parameter(property = "destDir", defaultValue = "testapidocs")
     private String destDir;
 
     /**
@@ -112,7 +117,7 @@ public class TestJavadocReport
      *
      * @since 2.5
      */
-    @Parameter( alias = "javadocDirectory", defaultValue = "${basedir}/src/test/javadoc" )
+    @Parameter(alias = "javadocDirectory", defaultValue = "${basedir}/src/test/javadoc")
     private File testJavadocDirectory;
 
     // ----------------------------------------------------------------------
@@ -125,7 +130,7 @@ public class TestJavadocReport
      *
      * @since 2.5
      */
-    @Parameter( property = "testName", alias = "name" )
+    @Parameter(property = "testName", alias = "name")
     private String testName;
 
     /**
@@ -134,7 +139,7 @@ public class TestJavadocReport
      *
      * @since 2.5
      */
-    @Parameter( property = "testDescription", alias = "description" )
+    @Parameter(property = "testDescription", alias = "description")
     private String testDescription;
 
     // ----------------------------------------------------------------------
@@ -142,47 +147,38 @@ public class TestJavadocReport
     // ----------------------------------------------------------------------
 
     @Override
-    protected void executeReport( Locale unusedLocale )
-        throws MavenReportException
-    {
+    protected void executeReport(Locale unusedLocale) throws MavenReportException {
         addMainJavadocLink();
 
-        super.executeReport( unusedLocale );
+        super.executeReport(unusedLocale);
     }
 
     @Override
-    public String getName( Locale locale )
-    {
-        if ( StringUtils.isEmpty( testName ) )
-        {
-            return getBundle( locale ).getString( "report.test-javadoc.name" );
+    public String getName(Locale locale) {
+        if (StringUtils.isEmpty(testName)) {
+            return getBundle(locale).getString("report.test-javadoc.name");
         }
 
         return testName;
     }
 
     @Override
-    public String getDescription( Locale locale )
-    {
-        if ( StringUtils.isEmpty( testDescription ) )
-        {
-            return getBundle( locale ).getString( "report.test-javadoc.description" );
+    public String getDescription(Locale locale) {
+        if (StringUtils.isEmpty(testDescription)) {
+            return getBundle(locale).getString("report.test-javadoc.description");
         }
 
         return testDescription;
     }
 
     @Override
-    public String getOutputName()
-    {
+    public String getOutputName() {
         return destDir + "/index";
     }
 
     @Override
-    public File getReportOutputDirectory()
-    {
-        if ( reportOutputDirectory == null )
-        {
+    public File getReportOutputDirectory() {
+        if (reportOutputDirectory == null) {
             return outputDirectory;
         }
 
@@ -195,27 +191,22 @@ public class TestJavadocReport
      * @param reportOutputDirectory the directory file to be set
      */
     @Override
-    public void setReportOutputDirectory( File reportOutputDirectory )
-    {
-        updateReportOutputDirectory( reportOutputDirectory, destDir );
+    public void setReportOutputDirectory(File reportOutputDirectory) {
+        updateReportOutputDirectory(reportOutputDirectory, destDir);
     }
 
     @Override
-    public void setDestDir( String destDir )
-    {
+    public void setDestDir(String destDir) {
         this.destDir = destDir;
-        updateReportOutputDirectory( reportOutputDirectory, destDir );
+        updateReportOutputDirectory(reportOutputDirectory, destDir);
     }
 
-    private void updateReportOutputDirectory( File reportOutputDirectory, String destDir )
-    {
-        if ( reportOutputDirectory != null && destDir != null
-             && !reportOutputDirectory.getAbsolutePath().endsWith( destDir ) )
-        {
-            this.reportOutputDirectory = new File( reportOutputDirectory, destDir );
-        }
-        else
-        {
+    private void updateReportOutputDirectory(File reportOutputDirectory, String destDir) {
+        if (reportOutputDirectory != null
+                && destDir != null
+                && !reportOutputDirectory.getAbsolutePath().endsWith(destDir)) {
+            this.reportOutputDirectory = new File(reportOutputDirectory, destDir);
+        } else {
             this.reportOutputDirectory = reportOutputDirectory;
         }
     }
@@ -226,77 +217,66 @@ public class TestJavadocReport
     // ----------------------------------------------------------------------
 
     @Override
-    protected List<File> getProjectBuildOutputDirs( MavenProject p )
-    {
+    protected List<File> getProjectBuildOutputDirs(MavenProject p) {
         List<File> dirs = new ArrayList<>();
-        if ( StringUtils.isNotEmpty( p.getBuild().getOutputDirectory() ) )
-        {
-            dirs.add( new File( p.getBuild().getOutputDirectory() ) );
+        if (StringUtils.isNotEmpty(p.getBuild().getOutputDirectory())) {
+            dirs.add(new File(p.getBuild().getOutputDirectory()));
         }
-        if ( StringUtils.isNotEmpty( p.getBuild().getTestOutputDirectory() ) )
-        {
-            dirs.add( new File( p.getBuild().getTestOutputDirectory() ) );
+        if (StringUtils.isNotEmpty(p.getBuild().getTestOutputDirectory())) {
+            dirs.add(new File(p.getBuild().getTestOutputDirectory()));
         }
 
         return dirs;
     }
 
     @Override
-    protected List<String> getProjectSourceRoots( MavenProject p )
-    {
-        if ( "pom".equals( p.getPackaging().toLowerCase() ) )
-        {
+    protected List<String> getProjectSourceRoots(MavenProject p) {
+        if ("pom".equals(p.getPackaging().toLowerCase())) {
             return Collections.emptyList();
         }
 
-        return ( p.getTestCompileSourceRoots() == null ? Collections.<String>emptyList()
-                        : new LinkedList<>( p.getTestCompileSourceRoots() ) );
+        return (p.getTestCompileSourceRoots() == null
+                ? Collections.<String>emptyList()
+                : new LinkedList<>(p.getTestCompileSourceRoots()));
     }
 
     @Override
-    protected List<String> getExecutionProjectSourceRoots( MavenProject p )
-    {
-        if ( "pom".equals( p.getExecutionProject().getPackaging().toLowerCase() ) )
-        {
+    protected List<String> getExecutionProjectSourceRoots(MavenProject p) {
+        if ("pom".equals(p.getExecutionProject().getPackaging().toLowerCase())) {
             return Collections.emptyList();
         }
 
-        return ( p.getExecutionProject().getTestCompileSourceRoots() == null ? Collections.<String>emptyList()
-                        : new LinkedList<>( p.getExecutionProject().getTestCompileSourceRoots() ) );
+        return (p.getExecutionProject().getTestCompileSourceRoots() == null
+                ? Collections.<String>emptyList()
+                : new LinkedList<>(p.getExecutionProject().getTestCompileSourceRoots()));
     }
 
     @Override
-    protected File getJavadocDirectory()
-    {
+    protected File getJavadocDirectory() {
         return testJavadocDirectory;
     }
 
     @Override
-    protected String getDoctitle()
-    {
+    protected String getDoctitle() {
         return testDoctitle;
     }
 
     @Override
-    protected File getOverview()
-    {
+    protected File getOverview() {
         return testOverview;
     }
 
     @Override
-    protected String getWindowtitle()
-    {
+    protected String getWindowtitle() {
         return testWindowtitle;
     }
 
     @Override
-    protected ScopeDependencyFilter getDependencyScopeFilter()
-    {
-        return new ScopeDependencyFilter( Arrays.asList( 
-                                                        Artifact.SCOPE_COMPILE,
-                                                        Artifact.SCOPE_PROVIDED,
-                                                        Artifact.SCOPE_SYSTEM,
-                                                        Artifact.SCOPE_TEST ), null );
+    protected ScopeDependencyFilter getDependencyScopeFilter() {
+        return new ScopeDependencyFilter(
+                Arrays.asList(
+                        Artifact.SCOPE_COMPILE, Artifact.SCOPE_PROVIDED, Artifact.SCOPE_SYSTEM, Artifact.SCOPE_TEST),
+                null);
     }
 
     /**
@@ -305,43 +285,40 @@ public class TestJavadocReport
      * @param locale The locale of the currently generated report.
      * @return The resource bundle for the requested locale.
      */
-    private ResourceBundle getBundle( Locale locale )
-    {
-        return ResourceBundle.getBundle( "test-javadoc-report", locale, getClass().getClassLoader() );
+    private ResourceBundle getBundle(Locale locale) {
+        return ResourceBundle.getBundle(
+                "test-javadoc-report", locale, getClass().getClassLoader());
     }
 
     /**
      * Add the <code>../apidocs</code> to the links parameter so Test report could be linked to the Main report.
      */
-    private void addMainJavadocLink()
-    {
-        if ( links == null )
-        {
+    private void addMainJavadocLink() {
+        if (links == null) {
             links = new ArrayList<>();
         }
 
         // TODO the prerequisite is that the main report is in apidocs
-        File apidocs = new File( getReportOutputDirectory().getParentFile(), "apidocs" );
-        if ( apidocs.isDirectory() && !links.contains( "../apidocs" ) )
-        {
-            links.add( "../apidocs" );
+        File apidocs = new File(getReportOutputDirectory().getParentFile(), "apidocs");
+        if (apidocs.isDirectory() && !links.contains("../apidocs")) {
+            links.add("../apidocs");
         }
     }
-    
+
     /**
      * Overridden to enable the resolution of -test-sources jar files.
-     * 
+     *
      * {@inheritDoc}
      */
     @Override
-    protected SourceResolverConfig configureDependencySourceResolution( final SourceResolverConfig config )
-    {
-        return super.configureDependencySourceResolution( config ).withoutCompileSources().withTestSources();
+    protected SourceResolverConfig configureDependencySourceResolution(final SourceResolverConfig config) {
+        return super.configureDependencySourceResolution(config)
+                .withoutCompileSources()
+                .withTestSources();
     }
 
     @Override
-    protected boolean isTest()
-    {
+    protected boolean isTest() {
         return true;
     }
 }

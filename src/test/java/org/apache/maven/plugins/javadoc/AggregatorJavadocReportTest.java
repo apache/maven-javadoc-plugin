@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.javadoc;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.javadoc;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,9 +37,7 @@ import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.repository.LocalRepository;
 
-public class AggregatorJavadocReportTest
-    extends AbstractMojoTestCase
-{
+public class AggregatorJavadocReportTest extends AbstractMojoTestCase {
     private static final char LINE_SEPARATOR = ' ';
 
     /** flag to copy repo only one time */
@@ -52,35 +49,32 @@ public class AggregatorJavadocReportTest
 
     /** {@inheritDoc} */
     @Override
-    protected void setUp()
-        throws Exception
-    {
+    protected void setUp() throws Exception {
         super.setUp();
 
-        unit = new File( getBasedir(), "src/test/resources/unit" );
+        unit = new File(getBasedir(), "src/test/resources/unit");
 
-        localRepo = new File( getBasedir(), "target/local-repo/" );
+        localRepo = new File(getBasedir(), "target/local-repo/");
 
         createTestRepo();
     }
 
-    private JavadocReport lookupMojo( File testPom )
-        throws Exception
-    {
-        JavadocReport mojo = (JavadocReport) lookupMojo( "aggregate", testPom );
+    private JavadocReport lookupMojo(File testPom) throws Exception {
+        JavadocReport mojo = (JavadocReport) lookupMojo("aggregate", testPom);
 
-        MojoExecution mojoExec = new MojoExecution( new Plugin(), "aggregate", null );
-        setVariableValueToObject( mojo, "mojo", mojoExec );
+        MojoExecution mojoExec = new MojoExecution(new Plugin(), "aggregate", null);
+        setVariableValueToObject(mojo, "mojo", mojoExec);
 
         MavenProject currentProject = new MavenProjectStub();
-        currentProject.setGroupId( "GROUPID" );
-        currentProject.setArtifactId( "ARTIFACTID" );
+        currentProject.setGroupId("GROUPID");
+        currentProject.setArtifactId("ARTIFACTID");
 
-        MavenSession session = newMavenSession( currentProject );
+        MavenSession session = newMavenSession(currentProject);
         DefaultRepositorySystemSession repoSysSession = (DefaultRepositorySystemSession) session.getRepositorySession();
-        repoSysSession.setLocalRepositoryManager( new SimpleLocalRepositoryManagerFactory().newInstance( repoSysSession, new LocalRepository( localRepo ) ) );
-        setVariableValueToObject( mojo, "session", session );
-        setVariableValueToObject( mojo, "repoSession", repoSysSession );
+        repoSysSession.setLocalRepositoryManager(
+                new SimpleLocalRepositoryManagerFactory().newInstance(repoSysSession, new LocalRepository(localRepo)));
+        setVariableValueToObject(mojo, "session", session);
+        setVariableValueToObject(mojo, "repoSession", repoSysSession);
         return mojo;
     }
 
@@ -89,11 +83,8 @@ public class AggregatorJavadocReportTest
      *
      * @throws IOException if any
      */
-    private void createTestRepo()
-        throws IOException
-    {
-        if ( TEST_REPO_CREATED )
-        {
+    private void createTestRepo() throws IOException {
+        if (TEST_REPO_CREATED) {
             return;
         }
 
@@ -103,56 +94,52 @@ public class AggregatorJavadocReportTest
         // UMLGraph
         // ----------------------------------------------------------------------
 
-        File sourceDir = new File( unit, "doclet-test/artifact-doclet" );
-        assertTrue( sourceDir.exists() );
-        FileUtils.copyDirectoryStructure( sourceDir, localRepo );
+        File sourceDir = new File(unit, "doclet-test/artifact-doclet");
+        assertTrue(sourceDir.exists());
+        FileUtils.copyDirectoryStructure(sourceDir, localRepo);
 
         // ----------------------------------------------------------------------
         // UMLGraph-bis
         // ----------------------------------------------------------------------
 
-        sourceDir = new File( unit, "doclet-path-test/artifact-doclet" );
-        assertTrue( sourceDir.exists() );
-        FileUtils.copyDirectoryStructure( sourceDir, localRepo );
+        sourceDir = new File(unit, "doclet-path-test/artifact-doclet");
+        assertTrue(sourceDir.exists());
+        FileUtils.copyDirectoryStructure(sourceDir, localRepo);
 
         // ----------------------------------------------------------------------
         // commons-attributes-compiler
         // http://www.tullmann.org/pat/taglets/
         // ----------------------------------------------------------------------
 
-        sourceDir = new File( unit, "taglet-test/artifact-taglet" );
-        assertTrue( sourceDir.exists() );
-        FileUtils.copyDirectoryStructure( sourceDir, localRepo );
+        sourceDir = new File(unit, "taglet-test/artifact-taglet");
+        assertTrue(sourceDir.exists());
+        FileUtils.copyDirectoryStructure(sourceDir, localRepo);
 
         // ----------------------------------------------------------------------
         // stylesheetfile-test
         // ----------------------------------------------------------------------
 
-        sourceDir = new File( unit, "stylesheetfile-test/artifact-stylesheetfile" );
-        assertTrue( sourceDir.exists() );
-        FileUtils.copyDirectoryStructure( sourceDir, localRepo );
+        sourceDir = new File(unit, "stylesheetfile-test/artifact-stylesheetfile");
+        assertTrue(sourceDir.exists());
+        FileUtils.copyDirectoryStructure(sourceDir, localRepo);
 
         // ----------------------------------------------------------------------
         // helpfile-test
         // ----------------------------------------------------------------------
 
-        sourceDir = new File( unit, "helpfile-test/artifact-helpfile" );
-        assertTrue( sourceDir.exists() );
-        FileUtils.copyDirectoryStructure( sourceDir, localRepo );
+        sourceDir = new File(unit, "helpfile-test/artifact-helpfile");
+        assertTrue(sourceDir.exists());
+        FileUtils.copyDirectoryStructure(sourceDir, localRepo);
 
         // Remove SCM files
-        List<String> files = FileUtils.getFileAndDirectoryNames( localRepo, FileUtils.getDefaultExcludesAsString(),
-                                                                 null, true, true, true, true );
-        for ( String filename : files )
-        {
-            File file = new File( filename );
+        List<String> files = FileUtils.getFileAndDirectoryNames(
+                localRepo, FileUtils.getDefaultExcludesAsString(), null, true, true, true, true);
+        for (String filename : files) {
+            File file = new File(filename);
 
-            if ( file.isDirectory() )
-            {
-                FileUtils.deleteDirectory( file );
-            }
-            else
-            {
+            if (file.isDirectory()) {
+                FileUtils.deleteDirectory(file);
+            } else {
                 file.delete();
             }
         }
@@ -169,16 +156,14 @@ public class AggregatorJavadocReportTest
      * @return a String object that contains the contents of the file
      * @throws IOException if any
      */
-    private static String readFile( File file )
-        throws IOException
-    {
-        StringBuilder str = new StringBuilder( (int) file.length() );
+    private static String readFile(File file) throws IOException {
+        StringBuilder str = new StringBuilder((int) file.length());
 
         try (BufferedReader in = new BufferedReader(new FileReader(file))) {
 
-            for ( String strTmp ; ( strTmp = in.readLine() ) != null ; ) {
-                str.append( LINE_SEPARATOR );
-                str.append( strTmp );
+            for (String strTmp; (strTmp = in.readLine()) != null; ) {
+                str.append(LINE_SEPARATOR);
+                str.append(strTmp);
             }
         }
 
@@ -190,26 +175,24 @@ public class AggregatorJavadocReportTest
      *
      * @throws Exception if any
      */
-    public void testAggregate()
-        throws Exception
-    {
-        File testPom = new File( unit, "aggregate-test/aggregate-test-plugin-config.xml" );
-        JavadocReport mojo = lookupMojo( testPom );
+    public void testAggregate() throws Exception {
+        File testPom = new File(unit, "aggregate-test/aggregate-test-plugin-config.xml");
+        JavadocReport mojo = lookupMojo(testPom);
         mojo.execute();
 
-        File apidocs = new File( getBasedir(), "target/test/unit/aggregate-test/target/site/apidocs/" );
+        File apidocs = new File(getBasedir(), "target/test/unit/aggregate-test/target/site/apidocs/");
 
         // check if project1 api files exist
-        assertTrue( new File( apidocs, "aggregate/test/project1/Project1App.html" ).exists() );
-        assertTrue( new File( apidocs, "aggregate/test/project1/Project1AppSample.html" ).exists() );
-        assertTrue( new File( apidocs, "aggregate/test/project1/Project1Sample.html" ).exists() );
-        assertTrue( new File( apidocs, "aggregate/test/project1/Project1Test.html" ).exists() );
+        assertTrue(new File(apidocs, "aggregate/test/project1/Project1App.html").exists());
+        assertTrue(new File(apidocs, "aggregate/test/project1/Project1AppSample.html").exists());
+        assertTrue(new File(apidocs, "aggregate/test/project1/Project1Sample.html").exists());
+        assertTrue(new File(apidocs, "aggregate/test/project1/Project1Test.html").exists());
 
         // check if project2 api files exist
-        assertTrue( new File( apidocs, "aggregate/test/project2/Project2App.html" ).exists() );
-        assertTrue( new File( apidocs, "aggregate/test/project2/Project2AppSample.html" ).exists() );
-        assertTrue( new File( apidocs, "aggregate/test/project2/Project2Sample.html" ).exists() );
-        assertTrue( new File( apidocs, "aggregate/test/project2/Project2Test.html" ).exists() );
+        assertTrue(new File(apidocs, "aggregate/test/project2/Project2App.html").exists());
+        assertTrue(new File(apidocs, "aggregate/test/project2/Project2AppSample.html").exists());
+        assertTrue(new File(apidocs, "aggregate/test/project2/Project2Sample.html").exists());
+        assertTrue(new File(apidocs, "aggregate/test/project2/Project2Test.html").exists());
     }
 
     /**
@@ -217,52 +200,47 @@ public class AggregatorJavadocReportTest
      *
      * @throws Exception if any
      */
-    public void testAggregateJavadocResources()
-        throws Exception
-    {
-        File testPom = new File( unit, "aggregate-resources-test/aggregate-resources-test-plugin-config.xml" );
-        JavadocReport mojo = lookupMojo( testPom );
+    public void testAggregateJavadocResources() throws Exception {
+        File testPom = new File(unit, "aggregate-resources-test/aggregate-resources-test-plugin-config.xml");
+        JavadocReport mojo = lookupMojo(testPom);
         mojo.execute();
 
-        File apidocs = new File( getBasedir(), "target/test/unit/aggregate-resources-test/target/site/apidocs" );
+        File apidocs = new File(getBasedir(), "target/test/unit/aggregate-resources-test/target/site/apidocs");
 
         // Test overview
         File overviewSummary = getOverviewSummary(apidocs);
 
-        assertTrue( overviewSummary.exists() );
-        String overview = readFile( overviewSummary ).toLowerCase( Locale.ENGLISH );
-        assertTrue( overview.contains( "<a href=\"resources/test/package-summary.html\">resources.test</a>" ) );
-        assertTrue( overview.contains( ">blabla</" ) );
-        assertTrue( overview.contains( "<a href=\"resources/test2/package-summary.html\">resources.test2</a>" ) );
-        assertTrue( overview.contains( "<a href=\"resources2/test/package-summary.html\">resources2.test</a>" ) );
-        assertTrue( overview.contains( "<a href=\"resources2/test2/package-summary.html\">resources2.test2</a>" ) );
+        assertTrue(overviewSummary.exists());
+        String overview = readFile(overviewSummary).toLowerCase(Locale.ENGLISH);
+        assertTrue(overview.contains("<a href=\"resources/test/package-summary.html\">resources.test</a>"));
+        assertTrue(overview.contains(">blabla</"));
+        assertTrue(overview.contains("<a href=\"resources/test2/package-summary.html\">resources.test2</a>"));
+        assertTrue(overview.contains("<a href=\"resources2/test/package-summary.html\">resources2.test</a>"));
+        assertTrue(overview.contains("<a href=\"resources2/test2/package-summary.html\">resources2.test2</a>"));
 
         // Test doc-files
-        File app = new File( apidocs, "resources/test/App.html" );
-        assertTrue( app.exists() );
-        overview = readFile( app );
-        assertTrue( overview.contains( "<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">" ) );
-        assertTrue( new File( apidocs, "resources/test/doc-files/maven-feather.png" ).exists() );
+        File app = new File(apidocs, "resources/test/App.html");
+        assertTrue(app.exists());
+        overview = readFile(app);
+        assertTrue(overview.contains("<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">"));
+        assertTrue(new File(apidocs, "resources/test/doc-files/maven-feather.png").exists());
     }
 
-    public void testAggregateWithModulsNotInSubFolders() throws Exception
-    {
-      File testPom = new File( unit, "aggregate-modules-not-in-subfolders-test/all/pom.xml");
-      JavadocReport mojo = lookupMojo( testPom );
-      mojo.execute();
+    public void testAggregateWithModulsNotInSubFolders() throws Exception {
+        File testPom = new File(unit, "aggregate-modules-not-in-subfolders-test/all/pom.xml");
+        JavadocReport mojo = lookupMojo(testPom);
+        mojo.execute();
 
-      File apidocs = new File( getBasedir(), "target/test/unit/aggregate-modules-not-in-subfolders-test/target/site/apidocs" );
-      assertTrue( apidocs.isDirectory() );
-      assertTrue( getOverviewSummary( apidocs ).isFile() );
+        File apidocs =
+                new File(getBasedir(), "target/test/unit/aggregate-modules-not-in-subfolders-test/target/site/apidocs");
+        assertTrue(apidocs.isDirectory());
+        assertTrue(getOverviewSummary(apidocs).isFile());
     }
 
-    private static File getOverviewSummary(File apidocs)
-    {
-      if ( JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore( "11" ) )
-      {
-          return new File( apidocs, "overview-summary.html" );
-      }
-      return new File( apidocs, "index.html" );
+    private static File getOverviewSummary(File apidocs) {
+        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("11")) {
+            return new File(apidocs, "overview-summary.html");
+        }
+        return new File(apidocs, "index.html");
     }
-
 }

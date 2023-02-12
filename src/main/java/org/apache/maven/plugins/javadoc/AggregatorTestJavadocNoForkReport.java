@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.javadoc;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc;
 
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -31,9 +30,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  * @version $Id$
  * @since 3.0.1
  */
-@Mojo( name = "test-aggregate-no-fork", requiresDependencyResolution = ResolutionScope.TEST )
-@Execute( phase = LifecyclePhase.NONE )
-public class AggregatorTestJavadocNoForkReport
-    extends AggregatorTestJavadocReport
-{
-}
+@Mojo(name = "test-aggregate-no-fork", requiresDependencyResolution = ResolutionScope.TEST)
+@Execute(phase = LifecyclePhase.NONE)
+public class AggregatorTestJavadocNoForkReport extends AggregatorTestJavadocReport {}

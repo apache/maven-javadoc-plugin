@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.javadoc.stubs;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.javadoc.stubs;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc.stubs;
 
 import java.io.File;
 
@@ -27,40 +26,34 @@ import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-public class FixMavenProjectStub
-    extends MavenProjectStub
-{
-    public FixMavenProjectStub()
-    {
-        readModel( new File( getBasedir(), "pom.xml" ) );
+public class FixMavenProjectStub extends MavenProjectStub {
+    public FixMavenProjectStub() {
+        readModel(new File(getBasedir(), "pom.xml"));
 
-        addCompileSourceRoot( getBasedir().getAbsolutePath() + "/target/classes" );
-        addCompileSourceRoot( getBasedir().getAbsolutePath() + "/src/main/java" );
+        addCompileSourceRoot(getBasedir().getAbsolutePath() + "/target/classes");
+        addCompileSourceRoot(getBasedir().getAbsolutePath() + "/src/main/java");
 
         Build build = new Build();
-        build.setDirectory( getBasedir().getAbsolutePath() + "/target" );
-        build.setSourceDirectory( getBasedir().getAbsolutePath() + "/src/main/java" );
-        build.setOutputDirectory( getBasedir().getAbsolutePath() + "/target/classes" );
-        build.setTestSourceDirectory( getBasedir().getAbsolutePath() + "/src/test/java" );
-        build.setTestOutputDirectory( getBasedir().getAbsolutePath() + "/target/test-classes" );
-        setBuild( build );
+        build.setDirectory(getBasedir().getAbsolutePath() + "/target");
+        build.setSourceDirectory(getBasedir().getAbsolutePath() + "/src/main/java");
+        build.setOutputDirectory(getBasedir().getAbsolutePath() + "/target/classes");
+        build.setTestSourceDirectory(getBasedir().getAbsolutePath() + "/src/test/java");
+        build.setTestOutputDirectory(getBasedir().getAbsolutePath() + "/target/test-classes");
+        setBuild(build);
     }
 
     /** {@inheritDoc} */
     @Override
-    public String getArtifactId()
-    {
+    public String getArtifactId() {
         return getModel().getArtifactId();
     }
 
     /** {@inheritDoc} */
     @Override
-    public String getGroupId()
-    {
+    public String getGroupId() {
         String groupId = getModel().getGroupId();
 
-        if ( ( groupId == null ) && ( getModel().getParent() != null ) )
-        {
+        if ((groupId == null) && (getModel().getParent() != null)) {
             groupId = getModel().getParent().getGroupId();
         }
 
@@ -69,12 +62,10 @@ public class FixMavenProjectStub
 
     /** {@inheritDoc} */
     @Override
-    public String getVersion()
-    {
+    public String getVersion() {
         String version = getModel().getVersion();
 
-        if ( ( version == null ) && ( getModel().getParent() != null ) )
-        {
+        if ((version == null) && (getModel().getParent() != null)) {
             version = getModel().getParent().getVersion();
         }
 
@@ -83,23 +74,20 @@ public class FixMavenProjectStub
 
     /** {@inheritDoc} */
     @Override
-    public String getPackaging()
-    {
+    public String getPackaging() {
         return getModel().getPackaging();
     }
 
     /** {@inheritDoc} */
     @Override
-    public File getBasedir()
-    {
+    public File getBasedir() {
         // Using unit test dir
-        return new File( super.getBasedir() + "/target/test/unit/fix-test/" );
+        return new File(super.getBasedir() + "/target/test/unit/fix-test/");
     }
 
     /** {@inheritDoc} */
     @Override
-    public File getFile()
-    {
-        return new File( getBasedir(), "pom.xml" );
+    public File getFile() {
+        return new File(getBasedir(), "pom.xml");
     }
 }

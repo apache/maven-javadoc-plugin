@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.javadoc.stubs;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,19 +16,18 @@ package org.apache.maven.plugins.javadoc.stubs;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc.stubs;
 
 /**
  * @author <a href="mailto:reto.weiss@axonivy.com">Reto Weiss</a>
  */
-public class AggregateResourcesTestMavenProjectStub
-    extends AbstractAggregateMavenProjectStub
-{
-    public AggregateResourcesTestMavenProjectStub()
-    {
-        super( "/src/test/resources/unit/aggregate-resources-test",
+public class AggregateResourcesTestMavenProjectStub extends AbstractAggregateMavenProjectStub {
+    public AggregateResourcesTestMavenProjectStub() {
+        super(
+                "/src/test/resources/unit/aggregate-resources-test",
                 "aggregate-resources-test-plugin-config.xml",
                 "/target/test/unit/aggregate-resources-test/target",
                 "project1",
-                "project2" );
+                "project2");
     }
 }

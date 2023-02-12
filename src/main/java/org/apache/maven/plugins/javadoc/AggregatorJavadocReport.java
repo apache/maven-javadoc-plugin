@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.javadoc;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc;
 
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -27,20 +26,17 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 /**
  * <p>Generates documentation for the <code>Java code</code> in an <b>aggregator</b> project using the standard
  * <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">Javadoc Tool</a>.</p>
- * 
- * <p>Since version 3.1.0 an aggregated report is created for every module of a Maven multimodule project.</p> 
+ *
+ * <p>Since version 3.1.0 an aggregated report is created for every module of a Maven multimodule project.</p>
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @since 2.5
  */
-@Mojo( name = "aggregate", aggregator = true, requiresDependencyResolution = ResolutionScope.COMPILE )
-@Execute( phase = LifecyclePhase.COMPILE )
-public class AggregatorJavadocReport
-    extends JavadocReport
-{
+@Mojo(name = "aggregate", aggregator = true, requiresDependencyResolution = ResolutionScope.COMPILE)
+@Execute(phase = LifecyclePhase.COMPILE)
+public class AggregatorJavadocReport extends JavadocReport {
     @Override
-    protected boolean isAggregator()
-    {
+    protected boolean isAggregator() {
         return true;
     }
 }

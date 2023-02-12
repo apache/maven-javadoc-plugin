@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.javadoc;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.javadoc;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.javadoc;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.javadoc;
 
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -35,9 +34,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">Javadoc Tool</a>
  * @see <a href="http://docs.oracle.com/javase/1.4.2/docs/tooldocs/windows/javadoc.html#options">Javadoc Options </a>
  */
-@Mojo( name = "test-javadoc-no-fork", requiresDependencyResolution = ResolutionScope.TEST, threadSafe = true )
-@Execute( phase = LifecyclePhase.NONE )
-public class TestJavadocNoForkReport
-    extends TestJavadocReport
-{
-}
+@Mojo(name = "test-javadoc-no-fork", requiresDependencyResolution = ResolutionScope.TEST, threadSafe = true)
+@Execute(phase = LifecyclePhase.NONE)
+public class TestJavadocNoForkReport extends TestJavadocReport {}
