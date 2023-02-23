@@ -34,7 +34,6 @@ under the License.
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <project implementation="org.apache.maven.plugins.javadoc.stubs.DefaultConfigurationMavenProjectStub"/>
-          <localRepository>${localRepository}</localRepository>
           <outputDirectory>${basedir}/target/test/unit/javaHome-test/target/site/apidocs</outputDirectory>
           <javadocOptionsDir>${basedir}/target/test/unit/javaHome-test/target/javadoc-bundle-options</javadocOptionsDir>
           <breakiterator>false</breakiterator>

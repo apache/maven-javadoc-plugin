@@ -69,7 +69,6 @@ import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -349,12 +348,6 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      */
     @Parameter(property = "level", defaultValue = "protected")
     private String level;
-
-    /**
-     * The local repository where the artifacts are located, used by the tests.
-     */
-    @Parameter(property = "localRepository")
-    private ArtifactRepository localRepository;
 
     /**
      * Output directory where Java classes will be rewritten.
@@ -657,7 +650,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
 
         JavadocUtil.invokeMaven(
                 getLog(),
-                new File(localRepository.getBasedir()),
+                session.getRepositorySession().getLocalRepository().getBasedir(),
                 project.getFile(),
                 Collections.singletonList(clirrGoal),
                 properties,
