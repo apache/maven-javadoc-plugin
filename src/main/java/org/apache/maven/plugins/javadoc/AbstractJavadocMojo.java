@@ -133,7 +133,6 @@ import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.ArtifactTypeRegistry;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.CollectRequest;
-import org.eclipse.aether.graph.DefaultDependencyNode;
 import org.eclipse.aether.graph.DependencyFilter;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
@@ -3242,8 +3241,11 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
             DependencyFilter filter = new ScopeDependencyFilter(
                     Arrays.asList(Artifact.SCOPE_COMPILE, Artifact.SCOPE_PROVIDED), Collections.emptySet());
-            DependencyRequest req =
-                    new DependencyRequest(new DefaultDependencyNode(RepositoryUtils.toArtifact(artifact)), filter);
+            DependencyRequest req = new DependencyRequest(
+                    new CollectRequest(
+                            new org.eclipse.aether.graph.Dependency(RepositoryUtils.toArtifact(artifact), null),
+                            RepositoryUtils.toRepos(project.getRemoteArtifactRepositories())),
+                    filter);
             Iterable<ArtifactResult> deps =
                     repoSystem.resolveDependencies(repoSession, req).getArtifactResults();
             for (ArtifactResult a : deps) {
