@@ -28,3 +28,4 @@ jobs:
     with:
       jdk-distribution-matrix: '[ "temurin", "zulu", "microsoft", "liberica", "adopt-openj9" ]'
       matrix-exclude: '[{ "jdk": "8", "distribution": "microsoft"}]'
+      verify-fail-fast: false
