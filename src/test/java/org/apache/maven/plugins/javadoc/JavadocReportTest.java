@@ -429,7 +429,8 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         assertTrue(str.toUpperCase().contains("MAVEN JAVADOC PLUGIN TEST"));
 
         // footer
-        if (JavaVersion.JAVA_VERSION.isBefore("16-ea")) {
+        if (JavaVersion.JAVA_VERSION.isBefore("16-ea")
+                && !System.getProperty("java.vm.name").contains("OpenJ9")) {
             assertTrue(str.toUpperCase().contains("MAVEN JAVADOC PLUGIN TEST FOOTER"));
         }
 
@@ -871,16 +872,23 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         String content = readFile(overview);
         assertThat(content)
                 .contains("Top - Copyright &#169; All rights reserved.")
-                .contains("Header - Copyright &#169; All rights reserved.")
-                .contains("Footer - Copyright &#169; All rights reserved.");
+                .contains("Header - Copyright &#169; All rights reserved.");
+        // IBM dist of adopt-openj9 does not support the footer param
+        if (!System.getProperty("java.vm.name").contains("OpenJ9")) {
+            assertThat(content).contains("Footer - Copyright &#169; All rights reserved.");
+        }
 
         Path packageSummary = apidocs.resolve("jdk6/test/package-summary.html");
         assertThat(packageSummary).exists();
         content = readFile(packageSummary);
         assertThat(content)
                 .contains("Top - Copyright &#169; All rights reserved.")
-                .contains("Header - Copyright &#169; All rights reserved.")
-                .contains("Footer - Copyright &#169; All rights reserved.");
+                .contains("Header - Copyright &#169; All rights reserved.");
+
+        // IBM dist of adopt-openj9 does not support the footer param
+        if (!System.getProperty("java.vm.name").contains("OpenJ9")) {
+            assertThat(content).contains("Footer - Copyright &#169; All rights reserved.");
+        }
     }
 
     /**
