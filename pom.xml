@@ -551,26 +551,6 @@ under the License.
               </locales>
             </configuration>
           </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-changes-plugin</artifactId>
-            <configuration>
-              <!-- For JIRA-report -->
-              <columnNames>Type,Key,Summary,Assignee,Status,Resolution,Fix Version</columnNames>
-              <onlyCurrentVersion>true</onlyCurrentVersion>
-              <resolutionIds>Fixed</resolutionIds>
-              <sortColumnNames>Type,Key</sortColumnNames>
-              <maxEntries>1000</maxEntries>
-              <!-- MCHANGES-124 -->
-            </configuration>
-            <reportSets>
-              <reportSet>
-                <reports>
-                  <report>jira-report</report>
-                </reports>
-              </reportSet>
-            </reportSets>
-          </plugin>
         </plugins>
       </reporting>
     </profile>

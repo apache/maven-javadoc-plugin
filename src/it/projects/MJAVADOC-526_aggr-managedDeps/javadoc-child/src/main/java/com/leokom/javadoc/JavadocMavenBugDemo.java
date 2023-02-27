@@ -19,7 +19,7 @@ package com.leokom.javadoc;
  * under the License.
  */
 
-import org.springframework.security.BadCredentialsException;
+import org.springframework.security.authentication.BadCredentialsException;
 
 public class JavadocMavenBugDemo {
 	/**
