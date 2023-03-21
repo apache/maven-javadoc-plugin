@@ -31,7 +31,7 @@ Using Alternate Doclet
 
  To generate output from an alternate doclet, add configuration similar to the following to your POM.
 
- In this example, the doclet is UmlGraph ({{http://www.umlgraph.org/}}). UmlGraph allows the declarative specification
+ In this example, the doclet is UmlGraph ({{https://www.spinellis.gr/umlgraph/}}). UmlGraph allows the declarative specification
  and drawing of UML class and sequence diagrams.
 
  <<Note about UmlGraph>>: You must have the Graphviz binary in your PATH, or the images will not be generated.
