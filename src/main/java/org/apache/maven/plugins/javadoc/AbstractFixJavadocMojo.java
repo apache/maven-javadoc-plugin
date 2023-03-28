@@ -1205,9 +1205,9 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      * <font color="#2a00ff">&#34;value&#34;</font><font color="#000000">;</font>
      * </code>
      *
-     * @param stringWriter not null
-     * @param field        not null
-     * @param indent       not null
+//     * @param stringWriter not null
+//     * @param field        not null
+//     * @param indent       not null
      * @throws IOException if any
      */
 
@@ -1219,7 +1219,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
                 || qualifiedName.equals(Float.TYPE.toString())
                 || qualifiedName.equals(Double.TYPE.toString())
                 || qualifiedName.equals(Boolean.TYPE.toString())
-                || qualifiedName.equals(Character.TYPE.toString());
+                || qualifiedName.equals(Character.TYPE.toString()));
     }
     // Refactor
     private void addDefaultFieldComment(final StringWriter stringWriter, final JavaField field, final String indent)
