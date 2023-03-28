@@ -1210,6 +1210,18 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      * @param indent       not null
      * @throws IOException if any
      */
+
+    // Refactor : Decompose Conditional
+    private boolean checkQualifiedNameComment(String qualifiedName){
+        return (qualifiedName.equals(Byte.TYPE.toString())
+                || qualifiedName.equals(Short.TYPE.toString())
+                || qualifiedName.equals(Integer.TYPE.toString()) || qualifiedName.equals(Long.TYPE.toString())
+                || qualifiedName.equals(Float.TYPE.toString())
+                || qualifiedName.equals(Double.TYPE.toString())
+                || qualifiedName.equals(Boolean.TYPE.toString())
+                || qualifiedName.equals(Character.TYPE.toString());
+    }
+    // Refactor
     private void addDefaultFieldComment(final StringWriter stringWriter, final JavaField field, final String indent)
             throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -1220,14 +1232,8 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
         if (StringUtils.isNotEmpty(field.getInitializationExpression())) {
             String qualifiedName = field.getType().getFullyQualifiedName();
 
-            if (qualifiedName.equals(Byte.TYPE.toString())
-                    || qualifiedName.equals(Short.TYPE.toString())
-                    || qualifiedName.equals(Integer.TYPE.toString())
-                    || qualifiedName.equals(Long.TYPE.toString())
-                    || qualifiedName.equals(Float.TYPE.toString())
-                    || qualifiedName.equals(Double.TYPE.toString())
-                    || qualifiedName.equals(Boolean.TYPE.toString())
-                    || qualifiedName.equals(Character.TYPE.toString())) {
+            // Refactor: Here (if) condition with 8 arguments moved to checkQualifiedNameComment() method
+            if (checkQualifiedNameComment(qualifiedName)) {
                 sb.append("=");
                 sb.append(StringEscapeUtils.escapeHtml4(
                         field.getInitializationExpression().trim()));
