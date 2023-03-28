@@ -433,7 +433,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
 
         // run clirr
         try {
-            executeClirr();
+            runClirrCheck();
         } catch (MavenInvocationException e) {
             if (getLog().isDebugEnabled()) {
                 getLog().error("MavenInvocationException: " + e.getMessage(), e);
@@ -631,7 +631,9 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      *
      * @throws MavenInvocationException if any
      */
-    private void executeClirr() throws MavenInvocationException {
+    // Refactoring : Rename method form executeClirr() to runClirrCheck()
+    // because it checks the base condition if it satifies or not
+    private void runClirrCheck() throws MavenInvocationException {
         if (ignoreClirr) {
             getLog().info("Clirr is ignored.");
             return;
