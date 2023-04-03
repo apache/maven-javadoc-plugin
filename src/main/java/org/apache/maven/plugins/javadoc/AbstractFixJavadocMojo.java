@@ -874,18 +874,9 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      * @throws IOException            if any
      * @throws MojoExecutionException if any
      */
-    private void processFix(JavaClass javaClass) throws IOException, MojoExecutionException {
-        // Skipping inner classes
-        if (javaClass.isInner()) {
-            return;
-        }
-
-        File javaFile;
-        try {
-            javaFile = Paths.get(javaClass.getSource().getURL().toURI()).toFile();
-        } catch (URISyntaxException e) {
-            throw new MojoExecutionException(e.getMessage());
-        }
+    // Refactoring : Extract Method
+    // processFixChangeDetected() is extracted from processFix()
+    private boolean processFixChangeDetected(JavaClass javaClass,File javaFile) throws MojoExecutionException, IOException {
 
         // the original java content in memory
         final String originalContent = StringUtils.unifyLineSeparators(FileUtils.fileRead(javaFile, encoding));
@@ -963,6 +954,33 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
                 stringWriter.write(EOL);
             }
         }
+        return changeDetected;
+    }
+
+    // Refactoring of extract method.
+    private void processFix(JavaClass javaClass) throws IOException, MojoExecutionException {
+        // Skipping inner classes
+        if (javaClass.isInner()) {
+            return;
+        }
+
+        File javaFile;
+        try {
+            javaFile = Paths.get(javaClass.getSource().getURL().toURI()).toFile();
+        } catch (URISyntaxException e) {
+            throw new MojoExecutionException(e.getMessage());
+        }
+
+        // the original java content in memory
+        final String originalContent = StringUtils.unifyLineSeparators(FileUtils.fileRead(javaFile, encoding));
+
+        if (getLog().isDebugEnabled()) {
+            getLog().debug("Analyzing " + javaClass.getFullyQualifiedName());
+        }
+
+        final StringWriter stringWriter = new StringWriter();
+        boolean changeDetected= processFixChangeDetected(javaClass,javaFile);
+
 
         if (changeDetected) {
             if (getLog().isInfoEnabled()) {
@@ -971,8 +989,8 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
 
             if (outputDirectory != null
                     && !outputDirectory
-                            .getAbsolutePath()
-                            .equals(getProjectSourceDirectory().getAbsolutePath())) {
+                    .getAbsolutePath()
+                    .equals(getProjectSourceDirectory().getAbsolutePath())) {
                 String path = StringUtils.replace(
                         javaFile.getAbsolutePath().replaceAll("\\\\", "/"),
                         project.getBuild().getSourceDirectory().replaceAll("\\\\", "/"),
