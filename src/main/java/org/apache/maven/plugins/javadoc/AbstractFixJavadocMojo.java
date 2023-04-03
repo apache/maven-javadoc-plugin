@@ -432,6 +432,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
         }
 
         // run clirr
+        // Refactored Method
         try {
             runClirrCheck();
         } catch (MavenInvocationException e) {
@@ -992,8 +993,8 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
 
             if (outputDirectory != null
                     && !outputDirectory
-                            .getAbsolutePath()
-                            .equals(getProjectSourceDirectory().getAbsolutePath())) {
+                    .getAbsolutePath()
+                    .equals(getProjectSourceDirectory().getAbsolutePath())) {
                 String path = StringUtils.replace(
                         javaFile.getAbsolutePath().replaceAll("\\\\", "/"),
                         project.getBuild().getSourceDirectory().replaceAll("\\\\", "/"),
