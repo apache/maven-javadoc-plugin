@@ -294,19 +294,19 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      * Flag to fix the classes or interfaces Javadoc comments according the <code>level</code>.
      */
     @Parameter(property = "fixClassComment", defaultValue = "true")
-    private boolean fixClassComment;
+    boolean fixClassComment;
 
     /**
      * Flag to fix the fields Javadoc comments according the <code>level</code>.
      */
     @Parameter(property = "fixFieldComment", defaultValue = "true")
-    private boolean fixFieldComment;
+    boolean fixFieldComment;
 
     /**
      * Flag to fix the methods Javadoc comments according the <code>level</code>.
      */
     @Parameter(property = "fixMethodComment", defaultValue = "true")
-    private boolean fixMethodComment;
+    boolean fixMethodComment;
 
     /**
      * <p>Flag to remove throws tags from unknown classes.</p>
@@ -391,7 +391,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      *
      * @see #init()
      */
-    private String[] fixTagsSplitted;
+    String[] fixTagsSplitted;
 
     /**
      * New classes found by Clirr.
@@ -511,7 +511,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
     /**
      * Init goal parameters.
      */
-    private void init() {
+    void init() {
         // defaultAuthor
         if (StringUtils.isEmpty(defaultAuthor)) {
             defaultAuthor = System.getProperty("user.name");
@@ -573,7 +573,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      * @return <code>true</code> if the user wants to proceed, <code>false</code> otherwise.
      * @throws MojoExecutionException if any
      */
-    private boolean preCheck() throws MojoExecutionException {
+    boolean preCheck() throws MojoExecutionException {
         if (force) {
             return true;
         }
@@ -634,7 +634,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      */
     // Refactoring : Rename method form executeClirr() to runClirrCheck()
     // because it checks the base condition if it satifies or not
-    private void runClirrCheck() throws MavenInvocationException {
+    void runClirrCheck() throws MavenInvocationException {
         if (ignoreClirr) {
             getLog().info("Clirr is ignored.");
             return;
@@ -801,7 +801,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      * @throws IOException            if any
      * @throws MojoExecutionException if any
      */
-    private Collection<JavaClass> getQdoxClasses() throws IOException, MojoExecutionException {
+    Collection<JavaClass> getQdoxClasses() throws IOException, MojoExecutionException {
         if ("pom".equalsIgnoreCase(project.getPackaging())) {
             getLog().warn("This project has 'pom' packaging, no Java sources is available.");
             return null;
@@ -962,7 +962,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
     }
 
     // Refactoring of extract method.
-    private void processFix(JavaClass javaClass) throws IOException, MojoExecutionException {
+    void processFix(JavaClass javaClass) throws IOException, MojoExecutionException {
         // Skipping inner classes
         if (javaClass.isInner()) {
             return;

@@ -7,7 +7,7 @@ import java.io.File;
 public class UpdateReportOutputDirectory {
     File reportOutputDirectory;
     public void updateReportOutputDirectory(File reportOutputDirectory, File thisReportOutputDirectory, String destDir) {
-        this.reportOutputDirectory=reportOutputDirectory;
+        this.reportOutputDirectory=thisReportOutputDirectory;
         if (reportOutputDirectory != null
                 && destDir != null
                 && !reportOutputDirectory.getAbsolutePath().endsWith(destDir)) {

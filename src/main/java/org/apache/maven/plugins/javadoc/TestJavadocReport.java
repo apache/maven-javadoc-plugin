@@ -201,6 +201,7 @@ public class TestJavadocReport extends JavadocReport {
         updateReportOutputDirectory(reportOutputDirectory, destDir);
     }
 
+    // Refactor : Extract Class
     private void updateReportOutputDirectory(File reportOutputDirectory, String destDir) {
         // Refactor: Extract Class : UpdateReportOutputDirectory
         UpdateReportOutputDirectory up=new UpdateReportOutputDirectory();
