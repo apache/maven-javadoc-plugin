@@ -66,6 +66,8 @@ import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
+import org.apache.maven.doxia.sink.Sink;
+import org.apache.maven.doxia.sink.SinkFactory;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
@@ -1752,6 +1754,20 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 ? Collections.<String>emptyList()
                 : new LinkedList<>(p.getExecutionProject().getCompileSourceRoots()));
     }
+
+    public void generatePull(Sink sink, SinkFactory sinkFactory, Locale locale,File outputDirectory) throws MavenReportException {
+        this.outputDirectory = outputDirectory;
+
+        try {
+            executeReport(locale);
+        } catch (MavenReportException | RuntimeException e) {
+            if (failOnError) {
+                throw e;
+            }
+            getLog().error("Error while creating javadoc report: " + e.getMessage(), e);
+        }
+    }
+
 
     /**
      * @return the current javadoc directory

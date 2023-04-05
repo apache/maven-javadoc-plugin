@@ -120,26 +120,13 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     /** {@inheritDoc} */
     @Override
     public void generate(org.codehaus.doxia.sink.Sink sink, Locale locale) throws MavenReportException {
-        generate(sink, null, locale);
-    }
-
-    public void generate(Sink sink, Locale locale) throws MavenReportException {
-        generate(sink, null, locale);
+        generatePull(sink, null, locale,outputDirectory);
     }
 
     /** {@inheritDoc} */
     @Override
     public void generate(Sink sink, SinkFactory sinkFactory, Locale locale) throws MavenReportException {
-        outputDirectory = getReportOutputDirectory();
-
-        try {
-            executeReport(locale);
-        } catch (MavenReportException | RuntimeException e) {
-            if (failOnError) {
-                throw e;
-            }
-            getLog().error("Error while creating javadoc report: " + e.getMessage(), e);
-        }
+        generatePull(sink,sinkFactory,locale,outputDirectory);
     }
 
     /** {@inheritDoc} */
