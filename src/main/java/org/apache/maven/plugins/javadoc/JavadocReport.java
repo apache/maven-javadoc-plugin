@@ -118,14 +118,18 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     }
 
     /** {@inheritDoc} */
+    // Refactor: Method pull
     @Override
     public void generate(org.codehaus.doxia.sink.Sink sink, Locale locale) throws MavenReportException {
+        // Uses its parents class's method
         generatePull(sink, null, locale,outputDirectory);
     }
 
     /** {@inheritDoc} */
+    //Refactor: Method Pull
     @Override
     public void generate(Sink sink, SinkFactory sinkFactory, Locale locale) throws MavenReportException {
+        // Uses its parents class's method
         generatePull(sink,sinkFactory,locale,outputDirectory);
     }
 

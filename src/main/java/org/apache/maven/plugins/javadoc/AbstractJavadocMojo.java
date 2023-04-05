@@ -76,7 +76,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.javadoc.options.JavadocPathArtifact;
+//import org.apache.maven.plugin.javadoc.options.JavadocPathArtifact;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.javadoc.options.BootclasspathArtifact;
@@ -1756,6 +1756,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     // Refactoring: Pull-up method from its child class JavaDocReport
+    // Method generatePull is created.
     public void generatePull(Sink sink, SinkFactory sinkFactory, Locale locale,File outputDirectory) throws MavenReportException {
         this.outputDirectory = outputDirectory;
 
