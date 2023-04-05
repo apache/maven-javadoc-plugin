@@ -1755,6 +1755,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 : new LinkedList<>(p.getExecutionProject().getCompileSourceRoots()));
     }
 
+    // Refactoring: Pull-up method from its child class JavaDocReport
     public void generatePull(Sink sink, SinkFactory sinkFactory, Locale locale,File outputDirectory) throws MavenReportException {
         this.outputDirectory = outputDirectory;
 

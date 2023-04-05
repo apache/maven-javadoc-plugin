@@ -265,13 +265,9 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     }
 
     private void updateReportOutputDirectory(File reportOutputDirectory, String destDir) {
-        if (reportOutputDirectory != null
-                && destDir != null
-                && !reportOutputDirectory.getAbsolutePath().endsWith(destDir)) {
-            this.reportOutputDirectory = new File(reportOutputDirectory, destDir);
-        } else {
-            this.reportOutputDirectory = reportOutputDirectory;
-        }
+        // Refactor: Extract Class : UpdateReportOutputDirectory
+        UpdateReportOutputDirectory up=new UpdateReportOutputDirectory();
+        up.updateReportOutputDirectory(reportOutputDirectory, this.reportOutputDirectory, destDir);
     }
 
     /** {@inheritDoc} */
