@@ -21,12 +21,12 @@ package org.apache.maven.plugins.javadoc;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.doxia.tools.SiteTool;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
@@ -178,7 +178,7 @@ public class JavadocJar extends AbstractJavadocMojo {
         }
 
         try {
-            executeReport(Locale.getDefault());
+            executeReport(SiteTool.DEFAULT_LOCALE);
         } catch (MavenReportException e) {
             failOnError("MavenReportException: Error while generating Javadoc", e);
         } catch (RuntimeException e) {

@@ -65,6 +65,7 @@ import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
+import org.apache.maven.doxia.tools.SiteTool;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
@@ -268,6 +269,12 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     // ----------------------------------------------------------------------
     // Mojo components
     // ----------------------------------------------------------------------
+
+    /**
+     * SiteTool.
+     */
+    @Component
+    protected SiteTool siteTool;
 
     /**
      * Archiver manager
@@ -4250,64 +4257,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         // locale
-        if (this.locale != null && !this.locale.isEmpty()) {
-            StringTokenizer tokenizer = new StringTokenizer(this.locale, "_");
-            final int maxTokens = 3;
-            if (tokenizer.countTokens() > maxTokens) {
-                throw new MavenReportException(
-                        "Unsupported option <locale/> '" + this.locale + "', should be language_country_variant.");
-            }
-
-            Locale localeObject = null;
-            if (tokenizer.hasMoreTokens()) {
-                String language = tokenizer.nextToken().toLowerCase(Locale.ENGLISH);
-                if (!Arrays.asList(Locale.getISOLanguages()).contains(language)) {
-                    throw new MavenReportException(
-                            "Unsupported language '" + language + "' in option <locale/> '" + this.locale + "'");
-                }
-                localeObject = new Locale(language);
-
-                if (tokenizer.hasMoreTokens()) {
-                    String country = tokenizer.nextToken().toUpperCase(Locale.ENGLISH);
-                    if (!Arrays.asList(Locale.getISOCountries()).contains(country)) {
-                        throw new MavenReportException(
-                                "Unsupported country '" + country + "' in option <locale/> '" + this.locale + "'");
-                    }
-                    localeObject = new Locale(language, country);
-
-                    if (tokenizer.hasMoreTokens()) {
-                        String variant = tokenizer.nextToken();
-                        localeObject = new Locale(language, country, variant);
-                    }
-                }
-            }
-
-            if (localeObject == null) {
-                throw new MavenReportException(
-                        "Unsupported option <locale/> '" + this.locale + "', should be language_country_variant.");
-            }
-
-            this.locale = localeObject.toString();
-            final List<Locale> availableLocalesList = Arrays.asList(Locale.getAvailableLocales());
-            if (StringUtils.isNotEmpty(localeObject.getVariant()) && !availableLocalesList.contains(localeObject)) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("Unsupported option <locale/> with variant '").append(this.locale);
-                sb.append("'");
-
-                localeObject = new Locale(localeObject.getLanguage(), localeObject.getCountry());
-                this.locale = localeObject.toString();
-
-                sb.append(", trying to use <locale/> without variant, i.e. '")
-                        .append(this.locale)
-                        .append("'");
-                if (getLog().isWarnEnabled()) {
-                    getLog().warn(sb.toString());
-                }
-            }
-
-            if (!availableLocalesList.contains(localeObject)) {
-                throw new MavenReportException("Unsupported option <locale/> '" + this.locale + "'");
-            }
+        if (StringUtils.isNotEmpty(this.locale)) {
+            this.locale = siteTool.getSiteLocales(locale).get(0).toString();
         }
     }
 
