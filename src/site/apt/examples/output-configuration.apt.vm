@@ -40,8 +40,7 @@ Using Alternative Output Directory
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>${project.version}</version>
         <configuration>
-          <reportOutputDirectory>\${project.reporting.outputDirectory}/myoutput</reportOutputDirectory>
-          <destDir>myapidocs</destDir>
+          <reportOutputDirectory>\${project.build.directory}/myoutput</reportOutputDirectory>
           ...
         </configuration>
       </plugin>
@@ -53,8 +52,8 @@ Using Alternative Output Directory
 +-----+
 
   Running <<<mvn javadoc:javadoc>>> will output the Javadoc in the
-  <$\{project.reporting.outputDirectory\}/myoutput/myapidocs> instead of the default directory, i.e.
-  <$\{project.reporting.outputDirectory\}/apidocs>.
+  <<<$\{project.build.directory\}/myoutput/apidocs>>> instead of the default directory, i.e.
+  <<<$\{project.build.directory\}/reports/apidocs>>>.
 
- <<Note>>: Running <mvn site> will automatically use the <$\{project.reporting.outputDirectory\}> directory and
- in this case, <reportOutputDirectory> has no effect. Only, <testDestDir> and <destDir> could be used.
+ <<Note>>: Running <<<mvn site>>> will automatically use the <<<$\{project.reporting.outputDirectory\}>>>
+ directory and in this case, <<<\<reportOutputDirectory /\>>>> has no effect.

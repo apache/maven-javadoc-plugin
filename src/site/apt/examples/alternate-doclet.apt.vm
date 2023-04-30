@@ -97,9 +97,6 @@ Using Alternate Doclet In Addition To The Javadoc Doclet
                 <additionalOption>\${project.build.directory}/site/doccheck</additionalOption>
               </additionalOptions>
 
-              <!-- Other dir than apidocs -->
-              <destDir>doccheck</destDir>
-
               <!-- For the project-reports page-->
               <name>DocCheck</name>
               <description>DocCheck documentation.</description>

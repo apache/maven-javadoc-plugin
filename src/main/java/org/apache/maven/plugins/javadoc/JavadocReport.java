@@ -28,8 +28,9 @@ import java.util.stream.Collectors;
 
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.doxia.sink.SinkFactory;
-import org.apache.maven.doxia.siterenderer.RenderingContext;
+import org.apache.maven.doxia.siterenderer.DocumentRenderingContext;
 import org.apache.maven.doxia.siterenderer.sink.SiteRendererSink;
+import org.apache.maven.doxia.tools.SiteTool;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Execute;
@@ -117,11 +118,6 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void generate(org.codehaus.doxia.sink.Sink sink, Locale locale) throws MavenReportException {
-        generate(sink, null, locale);
-    }
-
     public void generate(Sink sink, Locale locale) throws MavenReportException {
         generate(sink, null, locale);
     }
@@ -236,9 +232,6 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
 
             canGenerate = canGenerateReport(files);
         }
-        if (getLog().isDebugEnabled()) {
-            getLog().debug(" canGenerateReport = " + canGenerate + " for project " + this.project);
-        }
         return canGenerate;
     }
 
@@ -293,16 +286,16 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
 
         String filename = getOutputName() + ".html";
 
-        Locale locale = Locale.getDefault();
+        Locale locale = SiteTool.DEFAULT_LOCALE;
 
         try {
-            // TODO Replace null with real value
-            RenderingContext docRenderingContext = new RenderingContext(outputDirectory, filename, null);
+            String reportMojoInfo = mojoExecution.getPlugin().getId() + ":" + mojoExecution.getGoal();
+            DocumentRenderingContext docRenderingContext =
+                    new DocumentRenderingContext(outputDirectory, filename, reportMojoInfo);
 
             SiteRendererSink sink = new SiteRendererSink(docRenderingContext);
 
             generate(sink, null, locale);
-
         } catch (MavenReportException | RuntimeException e) {
             failOnError("An error has occurred in " + getName(Locale.ENGLISH) + " report generation", e);
         }

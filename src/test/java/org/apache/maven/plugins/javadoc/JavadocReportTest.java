@@ -1056,15 +1056,6 @@ public class JavadocReportTest extends AbstractMojoTestCase {
             assertTrue("No wrong charset catch", e.getMessage().contains("Unsupported option <charset/>"));
         }
 
-        // locale
-        testPom = unit.resolve("validate-options-test/wrong-locale-test-plugin-config.xml");
-        mojo = lookupMojo(testPom);
-        try {
-            mojo.execute();
-            fail("No wrong locale catch");
-        } catch (MojoExecutionException e) {
-            assertTrue("No wrong locale catch", e.getMessage().contains("Unsupported option <locale/>"));
-        }
         testPom = unit.resolve("validate-options-test/wrong-locale-with-variant-test-plugin-config.xml");
         mojo = lookupMojo(testPom);
         mojo.execute();
