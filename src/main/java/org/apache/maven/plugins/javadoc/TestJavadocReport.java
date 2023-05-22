@@ -155,7 +155,7 @@ public class TestJavadocReport extends JavadocReport {
 
     @Override
     public String getName(Locale locale) {
-        if (StringUtils.isEmpty(testName)) {
+        if (testName == null || testName.isEmpty()) {
             return getBundle(locale).getString("report.test-javadoc.name");
         }
 
@@ -164,7 +164,7 @@ public class TestJavadocReport extends JavadocReport {
 
     @Override
     public String getDescription(Locale locale) {
-        if (StringUtils.isEmpty(testDescription)) {
+        if (testDescription == null || testDescription.isEmpty()) {
             return getBundle(locale).getString("report.test-javadoc.description");
         }
 
@@ -235,9 +235,9 @@ public class TestJavadocReport extends JavadocReport {
             return Collections.emptyList();
         }
 
-        return (p.getTestCompileSourceRoots() == null
+        return p.getTestCompileSourceRoots() == null
                 ? Collections.<String>emptyList()
-                : new LinkedList<>(p.getTestCompileSourceRoots()));
+                : new LinkedList<>(p.getTestCompileSourceRoots());
     }
 
     @Override
@@ -246,9 +246,9 @@ public class TestJavadocReport extends JavadocReport {
             return Collections.emptyList();
         }
 
-        return (p.getExecutionProject().getTestCompileSourceRoots() == null
+        return p.getExecutionProject().getTestCompileSourceRoots() == null
                 ? Collections.<String>emptyList()
-                : new LinkedList<>(p.getExecutionProject().getTestCompileSourceRoots()));
+                : new LinkedList<>(p.getExecutionProject().getTestCompileSourceRoots());
     }
 
     @Override
