@@ -210,7 +210,7 @@ public class JavadocUtil {
     protected static String quotedArgument(String value) {
         String arg = value;
 
-        if (StringUtils.isNotEmpty(arg)) {
+        if (arg != null && !arg.isEmpty()) {
             if (arg.contains("'")) {
                 arg = StringUtils.replace(arg, "'", "\\'");
             }
@@ -233,7 +233,7 @@ public class JavadocUtil {
     protected static String quotedPathArgument(String value) {
         String path = value;
 
-        if (StringUtils.isNotEmpty(path)) {
+        if (path != null && !path.isEmpty()) {
             path = path.replace('\\', '/');
             if (path.contains("'")) {
                 StringBuilder pathBuilder = new StringBuilder();
@@ -275,7 +275,7 @@ public class JavadocUtil {
 
         List<String> excludes = new ArrayList<>(Arrays.asList(FileUtils.getDefaultExcludes()));
 
-        if (StringUtils.isNotEmpty(excludedocfilessubdir)) {
+        if (excludedocfilessubdir != null && !excludedocfilessubdir.isEmpty()) {
             StringTokenizer st = new StringTokenizer(excludedocfilessubdir, ":");
             String current;
             while (st.hasMoreTokens()) {
@@ -518,7 +518,7 @@ public class JavadocUtil {
      * @throws IllegalArgumentException if the output is null
      */
     protected static String extractJavadocVersion(String output) throws IllegalArgumentException {
-        if (StringUtils.isEmpty(output)) {
+        if (output == null || output.isEmpty()) {
             throw new IllegalArgumentException("The output could not be null.");
         }
 
@@ -578,7 +578,7 @@ public class JavadocUtil {
      * @throws IllegalArgumentException if the <code>memory</code> parameter is null or doesn't match any pattern.
      */
     protected static String parseJavadocMemory(String memory) throws IllegalArgumentException {
-        if (StringUtils.isEmpty(memory)) {
+        if (memory == null || memory.isEmpty()) {
             throw new IllegalArgumentException("The memory could not be null.");
         }
 
@@ -617,7 +617,7 @@ public class JavadocUtil {
      * @return <code>true</code> if the given charset is supported by the JVM, <code>false</code> otherwise.
      */
     protected static boolean validateEncoding(String charsetName) {
-        if (StringUtils.isEmpty(charsetName)) {
+        if (charsetName == null || charsetName.isEmpty()) {
             return false;
         }
 
@@ -741,7 +741,7 @@ public class JavadocUtil {
         }
 
         String mavenHome = getMavenHome(log);
-        if (StringUtils.isEmpty(mavenHome)) {
+        if (mavenHome == null || mavenHome.isEmpty()) {
             String msg = "Could NOT invoke Maven because no Maven Home is defined. You need to have set the M2_HOME "
                     + "system env variable or a maven.home Java system properties.";
             if (log != null) {
@@ -907,7 +907,7 @@ public class JavadocUtil {
                 Matcher matcher = pattern.matcher(jarEntry.getName());
                 if (matcher.matches()) {
                     String version = matcher.group("v");
-                    if (StringUtils.isEmpty(version) || JavaVersion.JAVA_VERSION.isAtLeast(version)) {
+                    if ((version == null || version.isEmpty()) || JavaVersion.JAVA_VERSION.isAtLeast(version)) {
                         String name = matcher.group("n");
 
                         classes.add(name.replaceAll("/", "\\."));
@@ -1176,7 +1176,7 @@ public class JavadocUtil {
     }
 
     static List<String> toList(String src, String elementPrefix, String elementSuffix) {
-        if (StringUtils.isEmpty(src)) {
+        if (src == null || src.isEmpty()) {
             return null;
         }
 
@@ -1186,13 +1186,13 @@ public class JavadocUtil {
         StringBuilder sb = new StringBuilder(256);
         while (st.hasMoreTokens()) {
             sb.setLength(0);
-            if (StringUtils.isNotEmpty(elementPrefix)) {
+            if (elementPrefix != null && !elementPrefix.isEmpty()) {
                 sb.append(elementPrefix);
             }
 
             sb.append(st.nextToken());
 
-            if (StringUtils.isNotEmpty(elementSuffix)) {
+            if (elementSuffix != null && !elementSuffix.isEmpty()) {
                 sb.append(elementSuffix);
             }
 
@@ -1426,7 +1426,7 @@ public class JavadocUtil {
     }
 
     private static boolean isValidPackageName(String str) {
-        if (StringUtils.isEmpty(str)) {
+        if (str == null || str.isEmpty()) {
             // unnamed package is valid (even if bad practice :) )
             return true;
         }
@@ -1444,7 +1444,7 @@ public class JavadocUtil {
     }
 
     private static boolean isValidClassName(String str) {
-        if (StringUtils.isEmpty(str) || !Character.isJavaIdentifierStart(str.charAt(0))) {
+        if ((str == null || str.isEmpty()) || !Character.isJavaIdentifierStart(str.charAt(0))) {
             return false;
         }
 

@@ -1733,9 +1733,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             return Collections.emptyList();
         }
 
-        return (p.getCompileSourceRoots() == null
+        return p.getCompileSourceRoots() == null
                 ? Collections.<String>emptyList()
-                : new LinkedList<>(p.getCompileSourceRoots()));
+                : new LinkedList<>(p.getCompileSourceRoots());
     }
 
     /**
@@ -1747,9 +1747,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             return Collections.emptyList();
         }
 
-        return (p.getExecutionProject().getCompileSourceRoots() == null
+        return p.getExecutionProject().getCompileSourceRoots() == null
                 ? Collections.<String>emptyList()
-                : new LinkedList<>(p.getExecutionProject().getCompileSourceRoots()));
+                : new LinkedList<>(p.getExecutionProject().getCompileSourceRoots());
     }
 
     /**
@@ -1791,21 +1791,21 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @return the charset attribute or the value of {@link #getDocencoding()} if <code>null</code>.
      */
     private String getCharset() {
-        return (StringUtils.isEmpty(charset)) ? getDocencoding() : charset;
+        return (charset == null || charset.isEmpty()) ? getDocencoding() : charset;
     }
 
     /**
      * @return the docencoding attribute or <code>UTF-8</code> if <code>null</code>.
      */
     private String getDocencoding() {
-        return (StringUtils.isEmpty(docencoding)) ? ReaderFactory.UTF_8 : docencoding;
+        return (docencoding == null || docencoding.isEmpty()) ? ReaderFactory.UTF_8 : docencoding;
     }
 
     /**
      * @return the encoding attribute or the value of <code>file.encoding</code> system property if <code>null</code>.
      */
     private String getEncoding() {
-        return (StringUtils.isEmpty(encoding)) ? ReaderFactory.FILE_ENCODING : encoding;
+        return (encoding == null || encoding.isEmpty()) ? ReaderFactory.FILE_ENCODING : encoding;
     }
 
     @Override
@@ -1930,7 +1930,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         addMemoryArg(cmd, "-Xms", this.minmemory);
         addProxyArg(cmd);
 
-        if (StringUtils.isNotEmpty(additionalJOption)) {
+        if (additionalJOption != null && !additionalJOption.isEmpty()) {
             cmd.createArg().setValue(additionalJOption);
         }
 
@@ -1946,7 +1946,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         List<String> standardDocletArguments = new ArrayList<>();
 
         Set<OfflineLink> offlineLinks;
-        if (StringUtils.isEmpty(doclet) || useStandardDocletOptions) {
+        if ((doclet == null || doclet.isEmpty()) || useStandardDocletOptions) {
             offlineLinks = getLinkofflines();
             addStandardDocletOptions(javadocOutputDirectory, standardDocletArguments, offlineLinks);
         } else {
@@ -1982,7 +1982,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         // getFiles(...) returns an empty list when subpackages are specified.
         boolean includesExcludesActive = (sourceFileIncludes != null && !sourceFileIncludes.isEmpty())
                 || (sourceFileExcludes != null && !sourceFileExcludes.isEmpty());
-        if (includesExcludesActive && !StringUtils.isEmpty(subpackages)) {
+        if (includesExcludesActive && !(subpackages == null || subpackages.isEmpty())) {
             getLog().warn("sourceFileIncludes and sourceFileExcludes have no effect when subpackages are specified!");
             includesExcludesActive = false;
         }
@@ -2068,7 +2068,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      */
     protected Map<Path, Collection<String>> getFiles(Collection<Path> sourcePaths) throws MavenReportException {
         Map<Path, Collection<String>> mappedFiles = new LinkedHashMap<>(sourcePaths.size());
-        if (StringUtils.isEmpty(subpackages)) {
+        if (subpackages == null || subpackages.isEmpty()) {
             Collection<String> excludedPackages = getExcludedPackages();
 
             final boolean autoExclude;
@@ -2106,7 +2106,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     protected Collection<JavadocModule> getSourcePaths() throws MavenReportException {
         Collection<JavadocModule> mappedSourcePaths = new ArrayList<>();
 
-        if (StringUtils.isEmpty(sourcepath)) {
+        if (sourcepath == null || sourcepath.isEmpty()) {
             if (!"pom".equals(project.getPackaging())) {
                 Set<Path> sourcePaths =
                         new LinkedHashSet<>(JavadocUtil.pruneDirs(project, getProjectSourceRoots(project)));
@@ -2351,7 +2351,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             }
         }
 
-        return !StringUtils.isEmpty(subpackages);
+        return !(subpackages == null || subpackages.isEmpty());
     }
 
     // ----------------------------------------------------------------------
@@ -2369,14 +2369,14 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private String getExcludedPackages(Collection<Path> sourcePaths) throws MavenReportException {
         List<String> excludedNames = null;
 
-        if (StringUtils.isNotEmpty(sourcepath) && StringUtils.isNotEmpty(subpackages)) {
+        if ((sourcepath != null && !sourcepath.isEmpty()) && (subpackages != null && !subpackages.isEmpty())) {
             Collection<String> excludedPackages = getExcludedPackages();
 
             excludedNames = JavadocUtil.getExcludedPackages(sourcePaths, excludedPackages);
         }
 
         String excludeArg = "";
-        if (StringUtils.isNotEmpty(subpackages) && excludedNames != null) {
+        if ((subpackages != null && !subpackages.isEmpty()) && excludedNames != null) {
             // add the excludedpackage names
             excludeArg = StringUtils.join(excludedNames.iterator(), ":");
         }
@@ -2395,7 +2395,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private String getSourcePath(Collection<Path> sourcePaths) {
         String sourcePath = null;
 
-        if (StringUtils.isEmpty(subpackages) || StringUtils.isNotEmpty(sourcepath)) {
+        if ((subpackages == null || subpackages.isEmpty()) || (sourcepath != null && !sourcepath.isEmpty())) {
             sourcePath = StringUtils.join(sourcePaths.iterator(), File.pathSeparator);
         }
 
@@ -2431,7 +2431,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         // for the specified excludePackageNames
-        if (StringUtils.isNotEmpty(excludePackageNames)) {
+        if (excludePackageNames != null && !excludePackageNames.isEmpty()) {
             List<String> packageNames = Arrays.asList(excludePackageNames.split("[,:;]"));
             excluded.addAll(trimValues(packageNames));
         }
@@ -2443,7 +2443,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         List<String> result = new ArrayList<>(items.size());
         for (String item : items) {
             String trimmed = item.trim();
-            if (StringUtils.isEmpty(trimmed)) {
+            if (trimmed == null || trimmed.isEmpty()) {
                 continue;
             }
             result.add(trimmed);
@@ -2712,7 +2712,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @see #getResource(List, String)
      */
     private Optional<File> getStylesheetFile(final File javadocOutputDirectory) {
-        if (StringUtils.isEmpty(stylesheetfile)) {
+        if (stylesheetfile == null || stylesheetfile.isEmpty()) {
             if ("java".equalsIgnoreCase(stylesheet)) {
                 // use the default Javadoc tool stylesheet
                 return Optional.empty();
@@ -2750,7 +2750,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
     private Optional<File> getAddStylesheet(final File javadocOutputDirectory, final String stylesheet)
             throws MavenReportException {
-        if (StringUtils.isEmpty(stylesheet)) {
+        if (stylesheet == null || stylesheet.isEmpty()) {
             return Optional.empty();
         }
 
@@ -2784,7 +2784,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @since 2.6
      */
     private Optional<File> getHelpFile(final File javadocOutputDirectory) {
-        if (StringUtils.isEmpty(helpfile)) {
+        if (helpfile == null || helpfile.isEmpty()) {
             return Optional.empty();
         }
 
@@ -2844,7 +2844,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         StringBuilder path = new StringBuilder();
         path.append(StringUtils.join(bootclassPath.iterator(), File.pathSeparator));
 
-        if (StringUtils.isNotEmpty(bootclasspath)) {
+        if (bootclasspath != null && !bootclasspath.isEmpty()) {
             path.append(JavadocUtil.unifyPathSeparator(bootclasspath));
         }
 
@@ -2873,13 +2873,13 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             }
         }
 
-        if (!StringUtils.isEmpty(docletPath)) {
+        if (!(docletPath == null || docletPath.isEmpty())) {
             pathParts.add(JavadocUtil.unifyPathSeparator(docletPath));
         }
 
         String path = StringUtils.join(pathParts.iterator(), File.pathSeparator);
 
-        if (StringUtils.isEmpty(path) && getLog().isWarnEnabled()) {
+        if ((path == null || path.isEmpty()) && getLog().isWarnEnabled()) {
             getLog().warn("No docletpath option was found. Please review <docletpath/> or <docletArtifact/>"
                     + " or <doclets/>.");
         }
@@ -2946,7 +2946,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         StringBuilder path = new StringBuilder();
         path.append(StringUtils.join(pathParts.iterator(), File.pathSeparator));
 
-        if (StringUtils.isNotEmpty(tagletpath)) {
+        if (tagletpath != null && !tagletpath.isEmpty()) {
             path.append(JavadocUtil.unifyPathSeparator(tagletpath));
         }
 
@@ -3288,7 +3288,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @see JavadocUtil#parseJavadocMemory(String)
      */
     private void addMemoryArg(Commandline cmd, String arg, String memory) {
-        if (StringUtils.isNotEmpty(memory)) {
+        if (memory != null && !memory.isEmpty()) {
             try {
                 cmd.createArg().setValue("-J" + arg + JavadocUtil.parseJavadocMemory(memory));
             } catch (IllegalArgumentException e) {
@@ -3385,7 +3385,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         // ----------------------------------------------------------------------
         // The javadoc executable is defined by the user
         // ----------------------------------------------------------------------
-        if (StringUtils.isNotEmpty(javadocExecutable)) {
+        if (javadocExecutable != null && !javadocExecutable.isEmpty()) {
             javadocExe = new File(javadocExecutable);
 
             if (javadocExe.isDirectory()) {
@@ -3462,7 +3462,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         if (!javadocExe.exists() || !javadocExe.isFile()) {
             Properties env = CommandLineUtils.getSystemEnvVars();
             String javaHome = env.getProperty("JAVA_HOME");
-            if (StringUtils.isEmpty(javaHome)) {
+            if (javaHome == null || javaHome.isEmpty()) {
                 throw new IOException("The environment variable JAVA_HOME is not correctly set.");
             }
             if ((!new File(javaHome).getCanonicalFile().exists())
@@ -3502,7 +3502,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             jVersion = JAVA_VERSION;
         }
 
-        if (StringUtils.isNotEmpty(javadocVersion)) {
+        if (javadocVersion != null && !javadocVersion.isEmpty()) {
             try {
                 javadocRuntimeVersion = JavaVersion.parse(javadocVersion);
             } catch (NumberFormatException e) {
@@ -3603,7 +3603,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             boolean repeatKey,
             boolean splitValue,
             JavaVersion requiredJavaVersion) {
-        if (StringUtils.isNotEmpty(value)) {
+        if (value != null && !value.isEmpty()) {
             if (isJavaDocVersionAtLeast(requiredJavaVersion)) {
                 addArgIfNotEmpty(arguments, key, value, repeatKey, splitValue);
             } else {
@@ -3629,8 +3629,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      */
     private void addArgIfNotEmpty(
             List<String> arguments, String key, String value, boolean repeatKey, boolean splitValue) {
-        if (StringUtils.isNotEmpty(value)) {
-            if (StringUtils.isNotEmpty(key)) {
+        if (value != null && !value.isEmpty()) {
+            if (key != null && !key.isEmpty()) {
                 arguments.add(key);
             }
 
@@ -3639,7 +3639,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 while (token.hasMoreTokens()) {
                     String current = token.nextToken().trim();
 
-                    if (StringUtils.isNotEmpty(current)) {
+                    if (current != null && !current.isEmpty()) {
                         arguments.add(current);
 
                         if (token.hasMoreTokens() && repeatKey) {
@@ -3696,7 +3696,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      */
     private void addArgIfNotEmpty(
             List<String> arguments, String key, String value, JavaVersion requiredJavaVersion, boolean repeatKey) {
-        if (StringUtils.isNotEmpty(value)) {
+        if (value != null && !value.isEmpty()) {
             if (isJavaDocVersionAtLeast(requiredJavaVersion)) {
                 addArgIfNotEmpty(arguments, key, value, repeatKey);
             } else {
@@ -3724,13 +3724,13 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             throws MavenReportException {
         for (OfflineLink offlineLink : offlineLinksList) {
             String url = offlineLink.getUrl();
-            if (StringUtils.isEmpty(url)) {
+            if (url == null || url.isEmpty()) {
                 continue;
             }
             url = cleanUrl(url);
 
             String location = offlineLink.getLocation();
-            if (StringUtils.isEmpty(location)) {
+            if (location == null || location.isEmpty()) {
                 continue;
             }
             if (isValidJavadocLink(location, false)) {
@@ -3774,7 +3774,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         Set<String> links = collectLinks();
 
         for (String link : links) {
-            if (StringUtils.isEmpty(link)) {
+            if (link == null || link.isEmpty()) {
                 continue;
             }
 
@@ -3933,7 +3933,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private List<String> getPackageNames(Map<Path, Collection<String>> sourcePaths) {
         List<String> returnList = new ArrayList<>();
 
-        if (!StringUtils.isEmpty(sourcepath)) {
+        if (!(sourcepath == null || sourcepath.isEmpty())) {
             return returnList;
         }
 
@@ -3971,7 +3971,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      */
     private Collection<String> getPackageNamesRespectingJavaModules(Collection<JavadocModule> javadocModules)
             throws MavenReportException {
-        if (!StringUtils.isEmpty(sourcepath)) {
+        if (!(sourcepath == null || sourcepath.isEmpty())) {
             return Collections.emptyList();
         }
 
@@ -4029,7 +4029,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private List<String> getFilesWithUnnamedPackages(Map<Path, Collection<String>> sourcePaths) {
         List<String> returnList = new ArrayList<>();
 
-        if (!StringUtils.isEmpty(sourcepath)) {
+        if (!(sourcepath == null || sourcepath.isEmpty())) {
             return returnList;
         }
 
@@ -4063,7 +4063,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @return a list of files
      */
     private List<String> getSpecialFiles(Map<Path, Collection<String>> sourcePaths) {
-        if (!StringUtils.isEmpty(sourcepath)) {
+        if (!(sourcepath == null || sourcepath.isEmpty())) {
             return new ArrayList<>();
         }
 
@@ -4238,7 +4238,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         // locale
-        if (StringUtils.isNotEmpty(this.locale)) {
+        if (this.locale != null && !this.locale.isEmpty()) {
             StringTokenizer tokenizer = new StringTokenizer(this.locale, "_");
             final int maxTokens = 3;
             if (tokenizer.countTokens() > maxTokens) {
@@ -4318,7 +4318,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         // helpfile
-        if (StringUtils.isNotEmpty(helpfile) && nohelp) {
+        if ((helpfile != null && !helpfile.isEmpty()) && nohelp) {
             throw new MavenReportException("Option <nohelp/> conflicts with <helpfile/>");
         }
 
@@ -4333,7 +4333,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         // stylesheet
-        if (StringUtils.isNotEmpty(stylesheet)
+        if ((stylesheet != null && !stylesheet.isEmpty())
                 && !(stylesheet.equalsIgnoreCase("maven") || stylesheet.equalsIgnoreCase("java"))) {
             throw new MavenReportException("Option <stylesheet/> supports only \"maven\" or \"java\" value.");
         }
@@ -4611,12 +4611,12 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                     false);
         }
 
-        if (StringUtils.isNotEmpty(doclet)) {
+        if (doclet != null && !doclet.isEmpty()) {
             addArgIfNotEmpty(arguments, "-doclet", JavadocUtil.quotedArgument(doclet));
             addArgIfNotEmpty(arguments, "-docletpath", JavadocUtil.quotedPathArgument(getDocletPath()));
         }
 
-        if (StringUtils.isEmpty(encoding)) {
+        if (encoding == null || encoding.isEmpty()) {
             getLog().warn("Source files encoding has not been set, using platform encoding "
                     + ReaderFactory.FILE_ENCODING + ", i.e. build is platform dependent!");
         }
@@ -4645,7 +4645,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             addArgIfNotEmpty(arguments, "-source", JavadocUtil.quotedArgument(source), SINCE_JAVADOC_1_4);
         }
 
-        if ((StringUtils.isEmpty(sourcepath)) && (StringUtils.isNotEmpty(subpackages))) {
+        if ((sourcepath == null || sourcepath.isEmpty()) && (subpackages != null && !subpackages.isEmpty())) {
             sourcepath = StringUtils.join(sourcePaths.iterator(), File.pathSeparator);
         }
 
@@ -4658,7 +4658,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                     arguments, "--module-source-path", JavadocUtil.quotedPathArgument(moduleSourceDir.toString()));
         }
 
-        if (StringUtils.isNotEmpty(sourcepath) && isJavaDocVersionAtLeast(SINCE_JAVADOC_1_5)) {
+        if ((sourcepath != null && !sourcepath.isEmpty()) && isJavaDocVersionAtLeast(SINCE_JAVADOC_1_5)) {
             addArgIfNotEmpty(arguments, "-subpackages", subpackages, SINCE_JAVADOC_1_5);
         }
 
@@ -4745,7 +4745,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         addArgIf(arguments, docfilessubdirs, "-docfilessubdirs", SINCE_JAVADOC_1_4);
 
-        addArgIf(arguments, StringUtils.isNotEmpty(doclint), "-Xdoclint:" + getDoclint(), SINCE_JAVADOC_1_8);
+        addArgIf(arguments, (doclint != null && !doclint.isEmpty()), "-Xdoclint:" + getDoclint(), SINCE_JAVADOC_1_8);
 
         addArgIfNotEmpty(arguments, "-doctitle", JavadocUtil.quotedArgument(getDoctitle()), false, false);
 
@@ -4836,7 +4836,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         addAddStyleSheets(arguments);
 
-        if (StringUtils.isNotEmpty(sourcepath) && !isJavaDocVersionAtLeast(SINCE_JAVADOC_1_5)) {
+        if ((sourcepath != null && !sourcepath.isEmpty()) && !isJavaDocVersionAtLeast(SINCE_JAVADOC_1_5)) {
             addArgIfNotEmpty(arguments, "-subpackages", subpackages, SINCE_JAVADOC_1_4);
         }
 
@@ -5114,9 +5114,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         try {
             int exitCode = CommandLineUtils.executeCommandLine(cmd, out, err);
 
-            String output = (StringUtils.isEmpty(out.getOutput())
+            String output = StringUtils.isEmpty(out.getOutput())
                     ? null
-                    : '\n' + out.getOutput().trim());
+                    : '\n' + out.getOutput().trim();
 
             if (exitCode != 0) {
                 if (cmdLine == null) {
@@ -5124,7 +5124,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 }
                 writeDebugJavadocScript(cmdLine, javadocOutputDirectory);
 
-                if (StringUtils.isNotEmpty(output)
+                if ((output != null && !output.isEmpty())
                         && StringUtils.isEmpty(err.getOutput())
                         && isJavadocVMInitError(output)) {
                     throw new MavenReportException(output + '\n' + '\n' + JavadocUtil.ERROR_INIT_VM + '\n'
@@ -5135,7 +5135,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                             + "' dir.\n");
                 }
 
-                if (StringUtils.isNotEmpty(output)) {
+                if (output != null && !output.isEmpty()) {
                     getLog().info(output);
                 }
 
@@ -5166,7 +5166,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 throw new MavenReportException(msg.toString());
             }
 
-            if (StringUtils.isNotEmpty(output)) {
+            if (output != null && !output.isEmpty()) {
                 getLog().info(output);
             }
         } catch (CommandLineException e) {
@@ -5203,7 +5203,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private boolean containsWarnings(String output) {
         // JDK-8268774 / JDK-8270831
         if (this.javadocRuntimeVersion.isBefore("17")) {
-            return StringUtils.isNotEmpty(output);
+            return output != null && !output.isEmpty();
         } else {
             return Arrays.stream(output.split("\\R"))
                     .reduce((first, second) -> second) // last line
@@ -5417,7 +5417,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         StringBuilder sb = new StringBuilder();
 
         sb.append("org.apache.maven.plugins:maven-javadoc-plugin:");
-        if (StringUtils.isNotEmpty(javadocPluginVersion)) {
+        if (javadocPluginVersion != null && !javadocPluginVersion.isEmpty()) {
             sb.append(javadocPluginVersion).append(":");
         }
 
@@ -6050,7 +6050,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @return <code>true</code> if the module need to be skipped from aggregate generation
      */
     protected boolean isSkippedModule(MavenProject mavenProject) {
-        if (StringUtils.isEmpty(this.skippedModules)) {
+        if (this.skippedModules == null || this.skippedModules.isEmpty()) {
             return false;
         }
         List<String> modulesToSkip = Arrays.asList(StringUtils.split(this.skippedModules, ','));
