@@ -200,19 +200,17 @@ public class JavadocUtil {
 
     /**
      * Convenience method to wrap an argument value in single quotes (i.e. <code>'</code>). Intended for values which
-     * may contain whitespaces. <br>
-     * To prevent javadoc error, the line separator (i.e. <code>\n</code>) are skipped.
+     * may contain whitespace. <br>
+     * To prevent javadoc errors, line feeds (i.e. <code>\n</code>) are replaces with spaces.
      *
-     * @param value the argument value.
-     * @return argument with quote
+     * @param value the argument value
+     * @return quoted argument
      */
     protected static String quotedArgument(String value) {
         String arg = value;
 
         if (arg != null && !arg.isEmpty()) {
-            if (arg.contains("'")) {
-                arg = arg.replace("'", "\\'");
-            }
+            arg = arg.replace("'", "\\'");
             arg = "'" + arg + "'";
 
             // To prevent javadoc error
