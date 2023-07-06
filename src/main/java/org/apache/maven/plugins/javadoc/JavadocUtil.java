@@ -99,7 +99,6 @@ import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
@@ -200,24 +199,22 @@ public class JavadocUtil {
     }
 
     /**
-     * Convenience method to wrap an argument value in single quotes (i.e. <code>'</code>). Intended for values which
-     * may contain whitespaces. <br>
-     * To prevent javadoc error, the line separator (i.e. <code>\n</code>) are skipped.
+     * Convenience method to wrap a command line option-argument in single quotes (i.e. <code>'</code>). Intended for values which
+     * may contain whitespace. <br>
+     * Line feeds (i.e. <code>\n</code>) are replaced with spaces, and single quotes are backslash escaped.
      *
-     * @param value the argument value.
-     * @return argument with quote
+     * @param value the option-argument
+     * @return quoted option-argument
      */
     protected static String quotedArgument(String value) {
         String arg = value;
 
         if (arg != null && !arg.isEmpty()) {
-            if (arg.contains("'")) {
-                arg = StringUtils.replace(arg, "'", "\\'");
-            }
+            arg = arg.replace("'", "\\'");
             arg = "'" + arg + "'";
 
             // To prevent javadoc error
-            arg = StringUtils.replace(arg, "\n", " ");
+            arg = arg.replace("\n", " ");
         }
 
         return arg;
@@ -285,13 +282,13 @@ public class JavadocUtil {
         }
 
         List<String> docFiles = FileUtils.getDirectoryNames(
-                javadocDir, "resources,**/doc-files", StringUtils.join(excludes.iterator(), ","), false, true);
+                javadocDir, "resources,**/doc-files", String.join(",", excludes), false, true);
         for (String docFile : docFiles) {
             File docFileOutput = new File(outputDirectory, docFile);
             FileUtils.mkdir(docFileOutput.getAbsolutePath());
             FileUtils.copyDirectoryStructure(new File(javadocDir, docFile), docFileOutput);
             List<String> files = FileUtils.getFileAndDirectoryNames(
-                    docFileOutput, StringUtils.join(excludes.iterator(), ","), null, true, true, true, true);
+                    docFileOutput, String.join(",", excludes), null, true, true, true, true);
             for (String filename : files) {
                 File file = new File(filename);
 
@@ -457,18 +454,21 @@ public class JavadocUtil {
         CommandLineUtils.StringStreamConsumer err = new JavadocOutputStreamConsumer();
 
         int exitCode = CommandLineUtils.executeCommandLine(cmd, out, err);
-
+        String errOutput = err.getOutput(); // non-null
         if (exitCode != 0) {
-            StringBuilder msg = new StringBuilder("Exit code: " + exitCode + " - " + err.getOutput());
+            StringBuilder msg = new StringBuilder("Exit code: " + exitCode + " - " + errOutput);
             msg.append('\n');
             msg.append("Command line was:").append(CommandLineUtils.toString(cmd.getCommandline()));
             throw new CommandLineException(msg.toString());
         }
 
-        if (StringUtils.isNotEmpty(err.getOutput())) {
-            return JavaVersion.parse(extractJavadocVersion(err.getOutput()));
-        } else if (StringUtils.isNotEmpty(out.getOutput())) {
-            return JavaVersion.parse(extractJavadocVersion(out.getOutput()));
+        if (!errOutput.isEmpty()) {
+            return JavaVersion.parse(extractJavadocVersion(errOutput));
+        } else {
+            String outOutput = out.getOutput(); // non-null
+            if (!outOutput.isEmpty()) {
+                return JavaVersion.parse(extractJavadocVersion(outOutput));
+            }
         }
 
         throw new IllegalArgumentException("No output found from the command line 'javadoc -J-version'");
@@ -881,7 +881,7 @@ public class JavadocUtil {
             return null;
         }
 
-        return StringUtils.join(splitPath(path), File.pathSeparator);
+        return String.join(File.pathSeparator, splitPath(path));
     }
 
     // ----------------------------------------------------------------------
@@ -1494,14 +1494,19 @@ public class JavadocUtil {
             ProxyInfo proxyInfo = new ProxyInfo();
             proxyInfo.setNonProxyHosts(activeProxy.getNonProxyHosts());
 
-            if (StringUtils.isNotEmpty(activeProxy.getHost())
+            String activeProxyHost = activeProxy.getHost();
+            if (activeProxyHost != null
+                    && !activeProxyHost.isEmpty()
                     && (url == null || !ProxyUtils.validateNonProxyHosts(proxyInfo, url.getHost()))) {
                 HttpHost proxy = new HttpHost(activeProxy.getHost(), activeProxy.getPort());
                 builder.setProxy(proxy);
 
-                if (StringUtils.isNotEmpty(activeProxy.getUsername()) && activeProxy.getPassword() != null) {
+                String activeProxyUsername = activeProxy.getUsername();
+                if (activeProxyUsername != null
+                        && !activeProxyUsername.isEmpty()
+                        && activeProxy.getPassword() != null) {
                     Credentials credentials =
-                            new UsernamePasswordCredentials(activeProxy.getUsername(), activeProxy.getPassword());
+                            new UsernamePasswordCredentials(activeProxyUsername, activeProxy.getPassword());
 
                     CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
                     credentialsProvider.setCredentials(AuthScope.ANY, credentials);
