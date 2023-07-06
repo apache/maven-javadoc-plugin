@@ -199,12 +199,12 @@ public class JavadocUtil {
     }
 
     /**
-     * Convenience method to wrap an argument value in single quotes (i.e. <code>'</code>). Intended for values which
+     * Convenience method to wrap a command line option-argument in single quotes (i.e. <code>'</code>). Intended for values which
      * may contain whitespace. <br>
-     * To prevent javadoc errors, line feeds (i.e. <code>\n</code>) are replaces with spaces.
+     * Line feeds (i.e. <code>\n</code>) are replaced with spaces, and single quotes are backslash escaped.
      *
-     * @param value the argument value
-     * @return quoted argument
+     * @param value the option-argument
+     * @return quoted option-argument
      */
     protected static String quotedArgument(String value) {
         String arg = value;
