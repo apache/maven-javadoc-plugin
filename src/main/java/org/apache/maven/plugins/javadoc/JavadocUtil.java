@@ -98,7 +98,6 @@ import org.apache.maven.wagon.proxy.ProxyUtils;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
@@ -983,7 +982,7 @@ public class JavadocUtil {
         InvocationOutputHandler outputHandler = new PrintStreamHandler(ps, false);
         request.setOutputHandler(outputHandler);
 
-        try {
+        try (OutputStream closeMe = os) {
             outputHandler.consumeLine("Invoking Maven for the goals: " + goals + " with "
                     + (properties == null ? "no properties" : "properties=" + properties));
             outputHandler.consumeLine("");
@@ -992,14 +991,9 @@ public class JavadocUtil {
             outputHandler.consumeLine("JAVA_HOME=" + getJavaHome(log));
             outputHandler.consumeLine("JAVA_OPTS=" + getJavaOpts(log));
             outputHandler.consumeLine("");
+            return invoker.execute(request);
         } catch (IOException ioe) {
             throw new MavenInvocationException("IOException while consuming invocation output", ioe);
-        }
-
-        try {
-            return invoker.execute(request);
-        } finally {
-            IOUtil.close(os);
         }
     }
 
