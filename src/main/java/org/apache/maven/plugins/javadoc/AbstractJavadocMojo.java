@@ -1682,7 +1682,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     /**
      * @param p not null maven project
      * @return the list of directories where compiled classes are placed for the given project. These dirs are
-     *         added in the javadoc classpath.
+     *         added to the javadoc classpath.
      */
     protected List<File> getProjectBuildOutputDirs(MavenProject p) {
         if (StringUtils.isEmpty(p.getBuild().getOutputDirectory())) {
@@ -1693,10 +1693,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * Either returns the attached artifact file or outputDirectory
-     *
-     * @param project
-     * @return
+     * @param mavenProject the project in which to find a classes file
+     * @return null, the attached artifact file, or outputDirectory.
      */
     protected File getClassesFile(MavenProject project) {
         if (!isAggregator() && isTest()) {
@@ -6026,8 +6024,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     *
-     * @return List of projects to be part of aggregated javadoc
+     * @return list of projects to be part of aggregated javadoc
      */
     private List<MavenProject> getAggregatedProjects() {
         if (this.reactorProjects == null) {
@@ -6046,8 +6043,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     *
-     * @return <code>true</code> if the module need to be skipped from aggregate generation
+     * @param mavenProject the project that might be skipped
+     * @return <code>true</code> if the project needs to be skipped from aggregate generation
      */
     protected boolean isSkippedModule(MavenProject mavenProject) {
         if (this.skippedModules == null || this.skippedModules.isEmpty()) {
@@ -6058,8 +6055,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     *
-     * @return <code>true</code> if the pom configuration skip javadoc generation for the project
+     * @param mavenProject the project that might be skipped
+     * @return <code>true</code> if the pom configuration skips javadoc generation for the project
      */
     protected boolean isSkippedJavadoc(MavenProject mavenProject) {
         String property = mavenProject.getProperties().getProperty("maven.javadoc.skip");
