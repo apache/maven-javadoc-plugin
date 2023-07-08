@@ -1027,7 +1027,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
     /**
      * Creates links to existing javadoc-generated documentation of external referenced classes.<p>
-     * 
+     *
      * <b>Notes</b>:
      * <ol>
      * <li>only used if {@code isOffline} is set to <code>false</code>.</li>
