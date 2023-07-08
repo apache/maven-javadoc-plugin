@@ -1026,8 +1026,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private boolean keywords;
 
     /**
-     * Creates links to existing javadoc-generated documentation of external referenced classes.
-     * <br>
+     * Creates links to existing javadoc-generated documentation of external referenced classes.<p>
+     * 
      * <b>Notes</b>:
      * <ol>
      * <li>only used if {@code isOffline} is set to <code>false</code>.</li>
@@ -1039,12 +1039,12 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * &lt;links&gt;
      * </pre>
      * will be used because <code>https://docs.oracle.com/en/java/javase/17/docs/api/element-list</code> exists.</li>
-     * <li>if {@link #detectLinks} is defined, the links between the project dependencies are
+     * <li>If {@link #detectLinks} is defined, the links between the project dependencies are
      * automatically added.</li>
-     * <li>if {@link #detectJavaApiLink} is defined, a Java API link, based on the Java version of the
+     * <li>If {@link #detectJavaApiLink} is defined, a Java API link, based on the Java version of the
      * project's sources, will be added automatically.</li>
      * </ol>
-     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option link</a>.
+     * @see <a href=https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options>Doclet option link</a>
      */
     @Parameter(property = "links")
     protected ArrayList<String> links;
@@ -1693,7 +1693,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * @param mavenProject the project in which to find a classes file
+     * @param project the project in which to find a classes file
      * @return null, the attached artifact file, or outputDirectory.
      */
     protected File getClassesFile(MavenProject project) {
