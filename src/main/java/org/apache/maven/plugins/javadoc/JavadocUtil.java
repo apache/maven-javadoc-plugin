@@ -393,9 +393,10 @@ public class JavadocUtil {
      * Convenience method that gets the files to be included in the javadoc.
      *
      * @param sourceDirectory the directory where the source files are located
-     * @param excludePackages the packages to be excluded in the javadocs
-     * @param sourceFileIncludes files to include.
-     * @param sourceFileExcludes files to exclude.
+     * @param sourceFileIncludes files to include
+     * @param sourceFileExcludes files to exclude
+     * @param excludePackages packages to be excluded from the javadocs
+     * @return the files from which javadoc should be generated
      */
     protected static List<String> getFilesFromSource(
             File sourceDirectory,

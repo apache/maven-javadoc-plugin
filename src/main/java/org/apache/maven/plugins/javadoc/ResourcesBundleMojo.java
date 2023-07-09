@@ -62,7 +62,7 @@ public class ResourcesBundleMojo extends AbstractJavadocMojo {
 
     /**
      * Base name of artifacts produced by this project. This will be combined with
-     * {@link ResourcesBundleMojo#getAttachmentClassifier()} to produce the name for this bundle
+     * {@link AbstractJavadocMojo#getAttachmentClassifier()} to produce the name for this bundle
      * jar.
      */
     @Parameter(defaultValue = "${project.build.finalName}", readonly = true)

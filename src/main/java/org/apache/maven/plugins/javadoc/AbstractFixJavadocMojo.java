@@ -87,8 +87,8 @@ import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Abstract class to fix Javadoc documentation and tags in source files.
- * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/javadoc/doc-comment-spec.html#where-tags-can-be-used">Where Tags
- * Can Be Used</a>.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/javadoc/doc-comment-spec.html#where-tags-can-be-used">Where Tags Can Be Used</a>
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @since 2.6
  */
