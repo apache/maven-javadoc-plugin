@@ -41,6 +41,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -284,15 +285,15 @@ public class JavadocUtil {
                 javadocDir, "resources,**/doc-files", String.join(",", excludes), false, true);
         for (String docFile : docFiles) {
             File docFileOutput = new File(outputDirectory, docFile);
-            FileUtils.mkdir(docFileOutput.getAbsolutePath());
-            FileUtils.copyDirectoryStructure(new File(javadocDir, docFile), docFileOutput);
+            Files.createDirectory(Paths.get(docFileOutput.getAbsolutePath()));
+            org.apache.commons.io.FileUtils.copyDirectory(new File(javadocDir, docFile), docFileOutput);
             List<String> files = FileUtils.getFileAndDirectoryNames(
                     docFileOutput, String.join(",", excludes), null, true, true, true, true);
             for (String filename : files) {
                 File file = new File(filename);
 
                 if (file.isDirectory()) {
-                    FileUtils.deleteDirectory(file);
+                    org.apache.commons.io.FileUtils.deleteDirectory(file);
                 } else {
                     file.delete();
                 }
@@ -698,7 +699,7 @@ public class JavadocUtil {
             throw new IOException("The url could not be null.");
         }
 
-        FileUtils.copyURLToFile(url, file);
+        Files.copy(url.openStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     /**
@@ -820,12 +821,11 @@ public class JavadocUtil {
      * @param javaFile not null
      * @param encoding could be null
      * @return the content with unified line separator of the given javaFile using the given encoding.
-     * @see FileUtils#fileRead(File, String)
      * @since 2.6.1
      */
     protected static String readFile(final File javaFile, final String encoding) {
         try {
-            return FileUtils.fileRead(javaFile, encoding);
+            return new String(Files.readAllBytes(javaFile.toPath()), encoding);
         } catch (IOException e) {
             return null;
         }
