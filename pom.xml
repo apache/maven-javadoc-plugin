@@ -223,10 +223,14 @@ under the License.
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-shared-utils</artifactId>
+      <version>3.4.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-common-artifact-filters</artifactId>
       <version>3.2.0</version>
     </dependency>
-
     <!-- Doxia -->
     <dependency>
       <groupId>org.apache.maven.doxia</groupId>
@@ -286,6 +290,16 @@ under the License.
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
       <version>3.5.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-io</artifactId>
+      <version>3.4.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-archiver</artifactId>
+      <version>4.7.1</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
