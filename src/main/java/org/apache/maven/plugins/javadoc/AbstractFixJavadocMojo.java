@@ -2061,26 +2061,6 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * @param sb             not null
-     * @param indent         not null
-     * @param separatorAdded
-     * @return true if separator has been added.
-     */
-    private boolean appendDefaultAuthorTag(final StringBuilder sb, final String indent, boolean separatorAdded) {
-        if (!fixTag(AUTHOR_TAG)) {
-            return separatorAdded;
-        }
-
-        if (!separatorAdded) {
-            appendSeparator(sb, indent);
-            separatorAdded = true;
-        }
-
-        appendDefaultAuthorTag(sb, indent);
-        return separatorAdded;
-    }
-
-    /**
      * @param sb     not null
      * @param indent not null
      */
