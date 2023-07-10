@@ -51,17 +51,17 @@ class FileAccumulator implements FileVisitor<Path> {
     }
 
     @Override
-    public FileVisitResult postVisitDirectory(Path path, IOException ex) throws IOException {
+    public FileVisitResult postVisitDirectory(Path path, IOException ex) {
         return FileVisitResult.CONTINUE;
     }
 
     @Override
-    public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes arg1) throws IOException {
+    public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes arg1) {
         return FileVisitResult.CONTINUE;
     }
 
     @Override
-    public FileVisitResult visitFile(Path path, BasicFileAttributes ex) throws IOException {
+    public FileVisitResult visitFile(Path path, BasicFileAttributes ex) {
         for (PathMatcher matcher : sourceFileExcludes) {
             if (matcher.matches(path)) {
                 return FileVisitResult.CONTINUE;
@@ -77,7 +77,7 @@ class FileAccumulator implements FileVisitor<Path> {
     }
 
     @Override
-    public FileVisitResult visitFileFailed(Path path, IOException ex) throws IOException {
+    public FileVisitResult visitFileFailed(Path path, IOException ex) {
         return FileVisitResult.CONTINUE;
     }
 
