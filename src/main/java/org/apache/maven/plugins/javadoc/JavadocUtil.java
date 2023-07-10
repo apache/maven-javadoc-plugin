@@ -414,7 +414,8 @@ public class JavadocUtil {
         ds.setBasedir(sourceDirectory);
         ds.scan();
 
-        FileAccumulator accumulator = new FileAccumulator(sourceFileIncludes, sourceFileExcludes);
+        FileAccumulator accumulator =
+                new FileAccumulator(sourceDirectory.toPath(), sourceFileIncludes, sourceFileExcludes);
         try {
             Files.walkFileTree(sourceDirectory.toPath(), accumulator);
         } catch (IOException e) {

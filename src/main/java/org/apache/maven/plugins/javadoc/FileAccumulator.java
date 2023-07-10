@@ -31,12 +31,13 @@ import java.util.List;
 
 class FileAccumulator implements FileVisitor<Path> {
 
+    private Path base;
     private List<PathMatcher> sourceFileIncludes = new ArrayList<>();
     private List<PathMatcher> sourceFileExcludes = new ArrayList<>();
     private List<String> includedFiles = new ArrayList<>();
 
-    FileAccumulator(List<String> sourceFileIncludes, List<String> sourceFileExcludes) {
-
+    FileAccumulator(Path base, List<String> sourceFileIncludes, List<String> sourceFileExcludes) {
+        this.base = base;
         FileSystem fileSystem = FileSystems.getDefault();
         for (String glob : sourceFileIncludes) {
             this.sourceFileIncludes.add(fileSystem.getPathMatcher("glob:" + glob));
@@ -57,7 +58,7 @@ class FileAccumulator implements FileVisitor<Path> {
     public FileVisitResult visitFile(Path path, BasicFileAttributes ex) throws IOException {
         for (PathMatcher matcher : sourceFileIncludes) {
             if (matcher.matches(path)) {
-                includedFiles.add(path.toString());
+                includedFiles.add(base.relativize(path).toString());
                 break;
             }
         }
