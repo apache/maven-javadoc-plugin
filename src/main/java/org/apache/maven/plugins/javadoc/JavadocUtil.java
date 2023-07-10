@@ -414,7 +414,15 @@ public class JavadocUtil {
         ds.setBasedir(sourceDirectory);
         ds.scan();
 
+        FileAccumulator accumulator = new FileAccumulator(sourceFileIncludes, sourceFileExcludes);
+        try {
+            Files.walkFileTree(sourceDirectory.toPath(), accumulator);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+
         String[] fileList = ds.getIncludedFiles();
+        fileList = accumulator.getIncludedFiles();
 
         List<String> files = new ArrayList<>();
         if (fileList.length != 0) {
