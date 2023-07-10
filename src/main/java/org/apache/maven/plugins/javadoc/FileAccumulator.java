@@ -42,6 +42,12 @@ class FileAccumulator implements FileVisitor<Path> {
         for (String glob : sourceFileIncludes) {
             this.sourceFileIncludes.add(fileSystem.getPathMatcher("glob:" + glob));
         }
+
+        if (sourceFileExcludes != null) {
+            for (String glob : sourceFileExcludes) {
+                this.sourceFileExcludes.add(fileSystem.getPathMatcher("glob:" + glob));
+            }
+        }
     }
 
     @Override
@@ -56,10 +62,15 @@ class FileAccumulator implements FileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFile(Path path, BasicFileAttributes ex) throws IOException {
+        for (PathMatcher matcher : sourceFileExcludes) {
+            if (matcher.matches(path)) {
+                return FileVisitResult.CONTINUE;
+            }
+        }
         for (PathMatcher matcher : sourceFileIncludes) {
             if (matcher.matches(path)) {
                 includedFiles.add(base.relativize(path).toString());
-                break;
+                return FileVisitResult.CONTINUE;
             }
         }
         return FileVisitResult.CONTINUE;
