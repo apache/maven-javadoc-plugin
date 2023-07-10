@@ -77,9 +77,6 @@ public class JavadocReportTest extends AbstractMojoTestCase {
 
     public static final String OPTIONS_UMLAUT_ENCODING = "Options Umlaut Encoding ö ä ü ß";
 
-    /** flag to copy repo only one time */
-    private static boolean TEST_REPO_CREATED = false;
-
     private Path unit;
 
     private File localRepo;
@@ -96,6 +93,13 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         localRepo = new File(getBasedir(), "target/local-repo/");
 
         createTestRepo();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        deleteDirectory(localRepo);
+
+        super.tearDown();
     }
 
     private JavadocReport lookupMojo(Path testPom) throws Exception {
@@ -121,10 +125,6 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      * @throws IOException if any
      */
     private void createTestRepo() throws IOException {
-        if (TEST_REPO_CREATED) {
-            return;
-        }
-
         localRepo.mkdirs();
 
         // ----------------------------------------------------------------------
@@ -145,7 +145,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
 
         // ----------------------------------------------------------------------
         // commons-attributes-compiler
-        // http://www.tullmann.org/pat/taglets/
+        // https://www.tullmann.org/pat/taglets/
         // ----------------------------------------------------------------------
 
         sourceDir = unit.resolve("taglet-test/artifact-taglet");
@@ -180,8 +180,6 @@ public class JavadocReportTest extends AbstractMojoTestCase {
                 file.delete();
             }
         }
-
-        TEST_REPO_CREATED = true;
     }
 
     /**
