@@ -121,6 +121,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      * @throws IOException if any
      */
     private void createTestRepo() throws IOException {
+        // TODO this is bad. Allows tests to interfere with each other, even between runs unless there's a maven clean
         if (TEST_REPO_CREATED) {
             return;
         }
