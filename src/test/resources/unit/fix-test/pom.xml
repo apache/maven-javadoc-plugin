@@ -25,10 +25,10 @@
   <version>1.1-SNAPSHOT</version>
   <name>Javadoc Test Project</name>
   <packaging>jar</packaging>
-  
+
   <properties>
-    <maven.compiler.source>1.5</maven.compiler.source>
-    <maven.compiler.target>1.5</maven.compiler.target>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
   </properties>
 
   <build>
