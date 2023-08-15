@@ -16,6 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- 
+
 def options = new File(basedir,'target/site/apidocs/options')
-assert options.readLines().dropWhile{it!='-linkoffline'}.get(1).startsWith("'https://docs.oracle.com/javase/7/docs/api'")
+assert options.readLines().dropWhile{it!='-linkoffline'}.get(1).startsWith("'https://docs.oracle.com/javase/8/docs/api")

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-def classFile 
+def classFile
 int javaVersion = System.getProperty( "java.specification.version" ) as Integer
 if ( javaVersion >= 11 ) {
  classFile = new File( basedir, 'target/apidocs/jul_to_slf4j/com/testcase/Testcase.html')
@@ -33,11 +33,11 @@ def m = classFile.text =~ p
 assert m.hasGroup()
 try {
   // https://bugs.openjdk.java.net/browse/JDK-8232438
-  // As of Java 15 ?is-external=true is removed 
-  assert m[0][1].startsWith('https://guava.dev/releases/27.0.1-jre/api/docs/com/google/common/collect/Multimap.html')
+  // As of Java 15 ?is-external=true is removed
+  assert m[0][1].startsWith('https://guava.dev/releases/32.0.0-jre/api/docs/com/google/common/collect/Multimap.html')
 }
 catch(IndexOutOfBoundsException ioobe) {
-  // seems to happen with some Java 11 releases... 
-  if ( javaVersion != 11 ) { throw ioobe }  
+  // seems to happen with some Java 11 releases...
+  if ( javaVersion != 11 ) { throw ioobe }
 }
 

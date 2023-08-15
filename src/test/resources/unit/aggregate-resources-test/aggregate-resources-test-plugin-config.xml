@@ -35,7 +35,6 @@ under the License.
         <configuration>
           <encoding>ISO-8859-1</encoding>
           <project implementation="org.apache.maven.plugins.javadoc.stubs.AggregateResourcesTestMavenProjectStub"/>
-          <localRepository>${localRepository}</localRepository>
           <outputDirectory>${basedir}/target/test/unit/aggregate-resources-test/target/site/apidocs</outputDirectory>
           <javadocOptionsDir>${basedir}/target/test/unit/aggregate-resources-test/target/javadoc-bundle-options</javadocOptionsDir>
           <windowtitle>Maven Javadoc Plugin aggregate resources 1.0-SNAPSHOT API</windowtitle>

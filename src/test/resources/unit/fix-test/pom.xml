@@ -25,10 +25,10 @@
   <version>1.1-SNAPSHOT</version>
   <name>Javadoc Test Project</name>
   <packaging>jar</packaging>
-  
+
   <properties>
-    <maven.compiler.source>1.5</maven.compiler.source>
-    <maven.compiler.target>1.5</maven.compiler.target>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
   </properties>
 
   <build>
@@ -43,7 +43,6 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <project implementation="org.apache.maven.plugins.javadoc.stubs.FixMavenProjectStub"/>
-          <localRepository>${localRepository}</localRepository>
           <outputDirectory>${basedir}/target/test/unit/fix-test/target/generated</outputDirectory>
           <defaultSince>1.1-SNAPSHOT</defaultSince>
           <encoding>UTF-8</encoding>

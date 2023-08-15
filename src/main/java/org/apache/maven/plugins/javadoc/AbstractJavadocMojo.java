@@ -63,7 +63,6 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.execution.MavenSession;
@@ -415,12 +414,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      */
     @Parameter(property = "resourcesArtifacts")
     private ResourcesArtifact[] resourcesArtifacts;
-
-    /**
-     * The local repository where the artifacts are located.
-     */
-    @Parameter(property = "localRepository")
-    private ArtifactRepository localRepository;
 
     /**
      * The projects in the reactor for aggregation report.
@@ -5476,7 +5469,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 try {
                     JavadocUtil.invokeMaven(
                             getLog(),
-                            new File(localRepository.getBasedir()),
+                            session.getRepositorySession().getLocalRepository().getBasedir(),
                             p.getFile(),
                             Collections.singletonList(javadocGoal),
                             null,

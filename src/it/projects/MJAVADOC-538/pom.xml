@@ -48,6 +48,7 @@
 
   <profiles>
     <profile>
+      <id>java10+</id>
       <activation>
         <jdk>10</jdk>
       </activation>
