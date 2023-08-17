@@ -4594,12 +4594,14 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         for (Entry<String, Collection<Path>> entry : patchModules.entrySet()) {
-            addArgIfNotEmpty(
-                    arguments,
-                    "--patch-module",
-                    entry.getKey() + '=' + JavadocUtil.quotedPathArgument(getSourcePath(entry.getValue())),
-                    false,
-                    false);
+            if (!entry.getValue().isEmpty()) {
+                addArgIfNotEmpty(
+                        arguments,
+                        "--patch-module",
+                        entry.getKey() + '=' + JavadocUtil.quotedPathArgument(getSourcePath(entry.getValue())),
+                        false,
+                        false);
+            }
         }
 
         if (doclet != null && !doclet.isEmpty()) {
