@@ -4554,8 +4554,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                         ModuleNameSource depModuleNameSource = locationManager
                                 .resolvePath(ResolvePathRequest.ofFile(file))
                                 .getModuleNameSource();
-                        if (ModuleNameSource.MODULEDESCRIPTOR.equals(depModuleNameSource)
-                                || ModuleNameSource.MANIFEST.equals(depModuleNameSource)) {
+                        if (ModuleNameSource.MODULEDESCRIPTOR.equals(depModuleNameSource)) {
                             modulePathElements.add(file);
                         } else {
                             patchModules.get(mainModuleName).add(file.toPath());
