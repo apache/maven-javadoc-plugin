@@ -841,6 +841,16 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     @Parameter(property = "verbose", defaultValue = "false")
     private boolean verbose;
 
+    /**
+     * Run the javadoc tool in pre-Java 9 (non-modular) style even if the java version is
+     * post java 9. This allows non-JPMS projects that have moved to newer Java
+     * versions to create javadocs without having to use JPMS modules.
+     *
+     * @since 3.5.1
+     */
+    @Parameter(property = "legacyMode", defaultValue = "false")
+    private boolean legacyMode;
+
     // ----------------------------------------------------------------------
     // Standard Doclet Options - all alphabetical
     // ----------------------------------------------------------------------
@@ -2068,7 +2078,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             } else if (source != null) {
                 autoExclude = JavaVersion.parse(source).isBefore("9");
             } else {
-                autoExclude = false;
+                // if legacy mode is active, treat it like pre-Java 9 (exclude module-info),
+                // otherwise don't auto-exclude anything.
+                autoExclude = legacyMode;
             }
 
             for (Path sourcePath : sourcePaths) {
@@ -4383,11 +4395,16 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         Map<String, JavaModuleDescriptor> allModuleDescriptors = new HashMap<>();
 
-        boolean supportModulePath = javadocRuntimeVersion.isAtLeast("9");
-        if (release != null) {
-            supportModulePath &= JavaVersion.parse(release).isAtLeast("9");
-        } else if (source != null) {
-            supportModulePath &= JavaVersion.parse(source).isAtLeast("9");
+        // do not support the module path in legacy mode
+        boolean supportModulePath = !legacyMode;
+
+        if (supportModulePath) {
+            supportModulePath &= javadocRuntimeVersion.isAtLeast("9");
+            if (release != null) {
+                supportModulePath &= JavaVersion.parse(release).isAtLeast("9");
+            } else if (source != null) {
+                supportModulePath &= JavaVersion.parse(source).isAtLeast("9");
+            }
         }
 
         if (supportModulePath) {
