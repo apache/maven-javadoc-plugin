@@ -333,10 +333,14 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private MojoExecution mojo;
 
     /**
-     * Specify if the Javadoc should operate in offline mode.
+     * Specify if the Javadoc plugin should operate in offline mode. If maven is run in offline
+     * mode (using {@code -o} or {@code --offline} on the command line), this option has no effect
+     * and the plugin is always in offline mode.
+     *
+     * @since 3.6.0
      */
-    @Parameter(defaultValue = "${settings.offline}", required = true, readonly = true)
-    private boolean isOffline;
+    @Parameter(property = "maven.javadoc.offline", defaultValue = "false")
+    private boolean offline;
 
     /**
      * Specifies the Javadoc resources directory to be included in the Javadoc (i.e. package.html, images...).
@@ -1033,7 +1037,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      *
      * <b>Notes</b>:
      * <ol>
-     * <li>only used if {@code isOffline} is set to <code>false</code>.</li>
+     * <li>This option is ignored if the plugin is run in offline mode (using the {@code <offline>}
+     * setting or specifying {@code -o, --offline} or {@code -Dmaven.javadoc.offline=true} on the
+     * command line.</li>
      * <li>all given links should have a fetchable <code>/package-list</code> or <code>/element-list</code>
      * (since Java 10). For instance:
      * <pre>
@@ -3781,7 +3787,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 continue;
             }
 
-            if (isOffline && !link.startsWith("file:")) {
+            if ((settings.isOffline() || offline) && !link.startsWith("file:")) {
                 continue;
             }
 
