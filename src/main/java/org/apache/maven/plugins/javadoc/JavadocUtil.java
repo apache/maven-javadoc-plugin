@@ -692,10 +692,10 @@ public class JavadocUtil {
      */
     protected static void copyResource(URL url, File file) throws IOException {
         if (file == null) {
-            throw new IOException("The file can't be null.");
+            throw new NullPointerException("The file can't be null.");
         }
         if (url == null) {
-            throw new IOException("The url could not be null.");
+            throw new NullPointerException("The url could not be null.");
         }
 
         FileUtils.copyURLToFile(url, file);
