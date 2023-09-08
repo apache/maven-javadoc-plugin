@@ -846,7 +846,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * post java 9. This allows non-JPMS projects that have moved to newer Java
      * versions to create javadocs without having to use JPMS modules.
      *
-     * @since 3.5.1
+     * @since 3.6.0
      */
     @Parameter(property = "legacyMode", defaultValue = "false")
     private boolean legacyMode;
