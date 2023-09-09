@@ -98,7 +98,7 @@ under the License.
           <header>MAVEN JAVADOC PLUGIN TEST</header>
           <footer>MAVEN JAVADOC PLUGIN TEST FOOTER</footer>
           <locale>en_US</locale>
-          <isOffline>true</isOffline>
+          <offline>true</offline>
           <excludePackageNames>*.exclude2:custom.configuration.exclude1.*</excludePackageNames>
           <debug>true</debug>
           <failOnError>true</failOnError>
