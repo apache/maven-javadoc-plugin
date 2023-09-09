@@ -23,6 +23,12 @@ package mjavadoc642;
  * This is the main class.
  */
 public final class Main {
+
+    /**
+     * Mising description on auto generated constructor cause javadoc warrning.
+     */
+    Main() {}
+
     /**
      * This is the main method.
      *
