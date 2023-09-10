@@ -31,11 +31,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.LegacySupport;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.plugins.javadoc.ProxyServer.AuthAsyncProxyServlet;
@@ -43,7 +45,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
-import org.apache.maven.shared.utils.StringUtils;
 import org.apache.maven.shared.utils.io.FileUtils;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.eclipse.aether.DefaultRepositorySystemSession;
@@ -595,27 +596,6 @@ public class JavadocReportTest extends AbstractMojoTestCase {
     }
 
     /**
-     * @throws Exception if any
-     */
-    public void testExceptions() throws Exception {
-        try {
-            Path testPom = unit.resolve("default-configuration/exception-test-plugin-config.xml");
-            JavadocReport mojo = lookupMojo(testPom);
-            mojo.execute();
-
-            fail("Must throw exception.");
-        } catch (Exception e) {
-            assertTrue(true);
-
-            try {
-                deleteDirectory(new File(getBasedir(), "exception"));
-            } catch (IOException ie) {
-                // nop
-            }
-        }
-    }
-
-    /**
      * Method to test the taglet artifact configuration
      *
      * @throws Exception if any
@@ -821,8 +801,6 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         } catch (MojoExecutionException e) {
             fail("Doesnt handle correctly newline for header or footer parameter");
         }
-
-        assertTrue(true);
     }
 
     /**
@@ -838,8 +816,6 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         } catch (MojoExecutionException e) {
             fail("Doesn't handle correctly newline for string parameters. See options and packages files.");
         }
-
-        assertTrue(true);
     }
 
     /**
@@ -1167,8 +1143,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         try {
             mojo.execute();
             fail();
-        } catch (Exception e) {
-            assertTrue(true);
+        } catch (MojoExecutionException | MojoFailureException e) {
         }
 
         // stylesheet == java

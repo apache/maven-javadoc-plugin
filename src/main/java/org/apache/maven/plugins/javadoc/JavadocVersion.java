@@ -18,8 +18,6 @@
  */
 package org.apache.maven.plugins.javadoc;
 
-import org.codehaus.plexus.util.StringUtils;
-
 /**
  * Once the plugin requires Java9, this class can be replaced with java.lang.Runtime.Version
  * <p>
@@ -36,7 +34,7 @@ public class JavadocVersion implements Comparable<JavadocVersion> {
     private String rawVersion;
 
     private JavadocVersion(String rawVersion) {
-        if (StringUtils.isEmpty(rawVersion)) {
+        if (rawVersion == null || rawVersion.isEmpty()) {
             throw new IllegalArgumentException("The rawVersion could not be null.");
         }
         this.rawVersion = rawVersion;
@@ -70,7 +68,7 @@ public class JavadocVersion implements Comparable<JavadocVersion> {
             }
         }
 
-        return (thisSegments.length - otherSegments.length);
+        return thisSegments.length - otherSegments.length;
     }
 
     @Override

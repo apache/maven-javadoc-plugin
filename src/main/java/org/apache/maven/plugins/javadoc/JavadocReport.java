@@ -39,7 +39,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.reporting.MavenMultiPageReport;
 import org.apache.maven.reporting.MavenReportException;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Generates documentation for the <code>Java code</code> in an <b>NON aggregator</b> project using the standard
@@ -100,7 +99,7 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     /** {@inheritDoc} */
     @Override
     public String getName(Locale locale) {
-        if (StringUtils.isEmpty(name)) {
+        if (name == null || name.isEmpty()) {
             return getBundle(locale).getString("report.javadoc.name");
         }
 
@@ -110,7 +109,7 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     /** {@inheritDoc} */
     @Override
     public String getDescription(Locale locale) {
-        if (StringUtils.isEmpty(description)) {
+        if (description == null || description.isEmpty()) {
             return getBundle(locale).getString("report.javadoc.description");
         }
 

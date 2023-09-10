@@ -69,7 +69,6 @@ import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -87,8 +86,8 @@ import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Abstract class to fix Javadoc documentation and tags in source files.
- * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/javadoc/doc-comment-spec.html#where-tags-can-be-used">Where Tags
- * Can Be Used</a>.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/javadoc/doc-comment-spec.html#where-tags-can-be-used">Where Tags Can Be Used</a>
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @since 2.6
  */
@@ -351,12 +350,6 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
     private String level;
 
     /**
-     * The local repository where the artifacts are located, used by the tests.
-     */
-    @Parameter(property = "localRepository")
-    private ArtifactRepository localRepository;
-
-    /**
      * Output directory where Java classes will be rewritten.
      */
     @Parameter(property = "outputDirectory", defaultValue = "${project.build.sourceDirectory}")
@@ -478,9 +471,9 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      * @return the list of source paths for the given project.
      */
     protected List<String> getProjectSourceRoots(MavenProject p) {
-        return (p.getCompileSourceRoots() == null
+        return p.getCompileSourceRoots() == null
                 ? Collections.<String>emptyList()
-                : new LinkedList<>(p.getCompileSourceRoots()));
+                : new LinkedList<>(p.getCompileSourceRoots());
     }
 
     /**
@@ -490,9 +483,9 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      *          if any
      */
     protected List<String> getCompileClasspathElements(MavenProject p) throws DependencyResolutionRequiredException {
-        return (p.getCompileClasspathElements() == null
+        return p.getCompileClasspathElements() == null
                 ? Collections.<String>emptyList()
-                : new LinkedList<>(p.getCompileClasspathElements()));
+                : new LinkedList<>(p.getCompileClasspathElements());
     }
 
     /**
@@ -512,7 +505,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      */
     private void init() {
         // defaultAuthor
-        if (StringUtils.isEmpty(defaultAuthor)) {
+        if (defaultAuthor == null || defaultAuthor.isEmpty()) {
             defaultAuthor = System.getProperty("user.name");
         }
 
@@ -550,7 +543,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
         fixTagsSplitted = StringUtils.split(fixTags, ",");
 
         // encoding
-        if (StringUtils.isEmpty(encoding)) {
+        if (encoding == null || encoding.isEmpty()) {
             if (getLog().isWarnEnabled()) {
                 getLog().warn("File encoding has not been set, using platform encoding " + ReaderFactory.FILE_ENCODING
                         + ", i.e. build is platform dependent!");
@@ -657,7 +650,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
 
         JavadocUtil.invokeMaven(
                 getLog(),
-                new File(localRepository.getBasedir()),
+                session.getRepositorySession().getLocalRepository().getBasedir(),
                 project.getFile(),
                 Collections.singletonList(clirrGoal),
                 properties,
@@ -1027,7 +1020,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
 
         String javadocComment = trimRight(extractOriginalJavadoc(originalContent, entity));
         String extraComment = javadocComment.substring(javadocComment.indexOf(END_JAVADOC) + END_JAVADOC.length());
-        if (StringUtils.isNotEmpty(extraComment)) {
+        if (extraComment != null && !extraComment.isEmpty()) {
             if (extraComment.contains(EOL)) {
                 stringWriter.write(extraComment.substring(extraComment.indexOf(EOL) + EOL.length()));
             } else {
@@ -1082,7 +1075,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
         }
 
         if (LEVEL_PROTECTED.equalsIgnoreCase(level.trim())) {
-            return (modifiers.contains(LEVEL_PUBLIC) || modifiers.contains(LEVEL_PROTECTED));
+            return modifiers.contains(LEVEL_PUBLIC) || modifiers.contains(LEVEL_PROTECTED);
         }
 
         if (LEVEL_PACKAGE.equalsIgnoreCase(level.trim())) {
@@ -1887,7 +1880,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
             return;
         }
 
-        if (StringUtils.isNotEmpty(originalJavadocTag)
+        if ((originalJavadocTag != null && !originalJavadocTag.isEmpty())
                 && javaMethod.getReturns() != null
                 && !javaMethod.getReturns().isVoid()) {
             sb.append(originalJavadocTag);
@@ -2058,26 +2051,6 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
                 }
             }
         }
-    }
-
-    /**
-     * @param sb             not null
-     * @param indent         not null
-     * @param separatorAdded
-     * @return true if separator has been added.
-     */
-    private boolean appendDefaultAuthorTag(final StringBuilder sb, final String indent, boolean separatorAdded) {
-        if (!fixTag(AUTHOR_TAG)) {
-            return separatorAdded;
-        }
-
-        if (!separatorAdded) {
-            appendSeparator(sb, indent);
-            separatorAdded = true;
-        }
-
-        appendDefaultAuthorTag(sb, indent);
-        return separatorAdded;
     }
 
     /**
@@ -3044,7 +3017,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      * @return the indentation for the given line.
      */
     private static String autodetectIndentation(final String line) {
-        if (StringUtils.isEmpty(line)) {
+        if (line == null || line.isEmpty()) {
             return "";
         }
 
@@ -3084,7 +3057,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      * @return the text trimmed on left side or empty if text is null.
      */
     private static String trimLeft(final String text) {
-        if (StringUtils.isEmpty(text) || StringUtils.isEmpty(text.trim())) {
+        if ((text == null || text.isEmpty()) || StringUtils.isEmpty(text.trim())) {
             return "";
         }
 
@@ -3106,7 +3079,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      * @return the text trimmed on tight side or empty if text is null.
      */
     private static String trimRight(final String text) {
-        if (StringUtils.isEmpty(text) || StringUtils.isEmpty(text.trim())) {
+        if ((text == null || text.isEmpty()) || StringUtils.isEmpty(text.trim())) {
             return "";
         }
 

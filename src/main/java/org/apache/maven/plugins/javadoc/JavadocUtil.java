@@ -93,14 +93,11 @@ import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.apache.maven.shared.invoker.PrintStreamHandler;
+import org.apache.maven.shared.utils.io.DirectoryScanner;
+import org.apache.maven.shared.utils.io.FileUtils;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.proxy.ProxyUtils;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
-import org.codehaus.plexus.util.DirectoryScanner;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.Os;
-import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
@@ -201,24 +198,22 @@ public class JavadocUtil {
     }
 
     /**
-     * Convenience method to wrap an argument value in single quotes (i.e. <code>'</code>). Intended for values which
-     * may contain whitespaces. <br>
-     * To prevent javadoc error, the line separator (i.e. <code>\n</code>) are skipped.
+     * Convenience method to wrap a command line option-argument in single quotes (i.e. <code>'</code>). Intended for values which
+     * may contain whitespace. <br>
+     * Line feeds (i.e. <code>\n</code>) are replaced with spaces, and single quotes are backslash escaped.
      *
-     * @param value the argument value.
-     * @return argument with quote
+     * @param value the option-argument
+     * @return quoted option-argument
      */
     protected static String quotedArgument(String value) {
         String arg = value;
 
-        if (StringUtils.isNotEmpty(arg)) {
-            if (arg.contains("'")) {
-                arg = StringUtils.replace(arg, "'", "\\'");
-            }
+        if (arg != null && !arg.isEmpty()) {
+            arg = arg.replace("'", "\\'");
             arg = "'" + arg + "'";
 
             // To prevent javadoc error
-            arg = StringUtils.replace(arg, "\n", " ");
+            arg = arg.replace("\n", " ");
         }
 
         return arg;
@@ -234,7 +229,7 @@ public class JavadocUtil {
     protected static String quotedPathArgument(String value) {
         String path = value;
 
-        if (StringUtils.isNotEmpty(path)) {
+        if (path != null && !path.isEmpty()) {
             path = path.replace('\\', '/');
             if (path.contains("'")) {
                 StringBuilder pathBuilder = new StringBuilder();
@@ -276,7 +271,7 @@ public class JavadocUtil {
 
         List<String> excludes = new ArrayList<>(Arrays.asList(FileUtils.getDefaultExcludes()));
 
-        if (StringUtils.isNotEmpty(excludedocfilessubdir)) {
+        if (excludedocfilessubdir != null && !excludedocfilessubdir.isEmpty()) {
             StringTokenizer st = new StringTokenizer(excludedocfilessubdir, ":");
             String current;
             while (st.hasMoreTokens()) {
@@ -286,13 +281,13 @@ public class JavadocUtil {
         }
 
         List<String> docFiles = FileUtils.getDirectoryNames(
-                javadocDir, "resources,**/doc-files", StringUtils.join(excludes.iterator(), ","), false, true);
+                javadocDir, "resources,**/doc-files", String.join(",", excludes), false, true);
         for (String docFile : docFiles) {
             File docFileOutput = new File(outputDirectory, docFile);
             FileUtils.mkdir(docFileOutput.getAbsolutePath());
             FileUtils.copyDirectoryStructure(new File(javadocDir, docFile), docFileOutput);
             List<String> files = FileUtils.getFileAndDirectoryNames(
-                    docFileOutput, StringUtils.join(excludes.iterator(), ","), null, true, true, true, true);
+                    docFileOutput, String.join(",", excludes), null, true, true, true, true);
             for (String filename : files) {
                 File file = new File(filename);
 
@@ -398,9 +393,10 @@ public class JavadocUtil {
      * Convenience method that gets the files to be included in the javadoc.
      *
      * @param sourceDirectory the directory where the source files are located
-     * @param excludePackages the packages to be excluded in the javadocs
-     * @param sourceFileIncludes files to include.
-     * @param sourceFileExcludes files to exclude.
+     * @param sourceFileIncludes files to include
+     * @param sourceFileExcludes files to exclude
+     * @param excludePackages packages to be excluded from the javadocs
+     * @return the files from which javadoc should be generated
      */
     protected static List<String> getFilesFromSource(
             File sourceDirectory,
@@ -458,18 +454,21 @@ public class JavadocUtil {
         CommandLineUtils.StringStreamConsumer err = new JavadocOutputStreamConsumer();
 
         int exitCode = CommandLineUtils.executeCommandLine(cmd, out, err);
-
+        String errOutput = err.getOutput(); // non-null
         if (exitCode != 0) {
-            StringBuilder msg = new StringBuilder("Exit code: " + exitCode + " - " + err.getOutput());
+            StringBuilder msg = new StringBuilder("Exit code: " + exitCode + " - " + errOutput);
             msg.append('\n');
             msg.append("Command line was:").append(CommandLineUtils.toString(cmd.getCommandline()));
             throw new CommandLineException(msg.toString());
         }
 
-        if (StringUtils.isNotEmpty(err.getOutput())) {
-            return JavaVersion.parse(extractJavadocVersion(err.getOutput()));
-        } else if (StringUtils.isNotEmpty(out.getOutput())) {
-            return JavaVersion.parse(extractJavadocVersion(out.getOutput()));
+        if (!errOutput.isEmpty()) {
+            return JavaVersion.parse(extractJavadocVersion(errOutput));
+        } else {
+            String outOutput = out.getOutput(); // non-null
+            if (!outOutput.isEmpty()) {
+                return JavaVersion.parse(extractJavadocVersion(outOutput));
+            }
         }
 
         throw new IllegalArgumentException("No output found from the command line 'javadoc -J-version'");
@@ -519,7 +518,7 @@ public class JavadocUtil {
      * @throws IllegalArgumentException if the output is null
      */
     protected static String extractJavadocVersion(String output) throws IllegalArgumentException {
-        if (StringUtils.isEmpty(output)) {
+        if (output == null || output.isEmpty()) {
             throw new IllegalArgumentException("The output could not be null.");
         }
 
@@ -579,7 +578,7 @@ public class JavadocUtil {
      * @throws IllegalArgumentException if the <code>memory</code> parameter is null or doesn't match any pattern.
      */
     protected static String parseJavadocMemory(String memory) throws IllegalArgumentException {
-        if (StringUtils.isEmpty(memory)) {
+        if (memory == null || memory.isEmpty()) {
             throw new IllegalArgumentException("The memory could not be null.");
         }
 
@@ -618,7 +617,7 @@ public class JavadocUtil {
      * @return <code>true</code> if the given charset is supported by the JVM, <code>false</code> otherwise.
      */
     protected static boolean validateEncoding(String charsetName) {
-        if (StringUtils.isEmpty(charsetName)) {
+        if (charsetName == null || charsetName.isEmpty()) {
             return false;
         }
 
@@ -693,10 +692,10 @@ public class JavadocUtil {
      */
     protected static void copyResource(URL url, File file) throws IOException {
         if (file == null) {
-            throw new IOException("The file can't be null.");
+            throw new NullPointerException("The file can't be null.");
         }
         if (url == null) {
-            throw new IOException("The url could not be null.");
+            throw new NullPointerException("The url could not be null.");
         }
 
         FileUtils.copyURLToFile(url, file);
@@ -742,7 +741,7 @@ public class JavadocUtil {
         }
 
         String mavenHome = getMavenHome(log);
-        if (StringUtils.isEmpty(mavenHome)) {
+        if (mavenHome == null || mavenHome.isEmpty()) {
             String msg = "Could NOT invoke Maven because no Maven Home is defined. You need to have set the M2_HOME "
                     + "system env variable or a maven.home Java system properties.";
             if (log != null) {
@@ -882,7 +881,7 @@ public class JavadocUtil {
             return null;
         }
 
-        return StringUtils.join(splitPath(path), File.pathSeparator);
+        return String.join(File.pathSeparator, splitPath(path));
     }
 
     // ----------------------------------------------------------------------
@@ -908,7 +907,7 @@ public class JavadocUtil {
                 Matcher matcher = pattern.matcher(jarEntry.getName());
                 if (matcher.matches()) {
                     String version = matcher.group("v");
-                    if (StringUtils.isEmpty(version) || JavaVersion.JAVA_VERSION.isAtLeast(version)) {
+                    if ((version == null || version.isEmpty()) || JavaVersion.JAVA_VERSION.isAtLeast(version)) {
                         String name = matcher.group("n");
 
                         classes.add(name.replaceAll("/", "\\."));
@@ -984,7 +983,7 @@ public class JavadocUtil {
         InvocationOutputHandler outputHandler = new PrintStreamHandler(ps, false);
         request.setOutputHandler(outputHandler);
 
-        try {
+        try (OutputStream closeMe = os) {
             outputHandler.consumeLine("Invoking Maven for the goals: " + goals + " with "
                     + (properties == null ? "no properties" : "properties=" + properties));
             outputHandler.consumeLine("");
@@ -993,14 +992,9 @@ public class JavadocUtil {
             outputHandler.consumeLine("JAVA_HOME=" + getJavaHome(log));
             outputHandler.consumeLine("JAVA_OPTS=" + getJavaOpts(log));
             outputHandler.consumeLine("");
+            return invoker.execute(request);
         } catch (IOException ioe) {
             throw new MavenInvocationException("IOException while consuming invocation output", ioe);
-        }
-
-        try {
-            return invoker.execute(request);
-        } finally {
-            IOUtil.close(os);
         }
     }
 
@@ -1096,12 +1090,6 @@ public class JavadocUtil {
         private String lookahead = null;
 
         /**
-         * A boolean that determines if we are running on Novell NetWare, which exhibits slightly different path name
-         * characteristics (multi-character volume / drive names)
-         */
-        private boolean onNetWare = Os.isFamily("netware");
-
-        /**
          * Flag to indicate whether or not we are running on a platform with a DOS style filesystem
          */
         private boolean dosStyleFilesystem;
@@ -1112,15 +1100,7 @@ public class JavadocUtil {
          * @param path The path to tokenize. Must not be <code>null</code>.
          */
         PathTokenizer(String path) {
-            if (onNetWare) {
-                // For NetWare, use the boolean=true mode, so we can use delimiter
-                // information to make a better decision later.
-                tokenizer = new StringTokenizer(path, ":;", true);
-            } else {
-                // on Windows and Unix, we can ignore delimiters and still have
-                // enough information to tokenize correctly.
-                tokenizer = new StringTokenizer(path, ":;", false);
-            }
+            tokenizer = new StringTokenizer(path, ":;", false);
             dosStyleFilesystem = File.pathSeparatorChar == ';';
         }
 
@@ -1150,59 +1130,21 @@ public class JavadocUtil {
                 token = tokenizer.nextToken().trim();
             }
 
-            if (!onNetWare) {
-                if (token.length() == 1
-                        && Character.isLetter(token.charAt(0))
-                        && dosStyleFilesystem
-                        && tokenizer.hasMoreTokens()) {
-                    // we are on a dos style system so this path could be a drive
-                    // spec. We look at the next token
-                    String nextToken = tokenizer.nextToken().trim();
-                    if (nextToken.startsWith("\\") || nextToken.startsWith("/")) {
-                        // we know we are on a DOS style platform and the next path
-                        // starts with a slash or backslash, so we know this is a
-                        // drive spec
-                        token += ":" + nextToken;
-                    } else {
-                        // store the token just read for next time
-                        lookahead = nextToken;
-                    }
-                }
-            } else {
-                // we are on NetWare, tokenizing is handled a little differently,
-                // due to the fact that NetWare has multiple-character volume names.
-                if (token.equals(File.pathSeparator) || token.equals(":")) {
-                    // ignore ";" and get the next token
-                    token = tokenizer.nextToken().trim();
-                }
-
-                if (tokenizer.hasMoreTokens()) {
-                    // this path could be a drive spec, so look at the next token
-                    String nextToken = tokenizer.nextToken().trim();
-
-                    // make sure we aren't going to get the path separator next
-                    if (!nextToken.equals(File.pathSeparator)) {
-                        if (nextToken.equals(":")) {
-                            if (!token.startsWith("/")
-                                    && !token.startsWith("\\")
-                                    && !token.startsWith(".")
-                                    && !token.startsWith("..")) {
-                                // it indeed is a drive spec, get the next bit
-                                String oneMore = tokenizer.nextToken().trim();
-                                if (!oneMore.equals(File.pathSeparator)) {
-                                    token += ":" + oneMore;
-                                } else {
-                                    token += ":";
-                                    lookahead = oneMore;
-                                }
-                            }
-                            // implicit else: ignore the ':' since we have either a
-                            // UNIX or a relative path
-                        } else {
-                            // store the token just read for next time
-                            lookahead = nextToken;
-                        }
-                    }
+            if (token.length() == 1
+                    && Character.isLetter(token.charAt(0))
+                    && dosStyleFilesystem
+                    && tokenizer.hasMoreTokens()) {
+                // we are on a dos style system so this path could be a drive
+                // spec. We look at the next token
+                String nextToken = tokenizer.nextToken().trim();
+                if (nextToken.startsWith("\\") || nextToken.startsWith("/")) {
+                    // we know we are on a DOS style platform and the next path
+                    // starts with a slash or backslash, so we know this is a
+                    // drive spec
+                    token += ":" + nextToken;
+                } else {
+                    // store the token just read for next time
+                    lookahead = nextToken;
                 }
             }
             return token;
@@ -1229,7 +1171,7 @@ public class JavadocUtil {
     }
 
     static List<String> toList(String src, String elementPrefix, String elementSuffix) {
-        if (StringUtils.isEmpty(src)) {
+        if (src == null || src.isEmpty()) {
             return null;
         }
 
@@ -1239,13 +1181,13 @@ public class JavadocUtil {
         StringBuilder sb = new StringBuilder(256);
         while (st.hasMoreTokens()) {
             sb.setLength(0);
-            if (StringUtils.isNotEmpty(elementPrefix)) {
+            if (elementPrefix != null && !elementPrefix.isEmpty()) {
                 sb.append(elementPrefix);
             }
 
             sb.append(st.nextToken());
 
-            if (StringUtils.isNotEmpty(elementSuffix)) {
+            if (elementSuffix != null && !elementSuffix.isEmpty()) {
                 sb.append(elementSuffix);
             }
 
@@ -1479,7 +1421,7 @@ public class JavadocUtil {
     }
 
     private static boolean isValidPackageName(String str) {
-        if (StringUtils.isEmpty(str)) {
+        if (str == null || str.isEmpty()) {
             // unnamed package is valid (even if bad practice :) )
             return true;
         }
@@ -1497,7 +1439,7 @@ public class JavadocUtil {
     }
 
     private static boolean isValidClassName(String str) {
-        if (StringUtils.isEmpty(str) || !Character.isJavaIdentifierStart(str.charAt(0))) {
+        if ((str == null || str.isEmpty()) || !Character.isJavaIdentifierStart(str.charAt(0))) {
             return false;
         }
 
@@ -1547,14 +1489,19 @@ public class JavadocUtil {
             ProxyInfo proxyInfo = new ProxyInfo();
             proxyInfo.setNonProxyHosts(activeProxy.getNonProxyHosts());
 
-            if (StringUtils.isNotEmpty(activeProxy.getHost())
+            String activeProxyHost = activeProxy.getHost();
+            if (activeProxyHost != null
+                    && !activeProxyHost.isEmpty()
                     && (url == null || !ProxyUtils.validateNonProxyHosts(proxyInfo, url.getHost()))) {
                 HttpHost proxy = new HttpHost(activeProxy.getHost(), activeProxy.getPort());
                 builder.setProxy(proxy);
 
-                if (StringUtils.isNotEmpty(activeProxy.getUsername()) && activeProxy.getPassword() != null) {
+                String activeProxyUsername = activeProxy.getUsername();
+                if (activeProxyUsername != null
+                        && !activeProxyUsername.isEmpty()
+                        && activeProxy.getPassword() != null) {
                     Credentials credentials =
-                            new UsernamePasswordCredentials(activeProxy.getUsername(), activeProxy.getPassword());
+                            new UsernamePasswordCredentials(activeProxyUsername, activeProxy.getPassword());
 
                     CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
                     credentialsProvider.setCredentials(AuthScope.ANY, credentials);

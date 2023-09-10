@@ -34,7 +34,6 @@ under the License.
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <project implementation="org.apache.maven.plugins.javadoc.stubs.CustomConfigurationMavenProjectStub"/>
-          <localRepository>${localRepository}</localRepository>
           <outputDirectory>${basedir}/target/test/unit/custom-configuration/target/site/apidocs</outputDirectory>
           <javadocOptionsDir>${basedir}/target/test/unit/custom-configuration/target/javadoc-bundle-options</javadocOptionsDir>
           <breakiterator>false</breakiterator>
@@ -99,7 +98,7 @@ under the License.
           <header>MAVEN JAVADOC PLUGIN TEST</header>
           <footer>MAVEN JAVADOC PLUGIN TEST FOOTER</footer>
           <locale>en_US</locale>
-          <isOffline>true</isOffline>
+          <offline>true</offline>
           <excludePackageNames>*.exclude2:custom.configuration.exclude1.*</excludePackageNames>
           <debug>true</debug>
           <failOnError>true</failOnError>

@@ -25,12 +25,16 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
+import org.eclipse.aether.repository.LocalRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,7 +54,12 @@ public class JavadocJarTest extends AbstractMojoTestCase {
         currentProject.setGroupId("GROUPID");
         currentProject.setArtifactId("ARTIFACTID");
 
-        setVariableValueToObject(mojo, "session", newMavenSession(currentProject));
+        MavenSession session = newMavenSession(currentProject);
+        ((DefaultRepositorySystemSession) session.getRepositorySession())
+                .setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
+                        .newInstance(
+                                session.getRepositorySession(), new LocalRepository(new File("target/local-repo"))));
+        setVariableValueToObject(mojo, "session", session);
 
         return mojo;
     }
