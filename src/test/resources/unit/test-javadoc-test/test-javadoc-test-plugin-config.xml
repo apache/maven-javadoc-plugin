@@ -55,6 +55,7 @@ under the License.
           <reactorProjects>
             <project implementation="org.apache.maven.plugins.javadoc.stubs.TestJavadocMavenProjectStub"/>
           </reactorProjects>
+          <settings implementation="org.apache.maven.settings.Settings"/>
         </configuration>
       </plugin>
     </plugins>
