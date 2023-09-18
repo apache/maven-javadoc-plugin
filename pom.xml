@@ -533,6 +533,7 @@ under the License.
                   <repositories>
                     <mockRepo>
                       <source>src/it/mrm/repository</source>
+                      <cloneTo>${project.build.directory}/mock-repo</cloneTo>
                     </mockRepo>
                     <proxyRepo />
                   </repositories>
@@ -548,6 +549,7 @@ under the License.
                   <repositories>
                     <mockRepo>
                       <source>src/it/mrm/3rdparty</source>
+                      <cloneTo>${project.build.directory}/mock-repo-3rdparty</cloneTo>
                     </mockRepo>
                   </repositories>
                   <propertyName>mrm.3rdparty.url</propertyName>
