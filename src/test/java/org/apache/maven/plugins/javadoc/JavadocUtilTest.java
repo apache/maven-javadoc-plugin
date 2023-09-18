@@ -268,7 +268,7 @@ public class JavadocUtilTest extends PlexusTestCase {
                 .toURL();
         assertTrue(JavadocUtil.isValidPackageList(url, settings, true));
 
-        url = new URL("http://maven.apache.org/plugins/maven-javadoc-plugin/apidocs/package-list");
+        url = new URL("http://maven.apache.org/plugins-archives/maven-javadoc-plugin-3.5.0/apidocs/package-list");
         assertTrue(JavadocUtil.isValidPackageList(url, settings, true));
 
         wrongUrl = new URL("http://maven.apache.org/plugins/maven-javadoc-plugin/apidocs/package-list2");
