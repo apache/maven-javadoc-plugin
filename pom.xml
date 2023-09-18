@@ -436,7 +436,6 @@ under the License.
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>${project.version}</version>
           <configuration>
             <failOnWarnings>false</failOnWarnings>
           </configuration>
@@ -596,6 +595,20 @@ under the License.
             </configuration>
           </plugin>
         </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>dev</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <version>${project.version}</version>
+            </plugin>
+          </plugins>
+        </pluginManagement>
       </build>
     </profile>
   </profiles>
