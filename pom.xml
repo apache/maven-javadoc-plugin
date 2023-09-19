@@ -23,12 +23,12 @@ under the License.
   <parent>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-plugins</artifactId>
-    <version>39</version>
+    <version>40</version>
     <relativePath />
   </parent>
 
   <artifactId>maven-javadoc-plugin</artifactId>
-  <version>3.5.1-SNAPSHOT</version>
+  <version>3.6.1-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Apache Maven Javadoc Plugin</name>
@@ -100,7 +100,7 @@ under the License.
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
-    <url>https://ci-builds.apache.org/job/Maven/job/maven-box/job/maven-javadoc-plugin/</url>
+    <url>https://ci-maven.apache.org/job/Maven/job/maven-box/job/maven-javadoc-plugin/</url>
   </ciManagement>
   <distributionManagement>
     <site>
@@ -122,7 +122,7 @@ under the License.
     <!-- for ITs -->
     <sitePluginVersion>3.12.1</sitePluginVersion>
     <projectInfoReportsPluginVersion>3.4.2</projectInfoReportsPluginVersion>
-    <project.build.outputTimestamp>2023-02-12T17:50:15Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2023-09-12T05:45:11Z</project.build.outputTimestamp>
     <slf4jVersion>1.7.36</slf4jVersion>
   </properties>
 
@@ -436,7 +436,6 @@ under the License.
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>${project.version}</version>
           <configuration>
             <failOnWarnings>false</failOnWarnings>
           </configuration>
@@ -533,6 +532,7 @@ under the License.
                   <repositories>
                     <mockRepo>
                       <source>src/it/mrm/repository</source>
+                      <cloneTo>${project.build.directory}/mock-repo</cloneTo>
                     </mockRepo>
                     <proxyRepo />
                   </repositories>
@@ -548,6 +548,7 @@ under the License.
                   <repositories>
                     <mockRepo>
                       <source>src/it/mrm/3rdparty</source>
+                      <cloneTo>${project.build.directory}/mock-repo-3rdparty</cloneTo>
                     </mockRepo>
                   </repositories>
                   <propertyName>mrm.3rdparty.url</propertyName>
@@ -596,6 +597,20 @@ under the License.
             </configuration>
           </plugin>
         </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>dev</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <version>${project.version}</version>
+            </plugin>
+          </plugins>
+        </pluginManagement>
       </build>
     </profile>
   </profiles>

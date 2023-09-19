@@ -132,7 +132,6 @@ import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.ArtifactTypeRegistry;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.CollectRequest;
-import org.eclipse.aether.graph.DefaultDependencyNode;
 import org.eclipse.aether.graph.DependencyFilter;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
@@ -333,10 +332,14 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private MojoExecution mojo;
 
     /**
-     * Specify if the Javadoc should operate in offline mode.
+     * Specify if the Javadoc plugin should operate in offline mode. If maven is run in offline
+     * mode (using {@code -o} or {@code --offline} on the command line), this option has no effect
+     * and the plugin is always in offline mode.
+     *
+     * @since 3.6.0
      */
-    @Parameter(defaultValue = "${settings.offline}", required = true, readonly = true)
-    private boolean isOffline;
+    @Parameter(property = "maven.javadoc.offline", defaultValue = "false")
+    private boolean offline;
 
     /**
      * Specifies the Javadoc resources directory to be included in the Javadoc (i.e. package.html, images...).
@@ -841,6 +844,16 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     @Parameter(property = "verbose", defaultValue = "false")
     private boolean verbose;
 
+    /**
+     * Run the javadoc tool in pre-Java 9 (non-modular) style even if the java version is
+     * post java 9. This allows non-JPMS projects that have moved to newer Java
+     * versions to create javadocs without having to use JPMS modules.
+     *
+     * @since 3.6.0
+     */
+    @Parameter(property = "legacyMode", defaultValue = "false")
+    private boolean legacyMode;
+
     // ----------------------------------------------------------------------
     // Standard Doclet Options - all alphabetical
     // ----------------------------------------------------------------------
@@ -1023,7 +1036,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      *
      * <b>Notes</b>:
      * <ol>
-     * <li>only used if {@code isOffline} is set to <code>false</code>.</li>
+     * <li>This option is ignored if the plugin is run in offline mode (using the {@code <offline>}
+     * setting or specifying {@code -o, --offline} or {@code -Dmaven.javadoc.offline=true} on the
+     * command line.</li>
      * <li>all given links should have a fetchable <code>/package-list</code> or <code>/element-list</code>
      * (since Java 10). For instance:
      * <pre>
@@ -2068,7 +2083,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             } else if (source != null) {
                 autoExclude = JavaVersion.parse(source).isBefore("9");
             } else {
-                autoExclude = false;
+                // if legacy mode is active, treat it like pre-Java 9 (exclude module-info),
+                // otherwise don't auto-exclude anything.
+                autoExclude = legacyMode;
             }
 
             for (Path sourcePath : sourcePaths) {
@@ -3233,8 +3250,11 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
             DependencyFilter filter = new ScopeDependencyFilter(
                     Arrays.asList(Artifact.SCOPE_COMPILE, Artifact.SCOPE_PROVIDED), Collections.emptySet());
-            DependencyRequest req =
-                    new DependencyRequest(new DefaultDependencyNode(RepositoryUtils.toArtifact(artifact)), filter);
+            DependencyRequest req = new DependencyRequest(
+                    new CollectRequest(
+                            new org.eclipse.aether.graph.Dependency(RepositoryUtils.toArtifact(artifact), null),
+                            RepositoryUtils.toRepos(project.getRemoteArtifactRepositories())),
+                    filter);
             Iterable<ArtifactResult> deps =
                     repoSystem.resolveDependencies(repoSession, req).getArtifactResults();
             for (ArtifactResult a : deps) {
@@ -3769,7 +3789,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 continue;
             }
 
-            if (isOffline && !link.startsWith("file:")) {
+            if ((settings.isOffline() || offline) && !link.startsWith("file:")) {
                 continue;
             }
 
@@ -4383,11 +4403,16 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         Map<String, JavaModuleDescriptor> allModuleDescriptors = new HashMap<>();
 
-        boolean supportModulePath = javadocRuntimeVersion.isAtLeast("9");
-        if (release != null) {
-            supportModulePath &= JavaVersion.parse(release).isAtLeast("9");
-        } else if (source != null) {
-            supportModulePath &= JavaVersion.parse(source).isAtLeast("9");
+        // do not support the module path in legacy mode
+        boolean supportModulePath = !legacyMode;
+
+        if (supportModulePath) {
+            supportModulePath &= javadocRuntimeVersion.isAtLeast("9");
+            if (release != null) {
+                supportModulePath &= JavaVersion.parse(release).isAtLeast("9");
+            } else if (source != null) {
+                supportModulePath &= JavaVersion.parse(source).isAtLeast("9");
+            }
         }
 
         if (supportModulePath) {
@@ -4554,8 +4579,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                         ModuleNameSource depModuleNameSource = locationManager
                                 .resolvePath(ResolvePathRequest.ofFile(file))
                                 .getModuleNameSource();
-                        if (ModuleNameSource.MODULEDESCRIPTOR.equals(depModuleNameSource)
-                                || ModuleNameSource.MANIFEST.equals(depModuleNameSource)) {
+                        if (ModuleNameSource.MODULEDESCRIPTOR.equals(depModuleNameSource)) {
                             modulePathElements.add(file);
                         } else {
                             patchModules.get(mainModuleName).add(file.toPath());
@@ -4594,12 +4618,14 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         for (Entry<String, Collection<Path>> entry : patchModules.entrySet()) {
-            addArgIfNotEmpty(
-                    arguments,
-                    "--patch-module",
-                    entry.getKey() + '=' + JavadocUtil.quotedPathArgument(getSourcePath(entry.getValue())),
-                    false,
-                    false);
+            if (!entry.getValue().isEmpty()) {
+                addArgIfNotEmpty(
+                        arguments,
+                        "--patch-module",
+                        entry.getKey() + '=' + JavadocUtil.quotedPathArgument(getSourcePath(entry.getValue())),
+                        false,
+                        false);
+            }
         }
 
         if (doclet != null && !doclet.isEmpty()) {

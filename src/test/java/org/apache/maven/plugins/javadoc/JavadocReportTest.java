@@ -1078,19 +1078,17 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         Path testPom = unit.resolve("tagletArtifacts-test/tagletArtifacts-test-plugin-config.xml");
         JavadocReport mojo = lookupMojo(testPom);
 
-        MavenSession session = spy(newMavenSession(mojo.project));
-        ProjectBuildingRequest buildingRequest = mock(ProjectBuildingRequest.class);
-        when(buildingRequest.getRemoteRepositories()).thenReturn(mojo.project.getRemoteArtifactRepositories());
-        when(session.getProjectBuildingRequest()).thenReturn(buildingRequest);
-        DefaultRepositorySystemSession repositorySession = new DefaultRepositorySystemSession();
-        repositorySession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
-                .newInstance(repositorySession, new LocalRepository(localRepo)));
-        when(buildingRequest.getRepositorySession()).thenReturn(repositorySession);
-        when(session.getRepositorySession()).thenReturn(repositorySession);
+        MavenSession session = newMavenSession(mojo.project);
+        DefaultRepositorySystemSession repoSysSession = (DefaultRepositorySystemSession) session.getRepositorySession();
+        repoSysSession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
+                .newInstance(session.getRepositorySession(), new LocalRepository(new File("target/local-repo"))));
+        // Ensure remote repo connection uses SSL
+        File globalSettingsFile = new File(getBasedir(), "target/test-classes/unit/settings.xml");
+        session.getRequest().setGlobalSettingsFile(globalSettingsFile);
         LegacySupport legacySupport = lookup(LegacySupport.class);
         legacySupport.setSession(session);
         setVariableValueToObject(mojo, "session", session);
-        setVariableValueToObject(mojo, "repoSession", repositorySession);
+        setVariableValueToObject(mojo, "repoSession", repoSysSession);
         mojo.execute();
 
         Path optionsFile = new File(mojo.getOutputDirectory(), "options").toPath();
