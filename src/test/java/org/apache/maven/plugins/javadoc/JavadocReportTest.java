@@ -98,7 +98,14 @@ public class JavadocReportTest extends AbstractMojoTestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        deleteDirectory(localRepo);
+    	try {
+    		deleteDirectory(localRepo);
+    	} catch (IOException ex) {
+    		// CI servers can have problems deleting files.
+    		// It will get cleared out eventually, and since
+    		// since temporary directories have unique names,
+    		// it shouldn't affect subsequent tests.
+    	}
 
         super.tearDown();
     }
