@@ -78,7 +78,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
     private static final char LINE_SEPARATOR = ' ';
 
     public static final String OPTIONS_UMLAUT_ENCODING = "Options Umlaut Encoding ö ä ü ß";
-    
+
     private Path unit;
 
     private File localRepo;
@@ -98,7 +98,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
 
     @Override
     protected void tearDown() throws Exception {
-    	deleteDirectory(localRepo);
+        deleteDirectory(localRepo);
 
         super.tearDown();
     }
