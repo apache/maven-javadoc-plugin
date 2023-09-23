@@ -26,6 +26,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,9 @@ import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.repository.LocalRepository;
 import org.hamcrest.MatcherAssert;
 import org.junit.AssumptionViolatedException;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,28 +81,27 @@ public class JavadocReportTest extends AbstractMojoTestCase {
     private static final char LINE_SEPARATOR = ' ';
 
     public static final String OPTIONS_UMLAUT_ENCODING = "Options Umlaut Encoding ö ä ü ß";
-
+    
     private Path unit;
 
     private File localRepo;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JavadocReportTest.class);
 
-    /** {@inheritDoc} */
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
+        Path folder = Files.createTempDirectory("JavadocReportTest");
+        localRepo = folder.resolve(Paths.get("target/local-repo/")).toFile();
         unit = new File(getBasedir(), "src/test/resources/unit").toPath();
-
-        localRepo = new File(getBasedir(), "target/local-repo/");
 
         createTestRepo();
     }
 
     @Override
     protected void tearDown() throws Exception {
-        deleteDirectory(localRepo);
+    	deleteDirectory(localRepo);
 
         super.tearDown();
     }
@@ -126,7 +129,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      * @throws IOException if any
      */
     private void createTestRepo() throws IOException {
-        localRepo.mkdirs();
+        assertTrue(localRepo.mkdirs());
 
         // ----------------------------------------------------------------------
         // UMLGraph
