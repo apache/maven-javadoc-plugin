@@ -23,12 +23,12 @@ under the License.
   <parent>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-plugins</artifactId>
-    <version>39</version>
+    <version>40</version>
     <relativePath />
   </parent>
 
   <artifactId>maven-javadoc-plugin</artifactId>
-  <version>3.5.1-SNAPSHOT</version>
+  <version>3.6.1-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Apache Maven Javadoc Plugin</name>
@@ -100,7 +100,7 @@ under the License.
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
-    <url>https://ci-builds.apache.org/job/Maven/job/maven-box/job/maven-javadoc-plugin/</url>
+    <url>https://ci-maven.apache.org/job/Maven/job/maven-box/job/maven-javadoc-plugin/</url>
   </ciManagement>
   <distributionManagement>
     <site>
@@ -118,11 +118,11 @@ under the License.
     <aetherVersion>1.0.0.v20140518</aetherVersion>
     <!-- https://cwiki.apache.org/confluence/x/VIHOCg#MavenEcosystemCleanup-ResolverandMaven -->
     <plexus-java.version>1.1.2</plexus-java.version>
-    <jetty.version>9.4.50.v20221201</jetty.version>
+    <jetty.version>9.4.51.v20230217</jetty.version>
     <!-- for ITs -->
     <sitePluginVersion>3.12.1</sitePluginVersion>
     <projectInfoReportsPluginVersion>3.4.2</projectInfoReportsPluginVersion>
-    <project.build.outputTimestamp>2023-02-12T17:50:15Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2023-09-12T05:45:11Z</project.build.outputTimestamp>
     <slf4jVersion>1.7.36</slf4jVersion>
   </properties>
 
@@ -223,10 +223,14 @@ under the License.
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-shared-utils</artifactId>
+      <version>3.4.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-common-artifact-filters</artifactId>
       <version>3.2.0</version>
     </dependency>
-
     <!-- Doxia -->
     <dependency>
       <groupId>org.apache.maven.doxia</groupId>
@@ -239,6 +243,13 @@ under the License.
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-site-renderer</artifactId>
       <version>${doxia-sitetoolsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <!-- MJAVADOC-726 -->
+          <groupId>org.apache.velocity</groupId>
+          <artifactId>velocity-tools</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- wagon -->
@@ -288,9 +299,19 @@ under the License.
       <version>3.5.1</version>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-io</artifactId>
+      <version>3.4.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-archiver</artifactId>
+      <version>4.8.0</version>
+    </dependency>
+    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.11.0</version>
+      <version>2.13.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -313,6 +334,18 @@ under the License.
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.13.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <version>2.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>4.0.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -341,7 +374,7 @@ under the License.
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-client</artifactId>
+      <artifactId>jetty-util</artifactId>
       <version>${jetty.version}</version>
       <scope>test</scope>
     </dependency>
@@ -410,7 +443,6 @@ under the License.
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>${project.version}</version>
           <configuration>
             <failOnWarnings>false</failOnWarnings>
           </configuration>
@@ -466,6 +498,7 @@ under the License.
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-invoker-plugin</artifactId>
+            <version>3.6.0</version>
             <configuration>
               <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
               <projectsDirectory>src/it/projects</projectsDirectory>
@@ -506,6 +539,7 @@ under the License.
                   <repositories>
                     <mockRepo>
                       <source>src/it/mrm/repository</source>
+                      <cloneTo>${project.build.directory}/mock-repo</cloneTo>
                     </mockRepo>
                     <proxyRepo />
                   </repositories>
@@ -521,6 +555,7 @@ under the License.
                   <repositories>
                     <mockRepo>
                       <source>src/it/mrm/3rdparty</source>
+                      <cloneTo>${project.build.directory}/mock-repo-3rdparty</cloneTo>
                     </mockRepo>
                   </repositories>
                   <propertyName>mrm.3rdparty.url</propertyName>
@@ -569,6 +604,20 @@ under the License.
             </configuration>
           </plugin>
         </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>dev</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <version>${project.version}</version>
+            </plugin>
+          </plugins>
+        </pluginManagement>
       </build>
     </profile>
   </profiles>

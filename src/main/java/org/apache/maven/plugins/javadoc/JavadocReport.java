@@ -41,7 +41,7 @@ import org.apache.maven.reporting.MavenMultiPageReport;
 import org.apache.maven.reporting.MavenReportException;
 
 /**
- * Generates documentation for the <code>Java code</code> in an <b>NON aggregator</b> project using the standard
+ * Generates documentation for the <code>Java code</code> in a <b>NON aggregator</b> project using the standard
  * <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">Javadoc Tool</a>.
  *
  * @author <a href="mailto:evenisse@apache.org">Emmanuel Venisse</a>
@@ -269,7 +269,7 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     }
 
     /**
-     * @param theDestDir The destination directory.
+     * @param theDestDir the destination directory
      */
     public void setDestDir(String theDestDir) {
         this.destDir = theDestDir;
@@ -316,8 +316,8 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     /**
      * Gets the resource bundle for the specified locale.
      *
-     * @param locale The locale of the currently generated report.
-     * @return The resource bundle for the requested locale.
+     * @param locale the locale of the currently generated report
+     * @return the resource bundle for the requested locale
      */
     private ResourceBundle getBundle(Locale locale) {
         return ResourceBundle.getBundle("javadoc-report", locale, getClass().getClassLoader());

@@ -37,9 +37,11 @@ import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.plugins.javadoc.AbstractFixJavadocMojo.JavaEntityTags;
 import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
+import org.eclipse.aether.repository.LocalRepository;
 
 import static org.apache.commons.lang3.reflect.MethodUtils.invokeMethod;
 
@@ -497,6 +499,10 @@ public class FixJavadocMojoTest extends AbstractMojoTestCase {
         assertNotNull(mojo);
 
         MavenSession session = newMavenSession(mojo.getProject());
+        ((DefaultRepositorySystemSession) session.getRepositorySession())
+                .setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
+                        .newInstance(
+                                session.getRepositorySession(), new LocalRepository(new File("target/local-repo"))));
         // Ensure remote repo connection uses SSL
         File globalSettingsFile = new File(getBasedir(), "target/test-classes/unit/settings.xml");
         session.getRequest().setGlobalSettingsFile(globalSettingsFile);
@@ -535,20 +541,6 @@ public class FixJavadocMojoTest extends AbstractMojoTestCase {
         File invokerLogFile = FileUtils.createTempFile("FixJavadocMojoTest", ".txt", invokerDir);
 
         Properties properties = new Properties();
-
-        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("12")) {
-            properties.put("maven.compiler.source", "1.7");
-            properties.put("maven.compiler.target", "1.7");
-        } else if (JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("9")) {
-            properties.put("maven.compiler.source", "1.6");
-            properties.put("maven.compiler.target", "1.6");
-        }
-
-        // @todo unittests shouldn't need to go remote
-        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("8")) {
-            // ensure that Java7 picks up TLSv1.2 when connecting with Central
-            properties.put("https.protocols", "TLSv1.2");
-        }
 
         JavadocUtil.invokeMaven(
                 log,

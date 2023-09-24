@@ -69,7 +69,6 @@ import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -87,8 +86,8 @@ import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Abstract class to fix Javadoc documentation and tags in source files.
- * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/javadoc/doc-comment-spec.html#where-tags-can-be-used">Where Tags
- * Can Be Used</a>.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/javadoc/doc-comment-spec.html#where-tags-can-be-used">Where Tags Can Be Used</a>
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @since 2.6
  */
@@ -349,12 +348,6 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      */
     @Parameter(property = "level", defaultValue = "protected")
     private String level;
-
-    /**
-     * The local repository where the artifacts are located, used by the tests.
-     */
-    @Parameter(property = "localRepository")
-    private ArtifactRepository localRepository;
 
     /**
      * Output directory where Java classes will be rewritten.
@@ -657,7 +650,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
 
         JavadocUtil.invokeMaven(
                 getLog(),
-                new File(localRepository.getBasedir()),
+                session.getRepositorySession().getLocalRepository().getBasedir(),
                 project.getFile(),
                 Collections.singletonList(clirrGoal),
                 properties,
@@ -2058,26 +2051,6 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
                 }
             }
         }
-    }
-
-    /**
-     * @param sb             not null
-     * @param indent         not null
-     * @param separatorAdded
-     * @return true if separator has been added.
-     */
-    private boolean appendDefaultAuthorTag(final StringBuilder sb, final String indent, boolean separatorAdded) {
-        if (!fixTag(AUTHOR_TAG)) {
-            return separatorAdded;
-        }
-
-        if (!separatorAdded) {
-            appendSeparator(sb, indent);
-            separatorAdded = true;
-        }
-
-        appendDefaultAuthorTag(sb, indent);
-        return separatorAdded;
     }
 
     /**

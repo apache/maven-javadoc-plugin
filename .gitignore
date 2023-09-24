@@ -15,5 +15,3 @@ out/
 .java-version
 /javadoc-options-javadoc-resources.xml
 .checkstyle
-/src/it/mrm/3rdparty/_doclet-1.0.jar
-/src/it/mrm/repository/_mjavadoc450-static.jar

@@ -96,11 +96,11 @@ import org.apache.maven.shared.invoker.PrintStreamHandler;
 import org.apache.maven.shared.utils.cli.CommandLineException;
 import org.apache.maven.shared.utils.cli.CommandLineUtils;
 import org.apache.maven.shared.utils.cli.Commandline;
+import org.apache.maven.shared.utils.io.DirectoryScanner;
+import org.apache.maven.shared.utils.io.FileUtils;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.proxy.ProxyUtils;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
-import org.codehaus.plexus.util.DirectoryScanner;
-import org.codehaus.plexus.util.FileUtils;
 
 /**
  * Set of utilities methods for Javadoc.
@@ -393,9 +393,10 @@ public class JavadocUtil {
      * Convenience method that gets the files to be included in the javadoc.
      *
      * @param sourceDirectory the directory where the source files are located
-     * @param excludePackages the packages to be excluded in the javadocs
-     * @param sourceFileIncludes files to include.
-     * @param sourceFileExcludes files to exclude.
+     * @param sourceFileIncludes files to include
+     * @param sourceFileExcludes files to exclude
+     * @param excludePackages packages to be excluded from the javadocs
+     * @return the files from which javadoc should be generated
      */
     protected static List<String> getFilesFromSource(
             File sourceDirectory,
@@ -691,10 +692,10 @@ public class JavadocUtil {
      */
     protected static void copyResource(URL url, File file) throws IOException {
         if (file == null) {
-            throw new IOException("The file can't be null.");
+            throw new NullPointerException("The file can't be null.");
         }
         if (url == null) {
-            throw new IOException("The url could not be null.");
+            throw new NullPointerException("The url could not be null.");
         }
 
         FileUtils.copyURLToFile(url, file);
@@ -1217,7 +1218,7 @@ public class JavadocUtil {
         return result;
     }
 
-    // TODO: move to plexus-utils or use something appropriate from there
+    // TODO: deprecate in favor of Path.relativize
     public static String toRelative(File basedir, String absolutePath) {
         String relative;
 
@@ -1258,13 +1259,13 @@ public class JavadocUtil {
     }
 
     /**
-     * Execute an Http request at the given URL, follows redirects, and returns the last redirect locations. For URLs
+     * Execute an HTTP request to the given URL, follow redirects, and return the last redirect location. For URLs
      * that aren't http/https, this does nothing and simply returns the given URL unchanged.
      *
-     * @param url URL.
-     * @param settings Maven settings.
-     * @return Last redirect location.
-     * @throws IOException if there was an error during the Http request.
+     * @param url URL
+     * @param settings Maven settings
+     * @return final URL after all redirects have been followed
+     * @throws IOException if there was an error during the HTTP request
      */
     protected static URL getRedirectUrl(URL url, Settings settings) throws IOException {
         String protocol = url.getProtocol();

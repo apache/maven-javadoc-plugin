@@ -63,7 +63,6 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.execution.MavenSession;
@@ -133,7 +132,6 @@ import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.ArtifactTypeRegistry;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.CollectRequest;
-import org.eclipse.aether.graph.DefaultDependencyNode;
 import org.eclipse.aether.graph.DependencyFilter;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
@@ -334,10 +332,14 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private MojoExecution mojo;
 
     /**
-     * Specify if the Javadoc should operate in offline mode.
+     * Specify if the Javadoc plugin should operate in offline mode. If maven is run in offline
+     * mode (using {@code -o} or {@code --offline} on the command line), this option has no effect
+     * and the plugin is always in offline mode.
+     *
+     * @since 3.6.0
      */
-    @Parameter(defaultValue = "${settings.offline}", required = true, readonly = true)
-    private boolean isOffline;
+    @Parameter(property = "maven.javadoc.offline", defaultValue = "false")
+    private boolean offline;
 
     /**
      * Specifies the Javadoc resources directory to be included in the Javadoc (i.e. package.html, images...).
@@ -415,12 +417,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      */
     @Parameter(property = "resourcesArtifacts")
     private ResourcesArtifact[] resourcesArtifacts;
-
-    /**
-     * The local repository where the artifacts are located.
-     */
-    @Parameter(property = "localRepository")
-    private ArtifactRepository localRepository;
 
     /**
      * The projects in the reactor for aggregation report.
@@ -547,7 +543,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private boolean detectOfflineLinks;
 
     /**
-     * Detect the Java API link for the current build, i.e. <code>https://docs.oracle.com/javase/1.4.2/docs/api/</code>
+     * Detect the Java API link for the current build, e.g. <code>https://docs.oracle.com/javase/1.4.2/docs/api/</code>
      * for Java source 1.4.
      * <br/>
      * By default, the goal detects the Javadoc API link depending the value of the <code>source</code>
@@ -848,6 +844,16 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     @Parameter(property = "verbose", defaultValue = "false")
     private boolean verbose;
 
+    /**
+     * Run the javadoc tool in pre-Java 9 (non-modular) style even if the java version is
+     * post java 9. This allows non-JPMS projects that have moved to newer Java
+     * versions to create javadocs without having to use JPMS modules.
+     *
+     * @since 3.6.0
+     */
+    @Parameter(property = "legacyMode", defaultValue = "false")
+    private boolean legacyMode;
+
     // ----------------------------------------------------------------------
     // Standard Doclet Options - all alphabetical
     // ----------------------------------------------------------------------
@@ -1026,11 +1032,13 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private boolean keywords;
 
     /**
-     * Creates links to existing javadoc-generated documentation of external referenced classes.
-     * <br>
+     * Creates links to existing javadoc-generated documentation of external referenced classes.<p>
+     *
      * <b>Notes</b>:
      * <ol>
-     * <li>only used if {@code isOffline} is set to <code>false</code>.</li>
+     * <li>This option is ignored if the plugin is run in offline mode (using the {@code <offline>}
+     * setting or specifying {@code -o, --offline} or {@code -Dmaven.javadoc.offline=true} on the
+     * command line.</li>
      * <li>all given links should have a fetchable <code>/package-list</code> or <code>/element-list</code>
      * (since Java 10). For instance:
      * <pre>
@@ -1039,12 +1047,12 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * &lt;links&gt;
      * </pre>
      * will be used because <code>https://docs.oracle.com/en/java/javase/17/docs/api/element-list</code> exists.</li>
-     * <li>if {@link #detectLinks} is defined, the links between the project dependencies are
+     * <li>If {@link #detectLinks} is defined, the links between the project dependencies are
      * automatically added.</li>
-     * <li>if {@link #detectJavaApiLink} is defined, a Java API link, based on the Java version of the
+     * <li>If {@link #detectJavaApiLink} is defined, a Java API link, based on the Java version of the
      * project's sources, will be added automatically.</li>
      * </ol>
-     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option link</a>.
+     * @see <a href=https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options>Doclet option link</a>
      */
     @Parameter(property = "links")
     protected ArrayList<String> links;
@@ -1682,7 +1690,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     /**
      * @param p not null maven project
      * @return the list of directories where compiled classes are placed for the given project. These dirs are
-     *         added in the javadoc classpath.
+     *         added to the javadoc classpath.
      */
     protected List<File> getProjectBuildOutputDirs(MavenProject p) {
         if (StringUtils.isEmpty(p.getBuild().getOutputDirectory())) {
@@ -1693,10 +1701,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * Either returns the attached artifact file or outputDirectory
-     *
-     * @param project
-     * @return
+     * @param project the project in which to find a classes file
+     * @return null, the attached artifact file, or outputDirectory.
      */
     protected File getClassesFile(MavenProject project) {
         if (!isAggregator() && isTest()) {
@@ -2077,7 +2083,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             } else if (source != null) {
                 autoExclude = JavaVersion.parse(source).isBefore("9");
             } else {
-                autoExclude = false;
+                // if legacy mode is active, treat it like pre-Java 9 (exclude module-info),
+                // otherwise don't auto-exclude anything.
+                autoExclude = legacyMode;
             }
 
             for (Path sourcePath : sourcePaths) {
@@ -3242,8 +3250,11 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
             DependencyFilter filter = new ScopeDependencyFilter(
                     Arrays.asList(Artifact.SCOPE_COMPILE, Artifact.SCOPE_PROVIDED), Collections.emptySet());
-            DependencyRequest req =
-                    new DependencyRequest(new DefaultDependencyNode(RepositoryUtils.toArtifact(artifact)), filter);
+            DependencyRequest req = new DependencyRequest(
+                    new CollectRequest(
+                            new org.eclipse.aether.graph.Dependency(RepositoryUtils.toArtifact(artifact), null),
+                            RepositoryUtils.toRepos(project.getRemoteArtifactRepositories())),
+                    filter);
             Iterable<ArtifactResult> deps =
                     repoSystem.resolveDependencies(repoSession, req).getArtifactResults();
             for (ArtifactResult a : deps) {
@@ -3756,7 +3767,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * If {@code detectLinks}, try to add javadoc apidocs according Maven conventions for all dependencies given
      * in the project.
      * <br/>
-     * According the Javadoc documentation, all defined link should have <code>${link}/package-list</code> fetchable.
+     * According the Javadoc documentation, all defined links should have <code>${link}/package-list</code> fetchable.
      * <br/>
      * <b>Note</b>: when a link is not fetchable:
      * <ul>
@@ -3778,7 +3789,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 continue;
             }
 
-            if (isOffline && !link.startsWith("file:")) {
+            if ((settings.isOffline() || offline) && !link.startsWith("file:")) {
                 continue;
             }
 
@@ -3791,7 +3802,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * Coppy all resources to the output directory
+     * Copy all resources to the output directory.
      *
      * @param javadocOutputDirectory not null
      * @throws MavenReportException if any
@@ -4392,11 +4403,16 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         Map<String, JavaModuleDescriptor> allModuleDescriptors = new HashMap<>();
 
-        boolean supportModulePath = javadocRuntimeVersion.isAtLeast("9");
-        if (release != null) {
-            supportModulePath &= JavaVersion.parse(release).isAtLeast("9");
-        } else if (source != null) {
-            supportModulePath &= JavaVersion.parse(source).isAtLeast("9");
+        // do not support the module path in legacy mode
+        boolean supportModulePath = !legacyMode;
+
+        if (supportModulePath) {
+            supportModulePath &= javadocRuntimeVersion.isAtLeast("9");
+            if (release != null) {
+                supportModulePath &= JavaVersion.parse(release).isAtLeast("9");
+            } else if (source != null) {
+                supportModulePath &= JavaVersion.parse(source).isAtLeast("9");
+            }
         }
 
         if (supportModulePath) {
@@ -4563,8 +4579,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                         ModuleNameSource depModuleNameSource = locationManager
                                 .resolvePath(ResolvePathRequest.ofFile(file))
                                 .getModuleNameSource();
-                        if (ModuleNameSource.MODULEDESCRIPTOR.equals(depModuleNameSource)
-                                || ModuleNameSource.MANIFEST.equals(depModuleNameSource)) {
+                        if (ModuleNameSource.MODULEDESCRIPTOR.equals(depModuleNameSource)) {
                             modulePathElements.add(file);
                         } else {
                             patchModules.get(mainModuleName).add(file.toPath());
@@ -4603,12 +4618,14 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         for (Entry<String, Collection<Path>> entry : patchModules.entrySet()) {
-            addArgIfNotEmpty(
-                    arguments,
-                    "--patch-module",
-                    entry.getKey() + '=' + JavadocUtil.quotedPathArgument(getSourcePath(entry.getValue())),
-                    false,
-                    false);
+            if (!entry.getValue().isEmpty()) {
+                addArgIfNotEmpty(
+                        arguments,
+                        "--patch-module",
+                        entry.getKey() + '=' + JavadocUtil.quotedPathArgument(getSourcePath(entry.getValue())),
+                        false,
+                        false);
+            }
         }
 
         if (doclet != null && !doclet.isEmpty()) {
@@ -5478,7 +5495,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 try {
                     JavadocUtil.invokeMaven(
                             getLog(),
-                            new File(localRepository.getBasedir()),
+                            session.getRepositorySession().getLocalRepository().getBasedir(),
                             p.getFile(),
                             Collections.singletonList(javadocGoal),
                             null,
@@ -5708,7 +5725,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             try {
                 redirectLinks.add(JavadocUtil.getRedirectUrl(new URI(link).toURL(), settings)
                         .toString());
-            } catch (Exception e) {
+            } catch (IOException e) {
                 // only print in debug, it should have been logged already in warn/error because link isn't valid
                 getLog().debug("Could not follow " + link + ". Reason: " + e.getMessage());
 
@@ -5716,6 +5733,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 // incomplete redirect configuration on the server side.
                 // This partially restores the previous behaviour before fix for MJAVADOC-427
                 redirectLinks.add(link);
+            } catch (URISyntaxException | IllegalArgumentException e) {
+                // only print in debug, it should have been logged already in warn/error because link isn't valid
+                getLog().debug("Could not follow " + link + ". Reason: " + e.getMessage());
             }
         }
         return redirectLinks;
@@ -6026,8 +6046,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     *
-     * @return List of projects to be part of aggregated javadoc
+     * @return list of projects to be part of aggregated javadoc
      */
     private List<MavenProject> getAggregatedProjects() {
         if (this.reactorProjects == null) {
@@ -6046,8 +6065,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     *
-     * @return <code>true</code> if the module need to be skipped from aggregate generation
+     * @param mavenProject the project that might be skipped
+     * @return <code>true</code> if the project needs to be skipped from aggregate generation
      */
     protected boolean isSkippedModule(MavenProject mavenProject) {
         if (this.skippedModules == null || this.skippedModules.isEmpty()) {
@@ -6058,8 +6077,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     *
-     * @return <code>true</code> if the pom configuration skip javadoc generation for the project
+     * @param mavenProject the project that might be skipped
+     * @return <code>true</code> if the pom configuration skips javadoc generation for the project
      */
     protected boolean isSkippedJavadoc(MavenProject mavenProject) {
         String property = mavenProject.getProperties().getProperty("maven.javadoc.skip");
