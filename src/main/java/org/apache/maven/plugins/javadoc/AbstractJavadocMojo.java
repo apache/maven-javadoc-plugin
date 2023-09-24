@@ -543,7 +543,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private boolean detectOfflineLinks;
 
     /**
-     * Detect the Java API link for the current build, i.e. <code>https://docs.oracle.com/javase/1.4.2/docs/api/</code>
+     * Detect the Java API link for the current build, e.g. <code>https://docs.oracle.com/javase/1.4.2/docs/api/</code>
      * for Java source 1.4.
      * <br/>
      * By default, the goal detects the Javadoc API link depending the value of the <code>source</code>
@@ -3767,7 +3767,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * If {@code detectLinks}, try to add javadoc apidocs according Maven conventions for all dependencies given
      * in the project.
      * <br/>
-     * According the Javadoc documentation, all defined link should have <code>${link}/package-list</code> fetchable.
+     * According the Javadoc documentation, all defined links should have <code>${link}/package-list</code> fetchable.
      * <br/>
      * <b>Note</b>: when a link is not fetchable:
      * <ul>
@@ -3802,7 +3802,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * Coppy all resources to the output directory
+     * Copy all resources to the output directory.
      *
      * @param javadocOutputDirectory not null
      * @throws MavenReportException if any
@@ -5725,7 +5725,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             try {
                 redirectLinks.add(JavadocUtil.getRedirectUrl(new URI(link).toURL(), settings)
                         .toString());
-            } catch (Exception e) {
+            } catch (IOException e) {
                 // only print in debug, it should have been logged already in warn/error because link isn't valid
                 getLog().debug("Could not follow " + link + ". Reason: " + e.getMessage());
 
@@ -5733,6 +5733,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 // incomplete redirect configuration on the server side.
                 // This partially restores the previous behaviour before fix for MJAVADOC-427
                 redirectLinks.add(link);
+            } catch (URISyntaxException | IllegalArgumentException e) {
+                // only print in debug, it should have been logged already in warn/error because link isn't valid
+                getLog().debug("Could not follow " + link + ". Reason: " + e.getMessage());
             }
         }
         return redirectLinks;

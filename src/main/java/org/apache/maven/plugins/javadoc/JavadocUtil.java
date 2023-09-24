@@ -1218,7 +1218,7 @@ public class JavadocUtil {
         return result;
     }
 
-    // TODO: move to plexus-utils or use something appropriate from there
+    // TODO: deprecate in favor of Path.relativize
     public static String toRelative(File basedir, String absolutePath) {
         String relative;
 
@@ -1259,13 +1259,13 @@ public class JavadocUtil {
     }
 
     /**
-     * Execute an Http request at the given URL, follows redirects, and returns the last redirect locations. For URLs
+     * Execute an HTTP request to the given URL, follow redirects, and return the last redirect location. For URLs
      * that aren't http/https, this does nothing and simply returns the given URL unchanged.
      *
-     * @param url URL.
-     * @param settings Maven settings.
-     * @return Last redirect location.
-     * @throws IOException if there was an error during the Http request.
+     * @param url URL
+     * @param settings Maven settings
+     * @return final URL after all redirects have been followed
+     * @throws IOException if there was an error during the HTTP request
      */
     protected static URL getRedirectUrl(URL url, Settings settings) throws IOException {
         String protocol = url.getProtocol();

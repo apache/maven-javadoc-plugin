@@ -243,6 +243,13 @@ under the License.
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-site-renderer</artifactId>
       <version>${doxia-sitetoolsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <!-- MJAVADOC-726 -->
+          <groupId>org.apache.velocity</groupId>
+          <artifactId>velocity-tools</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- wagon -->
