@@ -26,6 +26,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,25 +79,35 @@ public class JavadocReportTest extends AbstractMojoTestCase {
 
     public static final String OPTIONS_UMLAUT_ENCODING = "Options Umlaut Encoding ö ä ü ß";
 
-    /** flag to copy repo only one time */
-    private static boolean TEST_REPO_CREATED = false;
-
     private Path unit;
 
     private File localRepo;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JavadocReportTest.class);
 
-    /** {@inheritDoc} */
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
+        Path tempDirectory = Files.createTempDirectory("JavadocReportTest");
+        localRepo = tempDirectory.resolve(Paths.get("target/local-repo/")).toFile();
         unit = new File(getBasedir(), "src/test/resources/unit").toPath();
 
-        localRepo = new File(getBasedir(), "target/local-repo/");
-
         createTestRepo();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        try {
+            deleteDirectory(localRepo);
+        } catch (IOException ex) {
+            // CI servers can have problems deleting files.
+            // It will get cleared out eventually, and since
+            // temporary directories have unique names,
+            // it shouldn't affect subsequent tests.
+        }
+
+        super.tearDown();
     }
 
     private JavadocReport lookupMojo(Path testPom) throws Exception {
@@ -122,11 +133,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      * @throws IOException if any
      */
     private void createTestRepo() throws IOException {
-        if (TEST_REPO_CREATED) {
-            return;
-        }
-
-        localRepo.mkdirs();
+        assertTrue(localRepo.mkdirs());
 
         // ----------------------------------------------------------------------
         // UMLGraph
@@ -146,7 +153,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
 
         // ----------------------------------------------------------------------
         // commons-attributes-compiler
-        // http://www.tullmann.org/pat/taglets/
+        // https://www.tullmann.org/pat/taglets/
         // ----------------------------------------------------------------------
 
         sourceDir = unit.resolve("taglet-test/artifact-taglet");
@@ -181,8 +188,6 @@ public class JavadocReportTest extends AbstractMojoTestCase {
                 file.delete();
             }
         }
-
-        TEST_REPO_CREATED = true;
     }
 
     /**
