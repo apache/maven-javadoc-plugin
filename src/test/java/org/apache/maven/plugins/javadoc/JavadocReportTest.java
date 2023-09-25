@@ -89,8 +89,8 @@ public class JavadocReportTest extends AbstractMojoTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        Path folder = Files.createTempDirectory("JavadocReportTest");
-        localRepo = folder.resolve(Paths.get("target/local-repo/")).toFile();
+        Path tempDirectory = Files.createTempDirectory("JavadocReportTest");
+        localRepo = tempDirectory.resolve(Paths.get("target/local-repo/")).toFile();
         unit = new File(getBasedir(), "src/test/resources/unit").toPath();
 
         createTestRepo();
