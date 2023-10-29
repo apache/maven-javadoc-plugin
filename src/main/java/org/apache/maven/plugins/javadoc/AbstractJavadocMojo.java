@@ -765,6 +765,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @see <a href="https://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#a1.1">Javadoc option 1.1</a>.
      */
     @Parameter(property = "old", defaultValue = "false")
+    @Deprecated
     private boolean old;
 
     /**
