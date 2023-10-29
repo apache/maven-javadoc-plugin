@@ -221,7 +221,7 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     public boolean canGenerateReport() {
         boolean canGenerate = false;
 
-        if (this.isAggregator() || !"pom".equals(this.project.getPackaging())) {
+        if (!skip && (this.isAggregator() || !"pom".equals(this.project.getPackaging()))) {
             Collection<Path> sourcePaths;
             Map<Path, Collection<String>> files;
             try {
@@ -289,11 +289,6 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     /** {@inheritDoc} */
     @Override
     public void doExecute() throws MojoExecutionException, MojoFailureException {
-        if (skip) {
-            getLog().info("Skipping javadoc generation");
-            return;
-        }
-
         File outputDirectory = new File(getOutputDirectory());
 
         String filename = getOutputName() + ".html";
