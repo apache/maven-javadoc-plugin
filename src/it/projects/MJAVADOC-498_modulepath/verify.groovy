@@ -18,4 +18,4 @@
  */
 def log = new File( basedir, 'build.log').text
 
-assert log.count( " --module-path" ) == 2
+assert log.count( " --module-path" ) == 3
