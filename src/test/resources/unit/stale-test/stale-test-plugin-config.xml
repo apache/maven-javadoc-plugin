@@ -40,6 +40,9 @@ under the License.
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <project implementation="org.apache.maven.plugins.javadoc.stubs.JavadocJarArchiveConfigProjectStub"/>
+          <jarOutputDirectory>${basedir}/target/test/unit/stale-test/target</jarOutputDirectory>
+          <finalName>pom-test</finalName>
+          <classifier>javadoc</classifier>
           <outputDirectory>${basedir}/target/test/unit/stale-test/target/site/apidocs</outputDirectory>
           <javadocOptionsDir>${basedir}/target/test/unit/stale-test/target/javadoc-bundle-options</javadocOptionsDir>
           <show>protected</show>
