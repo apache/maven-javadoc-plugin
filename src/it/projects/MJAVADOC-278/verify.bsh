@@ -21,7 +21,7 @@
 import java.io.*;
 import org.codehaus.plexus.util.*;
 
-File exampleResourceFile = new File( basedir, "target/site/apidocs/resources/bg.psd" );
+File exampleResourceFile = new File( basedir, "target/reports/apidocs/resources/bg.psd" );
 
 if ( !exampleResourceFile.exists() ) 
 {

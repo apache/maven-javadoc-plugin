@@ -21,8 +21,8 @@
 import java.io.*;
 import org.codehaus.plexus.util.*;
 
-File includedFile = new File( basedir, "target/site/apidocs/foo/Included.html" );
-File excludedFile = new File( basedir, "target/site/apidocs/foo/Excluded.html" );
+File includedFile = new File( basedir, "target/reports/apidocs/foo/Included.html" );
+File excludedFile = new File( basedir, "target/reports/apidocs/foo/Excluded.html" );
 
 if ( !includedFile.exists() ) 
 {

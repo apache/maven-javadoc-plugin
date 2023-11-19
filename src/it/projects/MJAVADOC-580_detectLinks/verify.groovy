@@ -26,6 +26,6 @@ if ( javaVersion.startsWith('1.') || Integer.parseInt(javaVersion) < 16 )
 }
 else
 {
-  def barHtml = new File(basedir,'target/site/apidocs/foo/Bar.html')
+  def barHtml = new File(basedir,'target/reports/apidocs/foo/Bar.html')
   assert barHtml.text =~ /<a href="https:[^"]+Object.html"/
 }

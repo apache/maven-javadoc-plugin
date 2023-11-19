@@ -21,7 +21,7 @@
 import java.io.*;
 import org.codehaus.plexus.util.*;
 
-File javadocFile = new File( basedir, "target/site/apidocs/foo/Bar.html" );
+File javadocFile = new File( basedir, "target/reports/apidocs/foo/Bar.html" );
 
 if ( !javadocFile.exists() ) 
 {
