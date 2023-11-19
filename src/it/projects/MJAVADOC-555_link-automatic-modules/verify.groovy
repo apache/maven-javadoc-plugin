@@ -20,9 +20,9 @@
 def classFile
 int javaVersion = System.getProperty( "java.specification.version" ) as Integer
 if ( javaVersion >= 11 ) {
- classFile = new File( basedir, 'target/apidocs/jul_to_slf4j/com/testcase/Testcase.html')
+ classFile = new File( basedir, 'target/reports/apidocs/jul_to_slf4j/com/testcase/Testcase.html')
 } else {
- classFile = new File( basedir, 'target/apidocs/com/testcase/Testcase.html')
+ classFile = new File( basedir, 'target/reports/apidocs/com/testcase/Testcase.html')
 }
 assert classFile.exists() : "Can't locate ${classFile}"
 

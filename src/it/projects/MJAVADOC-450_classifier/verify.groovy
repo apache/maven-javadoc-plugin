@@ -20,5 +20,5 @@
 def buildLog = new File( basedir, 'build.log' );
 assert buildLog.text.contains('[DEBUG] custom.css found in javadoc plugin dependencies.')
 
-def stylesheetCss = new File( basedir, 'target/site/apidocs/stylesheet.css' );
+def stylesheetCss = new File( basedir, 'target/reports/apidocs/stylesheet.css' );
 assert stylesheetCss.text.contains('/* CUSTOM CSS */')

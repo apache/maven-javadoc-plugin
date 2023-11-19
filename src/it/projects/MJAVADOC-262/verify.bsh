@@ -25,7 +25,7 @@ boolean result = true;
 try
 {
     // Generated files checks
-    File apidocs = new File( basedir, "target/site/apidocs" );
+    File apidocs = new File( basedir, "target/reports/apidocs" );
     if ( !apidocs.isDirectory() )
     {
         System.err.println( apidocs.getAbsolutePath() + " dir is missing or a directory." );
