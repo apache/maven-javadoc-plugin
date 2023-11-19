@@ -32,17 +32,17 @@ try
         return false;
     }
 
-    File apidocs = new File( target, "site/apidocs" );
+    File apidocs = new File( target, "reports/apidocs" );
     if ( !apidocs.exists() || !apidocs.isDirectory() )
     {
-        System.err.println( "target/site/apidocs file is missing or not a directory." );
+        System.err.println( "target/reports/apidocs file is missing or not a directory." );
         return false;
     }
 
     File options = new File( apidocs, "options" );
     if ( !options.exists() || !options.isFile() )
     {
-        System.err.println( "target/site/apidocs/options file is missing or not a file." );
+        System.err.println( "target/reports/apidocs/options file is missing or not a file." );
         return false;
     }
 

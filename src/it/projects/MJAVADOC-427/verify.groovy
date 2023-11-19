@@ -17,7 +17,7 @@
  * under the License.
  */
 
-def file = new File( basedir, 'target/site/apidocs/mjavadoc427/App.html' );
+def file = new File( basedir, 'target/reports/apidocs/mjavadoc427/App.html' );
 
 assert file.exists()
 

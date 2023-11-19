@@ -31,17 +31,17 @@ try
         return false;
     }
 
-    File apidocs = new File( target, "site/apidocs" );
+    File apidocs = new File( target, "reports/apidocs" );
     if ( !apidocs.exists() || !apidocs.isDirectory() )
     {
-        System.err.println( "target/site/apidocs file is missing or a directory." );
+        System.err.println( "target/reports/apidocs file is missing or a directory." );
         return false;
     }
 
     File htmlFile = new File( apidocs, "Test.html" );
     if ( !htmlFile.isFile() )
     {
-        System.err.println( "target/site/apidocs/Test.html file is missing or a a file." );
+        System.err.println( "target/reports/apidocs/Test.html file is missing or a a file." );
         return false;
     }
 }
