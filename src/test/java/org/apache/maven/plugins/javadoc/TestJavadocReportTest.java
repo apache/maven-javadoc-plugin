@@ -56,10 +56,10 @@ public class TestJavadocReportTest extends AbstractMojoTestCase {
         mojo.execute();
 
         File generatedFile =
-                new File(getBasedir(), "target/test/unit/test-javadoc-test/target/site/apidocs/maven/AppTest.html");
+                new File(getBasedir(), "target/test/unit/test-javadoc-test/target/site/testapidocs/maven/AppTest.html");
         assertThat(generatedFile).exists();
 
-        File options = new File(getBasedir(), "target/test/unit/test-javadoc-test/target/site/apidocs/options");
+        File options = new File(getBasedir(), "target/test/unit/test-javadoc-test/target/site/testapidocs/options");
         assertThat(FileUtils.fileRead(options)).contains("junit-3.8.1.jar");
     }
 }
