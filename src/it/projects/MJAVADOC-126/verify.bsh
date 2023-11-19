@@ -27,7 +27,7 @@ if ( !target.isDirectory() )
     return false;
 }
 
-File apidocs = new File( basedir, "test/target/site/apidocs" );
+File apidocs = new File( basedir, "test/target/reports/apidocs" );
 if ( !apidocs.isDirectory() )
 {
     System.err.println( apidocs.getAbsolutePath() + " is missing or not a directory." );

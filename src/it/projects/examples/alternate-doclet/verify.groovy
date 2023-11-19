@@ -17,7 +17,7 @@
  * under the License.
  */
 
-File options = new File( basedir, 'target/site/apidocs/options' )
+File options = new File( basedir, 'target/reports/apidocs/options' )
 
 assert options.text.readLines().dropWhile{it != '-doclet'}.get(1) == "'org.umlgraph.doclet.UmlGraphDoc'"
 assert options.text.readLines().dropWhile{it != '-docletpath'}.get(1).contains('org/umlgraph/umlgraph/5.6.6/umlgraph-5.6.6.jar')

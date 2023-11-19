@@ -35,7 +35,7 @@ under the License.
         <configuration>
           <project implementation="org.apache.maven.plugins.javadoc.stubs.JavadocJarDefaultMavenProjectStub"/>
           <jarOutputDirectory>${basedir}/target/test/unit/javadocjar-default/target</jarOutputDirectory>
-          <outputDirectory>${basedir}/target/test/unit/javadocjar-default/target/site/apidocs</outputDirectory>
+          <outputDirectory>${basedir}/target/test/unit/javadocjar-default/target/site</outputDirectory>
           <javadocOptionsDir>${basedir}/target/test/unit/javadocjar-default/target/javadoc-bundle-options</javadocOptionsDir>
           <finalName>javadocjar-default</finalName>
           <classifier>javadoc</classifier>

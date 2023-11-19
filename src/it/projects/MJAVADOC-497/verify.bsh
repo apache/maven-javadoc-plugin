@@ -26,11 +26,11 @@ try
 	String javaVersion = System.getProperty( "java.specification.version" );
 	if ( javaVersion.startsWith( "1." ) || javaVersion.equals( "9" ) )
 	{
-	    list = new File( basedir, "target/site/apidocs/package-list" );
+	    list = new File( basedir, "target/reports/apidocs/package-list" );
 	}
 	else
 	{
-		list = new File( basedir, "target/site/apidocs/element-list" );
+		list = new File( basedir, "target/reports/apidocs/element-list" );
 	}
 	
     if ( !list.exists() )

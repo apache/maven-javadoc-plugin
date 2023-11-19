@@ -43,7 +43,7 @@ under the License.
           <jarOutputDirectory>${basedir}/target/test/unit/stale-test/target</jarOutputDirectory>
           <finalName>pom-test</finalName>
           <classifier>javadoc</classifier>
-          <outputDirectory>${basedir}/target/test/unit/stale-test/target/site/apidocs</outputDirectory>
+          <outputDirectory>${basedir}/target/test/unit/stale-test/target/site</outputDirectory>
           <javadocOptionsDir>${basedir}/target/test/unit/stale-test/target/javadoc-bundle-options</javadocOptionsDir>
           <show>protected</show>
           <encoding>ISO-8859-1</encoding>

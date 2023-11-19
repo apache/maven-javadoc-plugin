@@ -1218,14 +1218,15 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private OfflineLink[] offlineLinks;
 
     /**
-     * Specifies the destination directory where javadoc saves the generated HTML files.
+     * The shared output directory for the report where Javadoc saves the generated HTML files.
+     * Note that this parameter is only evaluated if the goal is run directly from the command line.
+     * If the goal is run indirectly as part of a site generation, the shared output directory configured in the
+     * <a href="https://maven.apache.org/plugins/maven-site-plugin/site-mojo.html#outputDirectory">Maven Site Plugin</a>
+     * is used instead.
+     * @see org.apache.maven.reporting.AbstractMavenReport#outputDirectory
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#additional-options-provided-by-the-standard-doclet">Doclet option d</a>
      */
-    @Parameter(
-            property = "destDir",
-            alias = "destDir",
-            defaultValue = "${project.build.directory}/apidocs",
-            required = true)
+    @Parameter(defaultValue = "${project.build.directory}/reports", required = true)
     protected File outputDirectory;
 
     /**
@@ -1695,11 +1696,18 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         return false;
     }
 
-    /**
-     * @return the output directory
-     */
     protected String getOutputDirectory() {
-        return outputDirectory.getAbsoluteFile().toString();
+        return outputDirectory.getAbsolutePath();
+    }
+
+    /**
+     * Method that returns the plugin report output directory where the generated Javadoc report will be put
+     * beneath {@link #getOutputDirectory()}/{@link org.apache.maven.reporting.AbstractMavenReport#getReportOutputDirectory()}.
+     *
+     * @return a String that contains the target directory
+     */
+    protected String getPluginReportOutputDirectory() {
+        return getOutputDirectory() + "/" + (isTest() ? "test" : "") + "apidocs";
     }
 
     protected MavenProject getProject() {
@@ -1843,7 +1851,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         doExecute();
     }
 
-    abstract void doExecute() throws MojoExecutionException, MojoFailureException;
+    protected abstract void doExecute() throws MojoExecutionException, MojoFailureException;
 
     protected final void verifyRemovedParameter(String paramName) {
         Xpp3Dom configDom = mojoExecution.getConfiguration();
@@ -1873,11 +1881,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @throws MavenReportException if any
      */
     protected void executeReport(Locale unusedLocale) throws MavenReportException {
-        if (skip) {
-            getLog().info("Skipping javadoc generation");
-            return;
-        }
-
         if (getLog().isDebugEnabled()) {
             this.debug = true;
         }
@@ -1923,12 +1926,12 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         // Javadoc output directory as File
         // ----------------------------------------------------------------------
 
-        File javadocOutputDirectory = new File(getOutputDirectory());
+        File javadocOutputDirectory = new File(getPluginReportOutputDirectory());
         if (javadocOutputDirectory.exists() && !javadocOutputDirectory.isDirectory()) {
-            throw new MavenReportException("IOException: " + getOutputDirectory() + " is not a directory.");
+            throw new MavenReportException("IOException: " + javadocOutputDirectory + " is not a directory.");
         }
         if (javadocOutputDirectory.exists() && !javadocOutputDirectory.canWrite()) {
-            throw new MavenReportException("IOException: " + getOutputDirectory() + " is not writable.");
+            throw new MavenReportException("IOException: " + javadocOutputDirectory + " is not writable.");
         }
         javadocOutputDirectory.mkdirs();
 
@@ -5451,7 +5454,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         List<OfflineLink> modulesLinks = new ArrayList<>();
-        String javadocDirRelative = PathUtils.toRelative(project.getBasedir(), getOutputDirectory());
+        String javadocDirRelative = PathUtils.toRelative(project.getBasedir(), getPluginReportOutputDirectory());
         for (MavenProject p : aggregatedProjects) {
             if (!dependencyArtifactIds.contains(p.getArtifact().getId()) || (p.getUrl() == null)) {
                 continue;
@@ -5751,7 +5754,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 // links can be relative paths or files
                 File dir = new File(link);
                 if (!dir.isAbsolute()) {
-                    dir = new File(getOutputDirectory(), link);
+                    dir = new File(getPluginReportOutputDirectory(), link);
                 }
                 if (!dir.isDirectory()) {
                     if (detecting) {

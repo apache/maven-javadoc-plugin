@@ -93,7 +93,12 @@ public class ResourcesBundleMojo extends AbstractJavadocMojo {
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     @Override
-    public void doExecute() throws MojoExecutionException, MojoFailureException {
+    protected void doExecute() throws MojoExecutionException, MojoFailureException {
+        if (skip) {
+            getLog().info("Skipping javadoc resource bundle generation");
+            return;
+        }
+
         try {
             buildJavadocOptions();
         } catch (IOException e) {

@@ -17,6 +17,6 @@
  * under the License.
  */
 
-def file = new File( basedir, 'target/site/apidocs/options' )
+def file = new File( basedir, 'target/reports/apidocs/options' )
 
 assert file.text.contains("'Copyright &#169; 2020. All rights reserved.'")

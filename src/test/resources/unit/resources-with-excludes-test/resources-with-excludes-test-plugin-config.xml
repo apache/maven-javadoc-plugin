@@ -34,7 +34,7 @@ under the License.
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <project implementation="org.apache.maven.plugins.javadoc.stubs.ResourcesWithExcludesTestMavenProjectStub"/>
-          <outputDirectory>${basedir}/target/test/unit/resources-with-excludes-test/target/site/apidocs</outputDirectory>
+          <outputDirectory>${basedir}/target/test/unit/resources-with-excludes-test/target/site</outputDirectory>
           <javadocOptionsDir>${basedir}/target/test/unit/resources-with-excludes-test/target/javadoc-bundle-options</javadocOptionsDir>
           <windowtitle>Maven Javadoc Plugin resources 1.0-SNAPSHOT API</windowtitle>
           <javadocDirectory>${basedir}/src/test/resources/unit/resources-with-excludes-test/src/main/javadoc</javadocDirectory>

@@ -24,7 +24,7 @@ import java.util.jar.*;
 def target = new File( basedir, 'target' )
 assert target.isDirectory()
 
-def apidocs = new File( target, 'apidocs' )
+def apidocs = new File( target, 'reports/apidocs' )
 assert apidocs.isDirectory()
 
 def options = new File( apidocs, 'options' )

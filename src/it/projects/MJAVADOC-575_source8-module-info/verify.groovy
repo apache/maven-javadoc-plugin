@@ -16,5 +16,5 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- 
-assert new File( basedir, 'target/apidocs/com/foo/MyClass.html').exists()
+
+assert new File( basedir, 'target/reports/apidocs/com/foo/MyClass.html').exists()

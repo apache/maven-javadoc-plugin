@@ -93,22 +93,6 @@ public class TestJavadocReport extends JavadocReport {
     // ----------------------------------------------------------------------
 
     /**
-     * Specifies the destination directory where test Javadoc saves the generated HTML files.
-     */
-    @Parameter(
-            property = "reportTestOutputDirectory",
-            defaultValue = "${project.reporting.outputDirectory}/testapidocs",
-            required = true)
-    private File reportOutputDirectory;
-
-    /**
-     * The name of the destination directory.
-     * <br/>
-     */
-    @Parameter(property = "destDir", defaultValue = "testapidocs")
-    private String destDir;
-
-    /**
      * Specifies the Test Javadoc resources directory to be included in the Javadoc (i.e. package.html, images...).
      * <br/>
      * Could be used in addition of <code>docfilessubdirs</code> parameter.
@@ -169,46 +153,6 @@ public class TestJavadocReport extends JavadocReport {
         }
 
         return testDescription;
-    }
-
-    @Override
-    public String getOutputName() {
-        return destDir + "/index";
-    }
-
-    @Override
-    public File getReportOutputDirectory() {
-        if (reportOutputDirectory == null) {
-            return outputDirectory;
-        }
-
-        return reportOutputDirectory;
-    }
-
-    /**
-     * Method to set the directory where the generated reports will be put
-     *
-     * @param reportOutputDirectory the directory file to be set
-     */
-    @Override
-    public void setReportOutputDirectory(File reportOutputDirectory) {
-        updateReportOutputDirectory(reportOutputDirectory, destDir);
-    }
-
-    @Override
-    public void setDestDir(String destDir) {
-        this.destDir = destDir;
-        updateReportOutputDirectory(reportOutputDirectory, destDir);
-    }
-
-    private void updateReportOutputDirectory(File reportOutputDirectory, String destDir) {
-        if (reportOutputDirectory != null
-                && destDir != null
-                && !reportOutputDirectory.getAbsolutePath().endsWith(destDir)) {
-            this.reportOutputDirectory = new File(reportOutputDirectory, destDir);
-        } else {
-            this.reportOutputDirectory = reportOutputDirectory;
-        }
     }
 
     // ----------------------------------------------------------------------
@@ -298,8 +242,7 @@ public class TestJavadocReport extends JavadocReport {
             links = new ArrayList<>();
         }
 
-        // TODO the prerequisite is that the main report is in apidocs
-        File apidocs = new File(getReportOutputDirectory().getParentFile(), "apidocs");
+        File apidocs = new File(getReportOutputDirectory(), "apidocs");
         if (apidocs.isDirectory() && !links.contains("../apidocs")) {
             links.add("../apidocs");
         }

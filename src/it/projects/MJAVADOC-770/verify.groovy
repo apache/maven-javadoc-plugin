@@ -18,6 +18,6 @@
  */
 
 // new style javadoc has a module summary. legacy mode has not.
-def moduleFile = new File( basedir, 'target/apidocs/mjavadoc770/module-summary.html')
+def moduleFile = new File( basedir, 'target/reports/apidocs/mjavadoc770/module-summary.html')
 
 assert !moduleFile.exists()

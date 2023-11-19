@@ -26,13 +26,13 @@ boolean result = true;
 try
 {
     // Generated files checks
-    File apidocs1 = new File( basedir, "module1/target/site/apidocs" );
+    File apidocs1 = new File( basedir, "module1/target/reports/apidocs" );
     if ( !apidocs1.exists() || !apidocs1.isDirectory() )
     {
         System.err.println( apidocs1.getAbsolutePath() + " dir is missing or a directory." );
         return false;
     }
-    File apidocs2 = new File( basedir, "module2/target/site/apidocs" );
+    File apidocs2 = new File( basedir, "module2/target/reports/apidocs" );
     if ( !apidocs2.exists() || !apidocs2.isDirectory() )
     {
         System.err.println( apidocs2.getAbsolutePath() + " dir is missing or a directory." );

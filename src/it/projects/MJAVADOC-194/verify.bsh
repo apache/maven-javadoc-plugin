@@ -31,45 +31,45 @@ try
         return false;
     }
 
-    File apidocs = new File( basedir, "target/site/apidocs" );
+    File apidocs = new File( basedir, "target/reports/apidocs" );
     if ( !apidocs.exists() || !apidocs.isDirectory() )
     {
-        System.err.println( "target/site/apidocs file is missing or a directory." );
+        System.err.println( "target/reports/apidocs file is missing or a directory." );
         return false;
     }
 
     File index = new File( apidocs, "index.html" );
     if ( !index.exists() || !index.isFile() )
     {
-        System.err.println( "target/site/apidocs/index.html file is missing or not a file." );
+        System.err.println( "target/reports/apidocs/index.html file is missing or not a file." );
         return false;
     }
 
     File test1 = new File( apidocs, "test/Test1.html" );
     if ( !test1.exists() || !test1.isFile() )
     {
-        System.err.println( "target/site/apidocs/test/Test1.html file is missing or not a file." );
+        System.err.println( "target/reports/apidocs/test/Test1.html file is missing or not a file." );
         return false;
     }
 
     File test2 = new File( apidocs, "test/Test2.html" );
     if ( !test2.exists() || !test2.isFile() )
     {
-        System.err.println( "target/site/apidocs/test/Test2.html file is missing or not a file." );
+        System.err.println( "target/reports/apidocs/test/Test2.html file is missing or not a file." );
         return false;
     }
 
     File generatedTest1 = new File( apidocs, "test/GeneratedTest1.html" );
     if ( !generatedTest1.exists() || !generatedTest1.isFile() )
     {
-        System.err.println( "target/site/apidocs/test/GeneratedTest1.html file is missing or not a file." );
+        System.err.println( "target/reports/apidocs/test/GeneratedTest1.html file is missing or not a file." );
         return false;
     }
 
     File generatedTest2 = new File( apidocs, "test/GeneratedTest2.html" );
     if ( !generatedTest2.exists() || !generatedTest2.isFile() )
     {
-        System.err.println( "target/site/apidocs/test/GeneratedTest2.html file is missing or not a file." );
+        System.err.println( "target/reports/apidocs/test/GeneratedTest2.html file is missing or not a file." );
         return false;
     }
 }

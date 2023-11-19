@@ -53,13 +53,6 @@ public class TestJavadocJarMojo extends JavadocJarMojo {
     // ----------------------------------------------------------------------
 
     /**
-     * Specifies the destination directory where Javadoc saves the generated HTML files.
-     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option d</a>.
-     */
-    @Parameter(defaultValue = "${project.build.directory}/testapidocs", required = true)
-    private File outputDirectory;
-
-    /**
      * Specifies the Test title to be placed near the top of the overview summary file.
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option doctitle</a>.
      * @since 2.5
@@ -123,11 +116,6 @@ public class TestJavadocJarMojo extends JavadocJarMojo {
     // ----------------------------------------------------------------------
     // Important Note: should be inline with methods defined in TestJavadocReport
     // ----------------------------------------------------------------------
-
-    @Override
-    protected String getOutputDirectory() {
-        return outputDirectory.getAbsoluteFile().toString();
-    }
 
     @Override
     protected File getJavadocDirectory() {

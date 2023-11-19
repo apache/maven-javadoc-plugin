@@ -17,7 +17,7 @@
  * under the License.
  */
 
-def options = new File( basedir, 'target/site/apidocs/options' );
+def options = new File( basedir, 'target/reports/apidocs/options' );
 assert options.exists() : options + " not found"
 
 def linkLines = options.readLines().dropWhile{it != '-link'}.drop(1).takeWhile{!it.startsWith('-')}

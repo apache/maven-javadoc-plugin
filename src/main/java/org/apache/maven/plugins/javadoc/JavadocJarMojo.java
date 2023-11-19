@@ -95,15 +95,6 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
     // ----------------------------------------------------------------------
 
     /**
-     * Specifies the destination directory where javadoc saves the generated HTML files.
-     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option d</a>.
-     * @deprecated
-     */
-    @Deprecated
-    @Parameter(property = "destDir")
-    private File destDir;
-
-    /**
      * Specifies the directory where the generated jar file will be put.
      */
     @Parameter(property = "project.build.directory")
@@ -158,15 +149,10 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
 
     /** {@inheritDoc} */
     @Override
-    public void doExecute() throws MojoExecutionException {
+    protected void doExecute() throws MojoExecutionException {
         if (skip) {
             getLog().info("Skipping javadoc generation");
             return;
-        }
-
-        File innerDestDir = this.destDir;
-        if (innerDestDir == null) {
-            innerDestDir = new File(getOutputDirectory());
         }
 
         if (!isAggregator() || !"pom".equalsIgnoreCase(project.getPackaging())) {
@@ -185,25 +171,24 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
             failOnError("RuntimeException: Error while generating Javadoc", e);
         }
 
-        if (innerDestDir.exists()) {
-            try {
-                File outputFile = generateArchive(innerDestDir, finalName + "-" + getClassifier() + ".jar");
+        try {
+            File outputFile = generateArchive(
+                    new File(getPluginReportOutputDirectory()), finalName + "-" + getClassifier() + ".jar");
 
-                if (!attach) {
-                    getLog().info("NOT adding javadoc to attached artifacts list.");
-                } else {
-                    // TODO: these introduced dependencies on the project are going to become problematic - can we
-                    // export it
-                    //  through metadata instead?
-                    projectHelper.attachArtifact(project, "javadoc", getClassifier(), outputFile);
-                }
-            } catch (ArchiverException e) {
-                failOnError("ArchiverException: Error while creating archive", e);
-            } catch (IOException e) {
-                failOnError("IOException: Error while creating archive", e);
-            } catch (RuntimeException e) {
-                failOnError("RuntimeException: Error while creating archive", e);
+            if (!attach) {
+                getLog().info("NOT adding javadoc to attached artifacts list.");
+            } else {
+                // TODO: these introduced dependencies on the project are going to become problematic - can we
+                // export it
+                //  through metadata instead?
+                projectHelper.attachArtifact(project, "javadoc", getClassifier(), outputFile);
             }
+        } catch (ArchiverException e) {
+            failOnError("ArchiverException: Error while creating archive", e);
+        } catch (IOException e) {
+            failOnError("IOException: Error while creating archive", e);
+        } catch (RuntimeException e) {
+            failOnError("RuntimeException: Error while creating archive", e);
         }
     }
 

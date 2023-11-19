@@ -17,7 +17,7 @@
  * under the License.
  */
  
-assert new File( basedir, 'target/site/apidocs/options').readLines()
+assert new File( basedir, 'target/reports/apidocs/options').readLines()
                                                         .dropWhile{ it != '-link'}
                                                         .drop(1)
                                                         .first()

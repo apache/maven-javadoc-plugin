@@ -35,7 +35,7 @@ boolean result = true;
 
 try
 {
-    File javadoc = new File( basedir, "target/site/apidocs/com/example/bar/Bar.html" );
+    File javadoc = new File( basedir, "target/reports/apidocs/com/example/bar/Bar.html" );
     if ( !javadoc.exists() )
     {
         System.err.println( javadoc + " is missing" );
