@@ -52,8 +52,7 @@ under the License.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>@pom.version@</version>
-        <!-- <version>2.6.1</version> -->
+        <version>@project.version@</version>
         <executions>
           <execution>
             <id>attach</id>

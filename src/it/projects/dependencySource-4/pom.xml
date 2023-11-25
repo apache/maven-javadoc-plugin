@@ -38,7 +38,7 @@ under the License.
   </properties>
 
   <!-- <properties>
-    <javadocPluginVersion>@pom.version@</javadocPluginVersion>
+    <javadocPluginVersion>@project.version@</javadocPluginVersion>
   </properties>
   
   <build>

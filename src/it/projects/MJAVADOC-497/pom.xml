@@ -43,7 +43,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.1</version>
+          <version>@compilerPluginVersion@</version>
           <configuration>
             <source>@maven.compiler.source@</source>
             <target>@maven.compiler.target@</target>
@@ -52,7 +52,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>@pom.version@</version>
+          <version>@project.version@</version>
           <configuration>
             <subpackages>com.example.foo</subpackages>
             <excludePackageNames>**.impl</excludePackageNames>

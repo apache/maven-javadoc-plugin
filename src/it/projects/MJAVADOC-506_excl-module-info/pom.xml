@@ -46,7 +46,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
+        <version>@compilerPluginVersion@</version>
         <configuration>
           <excludes>
             <exclude>module-info.java</exclude>
@@ -62,13 +62,13 @@
         <executions>
           <execution>
             <goals>
-              <goal>jar</goal> 
+              <goal>jar</goal>
             </goals>
           </execution>
         </executions>
         <configuration>
           <sourceFileExcludes>
-            <exclude>module-info.java</exclude> 
+            <exclude>module-info.java</exclude>
           </sourceFileExcludes>
         </configuration>
       </plugin>

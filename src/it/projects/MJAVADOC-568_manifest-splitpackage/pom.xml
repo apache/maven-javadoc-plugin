@@ -23,27 +23,27 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  
+
   <groupId>org.apache.maven.plugins.javadoc.it</groupId>
   <artifactId>mjavadoc568</artifactId>
   <packaging>pom</packaging>
   <version>1.0-SNAPSHOT</version>
-  
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-  
+
   <build>
     <pluginManagement>
       <plugins>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>@jarPluginVersion@</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
+          <version>@compilerPluginVersion@</version>
           <configuration>
             <release>9</release>
           </configuration>

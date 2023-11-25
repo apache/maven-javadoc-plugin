@@ -42,7 +42,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>@pom.version@</version>
+        <version>@project.version@</version>
         <configuration>
           <aggregate>true</aggregate>
           <groups>
@@ -55,7 +55,7 @@
               <packages>bbb</packages>
             </group>
           </groups>
-        </configuration>        
+        </configuration>
       </plugin>
     </plugins>
   </reporting>

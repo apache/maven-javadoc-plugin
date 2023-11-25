@@ -48,7 +48,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>@pom.version@</version>
+          <version>@project.version@</version>
           <configuration>
             <sourcepath>${basedir}/src/main/java${wrongPathSeparator}${basedir}/src/test/java${wrongPathSeparator}${basedir}/src/main/javadoc</sourcepath>
           </configuration>

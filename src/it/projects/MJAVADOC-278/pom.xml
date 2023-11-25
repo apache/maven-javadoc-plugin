@@ -51,7 +51,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>@pom.version@</version>
+          <version>@project.version@</version>
           <configuration>
             <javadocDirectory>${basedir}/src/main/javadoc2</javadocDirectory>
             <stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
@@ -73,7 +73,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>@pom.version@</version>
+        <version>@project.version@</version>
         <configuration>
           <javadocDirectory>${basedir}/src/main/javadoc2</javadocDirectory>
           <stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>

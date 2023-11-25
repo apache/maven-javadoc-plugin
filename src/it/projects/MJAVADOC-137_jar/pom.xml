@@ -44,7 +44,7 @@
       <plugins>
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>@pom.version@</version>
+          <version>@project.version@</version>
         </plugin>
         <plugin>
           <artifactId>maven-site-plugin</artifactId>

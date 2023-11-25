@@ -27,7 +27,7 @@
   <artifactId>javadoc-parent</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
-  
+
   <url>https://issues.apache.org/jira/browse/MJAVADOC-526</url>
 
   <properties>
@@ -37,15 +37,15 @@
   </properties>
 
   <build>
-  	<pluginManagement>
-  		<plugins>
-  			<plugin>
-  				<groupId>org.apache.maven.plugins</groupId>
-  				<artifactId>maven-javadoc-plugin</artifactId>
-  				<version>@project.version@</version>
-  			</plugin>
-  		</plugins>
-  	</pluginManagement>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>@project.version@</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <modules>

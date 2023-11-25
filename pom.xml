@@ -118,10 +118,16 @@ under the License.
     <aetherVersion>1.0.0.v20140518</aetherVersion>
     <!-- https://cwiki.apache.org/confluence/x/VIHOCg#MavenEcosystemCleanup-ResolverandMaven -->
     <plexus-java.version>1.2.0</plexus-java.version>
-    <jetty.version>9.4.51.v20230217</jetty.version>
+    <jetty.version>9.4.53.v20231009</jetty.version>
     <!-- for ITs -->
+    <compilerPluginVersion>3.11.0</compilerPluginVersion>
+    <sourcePluginVersion>3.3.0</sourcePluginVersion>
+    <surefirePluginVersion>3.2.2</surefirePluginVersion>
+    <enforcerPluginVersion>3.4.1</enforcerPluginVersion>
+    <pluginPluginVersion>3.10.1</pluginPluginVersion>
+    <jarPluginVersion>3.3.0</jarPluginVersion>
     <sitePluginVersion>3.12.1</sitePluginVersion>
-    <projectInfoReportsPluginVersion>3.4.2</projectInfoReportsPluginVersion>
+    <projectInfoReportsPluginVersion>3.5.0</projectInfoReportsPluginVersion>
     <project.build.outputTimestamp>2023-11-03T20:32:23Z</project.build.outputTimestamp>
     <slf4jVersion>1.7.36</slf4jVersion>
   </properties>
@@ -214,7 +220,7 @@ under the License.
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-archiver</artifactId>
-      <version>3.6.0</version>
+      <version>3.6.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
@@ -229,6 +235,7 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-common-artifact-filters</artifactId>
+      <!-- Do not upgrades, leads to IT failures, needs analysis -->
       <version>3.2.0</version>
     </dependency>
     <!-- Doxia -->
@@ -263,12 +270,12 @@ under the License.
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.12.0</version>
+      <version>3.14.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-text</artifactId>
-      <version>1.10.0</version>
+      <version>1.11.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -296,7 +303,10 @@ under the License.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-      <version>3.5.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-xml</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -306,12 +316,13 @@ under the License.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
-      <version>4.8.0</version>
+      <version>4.9.0</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.13.0</version>
+      <version>2.15.0</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -405,6 +416,12 @@ under the License.
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <version>3.24.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4jVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
