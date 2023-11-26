@@ -230,13 +230,13 @@ public class AggregatorJavadocReportTest extends AbstractMojoTestCase {
         assertTrue(new File(apidocs, "resources/test/doc-files/maven-feather.png").exists());
     }
 
-    public void testAggregateWithModulsNotInSubFolders() throws Exception {
-        File testPom = new File(unit, "aggregate-modules-not-in-subfolders-test/all/pom.xml");
+    public void testAggregateWithModulsNotInSubDirectories() throws Exception {
+        File testPom = new File(unit, "aggregate-modules-not-in-subdirectories-test/all/pom.xml");
         JavadocReport mojo = lookupMojo(testPom);
         mojo.execute();
 
-        File apidocs =
-                new File(getBasedir(), "target/test/unit/aggregate-modules-not-in-subfolders-test/target/site/apidocs");
+        File apidocs = new File(
+                getBasedir(), "target/test/unit/aggregate-modules-not-in-subdirectories-test/target/site/apidocs");
         assertTrue(apidocs.isDirectory());
         assertTrue(getOverviewSummary(apidocs).isFile());
     }

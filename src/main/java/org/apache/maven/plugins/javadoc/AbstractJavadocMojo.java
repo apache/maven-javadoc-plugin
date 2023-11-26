@@ -711,8 +711,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * <p>
      * Wildcards work as followed:
      * <ul>
-     *   <li>a wildcard at the beginning should match 1 or more folders</li>
-     *   <li>any other wildcard must match exactly one folder</li>
+     *   <li>a wildcard at the beginning should match one or more directories</li>
+     *   <li>any other wildcard must match exactly one directory</li>
      * </ul>
      * </p>
      * Example:

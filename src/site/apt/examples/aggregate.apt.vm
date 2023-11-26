@@ -48,10 +48,10 @@ Project
 
 +-----+
 
- Since 3.1.0 the <<<aggregate>>> has changed a little bit. It'll generate aggregated 
+ Since 3.1.0 the <<<aggregate>>> has changed a little bit. It'll generate aggregated
  reports at every level.
  To get only an aggregated project at root level, you need to configure the pom like:
- 
+
 +-----+
 <project>
   ...
@@ -64,7 +64,7 @@ Project
         <reportSets>
           <reportSet>
             <id>aggregate</id>
-            <inherited>false</inherited>        
+            <inherited>false</inherited>
             <reports>
               <report>aggregate</report>
             </reports>
@@ -178,8 +178,8 @@ Project
   Be aware that is not possible to have a mixture of named and unnamed modules. Ideally every Maven module has a Java module descriptor,
   but this is not always possible, e.g. due to split packages of dependencies.
   In such case you must have a jar containing a <<<META-INF/MANIFEST.MF>>> with an entry for the <<<Automatic-Module-Name>>>.
-  In other words: ensure to call <<<package javadoc:aggregate>>>, because the manifest file is only being read from jar, not from folder.
-  
+  In other words: ensure to call <<<package javadoc:aggregate>>>, because the manifest file is only being read from jar, not from directory.
+
 +-----+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -191,7 +191,7 @@ Project
               </manifestEntries>
             </archive>
           </configuration>
-        </plugin>  
+        </plugin>
 +-----+
 
   Occasionally, automatic modules need to import named modules. For example,

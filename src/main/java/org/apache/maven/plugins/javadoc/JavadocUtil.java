@@ -372,8 +372,8 @@ public class JavadocUtil {
             // Usage of wildcard was bad specified and bad implemented, i.e. using String.contains()
             //   without respecting surrounding context
             // Following implementation should match requirements as defined in the examples:
-            // - A wildcard at the beginning should match 1 or more folders
-            // - Any other wildcard must match exactly one folder
+            // - A wildcard at the beginning should match one or more directories
+            // - Any other wildcard must match exactly one directory
             Pattern p = Pattern.compile(excludePackagename
                     .replace(".", regexFileSeparator)
                     .replaceFirst("^\\*", ".+")
