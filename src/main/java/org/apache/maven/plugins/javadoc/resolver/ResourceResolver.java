@@ -38,6 +38,7 @@ import java.util.Set;
 
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.plugins.javadoc.AbstractJavadocMojo;
@@ -102,7 +103,7 @@ public final class ResourceResolver extends AbstractLogEnabled {
         final Map<String, MavenProject> projectMap = new HashMap<>();
         if (config.reactorProjects() != null) {
             for (final MavenProject p : config.reactorProjects()) {
-                projectMap.put(key(p.getGroupId(), p.getArtifactId()), p);
+                projectMap.put(ArtifactUtils.key(p.getGroupId(), p.getArtifactId(), p.getVersion()), p);
             }
         }
 
@@ -110,8 +111,7 @@ public final class ResourceResolver extends AbstractLogEnabled {
 
         final List<Artifact> forResourceResolution = new ArrayList<>(artifacts.size());
         for (final Artifact artifact : artifacts) {
-            final String key = key(artifact.getGroupId(), artifact.getArtifactId());
-            final MavenProject p = projectMap.get(key);
+            final MavenProject p = projectMap.get(ArtifactUtils.key(artifact));
             if (p != null) {
                 bundles.addAll(resolveBundleFromProject(config, p, artifact));
             } else {
@@ -137,14 +137,14 @@ public final class ResourceResolver extends AbstractLogEnabled {
         final Map<String, MavenProject> projectMap = new HashMap<>();
         if (config.reactorProjects() != null) {
             for (final MavenProject p : config.reactorProjects()) {
-                projectMap.put(key(p.getGroupId(), p.getArtifactId()), p);
+                projectMap.put(ArtifactUtils.key(p.getGroupId(), p.getArtifactId(), p.getVersion()), p);
             }
         }
 
         final List<Artifact> artifacts = config.project().getTestArtifacts();
 
         for (final Artifact artifact : artifacts) {
-            final String key = key(artifact.getGroupId(), artifact.getArtifactId());
+            final String key = ArtifactUtils.key(artifact);
             final MavenProject p = projectMap.get(key);
             if (p != null) {
                 mappedDirs.add(new JavadocModule(key, artifact.getFile(), resolveFromProject(config, p, artifact)));
@@ -269,7 +269,7 @@ public final class ResourceResolver extends AbstractLogEnabled {
 
         Collection<Path> sourcePaths = resolveAndUnpack(toResolve, config, SOURCE_VALID_CLASSIFIERS, true);
 
-        return new JavadocModule(key(artifact.getGroupId(), artifact.getArtifactId()), artifact.getFile(), sourcePaths);
+        return new JavadocModule(ArtifactUtils.key(artifact), artifact.getFile(), sourcePaths);
     }
 
     private org.eclipse.aether.artifact.Artifact createResourceArtifact(
@@ -376,9 +376,5 @@ public final class ResourceResolver extends AbstractLogEnabled {
         }
 
         return JavadocUtil.pruneDirs(reactorProject, dirs);
-    }
-
-    private static String key(final String gid, final String aid) {
-        return gid + ":" + aid;
     }
 }

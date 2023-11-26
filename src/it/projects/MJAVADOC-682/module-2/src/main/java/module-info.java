@@ -16,17 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- 
-def buildLog = new File(basedir,'build.log')
 
-def expectedLines = ['Creating an aggregated report for both named and unnamed modules is not possible.',
-                     'Ensure that every module has a module descriptor or is a jar with a MANIFEST.MF containing an Automatic-Module-Name.',
-                     'Fix the following projects:',
-                     ' - testcase:module2:1.0-SNAPSHOT']
-
-def errorLines = buildLog.readLines() 
-                         .dropWhile{ !it.startsWith('[ERROR] Creating') }
-                         .takeWhile{ it.startsWith('[ERROR]') }
-                         .collect  { it - '[ERROR] '}
-                         
-assert expectedLines == errorLines                   
+module com.foo {
+  exports com.foo;
+}

@@ -2192,7 +2192,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
             if (!sourcePaths.isEmpty()) {
                 mappedSourcePaths.add(new JavadocModule(
-                        ArtifactUtils.versionlessKey(project.getGroupId(), project.getArtifactId()),
+                        ArtifactUtils.key(project.getGroupId(), project.getArtifactId(), project.getVersion()),
                         getClassesFile(project),
                         sourcePaths));
             }
@@ -2206,12 +2206,12 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         ResolvePathResult resolvePathResult = getResolvePathResult(classessFile);
         if (resolvePathResult == null) {
             return new JavadocModule(
-                    ArtifactUtils.versionlessKey(project.getGroupId(), project.getArtifactId()),
+                    ArtifactUtils.key(project.getGroupId(), project.getArtifactId(), project.getVersion()),
                     classessFile,
                     sourcePaths);
         } else {
             return new JavadocModule(
-                    ArtifactUtils.versionlessKey(project.getGroupId(), project.getArtifactId()),
+                    ArtifactUtils.key(project.getGroupId(), project.getArtifactId(), project.getVersion()),
                     classessFile,
                     sourcePaths,
                     resolvePathResult.getModuleDescriptor(),
@@ -4398,7 +4398,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         Map<String, MavenProject> reactorKeys = new HashMap<>(aggregatedProjects.size());
         for (MavenProject reactorProject : aggregatedProjects) {
             reactorKeys.put(
-                    ArtifactUtils.versionlessKey(reactorProject.getGroupId(), reactorProject.getArtifactId()),
+                    ArtifactUtils.key(
+                            reactorProject.getGroupId(), reactorProject.getArtifactId(), reactorProject.getVersion()),
                     reactorProject);
         }
 
@@ -4424,7 +4425,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                     if (moduleDescriptor != null) {
                         try {
                             allModuleDescriptors.put(
-                                    entry.getGa(),
+                                    entry.getGav(),
                                     locationManager
                                             .parseModuleDescriptor(moduleDescriptor)
                                             .getModuleDescriptor());
@@ -4433,7 +4434,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                         }
                     }
                 } else {
-                    allModuleDescriptors.put(entry.getGa(), entry.getModuleDescriptor());
+                    allModuleDescriptors.put(entry.getGav(), entry.getModuleDescriptor());
                 }
             }
         }
@@ -4448,7 +4449,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         if (supportModulePath && !allModuleDescriptors.isEmpty()) {
             Collection<String> unnamedProjects = new ArrayList<>();
             for (JavadocModule javadocModule : allSourcePaths) {
-                MavenProject aggregatedProject = reactorKeys.get(javadocModule.getGa());
+                MavenProject aggregatedProject = reactorKeys.get(javadocModule.getGav());
                 if (aggregatedProject != null && !"pom".equals(aggregatedProject.getPackaging())) {
                     ResolvePathResult result = null;
 
@@ -4497,7 +4498,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                             throw new MavenReportException(e.getMessage(), e);
                         }
                     } else {
-                        unnamedProjects.add(javadocModule.getGa());
+                        unnamedProjects.add(javadocModule.getGav());
                     }
 
                     if (aggregatedProject.equals(getProject())) {
@@ -4505,7 +4506,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                     }
                 } else {
                     // todo
-                    getLog().error("no reactor project: " + javadocModule.getGa());
+                    getLog().error("no reactor project: " + javadocModule.getGav());
                 }
             }
 
