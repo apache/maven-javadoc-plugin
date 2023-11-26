@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,17 +114,23 @@ public class JavadocReportTest extends AbstractMojoTestCase {
     private JavadocReport lookupMojo(Path testPom) throws Exception {
         JavadocReport mojo = (JavadocReport) lookupMojo("javadoc", testPom.toFile());
 
-        MojoExecution mojoExec = new MojoExecution(new Plugin(), "javadoc", null);
+        Plugin p = new Plugin();
+        p.setGroupId("org.apache.maven.plugins");
+        p.setArtifactId("maven-javadoc-plugin");
+        MojoExecution mojoExecution = new MojoExecution(p, "javadoc", null);
 
-        setVariableValueToObject(mojo, "mojo", mojoExec);
+        setVariableValueToObject(mojo, "mojoExecution", mojoExecution);
 
         MavenProject currentProject = new MavenProjectStub();
         currentProject.setGroupId("GROUPID");
         currentProject.setArtifactId("ARTIFACTID");
 
+        List<MavenProject> reactorProjects =
+                mojo.getReactorProjects() != null ? mojo.getReactorProjects() : Collections.emptyList();
         MavenSession session = newMavenSession(currentProject);
         setVariableValueToObject(mojo, "session", session);
         setVariableValueToObject(mojo, "repoSession", session.getRepositorySession());
+        setVariableValueToObject(mojo, "reactorProjects", reactorProjects);
         return mojo;
     }
 

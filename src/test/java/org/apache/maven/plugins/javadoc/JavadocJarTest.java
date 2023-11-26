@@ -49,9 +49,12 @@ public class JavadocJarTest extends AbstractMojoTestCase {
     private JavadocJar lookupMojo(File testPom) throws Exception {
         JavadocJar mojo = (JavadocJar) lookupMojo("jar", testPom);
 
-        MojoExecution mojoExec = new MojoExecution(new Plugin(), "javadoc", null);
+        Plugin p = new Plugin();
+        p.setGroupId("org.apache.maven.plugins");
+        p.setArtifactId("maven-javadoc-plugin");
+        MojoExecution mojoExecution = new MojoExecution(p, "jar", null);
 
-        setVariableValueToObject(mojo, "mojo", mojoExec);
+        setVariableValueToObject(mojo, "mojoExecution", mojoExecution);
 
         MavenProject currentProject = new MavenProjectStub();
         currentProject.setGroupId("GROUPID");

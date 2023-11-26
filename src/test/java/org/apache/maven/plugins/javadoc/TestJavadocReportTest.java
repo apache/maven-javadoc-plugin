@@ -43,9 +43,12 @@ public class TestJavadocReportTest extends AbstractMojoTestCase {
                 new File(getBasedir(), "src/test/resources/unit/test-javadoc-test/test-javadoc-test-plugin-config.xml");
         TestJavadocReport mojo = (TestJavadocReport) lookupMojo("test-javadoc", testPom);
 
-        MojoExecution mojoExec = new MojoExecution(new Plugin(), "test-javadoc", null);
+        Plugin p = new Plugin();
+        p.setGroupId("org.apache.maven.plugins");
+        p.setArtifactId("maven-javadoc-plugin");
+        MojoExecution mojoExecution = new MojoExecution(p, "test-javadoc", null);
 
-        setVariableValueToObject(mojo, "mojo", mojoExec);
+        setVariableValueToObject(mojo, "mojoExecution", mojoExecution);
 
         MavenProject currentProject = new MavenProjectStub();
         currentProject.setGroupId("GROUPID");

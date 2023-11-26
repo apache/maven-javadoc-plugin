@@ -62,8 +62,12 @@ public class AggregatorJavadocReportTest extends AbstractMojoTestCase {
     private JavadocReport lookupMojo(File testPom) throws Exception {
         JavadocReport mojo = (JavadocReport) lookupMojo("aggregate", testPom);
 
-        MojoExecution mojoExec = new MojoExecution(new Plugin(), "aggregate", null);
-        setVariableValueToObject(mojo, "mojo", mojoExec);
+        Plugin p = new Plugin();
+        p.setGroupId("org.apache.maven.plugins");
+        p.setArtifactId("maven-javadoc-plugin");
+        MojoExecution mojoExecution = new MojoExecution(p, "aggregate", null);
+
+        setVariableValueToObject(mojo, "mojoExecution", mojoExecution);
 
         MavenProject currentProject = new MavenProjectStub();
         currentProject.setGroupId("GROUPID");

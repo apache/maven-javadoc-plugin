@@ -328,8 +328,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", readonly = true, required = true)
     protected MavenProject project;
 
-    @Parameter(defaultValue = "${mojoExecution}", readonly = true)
-    private MojoExecution mojo;
+    @Parameter(defaultValue = "${mojoExecution}", readonly = true, required = true)
+    protected MojoExecution mojoExecution;
 
     /**
      * Specify if the Javadoc plugin should operate in offline mode. If maven is run in offline
@@ -421,8 +421,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     /**
      * The projects in the reactor for aggregation report.
      */
-    @Parameter(property = "reactorProjects", readonly = true)
-    private List<MavenProject> reactorProjects;
+    @Parameter(defaultValue = "${reactorProjects}", required = true, readonly = true)
+    protected List<MavenProject> reactorProjects;
 
     /**
      * Set this to <code>true</code> to debug the Javadoc plugin. With this, <code>javadoc.bat(or.sh)</code>,
@@ -1828,7 +1828,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     abstract void doExecute() throws MojoExecutionException, MojoFailureException;
 
     protected final void verifyRemovedParameter(String paramName) {
-        Xpp3Dom configDom = mojo.getConfiguration();
+        Xpp3Dom configDom = mojoExecution.getConfiguration();
         if (configDom != null) {
             if (configDom.getChild(paramName) != null) {
                 throw new IllegalArgumentException(
@@ -1838,7 +1838,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     private void verifyReplacedParameter(String oldParamName, String newParamNew) {
-        Xpp3Dom configDom = mojo.getConfiguration();
+        Xpp3Dom configDom = mojoExecution.getConfiguration();
         if (configDom != null) {
             if (configDom.getChild(oldParamName) != null) {
                 throw new IllegalArgumentException("parameter '" + oldParamName + "' has been replaced with "
@@ -6040,6 +6040,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         } else {
             getLog().error(message);
         }
+    }
+
+    protected List<MavenProject> getReactorProjects() {
+        return reactorProjects;
     }
 
     /**
