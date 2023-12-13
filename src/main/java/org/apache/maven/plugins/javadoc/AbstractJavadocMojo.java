@@ -2956,7 +2956,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         path.append(StringUtils.join(pathParts.iterator(), File.pathSeparator));
 
         if (tagletpath != null && !tagletpath.isEmpty()) {
-            path.append(JavadocUtil.unifyPathSeparator(tagletpath));
+            path.append(path.length() > 0 ? File.pathSeparator : "").append(JavadocUtil.unifyPathSeparator(tagletpath));
         }
 
         return path.toString();
