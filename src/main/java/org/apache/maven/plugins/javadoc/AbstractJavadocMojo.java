@@ -2968,14 +2968,11 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             }
         }
 
-        StringBuilder path = new StringBuilder();
-        path.append(StringUtils.join(pathParts.iterator(), File.pathSeparator));
-
-        if (tagletpath != null && !tagletpath.isEmpty()) {
-            path.append(JavadocUtil.unifyPathSeparator(tagletpath));
+        if (StringUtils.isNotEmpty(tagletpath)) {
+            pathParts.addAll(Arrays.asList(JavadocUtil.splitPath(tagletpath)));
         }
 
-        return path.toString();
+        return StringUtils.join(pathParts, File.pathSeparator);
     }
 
     private Set<String> collectLinks() throws MavenReportException {
