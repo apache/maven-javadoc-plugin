@@ -2962,8 +2962,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                     && (StringUtils.isNotEmpty(taglet.getTagletArtifact().getVersion()))) {
                 pathParts.addAll(JavadocUtil.pruneFiles(getArtifactsAbsolutePath(taglet.getTagletArtifact())));
             } else if (StringUtils.isNotEmpty(taglet.getTagletpath())) {
-                for (Path dir : JavadocUtil.pruneDirs(project, Collections.singletonList(taglet.getTagletpath()))) {
-                    pathParts.add(dir.toString());
+                for (Path path :
+                        JavadocUtil.prunePaths(project, Collections.singletonList(taglet.getTagletpath()), true)) {
+                    pathParts.add(path.toString());
                 }
             }
         }

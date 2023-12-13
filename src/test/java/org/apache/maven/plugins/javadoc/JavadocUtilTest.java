@@ -32,9 +32,11 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -582,16 +584,43 @@ public class JavadocUtilTest extends PlexusTestCase {
      */
     public void testPruneDirs() {
         List<String> list = new ArrayList<>();
-        list.add(getBasedir() + "/target/classes");
-        list.add(getBasedir() + "/target/classes");
-        list.add(getBasedir() + "/target/classes");
+        String classesDir = getBasedir() + "/target/classes";
+        list.add(classesDir);
+        list.add(classesDir);
+        list.add(classesDir);
 
-        Set<Path> expected = Collections.singleton(Paths.get(getBasedir(), "target/classes"));
+        Set<Path> expected = Collections.singleton(Paths.get(classesDir));
 
         MavenProjectStub project = new MavenProjectStub();
         project.setFile(new File(getBasedir(), "pom.xml"));
 
         assertEquals(expected, JavadocUtil.pruneDirs(project, list));
+    }
+
+    /**
+     * Method to test prunePaths()
+     *
+     */
+    public void testPrunePaths() {
+        List<String> list = new ArrayList<>();
+        String classesDir = getBasedir() + "/target/classes";
+        String tagletJar = getBasedir()
+                + "/target/test-classes/unit/taglet-test/artifact-taglet/org/tullmann/taglets/1.0/taglets-1.0.jar";
+        list.add(classesDir);
+        list.add(classesDir);
+        list.add(classesDir);
+        list.add(tagletJar);
+        list.add(tagletJar);
+        list.add(tagletJar);
+
+        Set<Path> expectedNoJar = Collections.singleton(Paths.get(classesDir));
+        Set<Path> expectedWithJar = new HashSet<>(Arrays.asList(Paths.get(classesDir), Paths.get(tagletJar)));
+
+        MavenProjectStub project = new MavenProjectStub();
+        project.setFile(new File(getBasedir(), "pom.xml"));
+
+        assertEquals(expectedNoJar, JavadocUtil.prunePaths(project, list, false));
+        assertEquals(expectedWithJar, JavadocUtil.prunePaths(project, list, true));
     }
 
     /**
