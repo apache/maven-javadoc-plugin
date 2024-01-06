@@ -1314,7 +1314,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * Example:
      * <pre>
      *     &lt;addStylesheets&gt;
-     *         &lt;resources/addstylesheet.css&lt;/addStylesheet&gt;
+     *         &lt;addStylesheet&gt;resources/addstylesheet.css&lt;/addStylesheet&gt;
      *     &lt;/addStylesheets&gt;
      * </pre>
      * @since 3.3.0
