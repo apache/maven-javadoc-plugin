@@ -48,6 +48,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Set;
@@ -118,30 +119,52 @@ public class JavadocUtil {
                     + "environment variable using -Xms:<size> and -Xmx:<size>.";
 
     /**
-     * Method that removes the invalid directories in the specified directories. <b>Note</b>: All elements in
-     * <code>dirs</code> could be an absolute or relative against the project's base directory <code>String</code> path.
+     * Method that removes invalid classpath elements in the specified paths. <b>Note</b>: All elements in
+     * <code>paths</code> could be absolute or relative against the project's base directory <code>String</code> path.
+     * When pruning class paths, you can optionally include "*.jar" files in the result, otherwise only directories are
+     * permitted.
      *
      * @param project the current Maven project not null
-     * @param dirs the collection of <code>String</code> directories path that will be validated.
-     * @return a List of valid <code>String</code> directories absolute paths.
+     * @param paths the collection of <code>String</code> paths that will be validated
+     * @param includeJars whether to include JAR files in the result
+     * @return a list of valid <code>String</code> directories and optionally JAR files as absolute paths
      */
-    public static Collection<Path> pruneDirs(MavenProject project, Collection<String> dirs) {
+    public static Collection<Path> prunePaths(MavenProject project, Collection<String> paths, boolean includeJars) {
         final Path projectBasedir = project.getBasedir().toPath();
 
-        Set<Path> pruned = new LinkedHashSet<>(dirs.size());
-        for (String dir : dirs) {
-            if (dir == null) {
+        Set<Path> pruned = new LinkedHashSet<>(paths.size());
+        for (String path : paths) {
+            if (path == null) {
                 continue;
             }
 
-            Path directory = projectBasedir.resolve(dir);
+            Path resolvedPath = projectBasedir.resolve(path);
 
-            if (Files.isDirectory(directory)) {
-                pruned.add(directory.toAbsolutePath());
+            if (Files.isDirectory(resolvedPath)
+                    || includeJars
+                            && Files.isRegularFile(resolvedPath)
+                            && resolvedPath
+                                    .getFileName()
+                                    .toString()
+                                    .toLowerCase(Locale.ROOT)
+                                    .endsWith(".jar")) {
+                pruned.add(resolvedPath.toAbsolutePath());
             }
         }
 
         return pruned;
+    }
+
+    /**
+     * Method that removes the invalid directories in the specified directories. <b>Note</b>: All elements in
+     * <code>dirs</code> could be absolute or relative against the project's base directory <code>String</code> path.
+     *
+     * @param project the current Maven project not null
+     * @param dirs the collection of <code>String</code> directories that will be validated
+     * @return a list of valid <code>String</code> directories as absolute paths
+     */
+    public static Collection<Path> pruneDirs(MavenProject project, Collection<String> dirs) {
+        return prunePaths(project, dirs, false);
     }
 
     /**

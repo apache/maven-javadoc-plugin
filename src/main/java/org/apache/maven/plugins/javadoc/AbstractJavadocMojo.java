@@ -2946,8 +2946,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                     && (StringUtils.isNotEmpty(taglet.getTagletArtifact().getVersion()))) {
                 pathParts.addAll(JavadocUtil.pruneFiles(getArtifactsAbsolutePath(taglet.getTagletArtifact())));
             } else if (StringUtils.isNotEmpty(taglet.getTagletpath())) {
-                for (Path dir : JavadocUtil.pruneDirs(project, Collections.singletonList(taglet.getTagletpath()))) {
-                    pathParts.add(dir.toString());
+                for (Path path :
+                        JavadocUtil.prunePaths(project, Collections.singletonList(taglet.getTagletpath()), true)) {
+                    pathParts.add(path.toString());
                 }
             }
         }
@@ -2956,7 +2957,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         path.append(StringUtils.join(pathParts.iterator(), File.pathSeparator));
 
         if (tagletpath != null && !tagletpath.isEmpty()) {
-            path.append(JavadocUtil.unifyPathSeparator(tagletpath));
+            path.append(path.length() > 0 ? File.pathSeparator : "").append(JavadocUtil.unifyPathSeparator(tagletpath));
         }
 
         return path.toString();
