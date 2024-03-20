@@ -28,8 +28,9 @@ import java.util.stream.Collectors;
 
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.doxia.sink.SinkFactory;
-import org.apache.maven.doxia.siterenderer.RenderingContext;
+import org.apache.maven.doxia.siterenderer.DocumentRenderingContext;
 import org.apache.maven.doxia.siterenderer.sink.SiteRendererSink;
+import org.apache.maven.doxia.tools.SiteTool;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Execute;
@@ -56,23 +57,8 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     // Report Mojo Parameters
     // ----------------------------------------------------------------------
 
-    /**
-     * Specifies the destination directory where javadoc saves the generated HTML files.
-     */
-    @Parameter(
-            property = "reportOutputDirectory",
-            defaultValue = "${project.reporting.outputDirectory}/apidocs",
-            required = true)
+    /** The current shared report output directory to use */
     private File reportOutputDirectory;
-
-    /**
-     * The name of the destination directory.
-     * <br/>
-     *
-     * @since 2.1
-     */
-    @Parameter(property = "destDir", defaultValue = "apidocs")
-    private String destDir;
 
     /**
      * The name of the Javadoc report to be displayed in the Maven Generated Reports page
@@ -117,11 +103,6 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void generate(org.codehaus.doxia.sink.Sink sink, Locale locale) throws MavenReportException {
-        generate(sink, null, locale);
-    }
-
     public void generate(Sink sink, Locale locale) throws MavenReportException {
         generate(sink, null, locale);
     }
@@ -129,8 +110,6 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     /** {@inheritDoc} */
     @Override
     public void generate(Sink sink, SinkFactory sinkFactory, Locale locale) throws MavenReportException {
-        outputDirectory = getReportOutputDirectory();
-
         try {
             executeReport(locale);
         } catch (MavenReportException | RuntimeException e) {
@@ -144,7 +123,7 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     /** {@inheritDoc} */
     @Override
     public String getOutputName() {
-        return destDir + "/index";
+        return (isTest() ? "test" : "") + "apidocs" + "/index";
     }
 
     /** {@inheritDoc} */
@@ -218,28 +197,23 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
      *  </table>
      */
     @Override
-    public boolean canGenerateReport() {
-        boolean canGenerate = false;
-
-        if (!skip && (this.isAggregator() || !"pom".equals(this.project.getPackaging()))) {
-            Collection<Path> sourcePaths;
-            Map<Path, Collection<String>> files;
-            try {
-                sourcePaths = getSourcePaths().stream()
-                        .flatMap(e -> e.getSourcePaths().stream())
-                        .collect(Collectors.toList());
-                files = getFiles(sourcePaths);
-            } catch (MavenReportException e) {
-                getLog().error(e.getMessage(), e);
-                return false;
-            }
-
-            canGenerate = canGenerateReport(files);
+    public boolean canGenerateReport() throws MavenReportException {
+        if (skip) {
+            return false;
         }
-        if (getLog().isDebugEnabled()) {
-            getLog().debug(" canGenerateReport = " + canGenerate + " for project " + this.project);
+
+        Collection<JavadocModule> sourcePaths = getSourcePaths();
+
+        Collection<Path> collectedSourcePaths =
+                sourcePaths.stream().flatMap(e -> e.getSourcePaths().stream()).collect(Collectors.toList());
+
+        Map<Path, Collection<String>> files = getFiles(collectedSourcePaths);
+
+        if (!canGenerateReport(files)) {
+            return false;
         }
-        return canGenerate;
+
+        return true;
     }
 
     /** {@inheritDoc} */
@@ -252,57 +226,52 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     @Override
     public File getReportOutputDirectory() {
         if (reportOutputDirectory == null) {
-            return outputDirectory;
+            reportOutputDirectory = new File(getOutputDirectory());
         }
 
         return reportOutputDirectory;
     }
 
-    /**
-     * Method to set the directory where the generated reports will be put
-     *
-     * @param reportOutputDirectory the directory file to be set
-     */
+    /** {@inheritDoc} */
     @Override
     public void setReportOutputDirectory(File reportOutputDirectory) {
-        updateReportOutputDirectory(reportOutputDirectory, destDir);
-    }
-
-    /**
-     * @param theDestDir the destination directory
-     */
-    public void setDestDir(String theDestDir) {
-        this.destDir = theDestDir;
-        updateReportOutputDirectory(reportOutputDirectory, theDestDir);
-    }
-
-    private void updateReportOutputDirectory(File reportOutputDirectory, String destDir) {
-        if (reportOutputDirectory != null
-                && destDir != null
-                && !reportOutputDirectory.getAbsolutePath().endsWith(destDir)) {
-            this.reportOutputDirectory = new File(reportOutputDirectory, destDir);
-        } else {
-            this.reportOutputDirectory = reportOutputDirectory;
-        }
+        this.reportOutputDirectory = reportOutputDirectory;
+        this.outputDirectory = reportOutputDirectory;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void doExecute() throws MojoExecutionException, MojoFailureException {
+    protected String getPluginReportOutputDirectory() {
+        return getReportOutputDirectory().getAbsolutePath() + "/" + (isTest() ? "test" : "") + "apidocs";
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void doExecute() throws MojoExecutionException, MojoFailureException {
+        try {
+            if (!canGenerateReport()) {
+                String reportMojoInfo = mojoExecution.getPlugin().getId() + ":" + mojoExecution.getGoal();
+                getLog().info("Skipping " + reportMojoInfo + " report goal");
+                return;
+            }
+        } catch (MavenReportException e) {
+            throw new MojoExecutionException("Failed to determine whether report can be generated", e);
+        }
+
         File outputDirectory = new File(getOutputDirectory());
 
         String filename = getOutputName() + ".html";
 
-        Locale locale = Locale.getDefault();
+        Locale locale = SiteTool.DEFAULT_LOCALE;
 
         try {
-            // TODO Replace null with real value
-            RenderingContext docRenderingContext = new RenderingContext(outputDirectory, filename, null);
+            String reportMojoInfo = mojoExecution.getPlugin().getId() + ":" + mojoExecution.getGoal();
+            DocumentRenderingContext docRenderingContext =
+                    new DocumentRenderingContext(outputDirectory, filename, reportMojoInfo);
 
             SiteRendererSink sink = new SiteRendererSink(docRenderingContext);
 
             generate(sink, null, locale);
-
         } catch (MavenReportException | RuntimeException e) {
             failOnError("An error has occurred in " + getName(Locale.ENGLISH) + " report generation", e);
         }

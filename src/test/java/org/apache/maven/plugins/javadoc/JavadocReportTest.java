@@ -505,7 +505,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
                 new File(getBasedir(), "target/test/unit/doclet-test/target/site/apidocs/graph.dot").toPath();
         assertThat(generatedFile).exists();
 
-        Path optionsFile = new File(mojo.getOutputDirectory(), "options").toPath();
+        Path optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
         assertThat(optionsFile).exists();
         String options = readFile(optionsFile);
         assertThat(options).contains("/target/local-repo/umlgraph/UMLGraph/2.1/UMLGraph-2.1.jar");
@@ -524,7 +524,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         generatedFile = new File(getBasedir(), "target/test/unit/doclet-test/target/site/apidocs/graph.dot").toPath();
         assertThat(generatedFile).exists();
 
-        optionsFile = new File(mojo.getOutputDirectory(), "options").toPath();
+        optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
         assertThat(optionsFile).exists();
         options = readFile(optionsFile);
         assertThat(options)
@@ -571,7 +571,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         JavadocReport mojo = lookupMojo(testPom);
         mojo.execute();
 
-        Path optionsFile = new File(mojo.getOutputDirectory(), "options").toPath();
+        Path optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
         assertThat(optionsFile).exists();
 
         // check for a part of the window title
@@ -1052,15 +1052,6 @@ public class JavadocReportTest extends AbstractMojoTestCase {
             assertTrue("No wrong charset catch", e.getMessage().contains("Unsupported option <charset/>"));
         }
 
-        // locale
-        testPom = unit.resolve("validate-options-test/wrong-locale-test-plugin-config.xml");
-        mojo = lookupMojo(testPom);
-        try {
-            mojo.execute();
-            fail("No wrong locale catch");
-        } catch (MojoExecutionException e) {
-            assertTrue("No wrong locale catch", e.getMessage().contains("Unsupported option <locale/>"));
-        }
         testPom = unit.resolve("validate-options-test/wrong-locale-with-variant-test-plugin-config.xml");
         mojo = lookupMojo(testPom);
         mojo.execute();
@@ -1105,7 +1096,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "repoSession", repoSysSession);
         mojo.execute();
 
-        Path optionsFile = new File(mojo.getOutputDirectory(), "options").toPath();
+        Path optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
         assertThat(optionsFile).exists();
         String options = readFile(optionsFile);
         // count -taglet

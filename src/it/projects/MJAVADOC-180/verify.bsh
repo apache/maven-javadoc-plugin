@@ -31,24 +31,24 @@ try
         return false;
     }
 
-    File testapidocs = new File( basedir, "target/site/testapidocs" );
+    File testapidocs = new File( basedir, "target/reports/testapidocs" );
     if ( !testapidocs.exists() || !testapidocs.isDirectory() )
     {
-        System.err.println( "target/site/testapidocs file is missing or a directory." );
+        System.err.println( "target/reports/testapidocs file is missing or a directory." );
         return false;
     }
 
     File options = new File( testapidocs, "options" );
     if ( !options.exists() || !options.isFile() )
     {
-        System.err.println( "target/site/testapidocs/options file is missing or not a file." );
+        System.err.println( "target/reports/testapidocs/options file is missing or not a file." );
         return false;
     }
 
     File index = new File( testapidocs, "index.html" );
     if ( !index.exists() || !index.isFile() )
     {
-        System.err.println( "target/site/testapidocs/index.html file is missing or not a file." );
+        System.err.println( "target/reports/testapidocs/index.html file is missing or not a file." );
         return false;
     }
 }

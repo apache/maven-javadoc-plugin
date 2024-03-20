@@ -19,20 +19,20 @@
  
 int javaVersion = System.getProperty( "java.specification.version" ) as Integer
 if ( javaVersion >= 11 ) {
-    def index = new File( basedir, 'target/site/apidocs/index.html')
+    def index = new File( basedir, 'target/reports/apidocs/index.html')
 
 	assert index.text =~ /<a href="module1\/module-summary\.html">module1<\/a>/
 	assert index.text =~ /<a href="module2\/module-summary\.html">module2<\/a>/
 	
-	assert new File( basedir, 'target/site/apidocs/module1/module-summary.html').exists()
-	assert new File( basedir, 'target/site/apidocs/module2/module-summary.html').exists()
+	assert new File( basedir, 'target/reports/apidocs/module1/module-summary.html').exists()
+	assert new File( basedir, 'target/reports/apidocs/module2/module-summary.html').exists()
 } 
 else {
-    def overview = new File( basedir, 'target/site/apidocs/overview-summary.html')
+    def overview = new File( basedir, 'target/reports/apidocs/overview-summary.html')
 
 	assert overview.text =~ /<a href="module1-summary.html">module1<\/a>/
 	assert overview.text =~ /<a href="module2-summary.html">module2<\/a>/
 	
-	assert new File( basedir, 'target/site/apidocs/module1-summary.html').exists()
-	assert new File( basedir, 'target/site/apidocs/module2-summary.html').exists()
+	assert new File( basedir, 'target/reports/apidocs/module1-summary.html').exists()
+	assert new File( basedir, 'target/reports/apidocs/module2-summary.html').exists()
 } 

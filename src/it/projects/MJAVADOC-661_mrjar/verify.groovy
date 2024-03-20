@@ -23,7 +23,7 @@ def required = []
 
 versions.each { required << "'com.foo.Taglet" + it + "'" }
 
-def options = new File( basedir, 'target/site/apidocs/options' );
+def options = new File( basedir, 'target/reports/apidocs/options' );
 
 assert options.exists() : options + " not found"
 
