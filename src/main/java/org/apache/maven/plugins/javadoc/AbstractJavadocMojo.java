@@ -1926,6 +1926,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         Commandline cmd = new Commandline();
         cmd.getShell().setQuotedArgumentsEnabled(false); // for Javadoc JVM args
+        cmd.addEnvironment("LANG", Locale.US.getLanguage());
         cmd.setWorkingDirectory(javadocOutputDirectory.getAbsolutePath());
         cmd.setExecutable(jExecutable);
 
