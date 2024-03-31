@@ -854,7 +854,8 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
                 }
             }
 
-            projectClassLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]), null);
+            projectClassLoader =
+                    new URLClassLoader(urls.toArray(new URL[urls.size()]), ClassLoader.getPlatformClassLoader());
         }
 
         return projectClassLoader;
