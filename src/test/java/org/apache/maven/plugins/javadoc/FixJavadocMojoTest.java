@@ -503,13 +503,10 @@ public class FixJavadocMojoTest extends AbstractMojoTestCase {
                 .setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
                         .newInstance(
                                 session.getRepositorySession(), new LocalRepository(new File("target/local-repo"))));
-        // Ensure remote repo connection uses SSL
-        File globalSettingsFile = new File(getBasedir(), "target/test-classes/unit/settings.xml");
-        session.getRequest().setGlobalSettingsFile(globalSettingsFile);
         setVariableValueToObject(mojo, "session", session);
 
         // compile the test project
-        invokeCompileGoal(testPom, globalSettingsFile, mojo.getLog());
+        invokeCompileGoal(testPom, mojo.getLog());
         assertTrue(new File(testPomBasedir, "target/classes").exists());
 
         mojo.execute();
@@ -532,7 +529,7 @@ public class FixJavadocMojoTest extends AbstractMojoTestCase {
      * @param log not null
      * @throws MavenInvocationException if any
      */
-    private void invokeCompileGoal(File testPom, File globalSettingsFile, Log log) throws Exception {
+    private void invokeCompileGoal(File testPom, Log log) throws Exception {
         List<String> goals = new ArrayList<>();
         goals.add("clean");
         goals.add("compile");
@@ -543,13 +540,7 @@ public class FixJavadocMojoTest extends AbstractMojoTestCase {
         Properties properties = new Properties();
 
         JavadocUtil.invokeMaven(
-                log,
-                new File(getBasedir(), "target/local-repo"),
-                testPom,
-                goals,
-                properties,
-                invokerLogFile,
-                globalSettingsFile);
+                log, new File(getBasedir(), "target/local-repo"), testPom, goals, properties, invokerLogFile, null);
     }
 
     // ----------------------------------------------------------------------

@@ -45,6 +45,7 @@ import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.plugins.javadoc.ProxyServer.AuthAsyncProxyServlet;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingRequest;
+import org.apache.maven.project.ProjectBuildingRequest.RepositoryMerging;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.utils.io.FileUtils;
@@ -905,6 +906,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         MavenSession session = spy(newMavenSession(mojo.project));
         ProjectBuildingRequest buildingRequest = mock(ProjectBuildingRequest.class);
         when(buildingRequest.getRemoteRepositories()).thenReturn(mojo.project.getRemoteArtifactRepositories());
+        when(buildingRequest.getRepositoryMerging()).thenReturn(RepositoryMerging.POM_DOMINANT);
         when(session.getProjectBuildingRequest()).thenReturn(buildingRequest);
         DefaultRepositorySystemSession repositorySession = new DefaultRepositorySystemSession();
         repositorySession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
@@ -1097,8 +1099,6 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         repoSysSession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
                 .newInstance(session.getRepositorySession(), new LocalRepository(new File("target/local-repo"))));
         // Ensure remote repo connection uses SSL
-        File globalSettingsFile = new File(getBasedir(), "target/test-classes/unit/settings.xml");
-        session.getRequest().setGlobalSettingsFile(globalSettingsFile);
         LegacySupport legacySupport = lookup(LegacySupport.class);
         legacySupport.setSession(session);
         setVariableValueToObject(mojo, "session", session);
