@@ -115,7 +115,7 @@ under the License.
     <doxiaVersion>1.11.1</doxiaVersion>
     <doxia-sitetoolsVersion>1.11.1</doxia-sitetoolsVersion>
     <wagonVersion>3.5.3</wagonVersion>
-    <resolverVersion>1.4.1</resolverVersion>
+    <resolverVersion>1.9.20</resolverVersion>
     <!-- https://cwiki.apache.org/confluence/x/VIHOCg#MavenEcosystemCleanup-ResolverandMaven -->
     <plexus-java.version>1.2.0</plexus-java.version>
     <jetty.version>9.4.53.v20231009</jetty.version>
