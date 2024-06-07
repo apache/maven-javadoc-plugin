@@ -5727,13 +5727,17 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * Follows all of the given links, and returns their last redirect locations. Ordering is kept.
-     * This is necessary because javadoc tool doesn't follow links, see JDK-8190312 (MJAVADOC-427, MJAVADOC-487)
+     * Follows all of the given links if the Javadoc version is before 12, and returns their last
+     * redirect locations. Ordering is kept. This is necessary because javadoc tool doesn't follow
+     * links, see JDK-8190312 (MJAVADOC-427, MJAVADOC-487)
      *
      * @param links Links to follow.
      * @return Last redirect location of all the links.
      */
     private Set<String> followLinks(Set<String> links) {
+        if (javadocRuntimeVersion.isAtLeast("12")) {
+            return links;
+        }
         Set<String> redirectLinks = new LinkedHashSet<>(links.size());
         for (String link : links) {
             try {
