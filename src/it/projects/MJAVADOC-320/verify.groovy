@@ -22,7 +22,7 @@ File target = new File( basedir, "module2/target" );
 assert target.exists()
 assert target.isDirectory()
 
-File apidocs = new File( target, "apidocs" );
+File apidocs = new File( target, "reports/apidocs" );
 assert apidocs.exists()
 assert apidocs.isDirectory()
 

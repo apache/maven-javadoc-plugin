@@ -112,8 +112,7 @@ under the License.
   <properties>
     <javaVersion>8</javaVersion>
     <mavenVersion>3.6.3</mavenVersion>
-    <doxiaVersion>1.11.1</doxiaVersion>
-    <doxia-sitetoolsVersion>1.11.1</doxia-sitetoolsVersion>
+    <doxiaSitetoolsVersion>2.0.0-M19</doxiaSitetoolsVersion>
     <wagonVersion>3.5.3</wagonVersion>
     <resolverVersion>1.4.1</resolverVersion>
     <!-- https://cwiki.apache.org/confluence/x/VIHOCg#MavenEcosystemCleanup-ResolverandMaven -->
@@ -127,8 +126,8 @@ under the License.
     <enforcerPluginVersion>3.4.1</enforcerPluginVersion>
     <pluginPluginVersion>3.10.1</pluginPluginVersion>
     <jarPluginVersion>3.3.0</jarPluginVersion>
-    <sitePluginVersion>3.12.1</sitePluginVersion>
-    <projectInfoReportsPluginVersion>3.5.0</projectInfoReportsPluginVersion>
+    <sitePluginVersion>4.0.0-M15</sitePluginVersion>
+    <projectInfoReportsPluginVersion>3.6.1</projectInfoReportsPluginVersion>
     <project.build.outputTimestamp>2024-05-29T16:13:14Z</project.build.outputTimestamp>
     <slf4jVersion>1.7.36</slf4jVersion>
   </properties>
@@ -203,7 +202,14 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-api</artifactId>
-      <version>3.1.1</version>
+      <version>4.0.0-M12</version>
+    </dependency>
+    <!-- for Javadoc purposes -->
+    <dependency>
+      <groupId>org.apache.maven.reporting</groupId>
+      <artifactId>maven-reporting-impl</artifactId>
+      <version>4.0.0-M15</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -230,21 +236,20 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-sink-api</artifactId>
-      <version>${doxiaVersion}</version>
+      <version>2.0.0-M12</version>
     </dependency>
 
     <!-- Doxia-sitetools -->
     <dependency>
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-site-renderer</artifactId>
-      <version>${doxia-sitetoolsVersion}</version>
-      <exclusions>
-        <exclusion>
-          <!-- MJAVADOC-726 -->
-          <groupId>org.apache.velocity</groupId>
-          <artifactId>velocity-tools</artifactId>
-        </exclusion>
-      </exclusions>
+      <version>${doxiaSitetoolsVersion}</version>
+    </dependency>
+    <!-- Doxia-sitetools -->
+    <dependency>
+      <groupId>org.apache.maven.doxia</groupId>
+      <artifactId>doxia-integration-tools</artifactId>
+      <version>${doxiaSitetoolsVersion}</version>
     </dependency>
 
     <!-- wagon -->
