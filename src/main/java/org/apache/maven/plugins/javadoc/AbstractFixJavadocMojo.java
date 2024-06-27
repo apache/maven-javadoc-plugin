@@ -655,7 +655,8 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
                 Collections.singletonList(clirrGoal),
                 properties,
                 invokerLogFile,
-                session.getRequest().getGlobalSettingsFile());
+                session.getRequest().getGlobalSettingsFile(),
+                session.getRequest().getUserSettingsFile());
 
         try {
             if (invokerLogFile.exists()) {
