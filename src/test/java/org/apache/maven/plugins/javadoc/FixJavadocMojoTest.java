@@ -540,7 +540,7 @@ public class FixJavadocMojoTest extends AbstractMojoTestCase {
         Properties properties = new Properties();
 
         JavadocUtil.invokeMaven(
-                log, new File(getBasedir(), "target/local-repo"), testPom, goals, properties, invokerLogFile, null);
+                log, new File(getBasedir(), "target/local-repo"), testPom, goals, properties, invokerLogFile, null, null);
     }
 
     // ----------------------------------------------------------------------
