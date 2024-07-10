@@ -25,7 +25,6 @@ import java.util.Map;
  * <p>ClassWithNoJavadoc class.</p>
  *
  * @author <a href="mailto:vsiveton@apache.org">vsiveton@apache.org</a>
- * @version $Id: $
  */
 @SuppressWarnings("SameReturnValue")
 public class ClassWithNoJavadoc

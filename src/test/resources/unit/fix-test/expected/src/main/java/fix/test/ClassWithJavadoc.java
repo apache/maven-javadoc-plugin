@@ -23,7 +23,6 @@ package fix.test;
  * To add default class tags.
  *
  * @author <a href="mailto:vsiveton@apache.org">vsiveton@apache.org</a>
- * @version $Id: $
  */
 @SuppressWarnings("SameReturnValue")
 public class ClassWithJavadoc

@@ -207,11 +207,6 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      */
     public static final String JAVA_FILES = "**\\/*.java";
 
-    /**
-     * Default version value.
-     */
-    public static final String DEFAULT_VERSION_VALUE = "\u0024Id: \u0024Id";
-
     // ----------------------------------------------------------------------
     // Mojo components
     // ----------------------------------------------------------------------
@@ -251,13 +246,9 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
 
     /**
      * Default value for the Javadoc tag <code>&#64;version</code>.
-     * <br/>
-     * By default, it is <code>&#36;Id:&#36;</code>, corresponding to a
-     * <a href="http://svnbook.red-bean.com/en/1.1/ch07s02.html#svn-ch-7-sect-2.3.4">SVN keyword</a>.
-     * Refer to your SCM to use an other SCM keyword.
      */
-    @Parameter(property = "defaultVersion", defaultValue = DEFAULT_VERSION_VALUE)
-    private String defaultVersion = "\u0024Id: \u0024"; // can't use default-value="\u0024Id: \u0024"
+    @Parameter(property = "defaultVersion")
+    private String defaultVersion;
 
     /**
      * The file encoding to use when reading the source files. If the property
@@ -286,7 +277,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      * <li>link (fix only &#64;link tag)</li>
      * </ul>
      */
-    @Parameter(property = "fixTags", defaultValue = "all")
+    @Parameter(property = "fixTags", defaultValue = FIX_TAGS_ALL)
     private String fixTags;
 
     /**
@@ -346,7 +337,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      * </ul>
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#options-for-javadoc">private, protected, public, package options for Javadoc</a>
      */
-    @Parameter(property = "level", defaultValue = "protected")
+    @Parameter(property = "level", defaultValue = LEVEL_PROTECTED)
     private String level;
 
     /**
@@ -2109,7 +2100,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      * @return true if separator has been added.
      */
     private boolean appendDefaultVersionTag(final StringBuilder sb, final String indent, boolean separatorAdded) {
-        if (!fixTag(VERSION_TAG)) {
+        if (!fixTag(VERSION_TAG) || StringUtils.isEmpty(defaultVersion)) {
             return separatorAdded;
         }
 
@@ -2127,7 +2118,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      * @param indent not null
      */
     private void appendDefaultVersionTag(final StringBuilder sb, final String indent) {
-        if (!fixTag(VERSION_TAG)) {
+        if (!fixTag(VERSION_TAG) || StringUtils.isEmpty(defaultVersion)) {
             return;
         }
 

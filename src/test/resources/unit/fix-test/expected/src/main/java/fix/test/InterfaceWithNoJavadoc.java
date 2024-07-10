@@ -23,7 +23,6 @@ package fix.test;
  * <p>InterfaceWithNoJavadoc interface.</p>
  *
  * @author <a href="mailto:vsiveton@apache.org">vsiveton@apache.org</a>
- * @version $Id: $
  */
 public interface InterfaceWithNoJavadoc
 {
