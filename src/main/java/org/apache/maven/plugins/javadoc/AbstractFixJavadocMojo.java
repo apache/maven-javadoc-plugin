@@ -79,7 +79,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.codehaus.plexus.components.interactivity.InputHandler;
-import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.StringUtils;
@@ -193,9 +192,9 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
     private static final String CLIRR_MAVEN_PLUGIN_ARTIFACTID = "clirr-maven-plugin";
 
     /**
-     * The latest Clirr Maven plugin version <code>2.2.2</code> *
+     * The latest Clirr Maven plugin version <code>2.8</code> *
      */
-    private static final String CLIRR_MAVEN_PLUGIN_VERSION = "2.2.2";
+    private static final String CLIRR_MAVEN_PLUGIN_VERSION = "2.8";
 
     /**
      * The Clirr Maven plugin goal <code>check</code> *
@@ -223,7 +222,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
 
     /**
      * Version to compare the current code against using the
-     * <a href="http://mojo.codehaus.org/clirr-maven-plugin/">Clirr Maven Plugin</a>.
+     * <a href="https://www.mojohaus.org/clirr-maven-plugin/">Clirr Maven Plugin</a>.
      * <br/>
      * See <a href="#defaultSince">defaultSince</a>.
      */
@@ -623,17 +622,14 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
 
         String clirrGoal = getFullClirrGoal();
 
-        // http://mojo.codehaus.org/clirr-maven-plugin/check-mojo.html
+        // https://www.mojohaus.org/clirr-maven-plugin/check-mojo.html
         File clirrTextOutputFile = FileUtils.createTempFile(
                 "clirr", ".txt", new File(project.getBuild().getDirectory()));
         Properties properties = new Properties();
         properties.put("textOutputFile", clirrTextOutputFile.getAbsolutePath());
         properties.put("comparisonVersion", comparisonVersion);
         properties.put("failOnError", "false");
-        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("8")) {
-            // ensure that Java7 picks up TLSv1.2 when connecting with Central
-            properties.put("https.protocols", "TLSv1.2");
-        }
+        properties.put("minSeverity", "info");
 
         File invokerDir = new File(project.getBuild().getDirectory(), "invoker");
         invokerDir.mkdirs();
@@ -715,7 +711,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
                     continue;
                 }
 
-                // http://clirr.sourceforge.net/clirr-core/exegesis.html
+                // https://clirr.sourceforge.net/clirr-core/exegesis.html
                 // 7011 - Method Added
                 // 7012 - Method Added to Interface
                 // 8000 - Class Added

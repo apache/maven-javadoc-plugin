@@ -49,8 +49,8 @@ Fixing Javadoc Comments
  selective tags like author, version, etc.
  You specify default value for some tags, for example, {{{../fix-mojo.html#defaultAuthor}\<defaultAuthor/\>}}.
 
- The <javadoc:fix> goal can use Clirr ({{{http://clirr.sourceforge.net}}} via the
- {{{http://mojo.codehaus.org/clirr-maven-plugin/}clirr-maven-plugin}} to add
+ The <javadoc:fix> goal can use Clirr ({{{https://clirr.sourceforge.net}}} via the
+ {{{https://www.mojohaus.org/clirr-maven-plugin/}clirr-maven-plugin}} to add
  <@since> tags will be dynamically added for the current
  project version. You need to add the <comparisonVersion> parameter (see below).
 
@@ -105,8 +105,8 @@ mvn javadoc:fix -DcomparisonVersion=1.0
 
 ** Using another Clirr version
 
-  By default, the <fix> and <test-fix> goals use the {{{https://www.mojohaus.org/clirr-maven-plugin}clirr-maven-plugin}},
-  version <<<2.2.2>>>. To use another version, you need to add a dependency in the Javadoc plugin as shown here:
+  By default, the <fix> and <test-fix> goals use the {{{https://www.mojohaus.org/clirr-maven-plugin/}clirr-maven-plugin}},
+  version <<<2.8>>>. To use another version, you need to add a dependency in the Javadoc plugin as shown here:
 
 +-----+
 <project>
@@ -124,7 +124,7 @@ mvn javadoc:fix -DcomparisonVersion=1.0
           <dependency>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>clirr-maven-plugin</artifactId>
-            <version>2.3-SNAPSHOT</version>
+            <version>2.9-SNAPSHOT</version>
           </dependency>
         </dependencies>
       </plugin>
