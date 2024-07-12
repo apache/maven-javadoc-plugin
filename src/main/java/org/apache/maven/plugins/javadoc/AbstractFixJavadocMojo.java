@@ -231,10 +231,8 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
 
     /**
      * Default value for the Javadoc tag <code>&#64;author</code>.
-     * <br/>
-     * If not specified, the <code>user.name</code> defined in the System properties will be used.
      */
-    @Parameter(property = "defaultAuthor")
+    @Parameter(property = "defaultAuthor", defaultValue = "${user.name}")
     private String defaultAuthor;
 
     /**
@@ -494,11 +492,6 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      * Init goal parameters.
      */
     private void init() {
-        // defaultAuthor
-        if (defaultAuthor == null || defaultAuthor.isEmpty()) {
-            defaultAuthor = System.getProperty("user.name");
-        }
-
         // defaultSince
         int i = defaultSince.indexOf("-" + Artifact.SNAPSHOT_VERSION);
         if (i != -1) {
