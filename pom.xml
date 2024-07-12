@@ -224,7 +224,7 @@ under the License.
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-common-artifact-filters</artifactId>
       <!-- Do not upgrades, leads to IT failures, needs analysis -->
-      <version>3.2.0</version>
+      <version>3.4.0</version>
     </dependency>
     <!-- Doxia -->
     <dependency>
