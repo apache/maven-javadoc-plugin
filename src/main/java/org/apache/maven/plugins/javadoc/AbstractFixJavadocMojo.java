@@ -636,7 +636,9 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
                 properties,
                 invokerLogFile,
                 session.getRequest().getGlobalSettingsFile(),
-                session.getRequest().getUserSettingsFile());
+                session.getRequest().getUserSettingsFile(),
+                session.getRequest().getGlobalToolchainsFile(),
+                session.getRequest().getUserToolchainsFile());
 
         try {
             if (invokerLogFile.exists()) {

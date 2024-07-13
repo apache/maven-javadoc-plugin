@@ -5531,7 +5531,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                             null,
                             invokerLogFile,
                             session.getRequest().getGlobalSettingsFile(),
-                            session.getRequest().getUserSettingsFile());
+                            session.getRequest().getUserSettingsFile(),
+                            session.getRequest().getGlobalToolchainsFile(),
+                            session.getRequest().getUserToolchainsFile());
                 } catch (MavenInvocationException e) {
                     logError("MavenInvocationException: " + e.getMessage(), e);
 

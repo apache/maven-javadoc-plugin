@@ -715,6 +715,8 @@ public class JavadocUtil {
      * @param invokerLog the log file where the invoker will be written, if null using <code>System.out</code>.
      * @param globalSettingsFile reference to settings file, could be null.
      * @param userSettingsFile reference to user settings file, could be null.
+     * @param globalToolchainsFile reference to toolchains file, could be null.
+     * @param userToolchainsFile reference to user toolchains file, could be null.
      * @throws MavenInvocationException if any
      * @since 2.6
      */
@@ -726,7 +728,9 @@ public class JavadocUtil {
             Properties properties,
             File invokerLog,
             File globalSettingsFile,
-            File userSettingsFile)
+            File userSettingsFile,
+            File globalToolchainsFile,
+            File userToolchainsFile)
             throws MavenInvocationException {
         if (projectFile == null) {
             throw new IllegalArgumentException("projectFile should be not null.");
@@ -763,6 +767,8 @@ public class JavadocUtil {
         request.setPomFile(projectFile);
         request.setGlobalSettingsFile(globalSettingsFile);
         request.setUserSettingsFile(userSettingsFile);
+        request.setGlobalToolchainsFile(globalToolchainsFile);
+        request.setToolchainsFile(userToolchainsFile);
         request.setBatchMode(true);
         if (log != null) {
             request.setDebug(log.isDebugEnabled());

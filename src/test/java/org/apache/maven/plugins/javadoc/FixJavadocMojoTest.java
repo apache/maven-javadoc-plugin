@@ -547,6 +547,8 @@ public class FixJavadocMojoTest extends AbstractMojoTestCase {
                 properties,
                 invokerLogFile,
                 null,
+                null,
+                null,
                 null);
     }
 
