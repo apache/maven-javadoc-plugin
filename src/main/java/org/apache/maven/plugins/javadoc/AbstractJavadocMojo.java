@@ -1653,6 +1653,17 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.build.outputTimestamp}")
     protected String outputTimestamp;
 
+    /**
+     * Forces the Javadoc JVM locale to be {@link Locale#ROOT}. This will force the Javadoc output
+     * on {@code stdout} and {@code stderr} to be in English only and the generated HTML content in
+     * English as well. If you need the generated HTML content in another supported language use
+     * {@link #locale}.
+     *
+     * @since 3.7.1
+     */
+    @Parameter(property = "forceRootLocale", defaultValue = "true")
+    private boolean forceRootLocale;
+
     // ----------------------------------------------------------------------
     // protected methods
     // ----------------------------------------------------------------------
@@ -1936,6 +1947,11 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         addMemoryArg(cmd, "-Xmx", this.maxmemory);
         addMemoryArg(cmd, "-Xms", this.minmemory);
         addProxyArg(cmd);
+
+        if (forceRootLocale) {
+            cmd.createArg().setValue("-J-Duser.language=");
+            cmd.createArg().setValue("-J-Duser.country=");
+        }
 
         if (additionalJOption != null && !additionalJOption.isEmpty()) {
             cmd.createArg().setValue(additionalJOption);
