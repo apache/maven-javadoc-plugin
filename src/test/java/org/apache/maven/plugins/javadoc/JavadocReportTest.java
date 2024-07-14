@@ -83,6 +83,8 @@ public class JavadocReportTest extends AbstractMojoTestCase {
 
     private Path unit;
 
+    private Path tempDirectory;
+
     private File localRepo;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JavadocReportTest.class);
@@ -91,7 +93,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        Path tempDirectory = Files.createTempDirectory("JavadocReportTest");
+        tempDirectory = Files.createTempDirectory("JavadocReportTest");
         localRepo = tempDirectory.resolve(Paths.get("target/local-repo/")).toFile();
         unit = new File(getBasedir(), "src/test/resources/unit").toPath();
 
@@ -101,7 +103,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
     @Override
     protected void tearDown() throws Exception {
         try {
-            deleteDirectory(localRepo);
+            deleteDirectory(tempDirectory.toFile());
         } catch (IOException ex) {
             // CI servers can have problems deleting files.
             // It will get cleared out eventually, and since
