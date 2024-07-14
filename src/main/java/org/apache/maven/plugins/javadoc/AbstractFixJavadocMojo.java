@@ -66,6 +66,7 @@ import com.thoughtworks.qdox.model.JavaTypeVariable;
 import com.thoughtworks.qdox.parser.ParseException;
 import com.thoughtworks.qdox.type.TypeResolver;
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
@@ -79,6 +80,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.codehaus.plexus.components.interactivity.InputHandler;
+import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.StringUtils;
@@ -200,6 +202,8 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      * The Clirr Maven plugin goal <code>check</code> *
      */
     private static final String CLIRR_MAVEN_PLUGIN_GOAL = "check";
+
+    private static final JavaVersion JAVA_VERSION = JavaVersion.JAVA_SPECIFICATION_VERSION;
 
     /**
      * Java Files Pattern.
@@ -837,7 +841,17 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
                 }
             }
 
-            projectClassLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]), null);
+            ClassLoader parent = null;
+            if (JAVA_VERSION.isAtLeast("9")) {
+                try {
+                    parent = (ClassLoader) MethodUtils.invokeStaticMethod(ClassLoader.class, "getPlatformClassLoader");
+                } catch (Exception e) {
+                    throw new MojoExecutionException(
+                            "Failed to invoke ClassLoader#getPlatformClassLoader() dynamically", e);
+                }
+            }
+
+            projectClassLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]), parent);
         }
 
         return projectClassLoader;
