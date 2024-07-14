@@ -37,6 +37,16 @@
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>@compilerPluginVersion@</version>
+          <configuration>
+            <excludes>
+              <exclude>**/*Excluded.java</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>@project.version@</version>
           <configuration>
