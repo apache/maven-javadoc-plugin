@@ -1659,7 +1659,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * English as well. If you need the generated HTML content in another supported language use
      * {@link #locale}.
      *
-     * @since 3.7.1
+     * @since 3.8.0
      */
     @Parameter(property = "forceRootLocale", defaultValue = "true")
     private boolean forceRootLocale;
