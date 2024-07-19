@@ -1,0 +1,91 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+import java.io.*;
+import java.util.*;
+import org.codehaus.plexus.util.*;
+
+assertLines( String fileName, int start, String[] expectedLines )
+{
+    File javaFile = new File( basedir, "/src/main/java/fix/test/" + fileName );
+    String content = FileUtils.fileRead( javaFile, "UTF-8" );
+    String[] lines = content.split( "\\R" );
+    if ( start + expectedLines.length >= lines.length )
+    {
+        throw new IllegalArgumentException( "too few lines for " + fileName + ", expected: " + Arrays.toString( expectedLines ) );
+    }
+
+    for ( int i = 0; i < expectedLines.length; i++ )
+    {
+        String line = lines[ start + i ];
+        String expectedLine = expectedLines[ i ];
+        if ( !line.equals( expectedLine ) )
+        {
+            throw new IllegalArgumentException( "unexpected line for " + fileName + ":\n  expected: " + expectedLine + "\n  actual: " + line );
+        }
+    }
+}
+
+boolean result = true;
+try
+{
+    assertLines( "ClassWithJavadoc.java", 21, new String[] {
+        "/**",
+        " * Some Javadoc.",
+        " *",
+        " * @version 1.2.3",  // should have added version
+        " */",
+    } );
+    // Should not have added `@version` to nested class
+    assertLines( "ClassWithJavadoc.java", 28, new String[] {
+        "    /**",
+        "     * Nested",
+        "     */",
+    } );
+
+
+    assertLines( "ClassWithJavadocAndVersion.java", 21, new String[] {
+        "/**",
+        " * Some Javadoc.",
+        " *",
+        " * @version 5.6.7",  // should have kept existing version
+        " */",
+    } );
+
+
+    assertLines( "ClassWithNoJavadoc.java", 21, new String[] {
+        "/**",
+        " * <p>ClassWithNoJavadoc class.</p>",
+        " *",
+        " * @version 1.2.3",  // should have added version
+        " */",
+    } );
+    // Did not add Javadoc to nested class (TODO: missing javadoc:fix functionality?; but should not add `@version`)
+    assertLines( "ClassWithNoJavadoc.java", 27, new String[] {
+        "{",
+        "    public static class NestedClass",
+    } );
+}
+catch( Throwable e )
+{
+    e.printStackTrace();
+    result = false;
+}
+
+return result;
