@@ -21,12 +21,12 @@ package org.apache.maven.plugins.javadoc;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.doxia.tools.SiteTool;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
@@ -95,15 +95,6 @@ public class JavadocJar extends AbstractJavadocMojo {
     // ----------------------------------------------------------------------
 
     /**
-     * Specifies the destination directory where javadoc saves the generated HTML files.
-     * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option d</a>.
-     * @deprecated
-     */
-    @Deprecated
-    @Parameter(property = "destDir")
-    private File destDir;
-
-    /**
      * Specifies the directory where the generated jar file will be put.
      */
     @Parameter(property = "project.build.directory")
@@ -158,15 +149,10 @@ public class JavadocJar extends AbstractJavadocMojo {
 
     /** {@inheritDoc} */
     @Override
-    public void doExecute() throws MojoExecutionException {
+    protected void doExecute() throws MojoExecutionException {
         if (skip) {
             getLog().info("Skipping javadoc generation");
             return;
-        }
-
-        File innerDestDir = this.destDir;
-        if (innerDestDir == null) {
-            innerDestDir = new File(getOutputDirectory());
         }
 
         if (!isAggregator() || !"pom".equalsIgnoreCase(project.getPackaging())) {
@@ -178,32 +164,31 @@ public class JavadocJar extends AbstractJavadocMojo {
         }
 
         try {
-            executeReport(Locale.getDefault());
+            executeReport(SiteTool.DEFAULT_LOCALE);
         } catch (MavenReportException e) {
             failOnError("MavenReportException: Error while generating Javadoc", e);
         } catch (RuntimeException e) {
             failOnError("RuntimeException: Error while generating Javadoc", e);
         }
 
-        if (innerDestDir.exists()) {
-            try {
-                File outputFile = generateArchive(innerDestDir, finalName + "-" + getClassifier() + ".jar");
+        try {
+            File outputFile = generateArchive(
+                    new File(getPluginReportOutputDirectory()), finalName + "-" + getClassifier() + ".jar");
 
-                if (!attach) {
-                    getLog().info("NOT adding javadoc to attached artifacts list.");
-                } else {
-                    // TODO: these introduced dependencies on the project are going to become problematic - can we
-                    // export it
-                    //  through metadata instead?
-                    projectHelper.attachArtifact(project, "javadoc", getClassifier(), outputFile);
-                }
-            } catch (ArchiverException e) {
-                failOnError("ArchiverException: Error while creating archive", e);
-            } catch (IOException e) {
-                failOnError("IOException: Error while creating archive", e);
-            } catch (RuntimeException e) {
-                failOnError("RuntimeException: Error while creating archive", e);
+            if (!attach) {
+                getLog().info("NOT adding javadoc to attached artifacts list.");
+            } else {
+                // TODO: these introduced dependencies on the project are going to become problematic - can we
+                // export it
+                //  through metadata instead?
+                projectHelper.attachArtifact(project, "javadoc", getClassifier(), outputFile);
             }
+        } catch (ArchiverException e) {
+            failOnError("ArchiverException: Error while creating archive", e);
+        } catch (IOException e) {
+            failOnError("IOException: Error while creating archive", e);
+        } catch (RuntimeException e) {
+            failOnError("RuntimeException: Error while creating archive", e);
         }
     }
 

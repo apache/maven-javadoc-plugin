@@ -21,7 +21,7 @@
 import java.io.*;
 import org.codehaus.plexus.util.*;
 
-File indexFile = new File( basedir, "target/site/testapidocs/mjavadoc414/test/AppTest.html" );
+File indexFile = new File( basedir, "target/reports/testapidocs/mjavadoc414/test/AppTest.html" );
 
 if ( !indexFile.exists() )
 {

@@ -25,19 +25,19 @@ boolean result = true;
 try
 {
     // Generated files checks
-    File apidocs = new File( basedir, "application/target/site/apidocs" );
+    File apidocs = new File( basedir, "application/target/reports/apidocs" );
     if ( !apidocs.isDirectory() )
     {
         System.err.println( apidocs.getAbsolutePath() + " dir is missing or a directory." );
         return false;
     }
-    apidocs = new File( basedir, "library/module-a/target/site/apidocs" );
+    apidocs = new File( basedir, "library/module-a/target/reports/apidocs" );
     if ( !apidocs.isDirectory() )
     {
         System.err.println( apidocs.getAbsolutePath() + " dir is missing or a directory." );
         return false;
     }
-    apidocs = new File( basedir, "library/module-b/target/site/apidocs" );
+    apidocs = new File( basedir, "library/module-b/target/reports/apidocs" );
     if ( !apidocs.isDirectory() )
     {
         System.err.println( apidocs.getAbsolutePath() + " dir is missing or a directory." );
@@ -45,13 +45,13 @@ try
     }
 
     // Not existing files
-    apidocs = new File( basedir, "target/site/apidocs" );
+    apidocs = new File( basedir, "target/reports/apidocs" );
     if ( apidocs.exists() )
     {
         System.err.println( apidocs.getAbsolutePath() + " has been generated." );
         return false;
     }
-    apidocs = new File( basedir, "library/target/site/apidocs" );
+    apidocs = new File( basedir, "library/target/reports/apidocs" );
     if ( apidocs.exists() )
     {
         System.err.println( apidocs.getAbsolutePath() + " has been generated." );
