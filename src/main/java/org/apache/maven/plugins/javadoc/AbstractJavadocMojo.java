@@ -578,8 +578,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private Properties javaApiLinks;
 
     /**
-     * Flag controlling content validation of <code>package-list</code> resources. If set, the content of
-     * <code>package-list</code> resources will be validated.
+     * Flag controlling content validation of <code>package-list</code>/<code>element-list</code> resources.
+     * If set, the content of <code>package-list</code>/<code>element-list</code> resources will be validated.
      *
      * @since 2.8
      */
