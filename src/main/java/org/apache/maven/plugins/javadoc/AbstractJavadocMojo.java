@@ -1970,7 +1970,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         Set<OfflineLink> offlineLinks;
         if ((doclet == null || doclet.isEmpty()) || useStandardDocletOptions) {
-            offlineLinks = getLinkofflines();
+            offlineLinks = getOfflineLinks();
             addStandardDocletOptions(javadocOutputDirectory, standardDocletArguments, offlineLinks);
         } else {
             offlineLinks = Collections.emptySet();
@@ -3769,7 +3769,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
     }
 
-    private Set<OfflineLink> getLinkofflines() throws MavenReportException {
+    private Set<OfflineLink> getOfflineLinks() throws MavenReportException {
         Set<OfflineLink> offlineLinksList = collectOfflineLinks();
 
         offlineLinksList.addAll(getModulesLinks());
