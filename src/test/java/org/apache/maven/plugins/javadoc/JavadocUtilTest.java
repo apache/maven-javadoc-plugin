@@ -249,17 +249,17 @@ public class JavadocUtilTest extends PlexusTestCase {
         URL url = null;
         URL wrongUrl;
         try {
-            JavadocUtil.isValidPackageList(url, settings, false);
+            JavadocUtil.isValidPackageList(url, settings);
             fail();
-        } catch (IllegalArgumentException e) {
+        } catch (NullPointerException e) {
             assertTrue(true);
         }
 
         url = new File(getBasedir(), "/pom.xml").toURI().toURL();
-        assertTrue(JavadocUtil.isValidPackageList(url, settings, false));
+        assertFalse(JavadocUtil.isValidPackageList(url, settings));
 
         try {
-            assertFalse(JavadocUtil.isValidPackageList(url, settings, true));
+            assertFalse(JavadocUtil.isValidPackageList(url, settings));
         } catch (IOException e) {
             assertTrue(true);
         }
@@ -268,14 +268,14 @@ public class JavadocUtilTest extends PlexusTestCase {
                 .getResource("/JavadocUtilTest-package-list.txt")
                 .toURI()
                 .toURL();
-        assertTrue(JavadocUtil.isValidPackageList(url, settings, true));
+        assertTrue(JavadocUtil.isValidPackageList(url, settings));
 
         url = new URL("http://maven.apache.org/plugins-archives/maven-javadoc-plugin-3.5.0/apidocs/package-list");
-        assertTrue(JavadocUtil.isValidPackageList(url, settings, true));
+        assertTrue(JavadocUtil.isValidPackageList(url, settings));
 
         wrongUrl = new URL("http://maven.apache.org/plugins/maven-javadoc-plugin/apidocs/package-list2");
         try {
-            JavadocUtil.isValidPackageList(wrongUrl, settings, false);
+            JavadocUtil.isValidPackageList(wrongUrl, settings);
             fail();
         } catch (IOException e) {
             assertTrue(true);
@@ -291,10 +291,10 @@ public class JavadocUtilTest extends PlexusTestCase {
 
             settings = new Settings();
 
-            assertTrue(JavadocUtil.isValidPackageList(url, settings, true));
+            assertTrue(JavadocUtil.isValidPackageList(url, settings));
 
             try {
-                JavadocUtil.isValidPackageList(wrongUrl, settings, false);
+                JavadocUtil.isValidPackageList(wrongUrl, settings);
                 fail();
             } catch (IOException e) {
                 assertTrue(true);
@@ -321,7 +321,7 @@ public class JavadocUtilTest extends PlexusTestCase {
             proxy.setProtocol("http");
             settings.addProxy(proxy);
 
-            JavadocUtil.isValidPackageList(url, settings, false);
+            JavadocUtil.isValidPackageList(url, settings);
             fail();
         } catch (FileNotFoundException e) {
             assertTrue(true);
@@ -345,10 +345,10 @@ public class JavadocUtilTest extends PlexusTestCase {
             proxy.setPassword("bar");
             settings.addProxy(proxy);
 
-            assertTrue(JavadocUtil.isValidPackageList(url, settings, true));
+            assertTrue(JavadocUtil.isValidPackageList(url, settings));
 
             try {
-                JavadocUtil.isValidPackageList(wrongUrl, settings, false);
+                JavadocUtil.isValidPackageList(wrongUrl, settings);
                 fail();
             } catch (IOException e) {
                 assertTrue(true);
@@ -373,7 +373,7 @@ public class JavadocUtilTest extends PlexusTestCase {
             proxy.setPassword("bar");
             settings.addProxy(proxy);
 
-            JavadocUtil.isValidPackageList(url, settings, true);
+            JavadocUtil.isValidPackageList(url, settings);
             fail();
         } catch (SocketTimeoutException e) {
             assertTrue(true);
@@ -398,7 +398,7 @@ public class JavadocUtilTest extends PlexusTestCase {
             proxy.setNonProxyHosts("maven.apache.org");
             settings.addProxy(proxy);
 
-            assertTrue(JavadocUtil.isValidPackageList(url, settings, true));
+            assertTrue(JavadocUtil.isValidPackageList(url, settings));
         } finally {
             proxyServer.stop();
         }
