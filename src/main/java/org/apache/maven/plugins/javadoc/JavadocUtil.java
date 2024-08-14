@@ -1341,52 +1341,55 @@ public class JavadocUtil {
     }
 
     /**
-     * Validates an <code>URL</code> to point to a valid <code>package-list</code> resource.
+     * Validates the <code>URL</code> (content) to point to a valid <code>package-list</code> resource.
      *
-     * @param url The URL to validate.
+     * @param url The URL (content) to validate.
      * @param settings The user settings used to configure the connection to the URL or {@code null}.
-     * @param validateContent <code>true</code> to validate the content of the <code>package-list</code> resource;
-     *            <code>false</code> to only check the existence of the <code>package-list</code> resource.
      * @return <code>true</code> if <code>url</code> points to a valid <code>package-list</code> resource;
      *         <code>false</code> else.
      * @throws IOException if reading the resource fails.
      * @see #createHttpClient(org.apache.maven.settings.Settings, java.net.URL)
      * @since 2.8
      */
-    protected static boolean isValidPackageList(URL url, Settings settings, boolean validateContent)
-            throws IOException {
+    protected static boolean isValidPackageList(URL url, Settings settings) throws IOException {
         if (url == null) {
-            throw new IllegalArgumentException("The url is null");
+            throw new NullPointerException("The url is null");
         }
 
         try (BufferedReader reader = getReader(url, settings)) {
-            if (validateContent) {
-                for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-                    if (!isValidPackageName(line)) {
-                        return false;
-                    }
+            for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                if (!isValidPackageName(line)) {
+                    return false;
                 }
             }
             return true;
         }
     }
 
-    protected static boolean isValidElementList(URL url, Settings settings, boolean validateContent)
-            throws IOException {
+    /**
+     * Validates the <code>URL</code> (content) to point to a valid <code>element-list</code> resource.
+     *
+     * @param url The URL (content) to validate.
+     * @param settings The user settings used to configure the connection to the URL or {@code null}.
+     * @return <code>true</code> if <code>url</code> points to a valid <code>element-list</code> resource;
+     *         <code>false</code> else.
+     * @throws IOException if reading the resource fails.
+     * @see #createHttpClient(org.apache.maven.settings.Settings, java.net.URL)
+     * @since 3.1.0
+     */
+    protected static boolean isValidElementList(URL url, Settings settings) throws IOException {
         if (url == null) {
-            throw new IllegalArgumentException("The url is null");
+            throw new NullPointerException("The url is null");
         }
 
         try (BufferedReader reader = getReader(url, settings)) {
-            if (validateContent) {
-                for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-                    if (line.startsWith("module:")) {
-                        continue;
-                    }
+            for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                if (line.startsWith("module:")) {
+                    continue;
+                }
 
-                    if (!isValidPackageName(line)) {
-                        return false;
-                    }
+                if (!isValidPackageName(line)) {
+                    return false;
                 }
             }
             return true;
