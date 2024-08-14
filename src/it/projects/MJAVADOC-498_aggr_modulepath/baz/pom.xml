@@ -33,19 +33,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>javadoc-aggregate</id>
-            <phase>package</phase>
-            <goals>
-              <goal>javadoc-no-fork</goal>
-            </goals>
-            <configuration>
-              <includeDependencySources>true</includeDependencySources>
-              <includeTransitiveDependencySources>true</includeTransitiveDependencySources>
-            </configuration>
-          </execution>
-        </executions>
+        <configuration>
+          <includeDependencySources>true</includeDependencySources>
+          <includeTransitiveDependencySources>true</includeTransitiveDependencySources>
+        </configuration>
       </plugin>
     </plugins>
   </build>
