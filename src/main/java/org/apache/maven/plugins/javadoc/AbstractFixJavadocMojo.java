@@ -836,7 +836,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
             for (String filename : classPath) {
                 try {
                     urls.add(new File(filename).toURI().toURL());
-                } catch (MalformedURLException e) {
+                } catch (MalformedURLException | IllegalArgumentException e) {
                     throw new MojoExecutionException("MalformedURLException: " + e.getMessage(), e);
                 }
             }

@@ -5421,7 +5421,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         for (String filename : classPath) {
             try {
                 urls.add(new File(filename).toURI().toURL());
-            } catch (MalformedURLException e) {
+            } catch (MalformedURLException | IllegalArgumentException e) {
                 getLog().error("MalformedURLException: " + e.getMessage());
             }
         }
@@ -5758,8 +5758,11 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         Set<String> redirectLinks = new LinkedHashSet<>(links.size());
         for (String link : links) {
             try {
-                redirectLinks.add(JavadocUtil.getRedirectUrl(new URI(link).toURL(), settings)
-                        .toString());
+                redirectLinks.add(
+                        JavadocUtil.getRedirectUrl(new URL(link), settings).toString());
+            } catch (MalformedURLException | IllegalArgumentException e) {
+                // only print in debug, it should have been logged already in warn/error because link isn't valid
+                getLog().debug("Could not follow " + link + ". Reason: " + e.getMessage());
             } catch (IOException e) {
                 // only print in debug, it should have been logged already in warn/error because link isn't valid
                 getLog().debug("Could not follow " + link + ". Reason: " + e.getMessage());
@@ -5768,9 +5771,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 // incomplete redirect configuration on the server side.
                 // This partially restores the previous behaviour before fix for MJAVADOC-427
                 redirectLinks.add(link);
-            } catch (URISyntaxException | IllegalArgumentException e) {
-                // only print in debug, it should have been logged already in warn/error because link isn't valid
-                getLog().debug("Could not follow " + link + ". Reason: " + e.getMessage());
             }
         }
         return redirectLinks;
@@ -5818,6 +5818,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                     return true;
                 }
             } catch (IOException e) {
+                // ignore this because it is optional
             }
 
             if (JavadocUtil.isValidPackageList(packageListUri.toURL(), settings, validateLinks)) {
@@ -5835,12 +5836,12 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             }
 
             return false;
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException | MalformedURLException | IllegalArgumentException e) {
             if (getLog().isErrorEnabled()) {
                 if (detecting) {
-                    getLog().warn("Malformed link: " + e.getInput() + ". Ignored it.");
+                    getLog().warn("Malformed link: " + e.getMessage() + ". Ignored it.");
                 } else {
-                    getLog().error("Malformed link: " + e.getInput() + ". Ignored it.");
+                    getLog().error("Malformed link: " + e.getMessage() + ". Ignored it.");
                 }
             }
             return false;
