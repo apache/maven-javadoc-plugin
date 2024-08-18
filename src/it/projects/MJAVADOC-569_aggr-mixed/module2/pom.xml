@@ -65,6 +65,9 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <goalPrefix>module2</goalPrefix>
+        </configuration>
       </plugin>
     </plugins>
   </build>

@@ -81,13 +81,24 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>@project.version@</version>
         <configuration>
-          <tagletArtifacts>
-            <tagletArtifact>
-              <groupId>org.apache.maven.plugin-tools</groupId>
-              <artifactId>maven-plugin-tools-javadoc</artifactId>
-              <version>3.3</version>
-            </tagletArtifact>
-          </tagletArtifacts>
+         <tags>
+           <tag>
+             <name>goal</name>
+             <placement>X</placement>
+           </tag>
+           <tag>
+             <name>phase</name>
+             <placement>X</placement>
+           </tag>
+           <tag>
+             <name>parameter</name>
+             <placement>X</placement>
+           </tag>
+           <tag>
+             <name>required</name>
+             <placement>X</placement>
+           </tag>
+         </tags>
         </configuration>
         <reportSets>
           <reportSet>

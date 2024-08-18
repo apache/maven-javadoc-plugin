@@ -123,7 +123,6 @@ under the License.
     <!-- for ITs -->
     <compilerPluginVersion>3.11.0</compilerPluginVersion>
     <sourcePluginVersion>3.3.0</sourcePluginVersion>
-    <surefirePluginVersion>3.2.2</surefirePluginVersion>
     <enforcerPluginVersion>3.4.1</enforcerPluginVersion>
     <pluginPluginVersion>3.10.1</pluginPluginVersion>
     <jarPluginVersion>3.3.0</jarPluginVersion>

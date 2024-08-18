@@ -44,11 +44,6 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>@compilerPluginVersion@</version>
         </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>@surefirePluginVersion@</version>
-        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
