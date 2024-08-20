@@ -44,10 +44,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
-public class JavadocJarTest extends AbstractMojoTestCase {
+public class JavadocJarMojoTest extends AbstractMojoTestCase {
 
-    private JavadocJar lookupMojo(File testPom) throws Exception {
-        JavadocJar mojo = (JavadocJar) lookupMojo("jar", testPom);
+    private JavadocJarMojo lookupMojo(File testPom) throws Exception {
+        JavadocJarMojo mojo = (JavadocJarMojo) lookupMojo("jar", testPom);
 
         Plugin p = new Plugin();
         p.setGroupId("org.apache.maven.plugins");
@@ -78,7 +78,7 @@ public class JavadocJarTest extends AbstractMojoTestCase {
     public void testDefaultConfig() throws Exception {
         File testPom = new File(
                 getBasedir(), "src/test/resources/unit/javadocjar-default/javadocjar-default-plugin-config.xml");
-        JavadocJar mojo = lookupMojo(testPom);
+        JavadocJarMojo mojo = lookupMojo(testPom);
         mojo.execute();
 
         // check if the javadoc jar file was generated
@@ -144,7 +144,7 @@ public class JavadocJarTest extends AbstractMojoTestCase {
         File testPom = new File(
                 getBasedir(),
                 "src/test/resources/unit/javadocjar-invalid-destdir/javadocjar-invalid-destdir-plugin-config.xml");
-        JavadocJar mojo = lookupMojo(testPom);
+        JavadocJarMojo mojo = lookupMojo(testPom);
         mojo.execute();
 
         // check if the javadoc jar file was generated
@@ -158,7 +158,7 @@ public class JavadocJarTest extends AbstractMojoTestCase {
         File testPom = new File(
                 getBasedir(),
                 "src/test/resources/unit/javadocjar-failonerror/javadocjar-failonerror-plugin-config.xml");
-        JavadocJar mojo = lookupMojo(testPom);
+        JavadocJarMojo mojo = lookupMojo(testPom);
         mojo.execute();
 
         // check if the javadoc jar file was generated
@@ -170,7 +170,7 @@ public class JavadocJarTest extends AbstractMojoTestCase {
     public void testIncludeMavenDescriptorWhenExplicitlyConfigured() throws Exception {
         File testPom = new File(
                 getBasedir(), "src/test/resources/unit/javadocjar-archive-config/javadocjar-archive-config.xml");
-        JavadocJar mojo = lookupMojo(testPom);
+        JavadocJarMojo mojo = lookupMojo(testPom);
         mojo.execute();
 
         // check if the javadoc jar file was generated
@@ -200,7 +200,7 @@ public class JavadocJarTest extends AbstractMojoTestCase {
 
     public void testStale() throws Exception {
         File testPom = new File(getBasedir(), "src/test/resources/unit/stale-test/stale-test-plugin-config.xml");
-        JavadocJar mojo = lookupMojo(testPom);
+        JavadocJarMojo mojo = lookupMojo(testPom);
         BufferingLog log = new BufferingLog();
         mojo.setLog(log);
 

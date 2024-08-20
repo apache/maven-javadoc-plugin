@@ -24,7 +24,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
- * <p>Bundles the Javadoc documentation for <code>Java Test code</code> in an <b>aggregator</b> project into a jar
+ * <p>Bundles the Javadoc documentation for main <code>Java code</code> in an <b>aggregator</b> project into a jar
  * using the standard <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">Javadoc Tool</a>.
  * </p>
  *
@@ -33,12 +33,12 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  * @since 2.6
  */
 @Mojo(
-        name = "test-aggregate-jar",
+        name = "aggregate-jar",
         defaultPhase = LifecyclePhase.PACKAGE,
         aggregator = true,
-        requiresDependencyResolution = ResolutionScope.TEST)
-@Execute(phase = LifecyclePhase.TEST_COMPILE)
-public class AggregatorTestJavadocJar extends TestJavadocJar {
+        requiresDependencyResolution = ResolutionScope.COMPILE)
+@Execute(phase = LifecyclePhase.COMPILE)
+public class AggregatorJavadocJarMojo extends JavadocJarMojo {
     @Override
     protected boolean isAggregator() {
         return true;

@@ -53,7 +53,7 @@ import org.codehaus.plexus.archiver.jar.ManifestException;
         defaultPhase = LifecyclePhase.PACKAGE,
         requiresDependencyResolution = ResolutionScope.COMPILE,
         threadSafe = true)
-public class JavadocJar extends AbstractJavadocMojo {
+public class JavadocJarMojo extends AbstractJavadocMojo {
     /**
      * Includes all generated Javadoc files
      */

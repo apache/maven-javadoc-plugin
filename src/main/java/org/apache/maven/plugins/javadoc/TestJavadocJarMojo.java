@@ -47,7 +47,7 @@ import org.eclipse.aether.util.filter.ScopeDependencyFilter;
         defaultPhase = LifecyclePhase.PACKAGE,
         requiresDependencyResolution = ResolutionScope.TEST,
         threadSafe = true)
-public class TestJavadocJar extends JavadocJar {
+public class TestJavadocJarMojo extends JavadocJarMojo {
     // ----------------------------------------------------------------------
     // Javadoc Options (should be inline with Javadoc options defined in TestJavadocReport)
     // ----------------------------------------------------------------------

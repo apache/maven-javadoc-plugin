@@ -26,7 +26,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
- * Bundle {@link TestJavadocJar#testJavadocDirectory}, along with javadoc configuration options from
+ * Bundle {@link TestJavadocJarMojo#testJavadocDirectory}, along with javadoc configuration options from
  * {@link AbstractJavadocMojo} such as taglet, doclet, and link information into a deployable
  * artifact. This artifact can then be consumed by the javadoc plugin mojos when used by the
  * <code>includeDependencySources</code> option, to generate javadocs that are somewhat consistent
