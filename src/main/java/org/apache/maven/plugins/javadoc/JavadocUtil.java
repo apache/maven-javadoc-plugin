@@ -780,10 +780,18 @@ public class JavadocUtil {
         InvocationRequest request = new DefaultInvocationRequest();
         request.setBaseDirectory(projectFile.getParentFile());
         request.setPomFile(projectFile);
-        request.setGlobalSettingsFile(globalSettingsFile);
-        request.setUserSettingsFile(userSettingsFile);
-        request.setGlobalToolchainsFile(globalToolchainsFile);
-        request.setToolchainsFile(userToolchainsFile);
+        if (globalSettingsFile != null && globalSettingsFile.isFile()) {
+            request.setGlobalSettingsFile(globalSettingsFile);
+        }
+        if (userSettingsFile != null && userSettingsFile.isFile()) {
+            request.setUserSettingsFile(userSettingsFile);
+        }
+        if (globalToolchainsFile != null && globalToolchainsFile.isFile()) {
+            request.setGlobalToolchainsFile(globalToolchainsFile);
+        }
+        if (userToolchainsFile != null && userToolchainsFile.isFile()) {
+            request.setToolchainsFile(userToolchainsFile);
+        }
         request.setBatchMode(true);
         if (log != null) {
             request.setDebug(log.isDebugEnabled());
