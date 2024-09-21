@@ -171,24 +171,28 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
             failOnError("RuntimeException: Error while generating Javadoc", e);
         }
 
-        try {
-            File outputFile = generateArchive(
-                    new File(getPluginReportOutputDirectory()), finalName + "-" + getClassifier() + ".jar");
+        File javadocOutputDirectory = new File(getPluginReportOutputDirectory());
+        if (javadocOutputDirectory.exists()) {
+            try {
+                File outputFile = generateArchive(javadocOutputDirectory, finalName + "-" + getClassifier() + ".jar");
 
-            if (!attach) {
-                getLog().info("NOT adding javadoc to attached artifacts list.");
-            } else {
-                // TODO: these introduced dependencies on the project are going to become problematic - can we
-                // export it
-                //  through metadata instead?
-                projectHelper.attachArtifact(project, "javadoc", getClassifier(), outputFile);
+                if (!attach) {
+                    getLog().info("NOT adding javadoc to attached artifacts list.");
+                } else {
+                    // TODO: these introduced dependencies on the project are going to become problematic - can we
+                    // export it
+                    //  through metadata instead?
+                    projectHelper.attachArtifact(project, "javadoc", getClassifier(), outputFile);
+                }
+            } catch (ArchiverException e) {
+                failOnError("ArchiverException: Error while creating archive", e);
+            } catch (IOException e) {
+                failOnError("IOException: Error while creating archive", e);
+            } catch (RuntimeException e) {
+                failOnError("RuntimeException: Error while creating archive", e);
             }
-        } catch (ArchiverException e) {
-            failOnError("ArchiverException: Error while creating archive", e);
-        } catch (IOException e) {
-            failOnError("IOException: Error while creating archive", e);
-        } catch (RuntimeException e) {
-            failOnError("RuntimeException: Error while creating archive", e);
+        } else {
+            getLog().info("No Javadoc in project. Archive not created.");
         }
     }
 
