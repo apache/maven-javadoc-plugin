@@ -2671,6 +2671,15 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private String getBottomText() {
         final String inceptionYear = project.getInceptionYear();
 
+        final String sourceDateEpoch = System.getenv("SOURCE_DATE_EPOCH");
+        if (sourceDateEpoch != null) {
+            if (outputTimestamp == null
+                    || outputTimestamp.length() < 1
+                    || ((outputTimestamp.length() == 1) && !Character.isDigit(outputTimestamp.charAt(0)))) {
+                outputTimestamp = sourceDateEpoch;
+            }
+        }
+
         // get Reproducible Builds outputTimestamp date value or the current local date.
         final LocalDate localDate = MavenArchiver.parseBuildOutputTimestamp(outputTimestamp)
                 .map(instant -> instant.atZone(ZoneOffset.UTC).toLocalDate())
