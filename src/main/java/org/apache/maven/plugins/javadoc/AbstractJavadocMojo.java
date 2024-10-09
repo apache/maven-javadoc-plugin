@@ -4625,7 +4625,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             addArgIf(arguments, quiet, "-quiet", SINCE_JAVADOC_1_5);
         }
 
-        if (release != null) {
+        if (javadocRuntimeVersion.isAtLeast("9") && release != null) {
             arguments.add("--release");
             arguments.add(release);
         } else {
