@@ -120,7 +120,7 @@ under the License.
     <jetty.version>9.4.55.v20240627</jetty.version>
     <version.plexus-utils>4.0.2</version.plexus-utils>
     <!-- for ITs -->
-    <compilerPluginVersion>3.11.0</compilerPluginVersion>
+    <compilerPluginVersion>3.13.0</compilerPluginVersion>
     <sourcePluginVersion>3.3.0</sourcePluginVersion>
     <enforcerPluginVersion>3.4.1</enforcerPluginVersion>
     <pluginPluginVersion>3.15.0</pluginPluginVersion>
