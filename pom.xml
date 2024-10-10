@@ -112,7 +112,7 @@ under the License.
   <properties>
     <javaVersion>8</javaVersion>
     <mavenVersion>3.6.3</mavenVersion>
-    <doxiaSitetoolsVersion>2.0.0-M19</doxiaSitetoolsVersion>
+    <doxiaSitetoolsVersion>2.0.0</doxiaSitetoolsVersion>
     <wagonVersion>3.5.3</wagonVersion>
     <resolverVersion>1.4.1</resolverVersion>
     <!-- https://cwiki.apache.org/confluence/x/VIHOCg#MavenEcosystemCleanup-ResolverandMaven -->
