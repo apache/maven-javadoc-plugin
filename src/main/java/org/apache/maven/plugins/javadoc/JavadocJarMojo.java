@@ -147,6 +147,15 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
     @Parameter(property = "maven.javadoc.classifier", defaultValue = "javadoc", required = true)
     private String classifier;
 
+    /**
+     * Whether creating the archive should be forced. If set to true, the jar will always be created. If set to false,
+     * the jar will only be created when Javadoc files exist.
+     *
+     * @since 3.11.0
+     */
+    @Parameter(property = "maven.javadoc.forceCreation", defaultValue = "false")
+    protected boolean forceCreation;
+
     /** {@inheritDoc} */
     @Override
     protected void doExecute() throws MojoExecutionException {
@@ -172,7 +181,7 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
         }
 
         File javadocOutputDirectory = new File(getPluginReportOutputDirectory());
-        if (javadocOutputDirectory.exists()) {
+        if (javadocOutputDirectory.exists() || forceCreation) {
             try {
                 File outputFile = generateArchive(javadocOutputDirectory, finalName + "-" + getClassifier() + ".jar");
 
@@ -221,23 +230,14 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
      * @throws IOException {@link IOException}
      */
     private File generateArchive(File javadocFiles, String jarFileName) throws ArchiverException, IOException {
-        File javadocJar = new File(jarOutputDirectory, jarFileName);
-
-        if (javadocJar.exists()) {
-            javadocJar.delete();
-        }
-
         MavenArchiver archiver = new MavenArchiver();
-        archiver.setCreatedBy("Maven Javadoc Plugin", "org.apache.maven.plugins", "maven-javadoc-plugin");
         archiver.setArchiver(jarArchiver);
-        archiver.setOutputFile(javadocJar);
+        archiver.setCreatedBy("Maven Javadoc Plugin", "org.apache.maven.plugins", "maven-javadoc-plugin");
 
         // configure for Reproducible Builds based on outputTimestamp value
         archiver.configureReproducibleBuild(outputTimestamp);
 
-        if (!javadocFiles.exists()) {
-            getLog().warn("JAR will be empty - no content was marked for inclusion!");
-        } else {
+        if (javadocFiles.exists()) {
             archiver.getArchiver().addDirectory(javadocFiles, DEFAULT_INCLUDES, DEFAULT_EXCLUDES);
         }
 
@@ -254,14 +254,21 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
             archive.setManifestFile(defaultManifestFile);
         }
 
+        File outputFile = new File(jarOutputDirectory, jarFileName);
+
+        // Why do we do this?
+        if (outputFile.exists()) {
+            outputFile.delete();
+        }
+        archiver.setOutputFile(outputFile);
+        archive.setForced(forceCreation);
+
         try {
             archiver.createArchive(session, project, archive);
-        } catch (ManifestException e) {
-            throw new ArchiverException("ManifestException: " + e.getMessage(), e);
-        } catch (DependencyResolutionRequiredException e) {
-            throw new ArchiverException("DependencyResolutionRequiredException: " + e.getMessage(), e);
+        } catch (ManifestException | DependencyResolutionRequiredException e) {
+            throw new ArchiverException("Error creating Javadoc archive: " + e.getMessage(), e);
         }
 
-        return javadocJar;
+        return outputFile;
     }
 }
