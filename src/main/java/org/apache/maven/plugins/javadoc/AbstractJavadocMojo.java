@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -2615,27 +2614,13 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
     }
 
-    // TODO remove the part with ToolchainManager lookup once we depend on
-    // 3.0.9 (have it as prerequisite). Define as regular component field then.
     protected final Toolchain getToolchain() {
         Toolchain tc = null;
 
         if (jdkToolchain != null) {
-            // Maven 3.3.1 has plugin execution scoped Toolchain Support
-            try {
-                Method getToolchainsMethod = toolchainManager
-                        .getClass()
-                        .getMethod("getToolchains", MavenSession.class, String.class, Map.class);
-
-                @SuppressWarnings("unchecked")
-                List<Toolchain> tcs =
-                        (List<Toolchain>) getToolchainsMethod.invoke(toolchainManager, session, "jdk", jdkToolchain);
-
-                if (tcs != null && tcs.size() > 0) {
-                    tc = tcs.get(0);
-                }
-            } catch (SecurityException | ReflectiveOperationException e) {
-                // ignore
+            List<Toolchain> tcs = toolchainManager.getToolchains(session, "jdk", jdkToolchain);
+            if (tcs != null && !tcs.isEmpty()) {
+                tc = tcs.get(0);
             }
         }
 
