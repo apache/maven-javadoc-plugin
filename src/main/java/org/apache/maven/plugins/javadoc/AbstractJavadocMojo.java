@@ -52,6 +52,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -1210,7 +1211,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * <br/>
      * <b>Note</b>: if {@link #detectOfflineLinks} is defined, the offline links between the project modules are
      * automatically added if the goal is calling in a non-aggregator way.
-     * @see OfflineLink.
+     * @see OfflineLink
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#additional-options-provided-by-the-standard-doclet">Doclet option linkoffline</a>
      */
     @Parameter(property = "offlineLinks")
@@ -1642,13 +1643,18 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
     /**
      * <p>
-     * Comma separated list of modules (artifactId) to not add in aggregated javadoc
+     * Comma separated list of modules (can be regular expression) in the format ([group:]artifactId) to not add in aggregated javadoc
      * </p>
      *
      * @since 3.2.0
      */
     @Parameter(property = "maven.javadoc.skippedModules")
     private String skippedModules;
+
+    /**
+     * List built once from the parameter {@link #skippedModules}
+     */
+    private List<Pattern> patternsToSkip;
 
     /**
      * Timestamp for reproducible output archive entries, either formatted as ISO 8601
@@ -6043,8 +6049,20 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         if (this.skippedModules == null || this.skippedModules.isEmpty()) {
             return false;
         }
-        List<String> modulesToSkip = Arrays.asList(StringUtils.split(this.skippedModules, ','));
-        return modulesToSkip.contains(mavenProject.getArtifactId());
+        if (this.patternsToSkip == null) {
+            this.patternsToSkip = Arrays.stream(StringUtils.split(this.skippedModules, ','))
+                    .map(String::trim)
+                    // we are expecting something such [groupdId:]artifactId so if no groupId we want to match any
+                    // groupId
+                    .map(s -> !s.contains(":") ? ".*:" + s : s)
+                    .map(Pattern::compile)
+                    .collect(Collectors.toList());
+        }
+        Optional<Pattern> found = this.patternsToSkip.stream()
+                .filter(pattern -> pattern.matcher(mavenProject.getGroupId() + ":" + mavenProject.getArtifactId())
+                        .matches())
+                .findAny();
+        return found.isPresent() || isSkippedJavadoc(mavenProject);
     }
 
     /**

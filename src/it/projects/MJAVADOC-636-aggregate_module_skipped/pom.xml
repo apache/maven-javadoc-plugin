@@ -54,7 +54,7 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>@project.version@</version>
           <configuration>
-            <skippedModules>mjavadoc636e,mjavadoc636d1</skippedModules>
+            <skippedModules>mjavadoc636e.*,mjavadoc636d1</skippedModules>
           </configuration>
         </plugin>
       </plugins>
