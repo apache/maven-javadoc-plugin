@@ -1,3 +1,5 @@
+package a.b.e;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,23 +19,7 @@
  * under the License.
  */
 
-import java.util.jar.*
-
-def aggregatedJavadoc = new File( basedir, 'target/mjavadoc636-1.0-SNAPSHOT-javadoc.jar');
-
-assert aggregatedJavadoc.exists()
-
-def jar = new JarFile(aggregatedJavadoc)
-
-def files = new ArrayList()
-
-for (JarEntry file in jar.entries()){
-  files.add(file.getName())
+public interface E1
+{
+    
 }
-
-assert !files.contains("a/b/e/E.html")
-assert !files.contains("a/b/e/E1.html")
-assert !files.contains("a/b/c/d/D1.html")
-assert files.contains("a/b/c/d/D2.html")
-assert files.contains("a/f/F.html")
-

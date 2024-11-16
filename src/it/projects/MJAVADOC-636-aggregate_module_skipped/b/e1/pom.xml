@@ -25,16 +25,9 @@
 
   <parent>
     <groupId>org.apache.maven.plugins.javadoc.it</groupId>
-    <artifactId>mjavadoc636</artifactId>
+    <artifactId>mjavadoc636b</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>mjavadoc636b</artifactId>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>c</module>
-    <module>e</module>
-    <module>e1</module>
-  </modules>
+  <artifactId>mjavadoc636e1</artifactId>
 
 </project>
