@@ -70,7 +70,8 @@ import org.slf4j.LoggerFactory;
 @Named
 @Singleton
 public final class ResourceResolver {
-    private static final Logger logger = LoggerFactory.getLogger(ResourceResolver.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceResolver.class);
+
     @Inject
     private RepositorySystem repoSystem;
 
@@ -222,8 +223,8 @@ public final class ResourceResolver {
         try {
             dirs = resolveAndUnpack(toResolve, config, RESOURCE_VALID_CLASSIFIERS, false);
         } catch (ArtifactResolutionException | ArtifactNotFoundException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug(e.getMessage(), e);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(e.getMessage(), e);
             }
         }
 
