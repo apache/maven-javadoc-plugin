@@ -57,6 +57,7 @@ import java.util.jar.JarInputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
@@ -223,12 +224,12 @@ public class JavadocUtil {
     protected static String quotedArgument(String value) {
         String arg = value;
 
+        List<String> list =  Arrays.stream(arg.split("\n")).map(String::trim).collect(Collectors.toList());
+        arg = String.join("", list);
+
         if (arg != null && !arg.isEmpty()) {
             arg = arg.replace("'", "\\'");
             arg = "'" + arg + "'";
-
-            // To prevent javadoc error
-            arg = arg.replace("\n", " ");
         }
 
         return arg;

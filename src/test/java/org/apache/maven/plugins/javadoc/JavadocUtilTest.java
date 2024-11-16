@@ -675,4 +675,19 @@ public class JavadocUtilTest extends PlexusTestCase {
             // ignored
         }
     }
+
+    public void testQuotedArgument() throws Exception {
+
+        String value = "      org.apache.uima.analysis_component:\n" +
+                "      org.apache.uima.analysis_engine\n";
+
+        String arg = JavadocUtil.quotedArgument(value);
+        assertThat(arg).isEqualTo("'org.apache.uima.analysis_component:org.apache.uima.analysis_engine'");
+
+        value = "org.apache.uima.analysis_component:org.apache.uima.analysis_engine";
+
+        arg = JavadocUtil.quotedArgument(value);
+        assertThat(arg).isEqualTo("'org.apache.uima.analysis_component:org.apache.uima.analysis_engine'");
+
+    }
 }
