@@ -54,7 +54,6 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -62,13 +61,16 @@ import org.eclipse.aether.graph.DefaultDependencyNode;
 import org.eclipse.aether.graph.DependencyFilter;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  */
 @Named
 @Singleton
-public final class ResourceResolver extends AbstractLogEnabled {
+public final class ResourceResolver {
+    private static final Logger logger = LoggerFactory.getLogger(ResourceResolver.class);
     @Inject
     private RepositorySystem repoSystem;
 
@@ -220,8 +222,8 @@ public final class ResourceResolver extends AbstractLogEnabled {
         try {
             dirs = resolveAndUnpack(toResolve, config, RESOURCE_VALID_CLASSIFIERS, false);
         } catch (ArtifactResolutionException | ArtifactNotFoundException e) {
-            if (getLogger().isDebugEnabled()) {
-                getLogger().debug(e.getMessage(), e);
+            if (logger.isDebugEnabled()) {
+                logger.debug(e.getMessage(), e);
             }
         }
 
