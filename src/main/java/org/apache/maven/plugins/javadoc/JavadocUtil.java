@@ -20,7 +20,6 @@ package org.apache.maven.plugins.javadoc;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -222,9 +221,12 @@ public class JavadocUtil {
      * @return quoted option-argument
      */
     protected static String quotedArgument(String value) {
+        if (value == null) {
+            return null;
+        }
         String arg = value;
 
-        List<String> list =  Arrays.stream(arg.split("\n")).map(String::trim).collect(Collectors.toList());
+        List<String> list = Arrays.stream(arg.split("\n")).map(String::trim).collect(Collectors.toList());
         arg = String.join("", list);
 
         if (arg != null && !arg.isEmpty()) {
@@ -254,7 +256,7 @@ public class JavadocUtil {
 
                 for (int i = 0; i < split.length; i++) {
                     if (i != split.length - 1) {
-                        pathBuilder.append(split[i]).append("\\'");
+                        pathBuilder.append(split[i].trim()).append("\\'");
                     } else {
                         pathBuilder.append(split[i]);
                     }
@@ -292,7 +294,7 @@ public class JavadocUtil {
             String current;
             while (st.hasMoreTokens()) {
                 current = st.nextToken();
-                excludes.add("**/" + current + "/**");
+                excludes.add("**/" + current.trim() + "/**");
             }
         }
 
@@ -423,9 +425,9 @@ public class JavadocUtil {
         if (sourceFileIncludes == null) {
             sourceFileIncludes = Collections.singletonList("**/*.java");
         }
-        ds.setIncludes(sourceFileIncludes.toArray(new String[sourceFileIncludes.size()]));
-        if (sourceFileExcludes != null && sourceFileExcludes.size() > 0) {
-            ds.setExcludes(sourceFileExcludes.toArray(new String[sourceFileExcludes.size()]));
+        ds.setIncludes(sourceFileIncludes.toArray(new String[0]));
+        if (sourceFileExcludes != null && !sourceFileExcludes.isEmpty()) {
+            ds.setExcludes(sourceFileExcludes.toArray(new String[0]));
         }
         ds.setBasedir(sourceDirectory);
         ds.scan();
@@ -754,7 +756,7 @@ public class JavadocUtil {
         if (!projectFile.isFile()) {
             throw new IllegalArgumentException(projectFile.getAbsolutePath() + " is not a file.");
         }
-        if (goals == null || goals.size() == 0) {
+        if (goals == null || goals.isEmpty()) {
             throw new IllegalArgumentException("goals should be not empty.");
         }
         if (localRepositoryDir == null || !localRepositoryDir.isDirectory()) {
@@ -890,7 +892,7 @@ public class JavadocUtil {
             subpaths.add(pathTokenizer.nextToken());
         }
 
-        return subpaths.toArray(new String[subpaths.size()]);
+        return subpaths.toArray(new String[0]);
     }
 
     /**
@@ -933,7 +935,7 @@ public class JavadocUtil {
 
         List<String> classes = new ArrayList<>();
         Pattern pattern = Pattern.compile("(?i)^(META-INF/versions/(?<v>[0-9]+)/)?(?<n>.+)[.]class$");
-        try (JarInputStream jarStream = new JarInputStream(new FileInputStream(jarFile))) {
+        try (JarInputStream jarStream = new JarInputStream(Files.newInputStream(jarFile.toPath()))) {
             for (JarEntry jarEntry = jarStream.getNextJarEntry();
                     jarEntry != null;
                     jarEntry = jarStream.getNextJarEntry()) {
@@ -1180,7 +1182,7 @@ public class JavadocUtil {
                     lookahead = nextToken;
                 }
             }
-            return token;
+            return token.trim();
         }
     }
 
@@ -1224,7 +1226,7 @@ public class JavadocUtil {
                 sb.append(elementSuffix);
             }
 
-            result.add(sb.toString());
+            result.add(sb.toString().trim());
         }
 
         return result;
@@ -1514,7 +1516,7 @@ public class JavadocUtil {
         builder.setUserAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)");
 
         // Some server reject requests that do not have an Accept header
-        builder.setDefaultHeaders(Arrays.asList(new BasicHeader(HttpHeaders.ACCEPT, "*/*")));
+        builder.setDefaultHeaders(Collections.singletonList(new BasicHeader(HttpHeaders.ACCEPT, "*/*")));
 
         if (settings != null && settings.getActiveProxy() != null) {
             Proxy activeProxy = settings.getActiveProxy();

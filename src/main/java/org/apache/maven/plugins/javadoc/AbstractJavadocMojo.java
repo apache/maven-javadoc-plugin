@@ -5955,7 +5955,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         options.setBootclasspathArtifacts(toList(bootclasspathArtifacts));
         options.setDocfilesSubdirsUsed(docfilessubdirs);
         options.setDocletArtifacts(toList(docletArtifact, docletArtifacts));
-        options.setExcludedDocfilesSubdirs(excludedocfilessubdir);
+        options.setExcludedDocfilesSubdirs(excludedocfilessubdir == null ? null : excludedocfilessubdir.trim());
         options.setExcludePackageNames(toList(excludePackageNames));
         options.setGroups(toList(groups));
         options.setLinks(links);

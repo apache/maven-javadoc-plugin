@@ -654,6 +654,11 @@ public class JavadocUtilTest extends PlexusTestCase {
         assertEquals(
                 path1 + ps + path2 + ps + path1 + ps + path2,
                 JavadocUtil.unifyPathSeparator(path1 + ";" + path2 + ":" + path1 + ":" + path2));
+
+        path1 = "/tmp/maven-javadoc-plugin/src/main/java;\n" + "/tmp/maven-javadoc-plugin/src/main/javadoc\n";
+        assertEquals(
+                "/tmp/maven-javadoc-plugin/src/main/java" + ps + "/tmp/maven-javadoc-plugin/src/main/javadoc",
+                JavadocUtil.unifyPathSeparator(path1));
     }
 
     public void testGetIncludedFiles() {
@@ -678,8 +683,7 @@ public class JavadocUtilTest extends PlexusTestCase {
 
     public void testQuotedArgument() throws Exception {
 
-        String value = "      org.apache.uima.analysis_component:\n" +
-                "      org.apache.uima.analysis_engine\n";
+        String value = "      org.apache.uima.analysis_component:\n      org.apache.uima.analysis_engine\n";
 
         String arg = JavadocUtil.quotedArgument(value);
         assertThat(arg).isEqualTo("'org.apache.uima.analysis_component:org.apache.uima.analysis_engine'");
@@ -688,6 +692,11 @@ public class JavadocUtilTest extends PlexusTestCase {
 
         arg = JavadocUtil.quotedArgument(value);
         assertThat(arg).isEqualTo("'org.apache.uima.analysis_component:org.apache.uima.analysis_engine'");
+    }
 
+    public void testToList() throws Exception {
+        String value = "     *.internal:org.acme.exclude1.*:\n       org.acme.exclude2\n       ";
+        List<String> values = JavadocUtil.toList(value);
+        assertThat(values).containsExactly("*.internal", "org.acme.exclude1.*", "org.acme.exclude2");
     }
 }
