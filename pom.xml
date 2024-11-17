@@ -286,6 +286,12 @@ under the License.
       <version>2.1.0</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4jVersion}</version>
+    </dependency>
+
     <!-- Plexus -->
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -401,12 +407,6 @@ under the License.
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <version>3.26.3</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4jVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
