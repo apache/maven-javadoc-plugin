@@ -122,7 +122,6 @@ import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.WriterFactory;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
@@ -1836,14 +1835,16 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @return the docencoding attribute or <code>UTF-8</code> if <code>null</code>.
      */
     private String getDocencoding() {
-        return (docencoding == null || docencoding.isEmpty()) ? ReaderFactory.UTF_8 : docencoding;
+        return (docencoding == null || docencoding.isEmpty()) ? StandardCharsets.UTF_8.name() : docencoding;
     }
 
     /**
      * @return the encoding attribute or the value of <code>file.encoding</code> system property if <code>null</code>.
      */
     private String getEncoding() {
-        return (encoding == null || encoding.isEmpty()) ? ReaderFactory.FILE_ENCODING : encoding;
+        return (encoding == null || encoding.isEmpty())
+                ? Charset.defaultCharset().name()
+                : encoding;
     }
 
     @Override
@@ -4596,7 +4597,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         if (encoding == null || encoding.isEmpty()) {
             getLog().warn("Source files encoding has not been set, using platform encoding "
-                    + ReaderFactory.FILE_ENCODING + ", i.e. build is platform dependent!");
+                    + Charset.defaultCharset().name() + ", i.e. build is platform dependent!");
         }
         addArgIfNotEmpty(arguments, "-encoding", JavadocUtil.quotedArgument(getEncoding()));
 
