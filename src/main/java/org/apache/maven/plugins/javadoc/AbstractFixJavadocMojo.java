@@ -29,6 +29,9 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,7 +85,6 @@ import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.codehaus.plexus.components.interactivity.InputHandler;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
@@ -532,10 +534,10 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
         // encoding
         if (encoding == null || encoding.isEmpty()) {
             if (getLog().isWarnEnabled()) {
-                getLog().warn("File encoding has not been set, using platform encoding " + ReaderFactory.FILE_ENCODING
+                getLog().warn("File encoding has not been set, using platform encoding " + Charset.defaultCharset()
                         + ", i.e. build is platform dependent!");
             }
-            encoding = ReaderFactory.FILE_ENCODING;
+            encoding = Charset.defaultCharset().name();
         }
 
         // level
@@ -689,13 +691,13 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
         clirrNewClasses = new LinkedList<>();
         clirrNewMethods = new LinkedHashMap<>();
 
-        try (BufferedReader reader = new BufferedReader(ReaderFactory.newReader(clirrTextOutputFile, "UTF-8"))) {
+        try (BufferedReader reader = Files.newBufferedReader(clirrTextOutputFile.toPath(), StandardCharsets.UTF_8)) {
 
             for (String line = reader.readLine(); line != null; line = reader.readLine()) {
                 String[] split = StringUtils.split(line, ":");
                 if (split.length != 4) {
                     if (getLog().isDebugEnabled()) {
-                        getLog().debug("Unable to parse the clirr line: " + line);
+                        getLog().debug("Unable to parse the Clirr line: " + line);
                     }
                     continue;
                 }
@@ -2096,26 +2098,6 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
         sb.append(indent).append(" * @").append(SINCE_TAG).append(" ");
         sb.append(defaultSince);
         sb.append(EOL);
-    }
-
-    /**
-     * @param sb             not null
-     * @param indent         not null
-     * @param separatorAdded
-     * @return true if separator has been added.
-     */
-    private boolean appendDefaultVersionTag(final StringBuilder sb, final String indent, boolean separatorAdded) {
-        if (!fixTag(VERSION_TAG) || StringUtils.isEmpty(defaultVersion)) {
-            return separatorAdded;
-        }
-
-        if (!separatorAdded) {
-            appendSeparator(sb, indent);
-            separatorAdded = true;
-        }
-
-        appendDefaultVersionTag(sb, indent);
-        return separatorAdded;
     }
 
     /**
