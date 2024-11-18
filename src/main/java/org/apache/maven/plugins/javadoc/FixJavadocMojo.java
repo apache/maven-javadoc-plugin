@@ -18,10 +18,13 @@
  */
 package org.apache.maven.plugins.javadoc;
 
+import javax.inject.Inject;
+
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.codehaus.plexus.components.interactivity.InputHandler;
 
 /**
  * Fix Javadoc documentation and tags for the <code>Java code</code> for the project.
@@ -33,5 +36,9 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 @Mojo(name = "fix", requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
 @Execute(phase = LifecyclePhase.COMPILE)
 public class FixJavadocMojo extends AbstractFixJavadocMojo {
-    // nop
+
+    @Inject
+    public FixJavadocMojo(InputHandler inputHandler) {
+        super(inputHandler);
+    }
 }

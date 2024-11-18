@@ -18,6 +18,8 @@
  */
 package org.apache.maven.plugins.javadoc;
 
+import javax.inject.Inject;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -26,20 +28,24 @@ import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.doxia.tools.SiteTool;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.plugins.javadoc.resolver.ResourceResolver;
 import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.MavenReportException;
-import org.codehaus.plexus.archiver.Archiver;
+import org.apache.maven.toolchain.ToolchainManager;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.jar.ManifestException;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.eclipse.aether.RepositorySystem;
 
 /**
  * Bundles the Javadoc documentation for <code>main Java code</code> in an <b>NON aggregator</b> project into
@@ -79,7 +85,6 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
     /**
      * Used for attaching the artifact in the project.
      */
-    @Component
     private MavenProjectHelper projectHelper;
 
     /**
@@ -87,8 +92,32 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
      *
      * @since 2.5
      */
-    @Component(role = Archiver.class, hint = "jar")
     private JarArchiver jarArchiver;
+
+    // CHECKSTYLE_OFF: ParameterNumber
+    @Inject
+    public JavadocJarMojo(
+            MavenProjectHelper projectHelper,
+            JarArchiver jarArchiver,
+            SiteTool siteTool,
+            ArchiverManager archiverManager,
+            ResourceResolver resourceResolver,
+            RepositorySystem repoSystem,
+            ArtifactHandlerManager artifactHandlerManager,
+            ProjectBuilder mavenProjectBuilder,
+            ToolchainManager toolchainManager) {
+        super(
+                siteTool,
+                archiverManager,
+                resourceResolver,
+                repoSystem,
+                artifactHandlerManager,
+                mavenProjectBuilder,
+                toolchainManager);
+        this.projectHelper = projectHelper;
+        this.jarArchiver = jarArchiver;
+    }
+    // CHECKSTYLE_ON: ParameterNumber
 
     // ----------------------------------------------------------------------
     // Mojo Parameters

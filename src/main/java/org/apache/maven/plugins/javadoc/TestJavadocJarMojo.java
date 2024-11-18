@@ -18,6 +18,8 @@
  */
 package org.apache.maven.plugins.javadoc;
 
+import javax.inject.Inject;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,17 +27,26 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
+import org.apache.maven.doxia.tools.SiteTool;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.plugins.javadoc.resolver.ResourceResolver;
 import org.apache.maven.plugins.javadoc.resolver.SourceResolverConfig;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.project.ProjectBuilder;
+import org.apache.maven.toolchain.ToolchainManager;
+import org.codehaus.plexus.archiver.jar.JarArchiver;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.util.StringUtils;
+import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.util.filter.ScopeDependencyFilter;
 
 /**
- * Bundles the Javadoc documentation for <code>test Java code</code> in an <b>NON aggregator</b> project into
+ * Bundles the Javadoc documentation for <code>test Java code</code> in a <b>NON aggregator</b> project into
  * a jar using the standard <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">
  * Javadoc Tool</a>.
  *
@@ -48,6 +59,32 @@ import org.eclipse.aether.util.filter.ScopeDependencyFilter;
         requiresDependencyResolution = ResolutionScope.TEST,
         threadSafe = true)
 public class TestJavadocJarMojo extends JavadocJarMojo {
+
+    // CHECKSTYLE_OFF: ParameterNumber
+    @Inject
+    public TestJavadocJarMojo(
+            MavenProjectHelper projectHelper,
+            JarArchiver jarArchiver,
+            SiteTool siteTool,
+            ArchiverManager archiverManager,
+            ResourceResolver resourceResolver,
+            RepositorySystem repoSystem,
+            ArtifactHandlerManager artifactHandlerManager,
+            ProjectBuilder mavenProjectBuilder,
+            ToolchainManager toolchainManager) {
+        super(
+                projectHelper,
+                jarArchiver,
+                siteTool,
+                archiverManager,
+                resourceResolver,
+                repoSystem,
+                artifactHandlerManager,
+                mavenProjectBuilder,
+                toolchainManager);
+    }
+    // CHECKSTYLE_ON: ParameterNumber
+
     // ----------------------------------------------------------------------
     // Javadoc Options (should be inline with Javadoc options defined in TestJavadocReport)
     // ----------------------------------------------------------------------
@@ -177,7 +214,7 @@ public class TestJavadocJarMojo extends JavadocJarMojo {
     }
 
     /**
-     * Overriden to enable the resolution of -test-sources jar files.
+     * Overridden to enable the resolution of -test-sources jar files.
      *
      * {@inheritDoc}
      */

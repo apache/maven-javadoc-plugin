@@ -37,7 +37,7 @@ public class AbstractJavadocMojoTest {
 
     @Before
     public void setUp() {
-        mojo = new AbstractJavadocMojo() {
+        mojo = new AbstractJavadocMojo(null, null, null, null, null, null, null) {
             @Override
             public void doExecute() {}
         };
