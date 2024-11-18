@@ -18,8 +18,6 @@
  */
 package org.apache.maven.plugins.javadoc;
 
-import javax.inject.Inject;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -220,7 +218,6 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      */
     private InputHandler inputHandler;
 
-    @Inject
     public AbstractFixJavadocMojo(InputHandler inputHandler) {
         this.inputHandler = inputHandler;
     }

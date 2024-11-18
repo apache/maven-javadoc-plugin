@@ -18,8 +18,6 @@
  */
 package org.apache.maven.plugins.javadoc;
 
-import javax.inject.Inject;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -298,7 +296,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
     private ToolchainManager toolchainManager;
 
-    @Inject
     public AbstractJavadocMojo(
             SiteTool siteTool,
             ArchiverManager archiverManager,
