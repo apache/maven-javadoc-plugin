@@ -686,12 +686,12 @@ public class JavadocUtilTest extends PlexusTestCase {
         String value = "      org.apache.uima.analysis_component:\n      org.apache.uima.analysis_engine\n";
 
         String arg = JavadocUtil.quotedArgument(value);
-        assertThat(arg).isEqualTo("'org.apache.uima.analysis_component:org.apache.uima.analysis_engine'");
+        assertEquals("'org.apache.uima.analysis_component:org.apache.uima.analysis_engine'", arg);
 
         value = "org.apache.uima.analysis_component:org.apache.uima.analysis_engine";
 
         arg = JavadocUtil.quotedArgument(value);
-        assertThat(arg).isEqualTo("'org.apache.uima.analysis_component:org.apache.uima.analysis_engine'");
+        assertEquals("'org.apache.uima.analysis_component:org.apache.uima.analysis_engine'", arg);
     }
 
     public void testToList() throws Exception {
