@@ -319,7 +319,7 @@ public class FixJavadocMojoTest extends AbstractMojoTestCase {
 
         assertEquals(5, javaMethod.getTags().size());
 
-        AbstractFixJavadocMojo mojoInstance = new FixJavadocMojo();
+        AbstractFixJavadocMojo mojoInstance = new FixJavadocMojo(null);
         setVariableValueToObject(mojoInstance, "fixTagsSplitted", new String[] {"all"});
 
         DocletTag tag = javaMethod.getTags().get(0);
@@ -383,7 +383,7 @@ public class FixJavadocMojoTest extends AbstractMojoTestCase {
 
         assertEquals(4, javaMethod.getTags().size());
 
-        AbstractFixJavadocMojo mojoInstance = new FixJavadocMojo();
+        AbstractFixJavadocMojo mojoInstance = new FixJavadocMojo(null);
         setVariableValueToObject(mojoInstance, "fixTagsSplitted", new String[] {"all"});
 
         DocletTag tag = javaMethod.getTags().get(0);
@@ -404,7 +404,7 @@ public class FixJavadocMojoTest extends AbstractMojoTestCase {
     }
 
     public void testInitParameters() throws Throwable {
-        AbstractFixJavadocMojo mojoInstance = new FixJavadocMojo();
+        AbstractFixJavadocMojo mojoInstance = new FixJavadocMojo(null);
         setVariableValueToObject(mojoInstance, "fixTags", "author, version, since, param, return, throws, link");
         setVariableValueToObject(mojoInstance, "defaultSince", "1.0");
         setVariableValueToObject(mojoInstance, "level", "protected");
@@ -431,7 +431,7 @@ public class FixJavadocMojoTest extends AbstractMojoTestCase {
     }
 
     public void testRemoveUnknownExceptions() throws Exception {
-        AbstractFixJavadocMojo mojoInstance = new FixJavadocMojo();
+        AbstractFixJavadocMojo mojoInstance = new FixJavadocMojo(null);
         setVariableValueToObject(mojoInstance, "fixTagsSplitted", new String[] {"all"});
         setVariableValueToObject(mojoInstance, "project", new MavenProjectStub());
 

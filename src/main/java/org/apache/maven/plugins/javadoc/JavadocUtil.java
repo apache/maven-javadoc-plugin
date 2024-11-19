@@ -1045,7 +1045,7 @@ public class JavadocUtil {
         File m2Home = new File(mavenHome);
         if (!m2Home.exists()) {
             if (log != null && log.isErrorEnabled()) {
-                log.error("Cannot find Maven application directory. Either specify 'maven.home' system property.");
+                log.error("Cannot find Maven application directory. Specify 'maven.home' system property.");
             }
         }
 

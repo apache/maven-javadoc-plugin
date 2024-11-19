@@ -18,6 +18,8 @@
  */
 package org.apache.maven.plugins.javadoc;
 
+import javax.inject.Inject;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +32,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.components.interactivity.InputHandler;
 
 /**
  * Fix Javadoc documentation and tags for the <code>Test Java code</code> for the project.
@@ -41,6 +44,12 @@ import org.apache.maven.project.MavenProject;
 @Mojo(name = "test-fix", requiresDependencyResolution = ResolutionScope.TEST, threadSafe = true)
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
 public class TestFixJavadocMojo extends AbstractFixJavadocMojo {
+
+    @Inject
+    public TestFixJavadocMojo(InputHandler inputHandler) {
+        super(inputHandler);
+    }
+
     /** {@inheritDoc} */
     @Override
     protected List<String> getProjectSourceRoots(MavenProject p) {

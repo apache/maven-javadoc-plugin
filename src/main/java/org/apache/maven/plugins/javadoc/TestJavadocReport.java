@@ -18,6 +18,8 @@
  */
 package org.apache.maven.plugins.javadoc;
 
+import javax.inject.Inject;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,19 +30,26 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
+import org.apache.maven.doxia.tools.SiteTool;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.plugins.javadoc.resolver.ResourceResolver;
 import org.apache.maven.plugins.javadoc.resolver.SourceResolverConfig;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.MavenReportException;
+import org.apache.maven.toolchain.ToolchainManager;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.util.StringUtils;
+import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.util.filter.ScopeDependencyFilter;
 
 /**
- * Generates documentation for the <code>Java Test code</code> in an <b>NON aggregator</b> project using the standard
+ * Generates documentation for the <code>Java Test code</code> in a <b>NON aggregator</b> project using the standard
  * <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">Javadoc Tool</a>.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
@@ -129,6 +138,25 @@ public class TestJavadocReport extends JavadocReport {
     // ----------------------------------------------------------------------
     // Report public methods
     // ----------------------------------------------------------------------
+
+    @Inject
+    public TestJavadocReport(
+            SiteTool siteTool,
+            ArchiverManager archiverManager,
+            ResourceResolver resourceResolver,
+            RepositorySystem repoSystem,
+            ArtifactHandlerManager artifactHandlerManager,
+            ProjectBuilder mavenProjectBuilder,
+            ToolchainManager toolchainManager) {
+        super(
+                siteTool,
+                archiverManager,
+                resourceResolver,
+                repoSystem,
+                artifactHandlerManager,
+                mavenProjectBuilder,
+                toolchainManager);
+    }
 
     @Override
     protected void executeReport(Locale unusedLocale) throws MavenReportException {

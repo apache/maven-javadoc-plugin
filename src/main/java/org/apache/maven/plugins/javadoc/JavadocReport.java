@@ -18,6 +18,8 @@
  */
 package org.apache.maven.plugins.javadoc;
 
+import javax.inject.Inject;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -26,6 +28,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.doxia.sink.SinkFactory;
 import org.apache.maven.doxia.siterenderer.DocumentRenderingContext;
@@ -38,8 +41,13 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.plugins.javadoc.resolver.ResourceResolver;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.MavenMultiPageReport;
 import org.apache.maven.reporting.MavenReportException;
+import org.apache.maven.toolchain.ToolchainManager;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.eclipse.aether.RepositorySystem;
 
 /**
  * Generates documentation for the <code>Java code</code> in a <b>NON aggregator</b> project using the standard
@@ -78,6 +86,25 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     @Parameter(property = "description")
     private String description;
 
+    @Inject
+    public JavadocReport(
+            SiteTool siteTool,
+            ArchiverManager archiverManager,
+            ResourceResolver resourceResolver,
+            RepositorySystem repoSystem,
+            ArtifactHandlerManager artifactHandlerManager,
+            ProjectBuilder mavenProjectBuilder,
+            ToolchainManager toolchainManager) {
+        super(
+                siteTool,
+                archiverManager,
+                resourceResolver,
+                repoSystem,
+                artifactHandlerManager,
+                mavenProjectBuilder,
+                toolchainManager);
+    }
+
     // ----------------------------------------------------------------------
     // Report public methods
     // ----------------------------------------------------------------------
@@ -103,6 +130,7 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     }
 
     /** {@inheritDoc} */
+    @Override
     public void generate(Sink sink, Locale locale) throws MavenReportException {
         generate(sink, null, locale);
     }

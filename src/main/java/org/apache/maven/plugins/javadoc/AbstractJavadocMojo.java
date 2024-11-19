@@ -74,7 +74,6 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.javadoc.options.BootclasspathArtifact;
 import org.apache.maven.plugins.javadoc.options.DocletArtifact;
@@ -205,7 +204,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     protected static final String FILES_FILE_NAME = "files";
 
     /**
-     * Default css file name, used as file name in the output directory for the temporary custom stylesheet file
+     * Default CSS file name, used as file name in the output directory for the temporary custom stylesheet file
      * loaded from classloader resources.
      */
     private static final String DEFAULT_CSS_NAME = "stylesheet.css";
@@ -260,9 +259,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      */
     private static final JavaVersion SINCE_JAVADOC_1_8 = JavaVersion.parse("1.8");
 
-    /**
-     *
-     */
     private static final JavaVersion JAVA_VERSION = JavaVersion.JAVA_SPECIFICATION_VERSION;
 
     // ----------------------------------------------------------------------
@@ -272,7 +268,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     /**
      * SiteTool.
      */
-    @Component
     protected SiteTool siteTool;
 
     /**
@@ -280,19 +275,15 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      *
      * @since 2.5
      */
-    @Component
     private ArchiverManager archiverManager;
 
-    @Component
     private ResourceResolver resourceResolver;
 
-    @Component
     private RepositorySystem repoSystem;
 
     @Parameter(defaultValue = "${repositorySystemSession}", readonly = true, required = true)
     private RepositorySystemSession repoSession;
 
-    @Component
     private ArtifactHandlerManager artifactHandlerManager;
 
     /**
@@ -300,12 +291,26 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      *
      * @since 3.0
      */
-    @Component
     private ProjectBuilder mavenProjectBuilder;
 
-    /** */
-    @Component
     private ToolchainManager toolchainManager;
+
+    public AbstractJavadocMojo(
+            SiteTool siteTool,
+            ArchiverManager archiverManager,
+            ResourceResolver resourceResolver,
+            RepositorySystem repoSystem,
+            ArtifactHandlerManager artifactHandlerManager,
+            ProjectBuilder mavenProjectBuilder,
+            ToolchainManager toolchainManager) {
+        this.siteTool = siteTool;
+        this.archiverManager = archiverManager;
+        this.resourceResolver = resourceResolver;
+        this.repoSystem = repoSystem;
+        this.artifactHandlerManager = artifactHandlerManager;
+        this.mavenProjectBuilder = mavenProjectBuilder;
+        this.toolchainManager = toolchainManager;
+    }
 
     final LocationManager locationManager = new LocationManager();
 

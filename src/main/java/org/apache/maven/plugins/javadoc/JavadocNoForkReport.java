@@ -18,13 +18,22 @@
  */
 package org.apache.maven.plugins.javadoc;
 
+import javax.inject.Inject;
+
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
+import org.apache.maven.doxia.tools.SiteTool;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.plugins.javadoc.resolver.ResourceResolver;
+import org.apache.maven.project.ProjectBuilder;
+import org.apache.maven.toolchain.ToolchainManager;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.eclipse.aether.RepositorySystem;
 
 /**
- * Generates documentation for the <code>Java code</code> in an <b>NON aggregator</b> project using the standard
+ * Generates documentation for the <code>Java code</code> in a <b>NON aggregator</b> project using the standard
  * <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">Javadoc Tool</a>. Note that this
  * goal does require generation of sources before site generation, e.g. by invoking {@code mvn clean deploy site}.
  *
@@ -35,4 +44,24 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  */
 @Mojo(name = "javadoc-no-fork", requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
 @Execute(phase = LifecyclePhase.NONE)
-public class JavadocNoForkReport extends JavadocReport {}
+public class JavadocNoForkReport extends JavadocReport {
+
+    @Inject
+    public JavadocNoForkReport(
+            SiteTool siteTool,
+            ArchiverManager archiverManager,
+            ResourceResolver resourceResolver,
+            RepositorySystem repoSystem,
+            ArtifactHandlerManager artifactHandlerManager,
+            ProjectBuilder mavenProjectBuilder,
+            ToolchainManager toolchainManager) {
+        super(
+                siteTool,
+                archiverManager,
+                resourceResolver,
+                repoSystem,
+                artifactHandlerManager,
+                mavenProjectBuilder,
+                toolchainManager);
+    }
+}

@@ -18,10 +18,21 @@
  */
 package org.apache.maven.plugins.javadoc;
 
+import javax.inject.Inject;
+
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
+import org.apache.maven.doxia.tools.SiteTool;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.plugins.javadoc.resolver.ResourceResolver;
+import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.project.ProjectBuilder;
+import org.apache.maven.toolchain.ToolchainManager;
+import org.codehaus.plexus.archiver.jar.JarArchiver;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.eclipse.aether.RepositorySystem;
 
 /**
  * <p>Bundles the Javadoc documentation for <code>Java Test code</code> in an <b>aggregator</b> project into a jar
@@ -39,6 +50,32 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
         requiresDependencyResolution = ResolutionScope.TEST)
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
 public class AggregatorTestJavadocJarMojo extends TestJavadocJarMojo {
+
+    // CHECKSTYLE_OFF: ParameterNumber
+    @Inject
+    public AggregatorTestJavadocJarMojo(
+            MavenProjectHelper projectHelper,
+            JarArchiver jarArchiver,
+            SiteTool siteTool,
+            ArchiverManager archiverManager,
+            ResourceResolver resourceResolver,
+            RepositorySystem repoSystem,
+            ArtifactHandlerManager artifactHandlerManager,
+            ProjectBuilder mavenProjectBuilder,
+            ToolchainManager toolchainManager) {
+        super(
+                projectHelper,
+                jarArchiver,
+                siteTool,
+                archiverManager,
+                resourceResolver,
+                repoSystem,
+                artifactHandlerManager,
+                mavenProjectBuilder,
+                toolchainManager);
+    }
+    // CHECKSTYLE_ON: ParameterNumber
+
     @Override
     protected boolean isAggregator() {
         return true;
