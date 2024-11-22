@@ -209,11 +209,7 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
 
         Map<Path, Collection<String>> files = getFiles(collectedSourcePaths);
 
-        if (!canGenerateReport(files)) {
-            return false;
-        }
-
-        return true;
+        return canGenerateReport(files);
     }
 
     /** {@inheritDoc} */
