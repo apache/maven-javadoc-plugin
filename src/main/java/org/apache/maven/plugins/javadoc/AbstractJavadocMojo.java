@@ -842,6 +842,22 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private String sourcepath;
 
     /**
+     * When using legacyMode and aggregated javadoc, users may have a mix of Maven modules with module files and not.
+     * The javadoc need to be called with empty {@code -sourcepath} argument and files are in the argfile
+     * This usually need to be used with the following configuration
+     * <pre>
+     * {@code
+     *   <sourceFileExcludes>
+     *     <sourceFileExclude>**\/module-info.java</sourceFileExclude>
+     *   </sourceFileExcludes>
+     * }
+     * </pre>
+     * @since 3.11.2
+     */
+    @Parameter(property = "maven.javadoc.disableSourcepathUsage")
+    private boolean disableSourcepathUsage;
+
+    /**
      * Specifies the package directory where javadoc will be executed. Multiple packages can be separated by
      * colons (<code>:</code>).
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#options-for-javadoc">Javadoc option subpackages</a>.
@@ -4634,8 +4650,15 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         if (moduleSourceDir == null) {
-            addArgIfNotEmpty(
-                    arguments, "-sourcepath", JavadocUtil.quotedPathArgument(getSourcePath(sourcePaths)), false, false);
+            if (!disableSourcepathUsage) {
+                addArgIfNotEmpty(
+                        arguments,
+                        "-sourcepath",
+                        JavadocUtil.quotedPathArgument(getSourcePath(sourcePaths)),
+                        false,
+                        false);
+            }
+
         } else if (mainResolvePathResult == null
                 || ModuleNameSource.MODULEDESCRIPTOR.equals(mainResolvePathResult.getModuleNameSource())) {
             addArgIfNotEmpty(
@@ -4651,7 +4674,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         addArgIf(arguments, verbose, "-verbose");
 
-        if (additionalOptions != null && additionalOptions.length > 0) {
+        if (additionalOptions != null) {
             for (String additionalOption : additionalOptions) {
                 arguments.add(additionalOption.replaceAll("(?<!\\\\)\\\\(?!\\\\|:)", "\\\\"));
             }
