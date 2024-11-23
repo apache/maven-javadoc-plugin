@@ -841,14 +841,16 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * The javadoc need to be called with empty {@code -sourcepath} argument and files are in the argfile
      * This usually need to be used with the following configuration
      * <pre>
+     * {@code
      *   <sourceFileExcludes>
      *     <sourceFileExclude>**\/module-info.java</sourceFileExclude>
      *   </sourceFileExcludes>
+     * }
      * </pre>
      * @since 3.11.2
      */
-    @Parameter(property = "maven.javadoc.disableSourcepathEmpty")
-    private boolean disableSourcepathEmpty;
+    @Parameter(property = "maven.javadoc.disableSourcepathUsage")
+    private boolean disableSourcepathUsage;
 
     /**
      * Specifies the package directory where javadoc will be executed. Multiple packages can be separated by
@@ -4643,7 +4645,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         if (moduleSourceDir == null) {
-            if (!disableSourcepathEmpty) {
+            if (!disableSourcepathUsage) {
                 addArgIfNotEmpty(
                         arguments,
                         "-sourcepath",

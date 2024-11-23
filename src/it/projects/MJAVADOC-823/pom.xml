@@ -58,7 +58,7 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>@project.version@</version>
           <configuration>
-            <disableSourcepathEmpty>true</disableSourcepathEmpty>
+            <disableSourcepathUsage>true</disableSourcepathUsage>
             <legacyMode>true</legacyMode>
             <sourceFileExcludes>
               <sourceFileExclude>**/module-info.java</sourceFileExclude>
