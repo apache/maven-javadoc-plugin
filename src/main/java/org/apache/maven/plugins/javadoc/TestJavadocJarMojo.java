@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
@@ -189,7 +190,7 @@ public class TestJavadocJarMojo extends JavadocJarMojo {
 
     @Override
     protected List<String> getProjectSourceRoots(MavenProject p) {
-        if ("pom".equals(p.getPackaging().toLowerCase())) {
+        if ("pom".equals(p.getPackaging().toLowerCase(Locale.ENGLISH))) {
             return Collections.emptyList();
         }
 
@@ -198,7 +199,7 @@ public class TestJavadocJarMojo extends JavadocJarMojo {
 
     @Override
     protected List<String> getExecutionProjectSourceRoots(MavenProject p) {
-        if ("pom".equals(p.getExecutionProject().getPackaging().toLowerCase())) {
+        if ("pom".equals(p.getExecutionProject().getPackaging().toLowerCase(Locale.ENGLISH))) {
             return Collections.emptyList();
         }
 

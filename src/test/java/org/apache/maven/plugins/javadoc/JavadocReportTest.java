@@ -30,6 +30,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -427,31 +428,31 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         // read the contents of the html files based on some of the parameter values
         // author == false
         String str = readFile(apidocs.resolve("custom/configuration/AppSample.html"));
-        assertFalse(str.toLowerCase().contains("author"));
+        assertFalse(str.toLowerCase(Locale.ENGLISH).contains("author"));
 
         // bottom
-        assertTrue(str.toUpperCase().contains("SAMPLE BOTTOM CONTENT"));
+        assertTrue(str.toUpperCase(Locale.ENGLISH).contains("SAMPLE BOTTOM CONTENT"));
 
         // offlineLinks
         if (JavaVersion.JAVA_VERSION.isBefore("11.0.2")) {
             assertThat(str)
                     .containsIgnoringCase("href=\"http://java.sun.com/j2se/1.4.2/docs/api/java/lang/string.html");
         } else {
-            assertTrue(str.toLowerCase()
+            assertTrue(str.toLowerCase(Locale.ENGLISH)
                     .contains("href=\"http://java.sun.com/j2se/1.4.2/docs/api/java.base/java/lang/string.html"));
         }
 
         // header
-        assertTrue(str.toUpperCase().contains("MAVEN JAVADOC PLUGIN TEST"));
+        assertTrue(str.toUpperCase(Locale.ENGLISH).contains("MAVEN JAVADOC PLUGIN TEST"));
 
         // footer
         if (JavaVersion.JAVA_VERSION.isBefore("16-ea")
                 && !System.getProperty("java.vm.name").contains("OpenJ9")) {
-            assertTrue(str.toUpperCase().contains("MAVEN JAVADOC PLUGIN TEST FOOTER"));
+            assertTrue(str.toUpperCase(Locale.ENGLISH).contains("MAVEN JAVADOC PLUGIN TEST FOOTER"));
         }
 
         // nohelp == true
-        assertFalse(str.toUpperCase().contains("/HELP-DOC.HTML"));
+        assertFalse(str.toUpperCase(Locale.ENGLISH).contains("/HELP-DOC.HTML"));
 
         // check the wildcard (*) package exclusions -- excludePackageNames parameter
         assertThat(apidocs.resolve("custom/configuration/exclude1/Exclude1App.html"))
@@ -798,8 +799,9 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         // which is not enough for Java 11 anymore
         if (JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("11")) {
             assertThat(readed).contains(">Version:</");
-            assertTrue(readed.toLowerCase().contains("</dt>" + LINE_SEPARATOR + "  <dd>1.0</dd>")
-                    || readed.toLowerCase().contains("</dt>" + LINE_SEPARATOR + "<dd>1.0</dd>" /* JDK 8 */));
+            assertTrue(readed.toLowerCase(Locale.ENGLISH).contains("</dt>" + LINE_SEPARATOR + "  <dd>1.0</dd>")
+                    || readed.toLowerCase(Locale.ENGLISH)
+                            .contains("</dt>" + LINE_SEPARATOR + "<dd>1.0</dd>" /* JDK 8 */));
         }
     }
 

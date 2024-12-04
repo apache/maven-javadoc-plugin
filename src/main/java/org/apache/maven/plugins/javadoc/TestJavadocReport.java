@@ -214,7 +214,7 @@ public class TestJavadocReport extends JavadocReport {
 
     @Override
     protected List<String> getExecutionProjectSourceRoots(MavenProject p) {
-        if ("pom".equals(p.getExecutionProject().getPackaging().toLowerCase())) {
+        if ("pom".equals(p.getExecutionProject().getPackaging().toLowerCase(Locale.ENGLISH))) {
             return Collections.emptyList();
         }
 
