@@ -40,6 +40,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -716,7 +717,7 @@ public class JavadocUtil {
             throw new NullPointerException("The url could not be null.");
         }
 
-        FileUtils.copyURLToFile(url, file);
+        Files.copy(url.openStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     /**
@@ -801,7 +802,7 @@ public class JavadocUtil {
         } else {
             request.setDebug(true);
         }
-        request.setGoals(goals);
+        request.addArgs(goals);
         if (properties != null) {
             request.setProperties(properties);
         }
