@@ -1787,7 +1787,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @return the list of source paths for the given project
      */
     protected List<String> getProjectSourceRoots(MavenProject p) {
-        if ("pom".equals(p.getPackaging().toLowerCase())) {
+        if ("pom".equals(p.getPackaging().toLowerCase(Locale.ENGLISH))) {
             return Collections.emptyList();
         }
 
@@ -1801,7 +1801,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @return the list of source paths for the execution project of the given project
      */
     protected List<String> getExecutionProjectSourceRoots(MavenProject p) {
-        if ("pom".equals(p.getExecutionProject().getPackaging().toLowerCase())) {
+        if ("pom".equals(p.getExecutionProject().getPackaging().toLowerCase(Locale.ENGLISH))) {
             return Collections.emptyList();
         }
 
