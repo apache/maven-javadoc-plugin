@@ -272,7 +272,7 @@ public class JavadocUtil {
     }
 
     /**
-     * Convenience method that copy all <code>doc-files</code> directories from <code>javadocDir</code> to the
+     * Convenience method that copies all <code>doc-files</code> directories from <code>javadocDir</code> to the
      * <code>outputDirectory</code>.
      *
      * @param outputDirectory the output directory
@@ -302,7 +302,7 @@ public class JavadocUtil {
                 javadocDir, "resources,**/doc-files", String.join(",", excludes), false, true);
         for (String docFile : docFiles) {
             File docFileOutput = new File(outputDirectory, docFile);
-            FileUtils.mkdir(docFileOutput.getAbsolutePath());
+            Files.createDirectories(Paths.get(docFileOutput.getAbsolutePath()));
             FileUtils.copyDirectoryStructure(new File(javadocDir, docFile), docFileOutput);
             List<String> files = FileUtils.getFileAndDirectoryNames(
                     docFileOutput, String.join(",", excludes), null, true, true, true, true);
@@ -854,13 +854,12 @@ public class JavadocUtil {
      *
      * @param javaFile not null
      * @param encoding could be null
-     * @return the content with unified line separator of the given javaFile using the given encoding.
-     * @see FileUtils#fileRead(File, String)
+     * @return the content of the given javaFile using the given encoding
      * @since 2.6.1
      */
     protected static String readFile(final File javaFile, final String encoding) {
         try {
-            return FileUtils.fileRead(javaFile, encoding);
+            return new String(Files.readAllBytes(javaFile.toPath()), Charset.forName(encoding));
         } catch (IOException e) {
             return null;
         }
@@ -878,7 +877,7 @@ public class JavadocUtil {
      *
      * @param path which can contain multiple paths separated with a colon (<code>:</code>) or a semi-colon
      *            (<code>;</code>), platform independent. Could be null.
-     * @return the path splitted by colon or semi-colon or <code>null</code> if path was <code>null</code>.
+     * @return the path split by colon or semi-colon or <code>null</code> if path was <code>null</code>.
      * @since 2.6.1
      */
     protected static String[] splitPath(final String path) {
