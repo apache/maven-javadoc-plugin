@@ -497,8 +497,8 @@ public class JavadocUtil {
             Pattern.compile("(?s).*?[^a-zA-Z](([0-9]+\\.?[0-9]*)(\\.[0-9]+)?).*");
 
     /**
-     * Parse the output for 'javadoc -J-version' and return the javadoc version recognized. <br>
-     * Here are some output for 'javadoc -J-version' depending the JDK used:
+     * Parse the output of 'javadoc -J-version' and return the javadoc version recognized. <br>
+     * Here are some output for 'javadoc -J-version' depending on the JDK used:
      * <table><caption>Output for 'javadoc -J-version' per JDK</caption>
      * <tr>
      * <th>JDK</th>
