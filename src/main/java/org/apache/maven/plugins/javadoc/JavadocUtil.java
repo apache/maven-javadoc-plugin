@@ -532,7 +532,7 @@ public class JavadocUtil {
      *
      * @param output for 'javadoc -J-version'
      * @return the version of the javadoc for the output, only digits and dots
-     * @throws PatternSyntaxException if the output doesn't match with the output pattern
+     * @throws PatternSyntaxException if the output doesn't match the output pattern
      *             {@code (?s).*?[^a-zA-Z]([0-9]+\\.?[0-9]*)(\\.([0-9]+))?.*}.
      * @throws NullPointerException if the output is null
      * @throws IllegalArgumentException if the output is empty
