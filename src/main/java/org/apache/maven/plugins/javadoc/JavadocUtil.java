@@ -537,7 +537,7 @@ public class JavadocUtil {
      * @throws NullPointerException if the output is null
      * @throws IllegalArgumentException if the output is empty
      */
-    protected static String extractJavadocVersion(String output) throws IllegalArgumentException {
+    protected static String extractJavadocVersion(String output) {
         if (output == null) {
             throw new NullPointerException("The output cannot be null.");
         }
@@ -602,7 +602,7 @@ public class JavadocUtil {
      * @throws NullPointerException if the <code>memory</code> argument is null
      * @throws IllegalArgumentException if the <code>memory</code> argument doesn't match any pattern.
      */
-    protected static String parseJavadocMemory(String memory) throws IllegalArgumentException {
+    protected static String parseJavadocMemory(String memory) {
         if (memory == null) {
             throw new NullPointerException("The memory cannot be null.");
         }
