@@ -499,7 +499,7 @@ public class JavadocUtil {
     /**
      * Parse the output of 'javadoc -J-version' and return the javadoc version recognized. <br>
      * Here are some output for 'javadoc -J-version' depending on the JDK used:
-     * <table><caption>Output for 'javadoc -J-version' per JDK</caption>
+     * <table><caption>Output of 'javadoc -J-version' per JDK</caption>
      * <tr>
      * <th>JDK</th>
      * <th>Output for 'javadoc -J-version'</th>
