@@ -40,7 +40,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.PatternSyntaxException;
 
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.plugins.javadoc.ProxyServer.AuthAsyncProxyServlet;
@@ -61,21 +60,31 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
 public class JavadocUtilTest extends PlexusTestCase {
+
+    public void testParseJavadocVersion_Null() {
+        try {
+            JavadocUtil.extractJavadocVersion(null);
+            fail("Not catch null");
+        } catch (NullPointerException ex) {
+            assertNotNull(ex.getMessage());
+        }
+    }
+
+    public void testParseJavadocVersion_EmptyString() {
+        try {
+            JavadocUtil.extractJavadocVersion("");
+            fail("Not catch empty version");
+        } catch (IllegalArgumentException ex) {
+            assertNotNull(ex.getMessage());
+        }
+    }
+
     /**
-     * Method to test the javadoc version parsing.
-     *
+     * Test the javadoc version parsing.
      */
     public void testParseJavadocVersion() {
-        String version = null;
-        try {
-            JavadocUtil.extractJavadocVersion(version);
-            fail("Not catch null");
-        } catch (IllegalArgumentException e) {
-            assertTrue(true);
-        }
-
         // Sun JDK 1.4
-        version = "java full version \"1.4.2_12-b03\"";
+        String version = "java full version \"1.4.2_12-b03\"";
         assertEquals("1.4.2", JavadocUtil.extractJavadocVersion(version));
 
         // Sun JDK 1.5
@@ -126,15 +135,6 @@ public class JavadocUtilTest extends PlexusTestCase {
         version = "java full version \"1.4\"";
         assertEquals("1.4", JavadocUtil.extractJavadocVersion(version));
 
-        version = "java full version \"1.A.B_07-164\"";
-        try {
-            JavadocUtil.extractJavadocVersion(version);
-            // does not fail since JEP 223 support addition
-            // assertTrue( "Not catch wrong pattern", false );
-        } catch (PatternSyntaxException e) {
-            assertTrue(true);
-        }
-
         version = "SCO-UNIX-J2SE-1.5.0_09*FCS-UW714-OSR6*_20061114";
         assertEquals("1.5.0", JavadocUtil.extractJavadocVersion(version));
 
@@ -163,20 +163,29 @@ public class JavadocUtilTest extends PlexusTestCase {
         assertEquals("10.0.1", JavadocUtil.extractJavadocVersion(version));
     }
 
+    public void testParseJavadocMemory_null() {
+        try {
+            JavadocUtil.parseJavadocMemory(null);
+            fail("Not catch null");
+        } catch (NullPointerException ex) {
+            assertNotNull(ex.getMessage());
+        }
+    }
+
+    public void testParseJavadocMemory_empty() {
+        try {
+            JavadocUtil.parseJavadocMemory("");
+            fail("Not catch null");
+        } catch (IllegalArgumentException ex) {
+            assertNotNull(ex.getMessage());
+        }
+    }
+
     /**
      * Method to test the javadoc memory parsing.
-     *
      */
     public void testParseJavadocMemory() {
-        String memory = null;
-        try {
-            JavadocUtil.parseJavadocMemory(memory);
-            fail("Not catch null");
-        } catch (IllegalArgumentException e) {
-            assertTrue(true);
-        }
-
-        memory = "128";
+        String memory = "128";
         assertEquals(JavadocUtil.parseJavadocMemory(memory), "128m");
 
         memory = "128k";

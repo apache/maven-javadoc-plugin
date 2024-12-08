@@ -497,9 +497,9 @@ public class JavadocUtil {
             Pattern.compile("(?s).*?[^a-zA-Z](([0-9]+\\.?[0-9]*)(\\.[0-9]+)?).*");
 
     /**
-     * Parse the output for 'javadoc -J-version' and return the javadoc version recognized. <br>
-     * Here are some output for 'javadoc -J-version' depending the JDK used:
-     * <table><caption>Output for 'javadoc -J-version' per JDK</caption>
+     * Parse the output of 'javadoc -J-version' and return the javadoc version recognized. <br>
+     * Here are some output for 'javadoc -J-version' depending on the JDK used:
+     * <table><caption>Output of 'javadoc -J-version' per JDK</caption>
      * <tr>
      * <th>JDK</th>
      * <th>Output for 'javadoc -J-version'</th>
@@ -530,15 +530,20 @@ public class JavadocUtil {
      * </tr>
      * </table>
      *
-     * @param output for 'javadoc -J-version'
+     * @param output of 'javadoc -J-version'
      * @return the version of the javadoc for the output, only digits and dots
-     * @throws PatternSyntaxException if the output doesn't match with the output pattern
+     * @throws PatternSyntaxException if the output doesn't match the output pattern
      *             {@code (?s).*?[^a-zA-Z]([0-9]+\\.?[0-9]*)(\\.([0-9]+))?.*}.
-     * @throws IllegalArgumentException if the output is null
+     * @throws NullPointerException if the output is null
+     * @throws IllegalArgumentException if the output is empty
      */
-    protected static String extractJavadocVersion(String output) throws IllegalArgumentException {
-        if (output == null || output.isEmpty()) {
-            throw new IllegalArgumentException("The output could not be null.");
+    protected static String extractJavadocVersion(String output) {
+        if (output == null) {
+            throw new NullPointerException("The output cannot be null.");
+        }
+
+        if (output.isEmpty()) {
+            throw new IllegalArgumentException("The output cannot be empty.");
         }
 
         Pattern pattern = EXTRACT_JAVADOC_VERSION_PATTERN;
@@ -591,14 +596,18 @@ public class JavadocUtil {
      * </table>
      *
      * @param memory the memory to be parsed, not null.
-     * @return the memory parsed with a supported unit. If no unit specified in the <code>memory</code> parameter, the
+     * @return the memory parsed with a supported unit. If no unit is specified in the <code>memory</code> argument, the
      *         default unit is <code>m</code>. The units <code>g | gb</code> or <code>t | tb</code> will be converted in
      *         <code>m</code>.
-     * @throws IllegalArgumentException if the <code>memory</code> parameter is null or doesn't match any pattern.
+     * @throws NullPointerException if the <code>memory</code> argument is null
+     * @throws IllegalArgumentException if the <code>memory</code> argument doesn't match any pattern.
      */
-    protected static String parseJavadocMemory(String memory) throws IllegalArgumentException {
-        if (memory == null || memory.isEmpty()) {
-            throw new IllegalArgumentException("The memory could not be null.");
+    protected static String parseJavadocMemory(String memory) {
+        if (memory == null) {
+            throw new NullPointerException("The memory cannot be null.");
+        }
+        if (memory.isEmpty()) {
+            throw new IllegalArgumentException("The memory cannot be empty.");
         }
 
         Matcher m0 = PARSE_JAVADOC_MEMORY_PATTERN_0.matcher(memory);
