@@ -1072,7 +1072,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * <pre>
      * &lt;links&gt;
      *   &lt;link&gt;https://docs.oracle.com/en/java/javase/17/docs/api&lt;/link&gt;
-     * &lt;links&gt;
+     * &lt;/links&gt;
      * </pre>
      * will be used because <code>https://docs.oracle.com/en/java/javase/17/docs/api/element-list</code> exists.</li>
      * <li>If {@link #detectLinks} is defined, the links between the project dependencies are
