@@ -2201,7 +2201,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                     if (subProject != project) {
                         Collection<Path> additionalSourcePaths = new ArrayList<>();
 
-                        List<String> sourceRoots = getProjectSourceRoots(subProject);
+                        List<String> sourceRoots = new ArrayList<>(getProjectSourceRoots(subProject));
 
                         if (subProject.getExecutionProject() != null) {
                             sourceRoots.addAll(getExecutionProjectSourceRoots(subProject));
