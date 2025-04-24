@@ -26,9 +26,14 @@ jobs:
     name: Verify
     uses: apache/maven-gh-actions-shared/.github/workflows/maven-verify.yml@v4
     with:
+      verify-fail-fast: false
       jdk-distribution-matrix: '[ "temurin", "zulu", "microsoft", "liberica", "adopt-openj9" ]'
       matrix-exclude: '[
         { "jdk": "8", "distribution": "microsoft"},
         { "jdk": "8", "distribution": "temurin", "os": "macos-latest" },
         { "jdk": "8", "distribution": "adopt-openj9", "os": "macos-latest" }
       ]'
+      failure-upload-path: |
+        **/javacore*.txt
+        **/surefire-reports/*
+        
