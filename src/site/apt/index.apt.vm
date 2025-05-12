@@ -59,7 +59,7 @@ javadoc.exe(or .sh) @options @packages | @argfile
 
    * {{{./javadoc-no-fork-mojo.html}javadoc:javadoc-no-fork}} generates the Javadoc files for the project.
      It executes the standard Javadoc tool and supports the parameters used by the tool without forking the
-     <<<generate-sources>>> phase again. Note that this goal does require generation of test sources before site generation, e.g.
+     <<<generate-sources>>> phase again. Note that this goal does require generation of sources before site generation, e.g.
      by invoking <<<mvn clean deploy site>>>.
 
    * {{{./test-javadoc-no-fork-mojo.html}javadoc:test-javadoc-no-fork}} generates the test Javadoc files for the project.
