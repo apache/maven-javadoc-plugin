@@ -925,7 +925,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private String docencoding;
 
     /**
-     * Enables deep copying of the <code>&#42;&#42;/doc-files</code> directories and the specifc <code>resources</code>
+     * Enables deep copying of the <code>&#42;&#42;/doc-files</code> directories and the specific <code>resources</code>
      * directory from the <code>javadocDirectory</code> directory (for instance,
      * <code>src/main/javadoc/com/mycompany/myapp/doc-files</code> and <code>src/main/javadoc/resources</code>).
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option docfilessubdirs</a>.
