@@ -3782,13 +3782,14 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             if (location == null || location.isEmpty()) {
                 continue;
             }
-            if (isValidJavadocLink(location, false)) {
-                addArgIfNotEmpty(
-                        arguments,
-                        "-linkoffline",
-                        JavadocUtil.quotedPathArgument(url) + " " + JavadocUtil.quotedPathArgument(location),
-                        true);
+            if (validateLinks && !isValidJavadocLink(location, false)) {
+                continue;
             }
+            addArgIfNotEmpty(
+                    arguments,
+                    "-linkoffline",
+                    JavadocUtil.quotedPathArgument(url) + " " + JavadocUtil.quotedPathArgument(location),
+                    true);
         }
     }
 
@@ -5591,7 +5592,11 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 }
             }
 
-            if (url != null && isValidJavadocLink(url, detected)) {
+            if (url != null) {
+                if (validateLinks && !isValidJavadocLink(url, detected)) {
+                    continue;
+                }
+
                 getLog().debug("Added Javadoc link: " + url + " for " + artifact.getId());
 
                 dependenciesLinks.add(url);
@@ -5788,14 +5793,14 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             }
 
             try {
-                if (JavadocUtil.isValidElementList(elementListUri.toURL(), settings, validateLinks)) {
+                if (JavadocUtil.isValidElementList(elementListUri.toURL(), settings)) {
                     return true;
                 }
             } catch (IOException e) {
                 // ignore this because it is optional
             }
 
-            if (JavadocUtil.isValidPackageList(packageListUri.toURL(), settings, validateLinks)) {
+            if (JavadocUtil.isValidPackageList(packageListUri.toURL(), settings)) {
                 return true;
             }
 

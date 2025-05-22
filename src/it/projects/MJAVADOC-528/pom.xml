@@ -39,6 +39,7 @@
           <version>@project.version@</version>
           <configuration>
             <detectLinks>true</detectLinks>
+            <validateLinks>true</validateLinks>
           </configuration>
         </plugin>
       </plugins>
