@@ -47,7 +47,7 @@
           <dependencies>
             <dependency>
               <groupId>org.apache.maven.plugins.javadoc.its</groupId>
-              <artifactId>mjavadoc450</artifactId>
+              <artifactId>mjavadoc450-jdk-23</artifactId>
               <version>1.0</version>
               <classifier>static</classifier>
             </dependency>
