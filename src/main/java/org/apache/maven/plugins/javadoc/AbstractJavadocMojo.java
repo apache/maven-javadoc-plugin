@@ -2774,7 +2774,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         if (new File(stylesheetfile).exists()) {
             return Optional.of(new File(stylesheetfile));
         }
-
+        if (JavaVersion.JAVA_VERSION.isAtLeast("23")) {
+            return getResource(
+                    new File(new File(javadocOutputDirectory, "resource-files"), DEFAULT_CSS_NAME), stylesheetfile);
+        }
         return getResource(new File(javadocOutputDirectory, DEFAULT_CSS_NAME), stylesheetfile);
     }
 

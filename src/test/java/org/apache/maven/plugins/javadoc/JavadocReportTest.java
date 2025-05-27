@@ -315,7 +315,12 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         assertThat(apidocs.resolve("index-all.html")).exists();
         assertThat(apidocs.resolve("index.html")).exists();
         assertThat(apidocs.resolve("overview-tree.html")).exists();
-        assertThat(apidocs.resolve("stylesheet.css")).exists();
+        if (JavaVersion.JAVA_VERSION.isAtLeast("23")) {
+            assertThat(apidocs.resolve("resource-files/stylesheet.css")).exists();
+        } else {
+
+            assertThat(apidocs.resolve("stylesheet.css")).exists();
+        }
 
         if (JavaVersion.JAVA_VERSION.isAtLeast("10")) {
             assertThat(apidocs.resolve("element-list")).exists();
@@ -556,7 +561,11 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         assertThat(apidocs.resolve("index-all.html")).exists();
         assertThat(apidocs.resolve("index.html")).exists();
         assertThat(apidocs.resolve("overview-tree.html")).exists();
-        assertThat(apidocs.resolve("stylesheet.css")).exists();
+        if (JavaVersion.JAVA_VERSION.isAtLeast("23")) {
+            assertThat(apidocs.resolve("resource-files/stylesheet.css")).exists();
+        } else {
+            assertThat(apidocs.resolve("stylesheet.css")).exists();
+        }
 
         if (JavaVersion.JAVA_VERSION.isBefore("10")) {
             assertThat(apidocs.resolve("package-list")).exists();
@@ -602,7 +611,11 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         assertThat(apidocs.resolve("index-all.html")).exists();
         assertThat(apidocs.resolve("index.html")).exists();
         assertThat(apidocs.resolve("overview-tree.html")).exists();
-        assertThat(apidocs.resolve("stylesheet.css")).exists();
+        if (JavaVersion.JAVA_VERSION.isAtLeast("23")) {
+            assertThat(apidocs.resolve("resource-files/stylesheet.css")).exists();
+        } else {
+            assertThat(apidocs.resolve("stylesheet.css")).exists();
+        }
 
         if (JavaVersion.JAVA_VERSION.isBefore("10")) {
             assertThat(apidocs.resolve("package-list")).exists();
@@ -1140,6 +1153,9 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         Path apidocs = new File(getBasedir(), "target/test/unit/stylesheetfile-test/target/site/apidocs").toPath();
 
         Path stylesheetfile = apidocs.resolve("stylesheet.css");
+        if (JavaVersion.JAVA_VERSION.isAtLeast("23")) {
+            stylesheetfile = apidocs.resolve("resource-files/stylesheet.css");
+        }
         Path options = apidocs.resolve("options");
 
         // stylesheet == maven OR java
@@ -1191,8 +1207,9 @@ public class JavadocReportTest extends AbstractMojoTestCase {
 
         optionsContent = readFile(options);
         assertTrue(optionsContent.contains("-stylesheetfile"));
-        assertTrue(optionsContent.contains(
-                "'" + stylesheetfile.toFile().getAbsolutePath().replaceAll("\\\\", "/") + "'"));
+
+        assertThat(optionsContent)
+                .contains("'" + stylesheetfile.toFile().getAbsolutePath().replaceAll("\\\\", "/") + "'");
 
         // stylesheetfile defined as file
         Path css = unit.resolve("stylesheetfile-test/src/main/resources/com/mycompany/app/javadoc/css3/stylesheet.css");
