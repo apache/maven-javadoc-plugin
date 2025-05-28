@@ -1697,6 +1697,16 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     @Parameter(property = "forceRootLocale", defaultValue = "true")
     private boolean forceRootLocale;
 
+    /**
+     * From jdk 23, javadoc now include some extra css, files which can increase the size of javadoc jar.
+     * This can be disabled using the option {@code --no-fonts}
+     * The javadoc plugin will add this option to diable extra files to be added per default.
+     * If you prefer the new font you must set to {@code true} the option {@code disableNoFonts}
+     * @since 3.11.3
+     */
+    @Parameter(property = "maven.javadoc.disableNoFonts", defaultValue = "false")
+    private boolean disableNoFonts;
+
     // ----------------------------------------------------------------------
     // protected methods
     // ----------------------------------------------------------------------
@@ -2017,6 +2027,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         // Wrap Javadoc options
         // ----------------------------------------------------------------------
         List<String> javadocArguments = new ArrayList<>();
+
+        if (JavaVersion.JAVA_VERSION.isAtLeast("23") && !disableNoFonts) {
+            javadocArguments.add("--no-fonts");
+        }
 
         addJavadocOptions(javadocOutputDirectory, javadocArguments, sourcePaths, offlineLinks);
 

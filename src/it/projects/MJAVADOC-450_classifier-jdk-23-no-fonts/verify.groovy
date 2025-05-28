@@ -23,5 +23,4 @@ assert buildLog.text.contains('custom.css found in javadoc plugin dependencies')
 def stylesheetCss = new File( basedir, 'target/reports/apidocs/resource-files/stylesheet.css' );
 assert stylesheetCss.text.containsIgnoreCase('dejavu')
 
-
-assert new File( basedir, 'target/reports/apidocs/resource-files/fonts/dejavu.css' ).exists();
+assert !(new File( basedir, 'target/reports/apidocs/resource-files/fonts/dejavu.css'  ).exists());

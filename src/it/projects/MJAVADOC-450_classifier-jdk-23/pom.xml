@@ -42,6 +42,8 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>@project.version@</version>
           <configuration>
+            <debug>true</debug>
+            <disableNoFonts>true</disableNoFonts>
             <stylesheetfile>custom.css</stylesheetfile>
           </configuration>
           <dependencies>
