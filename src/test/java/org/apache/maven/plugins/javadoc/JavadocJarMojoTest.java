@@ -95,8 +95,11 @@ public class JavadocJarMojoTest extends AbstractMojoTestCase {
                 set.add(entry.getName());
             }
         }
-
-        assertTrue(set.contains("stylesheet.css"));
+        if (JavaVersion.JAVA_VERSION.isAtLeast("23")) {
+            assertTrue(set.contains("resource-files/stylesheet.css"));
+        } else {
+            assertTrue(set.contains("stylesheet.css"));
+        }
         JavaVersion javadocVersion = (JavaVersion) getVariableValueFromObject(mojo, "javadocRuntimeVersion");
         if (javadocVersion.isBefore("1.7")) {
             assertTrue(set.contains("resources/inherit.gif"));
