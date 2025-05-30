@@ -2120,16 +2120,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         if (applyJavadocSecurityFix) {
             // finally, patch the Javadoc vulnerability in older Javadoc tools (CVE-2013-1571):
             try {
-                final int patched = fixFrameInjectionBug(javadocOutputDirectory, getDocencoding());
-                if (patched > 0) {
-                    getLog().info(String.format(
-                            "Fixed Javadoc frame injection vulnerability (CVE-2013-1571) in %d files.", patched));
-                }
+                fixFrameInjectionBug(javadocOutputDirectory, getDocencoding());
             } catch (IOException e) {
                 throw new MavenReportException("Failed to patch javadocs vulnerability: " + e.getMessage(), e);
             }
-        } else {
-            getLog().info("applying javadoc security fix has been disabled");
         }
     }
 
@@ -2137,7 +2131,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * Method to get the files on the specified source paths
      *
      * @param sourcePaths a Collection that contains the paths to the source files
-     * @return a List that contains the specific path for every source file
+     * @return the specific path for every source file
      * @throws MavenReportException {@link MavenReportException} issue while generating report
      */
     protected Map<Path, Collection<String>> getFiles(Collection<Path> sourcePaths) throws MavenReportException {
