@@ -2229,7 +2229,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
                         if (getJavadocDirectory() != null) {
                             Path base = project.getBasedir().toPath();
-                            Path relative = base.relativize(getJavadocDirectory().toPath().toAbsolutePath());
+                            Path relative = base.relativize(
+                                    getJavadocDirectory().toPath().toAbsolutePath());
                             Path javadocDir = subProject.getBasedir().toPath().resolve(relative);
                             if (Files.exists(javadocDir) && javadocDir.isDirectory()) {
                                 Collection<Path> l = JavadocUtil.pruneDirs(
