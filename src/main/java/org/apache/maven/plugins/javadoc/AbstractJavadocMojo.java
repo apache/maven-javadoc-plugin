@@ -6012,8 +6012,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         options.setTags(toList(tags));
 
         if (getProject() != null && getJavadocDirectory() != null) {
-            options.setJavadocResourcesDirectory(
-                    toRelative(getProject().getBasedir(), getJavadocDirectory().getAbsolutePath()));
+            Path basedir = getProject().getBasedir().toPath().toAbsolutePath();
+            Path javadocDirectory = getJavadocDirectory().toPath().toAbsolutePath();
+            Path javadocResourcesDirectory = basedir.relativize(javadocDirectory);
+            options.setJavadocResourcesDirectory(javadocResourcesDirectory.toString());
         }
 
         File optionsFile = getJavadocOptionsFile();
