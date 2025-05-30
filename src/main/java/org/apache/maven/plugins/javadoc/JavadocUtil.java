@@ -363,7 +363,7 @@ public class JavadocUtil {
      *
      * @param sourceDirectory the directory where the source files are located
      * @param excludePackagenames package names to be excluded in the javadoc
-     * @return a List of the packagenames to be excluded
+     * @return the package names to be excluded
      */
     protected static Collection<String> getExcludedPackages(
             final Path sourceDirectory, Collection<String> excludePackagenames) {
@@ -1262,7 +1262,10 @@ public class JavadocUtil {
         return result;
     }
 
-    // TODO: deprecate in favor of Path.relativize
+    /**
+     * @deprecated use {@link Path#relativize(Path)} () instead
+     */
+    @Deprecated
     public static String toRelative(File basedir, String absolutePath) {
         String relative;
 
