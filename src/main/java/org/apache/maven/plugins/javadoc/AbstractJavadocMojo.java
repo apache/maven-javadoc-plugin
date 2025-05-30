@@ -148,7 +148,7 @@ import static org.apache.maven.plugins.javadoc.JavadocUtil.toList;
 import static org.apache.maven.plugins.javadoc.JavadocUtil.toRelative;
 
 /**
- * Base class with majority of Javadoc functionalities.
+ * Base class with the majority of Javadoc functionality.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
@@ -2234,7 +2234,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                             Path javadocDir = subProject.getBasedir().toPath().resolve(relative);
                             if (Files.isDirectory(javadocDir)) {
                                 Collection<Path> l = JavadocUtil.pruneDirs(
-                                        subProject, Collections.singletonList(javadocDir.toAbsolutePath().toString()));
+                                        subProject,
+                                        Collections.singletonList(
+                                                javadocDir.toAbsolutePath().toString()));
                                 additionalSourcePaths.addAll(l);
                             }
                         }
