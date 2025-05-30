@@ -3330,7 +3330,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @param javadocArtifact the {@link JavadocPathArtifact} to resolve
      * @return a resolved {@link Artifact}
      * @throws org.eclipse.aether.resolution.ArtifactResolutionException
-     * @throws ArtifactResolverException issue while resolving artifact
      */
     private Artifact createAndResolveArtifact(JavadocPathArtifact javadocArtifact)
             throws org.eclipse.aether.resolution.ArtifactResolutionException {
@@ -3861,7 +3860,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      *
      * @param javadocOutputDirectory not null
      * @throws MavenReportException if any
-     * @see #copyDefaultStylesheet(File)
      * @see #copyJavadocResources(File)
      * @see #copyAdditionalJavadocResources(File)
      */
