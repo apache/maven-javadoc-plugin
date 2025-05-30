@@ -2232,9 +2232,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                             Path relative = base.relativize(
                                     getJavadocDirectory().toPath().toAbsolutePath());
                             Path javadocDir = subProject.getBasedir().toPath().resolve(relative);
-                            if (Files.exists(javadocDir) && javadocDir.isDirectory()) {
+                            if (Files.isDirectory(javadocDir)) {
                                 Collection<Path> l = JavadocUtil.pruneDirs(
-                                        subProject, Collections.singletonList(javadocDir.getAbsolutePath()));
+                                        subProject, Collections.singletonList(javadocDir.toAbsolutePath().toString()));
                                 additionalSourcePaths.addAll(l);
                             }
                         }
@@ -3862,7 +3862,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      *
      * @param javadocOutputDirectory not null
      * @throws MavenReportException if any
-     * @see #copyDefaultStylesheet(File)
      * @see #copyJavadocResources(File)
      * @see #copyAdditionalJavadocResources(File)
      */
