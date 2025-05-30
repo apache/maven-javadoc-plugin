@@ -145,7 +145,6 @@ import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtLeast;
 import static org.apache.maven.plugins.javadoc.JavadocUtil.isEmpty;
 import static org.apache.maven.plugins.javadoc.JavadocUtil.isNotEmpty;
 import static org.apache.maven.plugins.javadoc.JavadocUtil.toList;
-import static org.apache.maven.plugins.javadoc.JavadocUtil.toRelative;
 
 /**
  * Base class with majority of Javadoc functionalities.
