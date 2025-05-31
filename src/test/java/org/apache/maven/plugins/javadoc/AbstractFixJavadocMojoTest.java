@@ -33,7 +33,7 @@ public class AbstractFixJavadocMojoTest {
     }
 
     @Test
-    public void testReplaceLinkTags_noLinkTag() {
+    public void testReplaceLinkTagsNoLinkTag() {
         String comment = "/** @see ConnectException */";
         String source = "import java.net.ConnectException;\n" + comment + "\n" + "public class NoLinkTag {}";
 
@@ -45,7 +45,7 @@ public class AbstractFixJavadocMojoTest {
     }
 
     @Test
-    public void testReplaceLinkTags_oneLinkTag() {
+    public void testReplaceLinkTagsOneLinkTag() {
         String comment = "/** {@link ConnectException} */";
         String source = "import java.net.ConnectException;\n" + comment + "\n" + "public class OneLinkTag {}";
 
@@ -56,7 +56,7 @@ public class AbstractFixJavadocMojoTest {
     }
 
     @Test
-    public void testReplaceLinkTags_missingEndBrace() {
+    public void testReplaceLinkTagsMissingEndBrace() {
         String comment = "/** {@link ConnectException */";
         String source = "import java.net.ConnectException;\n" + comment + "\n" + "public class MissingEndBrace {}";
 
@@ -67,7 +67,7 @@ public class AbstractFixJavadocMojoTest {
     }
 
     @Test
-    public void testReplaceLinkTags_spacesAfterLinkTag() {
+    public void testReplaceLinkTagsSpacesAfterLinkTag() {
         String comment = "/** {@link     ConnectException} */";
         String source = "import java.net.ConnectException;\n" + comment + "\n" + "public class SpacesAfterLinkTag {}";
 
@@ -78,7 +78,7 @@ public class AbstractFixJavadocMojoTest {
     }
 
     @Test
-    public void testReplaceLinkTags_spacesAfterClassName() {
+    public void testReplaceLinkTagsSpacesAfterClassName() {
         String comment = "/** {@link ConnectException       } */";
         String source = "import java.net.ConnectException;\n" + comment + "\n" + "public class SpacesAfterClassName {}";
 
@@ -89,7 +89,7 @@ public class AbstractFixJavadocMojoTest {
     }
 
     @Test
-    public void testReplaceLinkTags_spacesAfterMethod() {
+    public void testReplaceLinkTagsSpacesAfterMethod() {
         String comment = "/** {@link ConnectException#getMessage()       } */";
         String source = "import java.net.ConnectException;\n" + comment + "\n" + "public class SpacesAfterMethod {}";
 
@@ -100,7 +100,7 @@ public class AbstractFixJavadocMojoTest {
     }
 
     @Test
-    public void testReplaceLinkTags_containingHash() {
+    public void testReplaceLinkTagsContainingHash() {
         String comment = "/** {@link ConnectException#getMessage()} */";
         String source = "import java.net.ConnectException;\n" + comment + "\n" + "public class ContainingHashes {}";
 
@@ -111,7 +111,7 @@ public class AbstractFixJavadocMojoTest {
     }
 
     @Test
-    public void testReplaceLinkTags_followedByHash() {
+    public void testReplaceLinkTagsFollowedByHash() {
         String comment = "/** {@link ConnectException} ##important## */";
         String source = "import java.net.ConnectException;\n" + comment + "\n" + "public class FollowedByHash {}";
 
@@ -122,7 +122,7 @@ public class AbstractFixJavadocMojoTest {
     }
 
     @Test
-    public void testReplaceLinkTags_twoLinks() {
+    public void testReplaceLinkTagsTwoLinks() {
         String comment = "/** Use {@link ConnectException} instead of {@link Exception} */";
         String source = "import java.net.ConnectException;\n" + comment + "\n" + "public class TwoLinks {}";
 
@@ -134,7 +134,7 @@ public class AbstractFixJavadocMojoTest {
     }
 
     @Test
-    public void testReplaceLinkTags_OnlyAnchor() {
+    public void testReplaceLinkTagsOnlyAnchor() {
         String comment = "/** There's a {@link #getClass()} but no setClass() */";
         String source = "import java.net.ConnectException;\n" + comment + "\n" + "public class OnlyAnchor {}";
 
