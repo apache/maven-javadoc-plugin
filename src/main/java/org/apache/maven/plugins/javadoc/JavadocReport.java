@@ -148,9 +148,18 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
         }
     }
 
+    /**
+     * @deprecated use getOutputPath() instead
+     */
+    @Override
+    @Deprecated
+    public String getOutputName() {
+        return getOutputPath();
+    }
+
     /** {@inheritDoc} */
     @Override
-    public String getOutputName() {
+    public String getOutputPath() {
         return (isTest() ? "test" : "") + "apidocs" + "/index";
     }
 

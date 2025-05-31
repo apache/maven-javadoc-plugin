@@ -213,44 +213,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private static final String ELEMENT_LIST = "element-list";
 
     /**
-     * For Javadoc options appears since Java 1.4.
-     * See <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/whatsnew-1.4.1.html#summary">
-     * What's New in Javadoc 1.4</a>
-     *
-     * @since 2.1
-     */
-    private static final JavaVersion SINCE_JAVADOC_1_4 = JavaVersion.parse("1.4");
-
-    /**
-     * For Javadoc options appears since Java 1.4.2.
-     * See <a
-     * href="https://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/whatsnew-1.4.2.html#commandlineoptions">
-     * What's New in Javadoc 1.4.2</a>
-     *
-     * @since 2.1
-     */
-    private static final JavaVersion SINCE_JAVADOC_1_4_2 = JavaVersion.parse("1.4.2");
-
-    /**
-     * For Javadoc options appears since Java 5.0.
-     * See <a
-     * href="https://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/whatsnew-1.5.0.html#commandlineoptions">
-     * What's New in Javadoc 5.0</a>
-     *
-     * @since 2.1
-     */
-    private static final JavaVersion SINCE_JAVADOC_1_5 = JavaVersion.parse("1.5");
-
-    /**
-     * For Javadoc options appears since Java 6.0.
-     * See <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/index.html">
-     * Javadoc Technology</a>
-     *
-     * @since 2.4
-     */
-    private static final JavaVersion SINCE_JAVADOC_1_6 = JavaVersion.parse("1.6");
-
-    /**
      * For Javadoc options appears since Java 8.0.
      * See <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/javadoc/index.html">
      * Javadoc Technology</a>
@@ -1802,7 +1764,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         return p.getCompileSourceRoots() == null
-                ? Collections.<String>emptyList()
+                ? Collections.emptyList()
                 : new LinkedList<>(p.getCompileSourceRoots());
     }
 
@@ -1816,7 +1778,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         return p.getExecutionProject().getCompileSourceRoots() == null
-                ? Collections.<String>emptyList()
+                ? Collections.emptyList()
                 : new LinkedList<>(p.getExecutionProject().getCompileSourceRoots());
     }
 
@@ -3325,7 +3287,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * creates an {@link Artifact} representing the configured {@link JavadocPathArtifact} and resolves it.
+     * Creates an {@link Artifact} representing the configured {@link JavadocPathArtifact} and resolves it.
      *
      * @param javadocArtifact the {@link JavadocPathArtifact} to resolve
      * @return a resolved {@link Artifact}
@@ -4232,13 +4194,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private void addCommandLineArgFile(Commandline cmd, File javadocOutputDirectory, List<String> files)
             throws MavenReportException {
         File argfileFile;
-        if (JAVA_VERSION.compareTo(SINCE_JAVADOC_1_4) >= 0) {
-            argfileFile = new File(javadocOutputDirectory, ARGFILE_FILE_NAME);
-            cmd.createArg().setValue("@" + ARGFILE_FILE_NAME);
-        } else {
-            argfileFile = new File(javadocOutputDirectory, FILES_FILE_NAME);
-            cmd.createArg().setValue("@" + FILES_FILE_NAME);
-        }
+        argfileFile = new File(javadocOutputDirectory, ARGFILE_FILE_NAME);
+        cmd.createArg().setValue("@" + ARGFILE_FILE_NAME);
 
         List<String> quotedFiles = new ArrayList<>(files.size());
         for (String file : files) {
@@ -4376,20 +4333,15 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         // all options in alphabetical order
 
-        if (old && isJavaDocVersionAtLeast(SINCE_JAVADOC_1_4)) {
-            if (getLog().isWarnEnabled()) {
-                getLog().warn("Javadoc 1.4+ doesn't support the -1.1 switch anymore. Ignore this option.");
-            }
-        } else {
-            addArgIf(arguments, old, "-1.1");
+        if (getLog().isWarnEnabled()) {
+            getLog().warn("Javadoc 1.4+ doesn't support the -1.1 switch anymore. Ignore this option.");
         }
 
         addArgIfNotEmpty(arguments, "-bootclasspath", JavadocUtil.quotedPathArgument(getBootclassPath()));
 
-        if (isJavaDocVersionAtLeast(SINCE_JAVADOC_1_5)) {
-            addArgIf(arguments, breakiterator, "-breakiterator", SINCE_JAVADOC_1_5);
+        if (breakiterator) {
+            addArgIf(arguments, breakiterator, "-breakiterator");
         }
-
         List<MavenProject> aggregatedProjects = reactorProjects; // getAggregatedProjects();
         Map<String, MavenProject> reactorKeys = new HashMap<>(aggregatedProjects.size());
         for (MavenProject reactorProject : aggregatedProjects) {
@@ -4649,15 +4601,13 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         arguments.add(getAccessLevel());
 
-        if (isJavaDocVersionAtLeast(SINCE_JAVADOC_1_5)) {
-            addArgIf(arguments, quiet, "-quiet", SINCE_JAVADOC_1_5);
-        }
+        addArgIf(arguments, quiet, "-quiet");
 
         if (javadocRuntimeVersion.isAtLeast("9") && release != null) {
             arguments.add("--release");
             arguments.add(release);
         } else {
-            addArgIfNotEmpty(arguments, "-source", JavadocUtil.quotedArgument(source), SINCE_JAVADOC_1_4);
+            addArgIfNotEmpty(arguments, "-source", JavadocUtil.quotedArgument(source));
         }
 
         if ((sourcepath == null || sourcepath.isEmpty()) && (subpackages != null && !subpackages.isEmpty())) {
@@ -4680,12 +4630,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                     arguments, "--module-source-path", JavadocUtil.quotedPathArgument(moduleSourceDir.toString()));
         }
 
-        if ((sourcepath != null && !sourcepath.isEmpty()) && isJavaDocVersionAtLeast(SINCE_JAVADOC_1_5)) {
-            addArgIfNotEmpty(arguments, "-subpackages", subpackages, SINCE_JAVADOC_1_5);
-        }
+        addArgIfNotEmpty(arguments, "-subpackages", subpackages);
 
         // [MJAVADOC-497] must be after sourcepath is recalculated, since getExcludedPackages() depends on it
-        addArgIfNotEmpty(arguments, "-exclude", getExcludedPackages(sourcePaths), SINCE_JAVADOC_1_4);
+        addArgIfNotEmpty(arguments, "-exclude", getExcludedPackages(sourcePaths));
 
         addArgIf(arguments, verbose, "-verbose");
 
@@ -4755,9 +4703,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         addArgIfNotEmpty(arguments, "-bottom", JavadocUtil.quotedArgument(getBottomText()), false, false);
 
-        if (!isJavaDocVersionAtLeast(SINCE_JAVADOC_1_5)) {
-            addArgIf(arguments, breakiterator, "-breakiterator", SINCE_JAVADOC_1_4);
-        }
+        addArgIf(arguments, breakiterator, "-breakiterator");
 
         addArgIfNotEmpty(arguments, "-charset", JavadocUtil.quotedArgument(getCharset()));
 
@@ -4765,7 +4711,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         addArgIfNotEmpty(arguments, "-docencoding", JavadocUtil.quotedArgument(getDocencoding()));
 
-        addArgIf(arguments, docfilessubdirs, "-docfilessubdirs", SINCE_JAVADOC_1_4);
+        addArgIf(arguments, docfilessubdirs, "-docfilessubdirs");
 
         addArgIf(arguments, (doclint != null && !doclint.isEmpty()), "-Xdoclint:" + getDoclint(), SINCE_JAVADOC_1_8);
 
@@ -4773,10 +4719,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         if (docfilessubdirs) {
             addArgIfNotEmpty(
-                    arguments,
-                    "-excludedocfilessubdir",
-                    JavadocUtil.quotedPathArgument(excludedocfilessubdir),
-                    SINCE_JAVADOC_1_4);
+                    arguments, "-excludedocfilessubdir", JavadocUtil.quotedPathArgument(excludedocfilessubdir));
         }
 
         addArgIfNotEmpty(arguments, "-footer", JavadocUtil.quotedArgument(footer), false, false);
@@ -4785,30 +4728,23 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         addArgIfNotEmpty(arguments, "-header", JavadocUtil.quotedArgument(header), false, false);
 
-        Optional<File> helpFile = getHelpFile(javadocOutputDirectory);
-        if (helpFile.isPresent()) {
-            addArgIfNotEmpty(
-                    arguments,
-                    "-helpfile",
-                    JavadocUtil.quotedPathArgument(helpFile.get().getAbsolutePath()));
-        }
+        getHelpFile(javadocOutputDirectory)
+                .ifPresent(file -> addArgIfNotEmpty(
+                        arguments, "-helpfile", JavadocUtil.quotedPathArgument(file.getAbsolutePath())));
 
-        addArgIf(arguments, keywords, "-keywords", SINCE_JAVADOC_1_4_2);
+        addArgIf(arguments, keywords, "-keywords");
 
         addLinkArguments(arguments);
 
         addLinkofflineArguments(arguments, offlineLinks);
 
-        addArgIf(arguments, linksource, "-linksource", SINCE_JAVADOC_1_4);
+        addArgIf(arguments, linksource, "-linksource");
 
         if (sourcetab > 0) {
-            if (javadocRuntimeVersion == SINCE_JAVADOC_1_4_2) {
-                addArgIfNotEmpty(arguments, "-linksourcetab", String.valueOf(sourcetab));
-            }
-            addArgIfNotEmpty(arguments, "-sourcetab", String.valueOf(sourcetab), SINCE_JAVADOC_1_5);
+            addArgIfNotEmpty(arguments, "-sourcetab", String.valueOf(sourcetab));
         }
 
-        addArgIf(arguments, nocomment, "-nocomment", SINCE_JAVADOC_1_4);
+        addArgIf(arguments, nocomment, "-nocomment");
 
         addArgIf(arguments, nodeprecated, "-nodeprecated");
 
@@ -4822,7 +4758,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         addArgIf(arguments, nooverview, "-nooverview");
 
-        addArgIfNotEmpty(arguments, "-noqualifier", JavadocUtil.quotedArgument(noqualifier), SINCE_JAVADOC_1_4);
+        addArgIfNotEmpty(arguments, "-noqualifier", JavadocUtil.quotedArgument(noqualifier));
 
         addArgIf(arguments, nosince, "-nosince");
 
@@ -4832,44 +4768,34 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             notimestamp = true;
         }
 
-        addArgIf(arguments, notimestamp, "-notimestamp", SINCE_JAVADOC_1_5);
+        addArgIf(arguments, notimestamp, "-notimestamp");
 
         addArgIf(arguments, notree, "-notree");
 
-        addArgIfNotEmpty(arguments, "-packagesheader", JavadocUtil.quotedArgument(packagesheader), SINCE_JAVADOC_1_4_2);
+        addArgIfNotEmpty(arguments, "-packagesheader", JavadocUtil.quotedArgument(packagesheader));
 
-        if (!isJavaDocVersionAtLeast(SINCE_JAVADOC_1_5)) // Sun bug: 4714350
-        {
-            addArgIf(arguments, quiet, "-quiet", SINCE_JAVADOC_1_4);
-        }
+        addArgIf(arguments, quiet, "-quiet");
 
         addArgIf(arguments, serialwarn, "-serialwarn");
 
         addArgIf(arguments, splitindex, "-splitindex");
 
-        Optional<File> stylesheetfile = getStylesheetFile(javadocOutputDirectory);
-
-        if (stylesheetfile.isPresent()) {
-            addArgIfNotEmpty(
-                    arguments,
-                    "-stylesheetfile",
-                    JavadocUtil.quotedPathArgument(stylesheetfile.get().getAbsolutePath()));
-        }
+        getStylesheetFile(javadocOutputDirectory)
+                .ifPresent(file -> addArgIfNotEmpty(
+                        arguments, "-stylesheetfile", JavadocUtil.quotedPathArgument(file.getAbsolutePath())));
 
         addAddStyleSheets(arguments);
 
-        if ((sourcepath != null && !sourcepath.isEmpty()) && !isJavaDocVersionAtLeast(SINCE_JAVADOC_1_5)) {
-            addArgIfNotEmpty(arguments, "-subpackages", subpackages, SINCE_JAVADOC_1_4);
-        }
+        addArgIfNotEmpty(arguments, "-subpackages", subpackages);
 
-        addArgIfNotEmpty(arguments, "-taglet", JavadocUtil.quotedArgument(taglet), SINCE_JAVADOC_1_4);
+        addArgIfNotEmpty(arguments, "-taglet", JavadocUtil.quotedArgument(taglet));
         addTaglets(arguments);
         addTagletsFromTagletArtifacts(arguments);
-        addArgIfNotEmpty(arguments, "-tagletpath", JavadocUtil.quotedPathArgument(getTagletPath()), SINCE_JAVADOC_1_4);
+        addArgIfNotEmpty(arguments, "-tagletpath", JavadocUtil.quotedPathArgument(getTagletPath()));
 
         addTags(arguments);
 
-        addArgIfNotEmpty(arguments, "-top", JavadocUtil.quotedArgument(top), false, false, SINCE_JAVADOC_1_6);
+        addArgIfNotEmpty(arguments, "-top", JavadocUtil.quotedArgument(top), false, false);
 
         addArgIf(arguments, use, "-use");
 
@@ -4934,7 +4860,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                     }
                 }
                 value += "\"";
-                addArgIfNotEmpty(arguments, "-tag", value, SINCE_JAVADOC_1_4);
+                addArgIfNotEmpty(arguments, "-tag", value);
             }
         }
     }
@@ -4955,8 +4881,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                     getLog().warn("A taglet option is empty. Ignore this option.");
                 }
             } else {
-                addArgIfNotEmpty(
-                        arguments, "-taglet", JavadocUtil.quotedArgument(taglet1.getTagletClass()), SINCE_JAVADOC_1_4);
+                addArgIfNotEmpty(arguments, "-taglet", JavadocUtil.quotedArgument(taglet1.getTagletClass()));
             }
         }
     }
@@ -5054,7 +4979,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
             if (tagletClasses != null && !tagletClasses.isEmpty()) {
                 for (String tagletClass : tagletClasses) {
-                    addArgIfNotEmpty(arguments, "-taglet", JavadocUtil.quotedArgument(tagletClass), SINCE_JAVADOC_1_4);
+                    addArgIfNotEmpty(arguments, "-taglet", JavadocUtil.quotedArgument(tagletClass));
                 }
             }
         }
@@ -5601,7 +5526,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                     url = getJavadocLink(artifactProject);
                     detected = true;
                 } catch (ProjectBuildingException e) {
-                    logError("ProjectBuildingException for " + artifact.toString() + ": " + e.getMessage(), e);
+                    logError("ProjectBuildingException for " + artifact + ": " + e.getMessage(), e);
                     continue;
                 }
             }
