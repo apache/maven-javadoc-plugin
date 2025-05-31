@@ -44,7 +44,7 @@ public class AbstractJavadocMojoTest {
     }
 
     @Test
-    public void testMJAVADOC432_DetectLinksMessages() {
+    public void testMJAVADOC432DetectLinksMessages() {
         Log log = mock(Log.class);
         when(log.isErrorEnabled()).thenReturn(true);
         mojo.setLog(log);
@@ -69,7 +69,7 @@ public class AbstractJavadocMojoTest {
     }
 
     @Test
-    public void testMJAVADOC527_DetectLinksRecursion() {
+    public void testMJAVADOC527DetectLinksRecursion() {
         Log log = mock(Log.class);
         when(log.isErrorEnabled()).thenReturn(true);
         mojo.setLog(log);

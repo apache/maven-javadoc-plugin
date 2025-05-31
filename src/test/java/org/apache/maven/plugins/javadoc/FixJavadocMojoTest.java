@@ -53,7 +53,7 @@ public class FixJavadocMojoTest extends AbstractMojoTestCase {
     private static final String EOL = System.getProperty("line.separator");
 
     /** flag to copy repo only one time */
-    private static boolean TEST_REPO_CREATED = false;
+    private static boolean testRepoCreated = false;
 
     /** {@inheritDoc} */
     @Override
@@ -69,7 +69,7 @@ public class FixJavadocMojoTest extends AbstractMojoTestCase {
      * @throws IOException if any
      */
     private void createTestRepo() throws Exception {
-        if (TEST_REPO_CREATED) {
+        if (testRepoCreated) {
             return;
         }
 
@@ -97,7 +97,7 @@ public class FixJavadocMojoTest extends AbstractMojoTestCase {
             }
         }
 
-        TEST_REPO_CREATED = true;
+        testRepoCreated = true;
     }
 
     /**
