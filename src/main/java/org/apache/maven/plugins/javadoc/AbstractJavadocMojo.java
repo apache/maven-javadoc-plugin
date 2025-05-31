@@ -3291,7 +3291,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      *
      * @param javadocArtifact the {@link JavadocPathArtifact} to resolve
      * @return a resolved {@link Artifact}
-     * @throws org.eclipse.aether.resolution.ArtifactResolutionException
+     * @throws org.eclipse.aether.resolution.ArtifactResolutionException issue while resolving artifact
      */
     private Artifact createAndResolveArtifact(JavadocPathArtifact javadocArtifact)
             throws org.eclipse.aether.resolution.ArtifactResolutionException {
