@@ -203,12 +203,12 @@ public class TestJavadocReport extends JavadocReport {
 
     @Override
     protected List<String> getProjectSourceRoots(MavenProject p) {
-        if ("pom".equals(p.getPackaging().toLowerCase())) {
+        if ("pom".equalsIgnoreCase(p.getPackaging())) {
             return Collections.emptyList();
         }
 
         return p.getTestCompileSourceRoots() == null
-                ? Collections.<String>emptyList()
+                ? Collections.emptyList()
                 : new LinkedList<>(p.getTestCompileSourceRoots());
     }
 
@@ -219,7 +219,7 @@ public class TestJavadocReport extends JavadocReport {
         }
 
         return p.getExecutionProject().getTestCompileSourceRoots() == null
-                ? Collections.<String>emptyList()
+                ? Collections.emptyList()
                 : new LinkedList<>(p.getExecutionProject().getTestCompileSourceRoots());
     }
 

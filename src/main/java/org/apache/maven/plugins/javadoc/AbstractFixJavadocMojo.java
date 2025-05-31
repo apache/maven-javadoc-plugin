@@ -468,7 +468,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      */
     protected List<String> getProjectSourceRoots(MavenProject p) {
         return p.getCompileSourceRoots() == null
-                ? Collections.<String>emptyList()
+                ? Collections.emptyList()
                 : new LinkedList<>(p.getCompileSourceRoots());
     }
 
@@ -480,7 +480,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      */
     protected List<String> getCompileClasspathElements(MavenProject p) throws DependencyResolutionRequiredException {
         return p.getCompileClasspathElements() == null
-                ? Collections.<String>emptyList()
+                ? Collections.emptyList()
                 : new LinkedList<>(p.getCompileClasspathElements());
     }
 
@@ -855,7 +855,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
                 }
             }
 
-            projectClassLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]), parent);
+            projectClassLoader = new URLClassLoader(urls.toArray(new URL[0]), parent);
         }
 
         return projectClassLoader;
@@ -1724,7 +1724,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
 
             if (isJavaMethod) {
                 List<String> params = docletTag.getParameters();
-                if (params.size() < 1) {
+                if (params.isEmpty()) {
                     continue;
                 }
 
@@ -1769,7 +1769,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
                 JavaExecutable javaExecutable = (JavaExecutable) entity;
 
                 List<String> params = docletTag.getParameters();
-                if (params.size() < 1) {
+                if (params.isEmpty()) {
                     continue;
                 }
 
@@ -2439,7 +2439,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
             }
             if (clirrMethod.contains(retrn + " ")
                     && clirrMethod.contains(javaExecutable.getName() + "(")
-                    && clirrMethod.contains("(" + params.toString() + ")")) {
+                    && clirrMethod.contains("(" + params + ")")) {
                 return true;
             }
         }
