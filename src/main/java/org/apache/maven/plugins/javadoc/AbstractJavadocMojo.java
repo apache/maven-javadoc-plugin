@@ -19,7 +19,6 @@
 package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -118,9 +117,7 @@ import org.codehaus.plexus.languages.java.jpms.ResolvePathResult;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsRequest;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
-import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.WriterFactory;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
@@ -1567,10 +1564,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private List<String> sourceFileExcludes;
 
     /**
-     * To apply a security fix on generated javadoc, see
-     * <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-1571>CVE-2013-157</a>.
+     * No-op. Not needed in Java 8+ or the most recent versions of JDK 6 and 7.
      * @since 2.9.1
      */
+    @Deprecated
     @Parameter(defaultValue = "true", property = "maven.javadoc.applyJavadocSecurityFix")
     private boolean applyJavadocSecurityFix = true;
 
@@ -2078,20 +2075,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             if (scriptFile.exists()) {
                 scriptFile.delete();
             }
-        }
-        if (applyJavadocSecurityFix) {
-            // finally, patch the Javadoc vulnerability in older Javadoc tools (CVE-2013-1571):
-            try {
-                final int patched = fixFrameInjectionBug(javadocOutputDirectory, getDocencoding());
-                if (patched > 0) {
-                    getLog().info(String.format(
-                            "Fixed Javadoc frame injection vulnerability (CVE-2013-1571) in %d files.", patched));
-                }
-            } catch (IOException e) {
-                throw new MavenReportException("Failed to patch javadocs vulnerability: " + e.getMessage(), e);
-            }
-        } else {
-            getLog().info("applying javadoc security fix has been disabled");
         }
     }
 
@@ -5197,53 +5180,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * Patches the given Javadoc output directory to work around CVE-2013-1571
-     * (see http://www.kb.cert.org/vuls/id/225657).
-     *
-     * @param javadocOutputDirectory directory to scan for vulnerabilities
-     * @param outputEncoding         encoding used by the javadoc tool (-docencoding parameter).
-     *                               If {@code null}, the platform's default encoding is used (like javadoc does).
-     * @return the number of patched files
-     */
-    private int fixFrameInjectionBug(File javadocOutputDirectory, String outputEncoding) throws IOException {
-        final String fixData;
-
-        try (InputStream in = this.getClass().getResourceAsStream("frame-injection-fix.txt")) {
-            if (in == null) {
-                throw new FileNotFoundException("Missing resource 'frame-injection-fix.txt' in classpath.");
-            }
-            fixData = org.codehaus.plexus.util.StringUtils.unifyLineSeparators(IOUtil.toString(in, "US-ASCII"))
-                    .trim();
-        }
-
-        final DirectoryScanner ds = new DirectoryScanner();
-        ds.setBasedir(javadocOutputDirectory);
-        ds.setCaseSensitive(false);
-        ds.setIncludes(new String[] {"**/index.html", "**/index.htm", "**/toc.html", "**/toc.htm"});
-        ds.addDefaultExcludes();
-        ds.scan();
-        int patched = 0;
-        for (String f : ds.getIncludedFiles()) {
-            final File file = new File(javadocOutputDirectory, f);
-            // we load the whole file as one String (toc/index files are
-            // generally small, because they only contain frameset declaration):
-            final String fileContents = FileUtils.fileRead(file, outputEncoding);
-            // check if file may be vulnerable because it was not patched with "validURL(url)":
-            if (!StringUtils.contains(fileContents, "function validURL(url) {")) {
-                // we need to patch the file!
-                final String patchedFileContents =
-                        StringUtils.replaceOnce(fileContents, "function loadFrames() {", fixData);
-                if (!patchedFileContents.equals(fileContents)) {
-                    FileUtils.fileWrite(file, outputEncoding, patchedFileContents);
-                    patched++;
-                }
-            }
-        }
-        return patched;
-    }
-
-    /**
-     * @param outputFile        not nul
+     * @param outputFile        not null
      * @param inputResourceName a not null resource in <code>src/main/java</code>, <code>src/main/resources</code> or
      *                          <code>src/main/javadoc</code> or in the Javadoc plugin dependencies.
      * @return the resource file absolute path as String
