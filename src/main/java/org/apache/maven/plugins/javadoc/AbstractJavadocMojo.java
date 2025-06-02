@@ -2143,7 +2143,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 /*
                  * Should be after the source path (i.e. -sourcepath '.../src/main/java;.../src/main/javadoc') and *not*
                  * the opposite. If not, the javadoc tool always copies doc files, even if -docfilessubdirs is not
-                 * setted.
+                 * set.
                  */
                 if (getJavadocDirectory() != null) {
                     File javadocDir = getJavadocDirectory();
@@ -2309,10 +2309,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * Returns a ArtifactFilter that only includes direct dependencies of this project
+     * Returns an ArtifactFilter that only includes direct dependencies of this project
      * (verified via groupId and artifactId).
-     *
-     * @return
      */
     private TransformableFilter createDependencyArtifactFilter() {
         Set<Artifact> dependencyArtifacts = project.getDependencyArtifacts();
@@ -5600,12 +5598,12 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * Follows all of the given links if the Javadoc version is before 12, and returns their last
-     * redirect locations. Ordering is kept. This is necessary because javadoc tool doesn't follow
+     * Follows the given links if the Javadoc version is before 12, and returns their last
+     * redirect locations. Ordering is kept. This is necessary because the javadoc tool doesn't follow
      * links, see JDK-8190312 (MJAVADOC-427, MJAVADOC-487)
      *
-     * @param links Links to follow.
-     * @return Last redirect location of all the links.
+     * @param links Links to follow=
+     * @return last redirect location of all the links
      */
     private Set<String> followLinks(Set<String> links) {
         if (javadocRuntimeVersion.isAtLeast("12")) {
@@ -5757,23 +5755,23 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     // ----------------------------------------------------------------------
 
     /**
-     * @param p not null
-     * @return the javadoc link based on the project url i.e. <code>${project.url}/apidocs</code>.
+     * @param project not null
+     * @return the javadoc link based on the project URL i.e. <code>${project.url}/apidocs</code>.
      * @since 2.6
      */
-    private static String getJavadocLink(MavenProject p) {
-        if (p.getUrl() == null) {
+    private static String getJavadocLink(MavenProject project) {
+        if (project.getUrl() == null) {
             return null;
         }
 
-        String url = cleanUrl(p.getUrl());
+        String url = cleanUrl(project.getUrl());
 
         return url + "/apidocs";
     }
 
     /**
-     * @param url could be null.
-     * @return the url cleaned or empty if url was null.
+     * @param url could be null
+     * @return the cleaned URL or empty if url was null
      * @since 2.6
      */
     private static String cleanUrl(String url) {
@@ -5790,40 +5788,39 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * @param p        not null
+     * @param project        not null
      * @param pluginId not null key of the plugin defined in {@link org.apache.maven.model.Build#getPluginsAsMap()}
      *                 or in {@link org.apache.maven.model.PluginManagement#getPluginsAsMap()}
      * @return the Maven plugin defined in <code>${project.build.plugins}</code> or in
-     *         <code>${project.build.pluginManagement}</code>, or <code>null</code> if not defined.
+     *         <code>${project.build.pluginManagement}</code>, or <code>null</code> if not defined
      * @since 2.6
      */
-    private static Plugin getPlugin(MavenProject p, String pluginId) {
-        if ((p.getBuild() == null) || (p.getBuild().getPluginsAsMap() == null)) {
+    private static Plugin getPlugin(MavenProject project, String pluginId) {
+        if ((project.getBuild() == null) || (project.getBuild().getPluginsAsMap() == null)) {
             return null;
         }
 
-        Plugin plugin = p.getBuild().getPluginsAsMap().get(pluginId);
+        Plugin plugin = project.getBuild().getPluginsAsMap().get(pluginId);
 
         if ((plugin == null)
-                && (p.getBuild().getPluginManagement() != null)
-                && (p.getBuild().getPluginManagement().getPluginsAsMap() != null)) {
-            plugin = p.getBuild().getPluginManagement().getPluginsAsMap().get(pluginId);
+                && (project.getBuild().getPluginManagement() != null)
+                && (project.getBuild().getPluginManagement().getPluginsAsMap() != null)) {
+            plugin = project.getBuild().getPluginManagement().getPluginsAsMap().get(pluginId);
         }
 
         return plugin;
     }
 
     /**
-     * @param p        not null
+     * @param project the Maven project
      * @param pluginId not null
      * @param param    not null
-     * @return the simple parameter as String defined in the plugin configuration by <code>param</code> key
+     * @return the string parameter defined in the plugin configuration by <code>param</code> key
      *         or <code>null</code> if not found.
      * @since 2.6
      */
-    private static String getPluginParameter(MavenProject p, String pluginId, String param) {
-        //        p.getGoalConfiguration( pluginGroupId, pluginArtifactId, executionId, goalId );
-        Plugin plugin = getPlugin(p, pluginId);
+    private static String getPluginParameter(MavenProject project, String pluginId, String param) {
+        Plugin plugin = getPlugin(project, pluginId);
         if (plugin != null) {
             Xpp3Dom xpp3Dom = (Xpp3Dom) plugin.getConfiguration();
             if (xpp3Dom != null
@@ -5893,7 +5890,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     /**
      * Override this if you need to provide a bundle attachment classifier, as in the case of test
      * javadocs.
-     * @return The attachment classifier.
+     *
+     * @return the attachment classifier
      */
     protected String getAttachmentClassifier() {
         return JAVADOC_RESOURCES_ATTACHMENT_CLASSIFIER;
@@ -5902,8 +5900,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     /**
      * Logs an error with throwable content only if in debug.
      *
-     * @param message The message which should be announced.
-     * @param t The throwable part of the message.
+     * @param message the message which should be announced
+     * @param t the throwable part of the message
      */
     protected void logError(String message, Throwable t) {
         if (getLog().isDebugEnabled()) {
@@ -5918,8 +5916,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * @param prefix The prefix of the exception.
-     * @param e The exception.
+     * @param prefix the prefix of the exception
+     * @param e the exception
      * @throws MojoExecutionException {@link MojoExecutionException} issue while generating report
      */
     protected void failOnError(String prefix, Exception e) throws MojoExecutionException {
