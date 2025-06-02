@@ -61,7 +61,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JavadocUtilTest extends PlexusTestCase {
 
-    public void testParseJavadocVersion_Null() {
+    public void testParseJavadocVersionNull() {
         try {
             JavadocUtil.extractJavadocVersion(null);
             fail("Not catch null");
@@ -70,7 +70,7 @@ public class JavadocUtilTest extends PlexusTestCase {
         }
     }
 
-    public void testParseJavadocVersion_EmptyString() {
+    public void testParseJavadocVersionEmptyString() {
         try {
             JavadocUtil.extractJavadocVersion("");
             fail("Not catch empty version");
@@ -163,7 +163,7 @@ public class JavadocUtilTest extends PlexusTestCase {
         assertEquals("10.0.1", JavadocUtil.extractJavadocVersion(version));
     }
 
-    public void testParseJavadocMemory_null() {
+    public void testParseJavadocMemoryNull() {
         try {
             JavadocUtil.parseJavadocMemory(null);
             fail("Not catch null");
@@ -172,7 +172,7 @@ public class JavadocUtilTest extends PlexusTestCase {
         }
     }
 
-    public void testParseJavadocMemory_empty() {
+    public void testParseJavadocMemoryEmpty() {
         try {
             JavadocUtil.parseJavadocMemory("");
             fail("Not catch null");
@@ -291,35 +291,24 @@ public class JavadocUtilTest extends PlexusTestCase {
         }
 
         // real proxy
-        ProxyServer proxyServer = null;
-        AuthAsyncProxyServlet proxyServlet;
-        try {
-            proxyServlet = new AuthAsyncProxyServlet();
-            proxyServer = new ProxyServer(proxyServlet);
+        AuthAsyncProxyServlet proxyServlet = new AuthAsyncProxyServlet();
+        try (ProxyServer proxyServer = new ProxyServer(proxyServlet)) {
             proxyServer.start();
-
             settings = new Settings();
-
             assertTrue(JavadocUtil.isValidPackageList(url, settings, true));
-
             try {
                 JavadocUtil.isValidPackageList(wrongUrl, settings, false);
                 fail();
             } catch (IOException e) {
                 assertTrue(true);
             }
-        } finally {
-            if (proxyServer != null) {
-                proxyServer.stop();
-            }
         }
 
         Map<String, String> authentications = new HashMap<>();
         authentications.put("foo", "bar");
         // wrong auth
-        try {
-            proxyServlet = new AuthAsyncProxyServlet(authentications);
-            proxyServer = new ProxyServer(proxyServlet);
+        proxyServlet = new AuthAsyncProxyServlet(authentications);
+        try (ProxyServer proxyServer = new ProxyServer(proxyServlet)) {
             proxyServer.start();
 
             settings = new Settings();
@@ -334,14 +323,11 @@ public class JavadocUtilTest extends PlexusTestCase {
             fail();
         } catch (FileNotFoundException e) {
             assertTrue(true);
-        } finally {
-            proxyServer.stop();
         }
 
         // auth proxy
-        try {
-            proxyServlet = new AuthAsyncProxyServlet(authentications);
-            proxyServer = new ProxyServer(proxyServlet);
+        proxyServlet = new AuthAsyncProxyServlet(authentications);
+        try (ProxyServer proxyServer = new ProxyServer(proxyServlet)) {
             proxyServer.start();
 
             settings = new Settings();
@@ -362,14 +348,11 @@ public class JavadocUtilTest extends PlexusTestCase {
             } catch (IOException e) {
                 assertTrue(true);
             }
-        } finally {
-            proxyServer.stop();
         }
 
         // timeout
-        try {
-            proxyServlet = new AuthAsyncProxyServlet(authentications, 3000); // more than 2000, see fetchURL
-            proxyServer = new ProxyServer(proxyServlet);
+        proxyServlet = new AuthAsyncProxyServlet(authentications, 3000); // more than 2000, see fetchURL
+        try (ProxyServer proxyServer = new ProxyServer(proxyServlet)) {
             proxyServer.start();
 
             settings = new Settings();
@@ -386,14 +369,11 @@ public class JavadocUtilTest extends PlexusTestCase {
             fail();
         } catch (SocketTimeoutException e) {
             assertTrue(true);
-        } finally {
-            proxyServer.stop();
         }
 
         // nonProxyHosts
-        try {
-            proxyServlet = new AuthAsyncProxyServlet(authentications);
-            proxyServer = new ProxyServer(proxyServlet);
+        proxyServlet = new AuthAsyncProxyServlet(authentications);
+        try (ProxyServer proxyServer = new ProxyServer(proxyServlet)) {
             proxyServer.start();
 
             settings = new Settings();
@@ -408,8 +388,6 @@ public class JavadocUtilTest extends PlexusTestCase {
             settings.addProxy(proxy);
 
             assertTrue(JavadocUtil.isValidPackageList(url, settings, true));
-        } finally {
-            proxyServer.stop();
         }
     }
 

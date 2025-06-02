@@ -43,7 +43,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @since 2.6
  */
-class ProxyServer {
+class ProxyServer implements AutoCloseable {
     private Server proxyServer;
 
     private ServerConnector serverConnector;
@@ -51,7 +51,7 @@ class ProxyServer {
     /**
      * @param proxyServlet the wanted auth proxy servlet
      */
-    public ProxyServer(AuthAsyncProxyServlet proxyServlet) {
+    ProxyServer(AuthAsyncProxyServlet proxyServlet) {
         this(null, 0, proxyServlet);
     }
 
@@ -60,7 +60,7 @@ class ProxyServer {
      * @param port the server port
      * @param proxyServlet the wanted auth proxy servlet
      */
-    public ProxyServer(String hostName, int port, AuthAsyncProxyServlet proxyServlet) {
+    ProxyServer(String hostName, int port, AuthAsyncProxyServlet proxyServlet) {
         proxyServer = new Server();
 
         serverConnector = new ServerConnector(proxyServer);
@@ -105,6 +105,11 @@ class ProxyServer {
         }
     }
 
+    @Override
+    public void close() throws Exception {
+        this.stop();
+    }
+
     /**
      * @throws Exception if any
      */
@@ -126,7 +131,7 @@ class ProxyServer {
         /**
          * Constructor for non authentication servlet.
          */
-        public AuthAsyncProxyServlet() {
+        AuthAsyncProxyServlet() {
             super();
         }
 
@@ -135,7 +140,7 @@ class ProxyServer {
          *
          * @param authentications a map of user/password
          */
-        public AuthAsyncProxyServlet(Map<String, String> authentications) {
+        AuthAsyncProxyServlet(Map<String, String> authentications) {
             this();
 
             this.authentications = authentications;
@@ -147,7 +152,7 @@ class ProxyServer {
          * @param authentications a map of user/password
          * @param sleepTime a positive time to sleep the service thread (for timeout)
          */
-        public AuthAsyncProxyServlet(Map<String, String> authentications, long sleepTime) {
+        AuthAsyncProxyServlet(Map<String, String> authentications, long sleepTime) {
             this();
             this.authentications = authentications;
             this.sleepTime = sleepTime;

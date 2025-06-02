@@ -41,7 +41,7 @@ public class AggregatorJavadocReportTest extends AbstractMojoTestCase {
     private static final char LINE_SEPARATOR = ' ';
 
     /** flag to copy repo only one time */
-    private static boolean TEST_REPO_CREATED = false;
+    private static boolean testRepoCreated = false;
 
     private File unit;
 
@@ -88,7 +88,7 @@ public class AggregatorJavadocReportTest extends AbstractMojoTestCase {
      * @throws IOException if any
      */
     private void createTestRepo() throws IOException {
-        if (TEST_REPO_CREATED) {
+        if (testRepoCreated) {
             return;
         }
 
@@ -148,7 +148,7 @@ public class AggregatorJavadocReportTest extends AbstractMojoTestCase {
             }
         }
 
-        TEST_REPO_CREATED = true;
+        testRepoCreated = true;
     }
 
     /**
