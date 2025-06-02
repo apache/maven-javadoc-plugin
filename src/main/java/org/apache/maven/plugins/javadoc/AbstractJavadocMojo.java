@@ -3976,7 +3976,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             selectors[0].setExcludes(new String[] {"META-INF/**"});
             unArchiver.setFileSelectors(selectors);
 
-            getLog().info("Extracting contents of resources artifact: " + artifact.getArtifactId());
+            getLog().debug("Extracting contents of resources artifact: " + artifact.getArtifactId());
             try {
                 unArchiver.extract();
             } catch (ArchiverException e) {
