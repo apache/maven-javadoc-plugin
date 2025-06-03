@@ -579,7 +579,8 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
         getLog().warn("");
         getLog().warn("All warranties with regard to this Maven goal are disclaimed!");
         getLog().warn("The changes will be done directly in the source code.");
-        getLog().warn("The Maven Team strongly recommends commiting the code to source code management BEFORE executing this goal.");
+        getLog().warn(
+                        "The Maven Team strongly recommends committing the code to source code management BEFORE executing this goal.");
         getLog().warn("");
 
         while (true) {
