@@ -3436,7 +3436,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         //
         // In Java 9 and above the JRE is no longer in a subdirectory of the
         // JDK, i.e. the JRE and the JDK are merged. In this case the java
-        // command is installed to my-dir/bin/java along side the javadoc
+        // command is installed to my-dir/bin/java alongside the javadoc
         // command. So the relative path from "java.home" to the javadoc
         // command is bin/javadoc.
         //
@@ -3451,8 +3451,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         // "JEP 220: Modular Run-Time Images"
         // http://openjdk.java.net/jeps/220
         // ----------------------------------------------------------------------
-        // For IBM's JDK 1.2
         // CHECKSTYLE_ON: LineLength
+
+        // For IBM's JDK 1.2
         if (SystemUtils.IS_OS_AIX) {
             javadocExe =
                     new File(SystemUtils.getJavaHome() + File.separator + ".." + File.separator + "sh", javadocCommand);
@@ -3930,7 +3931,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             selectors[0].setExcludes(new String[] {"META-INF/**"});
             unArchiver.setFileSelectors(selectors);
 
-            getLog().info("Extracting contents of resources artifact: " + artifact.getArtifactId());
+            getLog().debug("Extracting contents of resources artifact: " + artifact.getArtifactId());
             try {
                 unArchiver.extract();
             } catch (ArchiverException e) {
@@ -5009,13 +5010,13 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 prvdata = null;
             }
             if (curdata.equals(prvdata)) {
-                getLog().info("Skipping javadoc generation, everything is up to date.");
+                getLog().debug("Skipping javadoc generation, everything is up to date.");
                 return true;
             } else {
                 if (prvdata == null) {
-                    getLog().info("No previous run data found, generating javadoc.");
+                    getLog().debug("No previous run data found, generating javadoc.");
                 } else {
-                    getLog().info("Configuration changed, re-generating javadoc.");
+                    getLog().debug("Configuration changed, re-generating javadoc.");
                     if (getLog().isDebugEnabled()) {
                         List<String> newStrings = new ArrayList<>(curdata);
                         List<String> remStrings = new ArrayList<>(prvdata);
@@ -5365,13 +5366,12 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             File location = new File(p.getBasedir(), javadocDirRelative);
 
             if (!location.exists()) {
+                String javadocGoal = getFullJavadocGoal();
                 if (getLog().isDebugEnabled()) {
                     getLog().debug("Javadoc directory not found: " + location);
+                    getLog().debug("The goal '" + javadocGoal + "' has not been previously called for the module: '"
+                            + p.getId() + "'. Trying to invoke it...");
                 }
-
-                String javadocGoal = getFullJavadocGoal();
-                getLog().info("The goal '" + javadocGoal + "' has not been previously called for the module: '"
-                        + p.getId() + "'. Trying to invoke it...");
 
                 File invokerDir = new File(project.getBuild().getDirectory(), "invoker");
                 invokerDir.mkdirs();
