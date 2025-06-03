@@ -270,7 +270,7 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
         }
 
         if (useDefaultManifestFile && defaultManifestFile.exists() && archive.getManifestFile() == null) {
-            getLog().info("Adding existing MANIFEST to archive. Found under: " + defaultManifestFile.getPath());
+            getLog().debug("Adding existing MANIFEST to archive. Found under: " + defaultManifestFile.getPath());
             archive.setManifestFile(defaultManifestFile);
         }
 
