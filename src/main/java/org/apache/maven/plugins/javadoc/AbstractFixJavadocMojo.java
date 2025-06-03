@@ -569,7 +569,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
         }
 
         if (!settings.isInteractiveMode()) {
-            getLog().error("Maven is not attempt to interact with the user for input. "
+            getLog().error("Maven is not interacting with the user for input. "
                     + "Verify the <interactiveMode/> configuration in your settings.");
             return false;
         }
@@ -579,11 +579,11 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
         getLog().warn("");
         getLog().warn("All warranties with regard to this Maven goal are disclaimed!");
         getLog().warn("The changes will be done directly in the source code.");
-        getLog().warn("The Maven Team strongly recommends the use of a SCM software BEFORE executing this goal.");
+        getLog().warn("The Maven Team strongly recommends commiting the code to source code management BEFORE executing this goal.");
         getLog().warn("");
 
         while (true) {
-            getLog().info("Are you sure to proceed? [Y]es [N]o");
+            getLog().info("Are you sure you want to proceed? [Y]es [N]o");
 
             try {
                 String userExpression = inputHandler.readLine();
@@ -592,7 +592,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
                     break;
                 }
                 if (JavadocUtil.equalsIgnoreCase(userExpression, "N", "No")) {
-                    getLog().info("No changes in your sources occur.");
+                    getLog().info("OK, I will not change your source code.");
                     return false;
                 }
             } catch (IOException e) {
@@ -737,9 +737,9 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
             }
         }
         if (clirrNewClasses.isEmpty() && clirrNewMethods.isEmpty()) {
-            getLog().info("Clirr NOT found API differences.");
+            getLog().info("Clirr did NOT find any API differences.");
         } else {
-            getLog().info("Clirr found API differences, i.e. new classes/interfaces or methods.");
+            getLog().info("Clirr found API differences; e.g. new classes, interfaces, or methods.");
         }
     }
 
