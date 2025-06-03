@@ -192,13 +192,13 @@ public class JavadocJarMojoTest extends AbstractMojoTestCase {
 
         new File(getBasedir(), "target/test/unit/stale-test/target/maven-javadoc-plugin-stale-data.txt").delete();
         mojo.execute();
-        assertThat(log.getMessages()).contains("[INFO] No previous run data found, generating javadoc.");
+        assertThat(log.getMessages()).contains("[DEBUG] No previous run data found, generating javadoc.");
 
         Thread.sleep(500);
 
         log.getMessages().clear();
         mojo.execute();
-        assertThat(log.getMessages()).contains("[INFO] Skipping javadoc generation, everything is up to date.");
+        assertThat(log.getMessages()).contains("[DEBUG] Skipping javadoc generation, everything is up to date.");
     }
 
     private static class BufferingLog implements Log {
