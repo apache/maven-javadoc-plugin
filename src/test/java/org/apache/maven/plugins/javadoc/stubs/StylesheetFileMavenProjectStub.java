@@ -20,12 +20,8 @@ package org.apache.maven.plugins.javadoc.stubs;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.DefaultArtifactRepository;
-import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
@@ -64,14 +60,5 @@ public class StylesheetFileMavenProjectStub extends MavenProjectStub {
     @Override
     public File getBasedir() {
         return new File(super.getBasedir() + "/src/test/resources/unit/stylesheetfile-test");
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<ArtifactRepository> getRemoteArtifactRepositories() {
-        ArtifactRepository repository = new DefaultArtifactRepository(
-                "central", "http://repo.maven.apache.org/maven2", new DefaultRepositoryLayout());
-
-        return Collections.singletonList(repository);
     }
 }
