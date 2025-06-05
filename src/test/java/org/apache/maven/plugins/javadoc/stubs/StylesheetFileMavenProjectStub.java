@@ -70,7 +70,7 @@ public class StylesheetFileMavenProjectStub extends MavenProjectStub {
     @Override
     public List<ArtifactRepository> getRemoteArtifactRepositories() {
         ArtifactRepository repository = new DefaultArtifactRepository(
-                "central", "http://repo.maven.apache.org/maven2", new DefaultRepositoryLayout());
+                "central", "https://repo.maven.apache.org/maven2", new DefaultRepositoryLayout());
 
         return Collections.singletonList(repository);
     }
