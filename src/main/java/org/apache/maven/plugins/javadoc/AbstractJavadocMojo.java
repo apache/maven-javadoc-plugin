@@ -142,7 +142,6 @@ import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtLeast;
 import static org.apache.maven.plugins.javadoc.JavadocUtil.isEmpty;
 import static org.apache.maven.plugins.javadoc.JavadocUtil.isNotEmpty;
 import static org.apache.maven.plugins.javadoc.JavadocUtil.toList;
-import static org.apache.maven.plugins.javadoc.JavadocUtil.toRelative;
 
 /**
  * Base class with the majority of Javadoc functionality.
@@ -5876,8 +5875,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         options.setTags(toList(tags));
 
         if (getProject() != null && getJavadocDirectory() != null) {
-            options.setJavadocResourcesDirectory(
-                    toRelative(getProject().getBasedir(), getJavadocDirectory().getAbsolutePath()));
+            Path basedir = getProject().getBasedir().toPath();
+            Path javadocDirectory = getJavadocDirectory().toPath().toAbsolutePath();
+            Path javadocResourcesDirectory = basedir.relativize(javadocDirectory);
+            options.setJavadocResourcesDirectory(javadocResourcesDirectory.toString());
         }
 
         File optionsFile = getJavadocOptionsFile();
