@@ -1534,7 +1534,7 @@ public class JavadocUtil {
             String activeProxyHost = activeProxy.getHost();
             if (activeProxyHost != null
                     && !activeProxyHost.isEmpty()
-                    && (url == null || !validateNonProxyHosts(nonProxyHosts, url.getHost()))) {
+                    && (url == null || !isNonProxyHost(nonProxyHosts, url.getHost()))) {
                 HttpHost proxy = new HttpHost(activeProxyHost, activeProxy.getPort());
                 builder.setProxy(proxy);
 
@@ -1554,7 +1554,7 @@ public class JavadocUtil {
         return builder.build();
     }
 
-    private static boolean validateNonProxyHosts(String nonProxyHosts, String targetHost) {
+    private static boolean isNonProxyHost(String nonProxyHosts, String targetHost) {
         if (nonProxyHosts == null) {
             return false;
         }
