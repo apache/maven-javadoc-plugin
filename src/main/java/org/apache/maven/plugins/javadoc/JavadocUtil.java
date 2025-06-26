@@ -96,8 +96,6 @@ import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.apache.maven.shared.invoker.PrintStreamHandler;
 import org.apache.maven.shared.utils.io.DirectoryScanner;
 import org.apache.maven.shared.utils.io.FileUtils;
-import org.apache.maven.wagon.proxy.ProxyInfo;
-import org.apache.maven.wagon.proxy.ProxyUtils;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
@@ -1527,20 +1525,17 @@ public class JavadocUtil {
         // Some web servers don't allow the default user-agent sent by httpClient
         builder.setUserAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)");
 
-        // Some server reject requests that do not have an Accept header
+        // Some servers reject requests that do not have an Accept header
         builder.setDefaultHeaders(Collections.singletonList(new BasicHeader(HttpHeaders.ACCEPT, "*/*")));
 
         if (settings != null && settings.getActiveProxy() != null) {
             Proxy activeProxy = settings.getActiveProxy();
-
-            ProxyInfo proxyInfo = new ProxyInfo();
-            proxyInfo.setNonProxyHosts(activeProxy.getNonProxyHosts());
-
+            String nonProxyHosts = activeProxy.getNonProxyHosts();
             String activeProxyHost = activeProxy.getHost();
             if (activeProxyHost != null
                     && !activeProxyHost.isEmpty()
-                    && (url == null || !ProxyUtils.validateNonProxyHosts(proxyInfo, url.getHost()))) {
-                HttpHost proxy = new HttpHost(activeProxy.getHost(), activeProxy.getPort());
+                    && (url == null || !validateNonProxyHosts(nonProxyHosts, url.getHost()))) {
+                HttpHost proxy = new HttpHost(activeProxyHost, activeProxy.getPort());
                 builder.setProxy(proxy);
 
                 String activeProxyUsername = activeProxy.getUsername();
@@ -1557,6 +1552,24 @@ public class JavadocUtil {
             }
         }
         return builder.build();
+    }
+
+    private static boolean validateNonProxyHosts(String nonProxyHosts, String targetHost) {
+        if (nonProxyHosts == null) {
+            return false;
+        }
+        if (targetHost == null) {
+            targetHost = "";
+        }
+        StringTokenizer tokenizer = new StringTokenizer(nonProxyHosts, "|");
+        while (tokenizer.hasMoreTokens()) {
+            String pattern = tokenizer.nextToken();
+            pattern = pattern.replaceAll("\\.", "\\\\.").replaceAll("\\*", ".*");
+            if (targetHost.matches(pattern)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     static boolean equalsIgnoreCase(String value, String... strings) {
