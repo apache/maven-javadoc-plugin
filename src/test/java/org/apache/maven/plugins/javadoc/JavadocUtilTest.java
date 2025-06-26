@@ -223,14 +223,14 @@ public class JavadocUtilTest extends PlexusTestCase {
             JavadocUtil.parseJavadocMemory(memory);
             fail("Not catch wrong pattern");
         } catch (IllegalArgumentException e) {
-            assertTrue(true);
+            assertNotNull(e.getMessage());
         }
         memory = "ABC128m";
         try {
             JavadocUtil.parseJavadocMemory(memory);
             fail("Not catch wrong pattern");
         } catch (IllegalArgumentException e) {
-            assertTrue(true);
+            assertNotNull(e.getMessage());
         }
     }
 
@@ -261,7 +261,7 @@ public class JavadocUtilTest extends PlexusTestCase {
             JavadocUtil.isValidPackageList(url, settings, false);
             fail();
         } catch (IllegalArgumentException e) {
-            assertTrue(true);
+            assertNotNull(e.getMessage());
         }
 
         url = new File(getBasedir(), "/pom.xml").toURI().toURL();
@@ -270,7 +270,7 @@ public class JavadocUtilTest extends PlexusTestCase {
         try {
             assertFalse(JavadocUtil.isValidPackageList(url, settings, true));
         } catch (IOException e) {
-            assertTrue(true);
+            assertNotNull(e.getMessage());
         }
 
         url = this.getClass()
@@ -287,7 +287,7 @@ public class JavadocUtilTest extends PlexusTestCase {
             JavadocUtil.isValidPackageList(wrongUrl, settings, false);
             fail();
         } catch (IOException e) {
-            assertTrue(true);
+            assertNotNull(e.getMessage());
         }
 
         // real proxy
@@ -300,7 +300,7 @@ public class JavadocUtilTest extends PlexusTestCase {
                 JavadocUtil.isValidPackageList(wrongUrl, settings, false);
                 fail();
             } catch (IOException e) {
-                assertTrue(true);
+                assertNotNull(e.getMessage());
             }
         }
 
@@ -322,7 +322,7 @@ public class JavadocUtilTest extends PlexusTestCase {
             JavadocUtil.isValidPackageList(url, settings, false);
             fail();
         } catch (FileNotFoundException e) {
-            assertTrue(true);
+            assertNotNull(e.getMessage());
         }
 
         // auth proxy
@@ -346,7 +346,7 @@ public class JavadocUtilTest extends PlexusTestCase {
                 JavadocUtil.isValidPackageList(wrongUrl, settings, false);
                 fail();
             } catch (IOException e) {
-                assertTrue(true);
+                assertNotNull(e.getMessage());
             }
         }
 
@@ -368,7 +368,7 @@ public class JavadocUtilTest extends PlexusTestCase {
             JavadocUtil.isValidPackageList(url, settings, true);
             fail();
         } catch (SocketTimeoutException e) {
-            assertTrue(true);
+            assertNotNull(e.getMessage());
         }
 
         // nonProxyHosts
