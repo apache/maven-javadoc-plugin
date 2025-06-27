@@ -118,8 +118,7 @@ public class JavadocUtilTest extends PlexusTestCase {
         version = System.lineSeparator() + "java full version \"1.5.0_07-164\"";
         assertEquals("1.5.0", JavadocUtil.extractJavadocVersion(version));
 
-        version = System.lineSeparator() + "java full version \"1.5.0_07-164\""
-                + System.lineSeparator();
+        version = System.lineSeparator() + "java full version \"1.5.0_07-164\"" + System.lineSeparator();
         assertEquals("1.5.0", JavadocUtil.extractJavadocVersion(version));
 
         version = "java full" + System.lineSeparator() + " version \"1.5.0_07-164\"";
@@ -677,7 +676,7 @@ public class JavadocUtilTest extends PlexusTestCase {
         assertEquals("'org.apache.uima.analysis_component:org.apache.uima.analysis_engine'", arg);
     }
 
-    public void testToList()  {
+    public void testToList() {
         String value = "     *.internal:org.acme.exclude1.*:\n       org.acme.exclude2\n       ";
         List<String> values = JavadocUtil.toList(value);
         assertThat(values).containsExactly("*.internal", "org.acme.exclude1.*", "org.acme.exclude2");
