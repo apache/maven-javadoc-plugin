@@ -50,7 +50,7 @@ import static org.apache.commons.lang3.reflect.MethodUtils.invokeMethod;
  */
 public class FixJavadocMojoTest extends AbstractMojoTestCase {
     /** The vm line separator */
-    private static final String EOL = System.getProperty("line.separator");
+    private static final String EOL = System.lineSeparator();
 
     /** flag to copy repo only one time */
     private static boolean testRepoCreated = false;

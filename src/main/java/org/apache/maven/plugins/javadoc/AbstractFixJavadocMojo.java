@@ -97,7 +97,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
     /**
      * The vm line separator
      */
-    private static final String EOL = System.getProperty("line.separator");
+    private static final String EOL = System.lineSeparator();
 
     /**
      * Tag name for &#64;author *

@@ -885,9 +885,9 @@ public class JavadocUtil {
      * splitPath( "C:/home;C:/tmp" ) = ["C:/home", "C:/tmp"]
      * </pre>
      *
-     * @param path which can contain multiple paths separated with a colon (<code>:</code>) or a semi-colon
+     * @param path which can contain multiple paths separated with a colon (<code>:</code>) or a semicolon
      *            (<code>;</code>), platform independent. Could be null.
-     * @return the path split by colon or semi-colon or <code>null</code> if path was <code>null</code>.
+     * @return the path split by colon or semicolon or <code>null</code> if path was <code>null</code>.
      * @since 2.6.1
      */
     protected static String[] splitPath(final String path) {
@@ -912,7 +912,7 @@ public class JavadocUtil {
      * unifyPathSeparator( "/home:/tmp" ) = "/home;/tmp" (Windows box)
      * </pre>
      *
-     * @param path which can contain multiple paths by separating them with a colon (<code>:</code>) or a semi-colon
+     * @param path which can contain multiple paths by separating them with a colon (<code>:</code>) or a semicolon
      *            (<code>;</code>), platform independent. Could be null.
      * @return the same path but separated with the current System path separator or <code>null</code> if path was
      *         <code>null</code>.
