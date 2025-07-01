@@ -18,7 +18,6 @@
  */
 package org.apache.maven.plugins.javadoc;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -113,17 +112,16 @@ public class JavadocUtilTest extends PlexusTestCase {
         assertEquals("1.5.0", JavadocUtil.extractJavadocVersion(version));
 
         // Other tests
-        version = "java full version \"1.5.0_07-164\"" + System.getProperty("line.separator");
+        version = "java full version \"1.5.0_07-164\"" + System.lineSeparator();
         assertEquals("1.5.0", JavadocUtil.extractJavadocVersion(version));
 
-        version = System.getProperty("line.separator") + "java full version \"1.5.0_07-164\"";
+        version = System.lineSeparator() + "java full version \"1.5.0_07-164\"";
         assertEquals("1.5.0", JavadocUtil.extractJavadocVersion(version));
 
-        version = System.getProperty("line.separator") + "java full version \"1.5.0_07-164\""
-                + System.getProperty("line.separator");
+        version = System.lineSeparator() + "java full version \"1.5.0_07-164\"" + System.lineSeparator();
         assertEquals("1.5.0", JavadocUtil.extractJavadocVersion(version));
 
-        version = "java full" + System.getProperty("line.separator") + " version \"1.5.0_07-164\"";
+        version = "java full" + System.lineSeparator() + " version \"1.5.0_07-164\"";
         assertEquals("1.5.0", JavadocUtil.extractJavadocVersion(version));
 
         version = "java full version \"1.99.123-b01\"";
@@ -186,64 +184,63 @@ public class JavadocUtilTest extends PlexusTestCase {
      */
     public void testParseJavadocMemory() {
         String memory = "128";
-        assertEquals(JavadocUtil.parseJavadocMemory(memory), "128m");
+        assertEquals("128m", JavadocUtil.parseJavadocMemory(memory));
 
         memory = "128k";
-        assertEquals(JavadocUtil.parseJavadocMemory(memory), "128k");
+        assertEquals("128k", JavadocUtil.parseJavadocMemory(memory));
         memory = "128kb";
-        assertEquals(JavadocUtil.parseJavadocMemory(memory), "128k");
+        assertEquals("128k", JavadocUtil.parseJavadocMemory(memory));
 
         memory = "128m";
-        assertEquals(JavadocUtil.parseJavadocMemory(memory), "128m");
+        assertEquals("128m", JavadocUtil.parseJavadocMemory(memory));
         memory = "128mb";
-        assertEquals(JavadocUtil.parseJavadocMemory(memory), "128m");
+        assertEquals("128m", JavadocUtil.parseJavadocMemory(memory));
 
         memory = "1g";
-        assertEquals(JavadocUtil.parseJavadocMemory(memory), "1024m");
+        assertEquals("1024m", JavadocUtil.parseJavadocMemory(memory));
         memory = "1gb";
-        assertEquals(JavadocUtil.parseJavadocMemory(memory), "1024m");
+        assertEquals("1024m", JavadocUtil.parseJavadocMemory(memory));
 
         memory = "1t";
-        assertEquals(JavadocUtil.parseJavadocMemory(memory), "1048576m");
+        assertEquals("1048576m", JavadocUtil.parseJavadocMemory(memory));
         memory = "1tb";
-        assertEquals(JavadocUtil.parseJavadocMemory(memory), "1048576m");
+        assertEquals("1048576m", JavadocUtil.parseJavadocMemory(memory));
 
-        memory = System.getProperty("line.separator") + "128m";
-        assertEquals(JavadocUtil.parseJavadocMemory(memory), "128m");
-        memory = System.getProperty("line.separator") + "128m" + System.getProperty("line.separator");
-        assertEquals(JavadocUtil.parseJavadocMemory(memory), "128m");
+        memory = System.lineSeparator() + "128m";
+        assertEquals("128m", JavadocUtil.parseJavadocMemory(memory));
+        memory = System.lineSeparator() + "128m" + System.lineSeparator();
+        assertEquals("128m", JavadocUtil.parseJavadocMemory(memory));
 
         memory = "     128m";
-        assertEquals(JavadocUtil.parseJavadocMemory(memory), "128m");
+        assertEquals("128m", JavadocUtil.parseJavadocMemory(memory));
         memory = "     128m     ";
-        assertEquals(JavadocUtil.parseJavadocMemory(memory), "128m");
+        assertEquals("128m", JavadocUtil.parseJavadocMemory(memory));
 
         memory = "1m28m";
         try {
             JavadocUtil.parseJavadocMemory(memory);
             fail("Not catch wrong pattern");
         } catch (IllegalArgumentException e) {
-            assertTrue(true);
+            assertNotNull(e.getMessage());
         }
         memory = "ABC128m";
         try {
             JavadocUtil.parseJavadocMemory(memory);
             fail("Not catch wrong pattern");
         } catch (IllegalArgumentException e) {
-            assertTrue(true);
+            assertNotNull(e.getMessage());
         }
     }
 
     /**
      * Method to test the validate encoding parsing.
-     *
      */
     public void testValidateEncoding() {
         assertFalse("Not catch null", JavadocUtil.validateEncoding(null));
-        assertTrue("UTF-8 not supported on this plateform", JavadocUtil.validateEncoding("UTF-8"));
-        assertTrue("ISO-8859-1 not supported on this plateform", JavadocUtil.validateEncoding("ISO-8859-1"));
-        assertFalse("latin is supported on this plateform???", JavadocUtil.validateEncoding("latin"));
-        assertFalse("WRONG is supported on this plateform???", JavadocUtil.validateEncoding("WRONG"));
+        assertTrue("UTF-8 not supported on this platform", JavadocUtil.validateEncoding("UTF-8"));
+        assertTrue("ISO-8859-1 not supported on this platform", JavadocUtil.validateEncoding("ISO-8859-1"));
+        assertFalse("latin is supported on this platform???", JavadocUtil.validateEncoding("latin"));
+        assertFalse("WRONG is supported on this platform???", JavadocUtil.validateEncoding("WRONG"));
     }
 
     /**
@@ -261,7 +258,7 @@ public class JavadocUtilTest extends PlexusTestCase {
             JavadocUtil.isValidPackageList(url, settings, false);
             fail();
         } catch (IllegalArgumentException e) {
-            assertTrue(true);
+            assertNotNull(e.getMessage());
         }
 
         url = new File(getBasedir(), "/pom.xml").toURI().toURL();
@@ -270,7 +267,7 @@ public class JavadocUtilTest extends PlexusTestCase {
         try {
             assertFalse(JavadocUtil.isValidPackageList(url, settings, true));
         } catch (IOException e) {
-            assertTrue(true);
+            assertNotNull(e.getMessage());
         }
 
         url = this.getClass()
@@ -287,7 +284,7 @@ public class JavadocUtilTest extends PlexusTestCase {
             JavadocUtil.isValidPackageList(wrongUrl, settings, false);
             fail();
         } catch (IOException e) {
-            assertTrue(true);
+            assertNotNull(e.getMessage());
         }
 
         // real proxy
@@ -300,7 +297,7 @@ public class JavadocUtilTest extends PlexusTestCase {
                 JavadocUtil.isValidPackageList(wrongUrl, settings, false);
                 fail();
             } catch (IOException e) {
-                assertTrue(true);
+                assertNotNull(e.getMessage());
             }
         }
 
@@ -322,7 +319,7 @@ public class JavadocUtilTest extends PlexusTestCase {
             JavadocUtil.isValidPackageList(url, settings, false);
             fail();
         } catch (FileNotFoundException e) {
-            assertTrue(true);
+            assertNotNull(e.getMessage());
         }
 
         // auth proxy
@@ -346,7 +343,7 @@ public class JavadocUtilTest extends PlexusTestCase {
                 JavadocUtil.isValidPackageList(wrongUrl, settings, false);
                 fail();
             } catch (IOException e) {
-                assertTrue(true);
+                assertNotNull(e.getMessage());
             }
         }
 
@@ -368,7 +365,7 @@ public class JavadocUtilTest extends PlexusTestCase {
             JavadocUtil.isValidPackageList(url, settings, true);
             fail();
         } catch (SocketTimeoutException e) {
-            assertTrue(true);
+            assertNotNull(e.getMessage());
         }
 
         // nonProxyHosts
@@ -412,7 +409,7 @@ public class JavadocUtilTest extends PlexusTestCase {
                 @Override
                 public void handle(
                         String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-                        throws IOException, ServletException {
+                        throws IOException {
                     response.setStatus(HttpServletResponse.SC_OK);
                     ByteArrayISO8859Writer writer = new ByteArrayISO8859Writer(100);
                     writer.write("<html>Hello world</html>");
@@ -456,7 +453,7 @@ public class JavadocUtilTest extends PlexusTestCase {
                 @Override
                 public void handle(
                         String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-                        throws IOException, ServletException {
+                        throws IOException {
                     response.setStatus(HttpServletResponse.SC_OK);
                     ByteArrayISO8859Writer writer = new ByteArrayISO8859Writer(100);
                     writer.write("<html>Hello world</html>");
@@ -492,7 +489,7 @@ public class JavadocUtilTest extends PlexusTestCase {
                 @Override
                 public void handle(
                         String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-                        throws IOException, ServletException {
+                        throws IOException {
 
                     if (request.getHeader("Accept") == null) {
                         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -567,7 +564,6 @@ public class JavadocUtilTest extends PlexusTestCase {
 
     /**
      * Method to test pruneDirs()
-     *
      */
     public void testPruneDirs() {
         List<String> list = new ArrayList<>();
@@ -612,7 +608,6 @@ public class JavadocUtilTest extends PlexusTestCase {
 
     /**
      * Method to test unifyPathSeparator()
-     *
      */
     public void testUnifyPathSeparator() {
         assertNull(JavadocUtil.unifyPathSeparator(null));
@@ -668,7 +663,7 @@ public class JavadocUtilTest extends PlexusTestCase {
         }
     }
 
-    public void testQuotedArgument() throws Exception {
+    public void testQuotedArgument() {
 
         String value = "      org.apache.uima.analysis_component:\n      org.apache.uima.analysis_engine\n";
 
@@ -681,7 +676,7 @@ public class JavadocUtilTest extends PlexusTestCase {
         assertEquals("'org.apache.uima.analysis_component:org.apache.uima.analysis_engine'", arg);
     }
 
-    public void testToList() throws Exception {
+    public void testToList() {
         String value = "     *.internal:org.acme.exclude1.*:\n       org.acme.exclude2\n       ";
         List<String> values = JavadocUtil.toList(value);
         assertThat(values).containsExactly("*.internal", "org.acme.exclude1.*", "org.acme.exclude2");
