@@ -1662,7 +1662,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     /**
      * From jdk 23, javadoc now include some extra css, files which can increase the size of javadoc jar.
      * This can be disabled using the option {@code --no-fonts}
-     * The javadoc plugin will add this option to diable extra files to be added per default.
+     * The javadoc plugin will add this option to disable extra files to be added per default.
      * If you prefer the new font you must set to {@code true} the option {@code disableNoFonts}
      * @since 3.11.3
      */
