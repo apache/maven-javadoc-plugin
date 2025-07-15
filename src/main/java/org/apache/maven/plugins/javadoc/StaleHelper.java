@@ -41,6 +41,20 @@ import org.codehaus.plexus.util.cli.Commandline;
 public class StaleHelper {
 
     /**
+     * Compute the encoding of the stale javadoc
+     *
+     * @return the the encoding of the stale data
+     */
+    private static Charset getDataCharset() {
+        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("9")
+                && JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("12")) {
+            return StandardCharsets.UTF_8;
+        } else {
+            return Charset.defaultCharset();
+        }
+    }
+
+    /**
      * Compute the data used to detect a stale javadoc
      *
      * @param cmd the command line
@@ -55,18 +69,10 @@ public class StaleHelper {
             String[] args = cmd.getArguments();
             Collections.addAll(options, args);
 
-            final Charset cs;
-            if (JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("9")
-                    && JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("12")) {
-                cs = StandardCharsets.UTF_8;
-            } else {
-                cs = Charset.defaultCharset();
-            }
-
             for (String arg : args) {
                 if (arg.startsWith("@")) {
                     String name = arg.substring(1);
-                    options.addAll(Files.readAllLines(dir.resolve(name), cs));
+                    options.addAll(Files.readAllLines(dir.resolve(name), getDataCharset()));
                     ignored.add(name);
                 }
             }
@@ -117,7 +123,7 @@ public class StaleHelper {
         try {
             List<String> curdata = getStaleData(cmd);
             Files.createDirectories(path.getParent());
-            Files.write(path, curdata, StandardCharsets.UTF_8);
+            Files.write(path, curdata, getDataCharset());
         } catch (IOException e) {
             throw new MavenReportException("Error checking stale data", e);
         }
