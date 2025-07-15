@@ -2022,7 +2022,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             getLog().warn("sourceFileIncludes and sourceFileExcludes have no effect when subpackages are specified!");
             includesExcludesActive = false;
         }
-        if (!packageNames.isEmpty() && !includesExcludesActive) {
+        if (!packageNames.isEmpty() && !includesExcludesActive && !legacyMode) {
             addCommandLinePackages(cmd, javadocOutputDirectory, packageNames);
 
             // ----------------------------------------------------------------------
@@ -2093,23 +2093,26 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         if (subpackages == null || subpackages.isEmpty()) {
             Collection<String> excludedPackages = getExcludedPackages();
 
-            final boolean autoExclude;
-            if (release != null) {
-                autoExclude = JavaVersion.parse(release).isBefore("9");
-            } else if (source != null) {
-                autoExclude = JavaVersion.parse(source).isBefore("9");
-            } else {
-                // if legacy mode is active, treat it like pre-Java 9 (exclude module-info),
-                // otherwise don't auto-exclude anything.
-                autoExclude = legacyMode;
+            // if legacy mode is active, treat it like pre-Java 9 (exclude module-info),
+            // otherwise don't auto-exclude anything. Do this regardless of the release
+            // or source values specified
+            boolean autoExclude = legacyMode;
+            if (!autoExclude) {
+                if (release != null) {
+                    autoExclude = JavaVersion.parse(release).isBefore("9");
+                } else if (source != null) {
+                    autoExclude = JavaVersion.parse(source).isBefore("9");
+                }
             }
 
             for (Path sourcePath : sourcePaths) {
                 File sourceDirectory = sourcePath.toFile();
-                List<String> files = new ArrayList<>(JavadocUtil.getFilesFromSource(
+                ArrayList<String> files = new ArrayList<>(JavadocUtil.getFilesFromSource(
                         sourceDirectory, sourceFileIncludes, sourceFileExcludes, excludedPackages));
 
-                if (autoExclude && files.remove("module-info.java")) {
+                // in the aggregate goal (and theoretically in others too), there can be
+                // more then one module-info.java. Filter out all of them.
+                if (autoExclude && files.removeIf(s -> s.endsWith("module-info.java"))) {
                     getLog().debug("Auto exclude module-info.java due to source value");
                 }
                 mappedFiles.put(sourcePath, files);
@@ -4603,7 +4606,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         if (moduleSourceDir == null) {
-            if (!disableSourcepathUsage) {
+            if (!disableSourcepathUsage && !legacyMode) {
                 addArgIfNotEmpty(
                         arguments,
                         "-sourcepath",
