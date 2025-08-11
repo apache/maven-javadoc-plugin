@@ -214,7 +214,7 @@ under the License.
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-archiver</artifactId>
-      <version>3.6.2</version>
+      <version>3.6.4</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
