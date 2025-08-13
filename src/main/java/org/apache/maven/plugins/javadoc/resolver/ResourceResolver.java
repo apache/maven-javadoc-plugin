@@ -222,7 +222,7 @@ public final class ResourceResolver {
         Collection<Path> dirs = new ArrayList<>(toResolve.size());
         try {
             dirs = resolveAndUnpack(toResolve, config, RESOURCE_VALID_CLASSIFIERS, false);
-        } catch (ArtifactResolutionException | ArtifactNotFoundException e) {
+        } catch (ArtifactResolutionException e) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug(e.getMessage(), e);
             }
