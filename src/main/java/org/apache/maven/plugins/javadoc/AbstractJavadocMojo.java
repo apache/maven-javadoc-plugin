@@ -5063,9 +5063,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 }
                 writeDebugJavadocScript(cmdLine, javadocOutputDirectory);
 
-                if (output != null
-                        && StringUtils.isEmpty(err.getOutput())
-                        && isJavadocVMInitError(output)) {
+                if (output != null && StringUtils.isEmpty(err.getOutput()) && isJavadocVMInitError(output)) {
                     throw new MavenReportException(output + '\n' + '\n' + JavadocUtil.ERROR_INIT_VM + '\n'
                             + "Or, try to reduce the Java heap size for the Javadoc goal using "
                             + "-Dminmemory=<size> and -Dmaxmemory=<size>." + '\n' + '\n' + "Command line was: "
