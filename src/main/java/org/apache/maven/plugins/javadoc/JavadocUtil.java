@@ -1088,7 +1088,7 @@ public class JavadocUtil {
             }
         }
 
-        if (!javaHome.exists()) {
+        if (javaHome == null || !javaHome.exists()) {
             javaHome = new File(javaHomeValue);
         }
 
