@@ -2663,12 +2663,15 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * Method that sets the text that will be displayed on the bottom of the
-     * javadocs.
+     * Method that sets the text that will be displayed on the bottom of the javadocs.
      *
      * @return a String that contains the text that will be displayed at the bottom of the javadoc
      */
     private String getBottomText() {
+        if (this.bottom == null) {
+            return null;
+        }
+
         final String inceptionYear = project.getInceptionYear();
 
         // get Reproducible Builds outputTimestamp date value or the current local date.
@@ -2697,8 +2700,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                                     + project.getOrganization().getName() + "</a>");
                 } else {
                     theBottom = theBottom.replace(
-                            "{organizationName}",
-                            project.getOrganization().getName());
+                            "{organizationName}", project.getOrganization().getName());
                 }
             } else {
                 theBottom = theBottom.replace(" {organizationName}", "");
