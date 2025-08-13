@@ -1033,9 +1033,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
             // see comment above (line 829)
             //             assertTrue( optionsContent.contains( "-link 'http://commons.apache.org/logging/apidocs'" ) );
         } finally {
-            if (proxyServer != null) {
-                proxyServer.stop();
-            }
+            proxyServer.stop();
         }
     }
 

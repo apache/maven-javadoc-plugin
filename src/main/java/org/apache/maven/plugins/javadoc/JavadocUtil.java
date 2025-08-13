@@ -228,7 +228,7 @@ public class JavadocUtil {
         List<String> list = Arrays.stream(arg.split("\n")).map(String::trim).collect(Collectors.toList());
         arg = String.join("", list);
 
-        if (arg != null && !arg.isEmpty()) {
+        if (!arg.isEmpty()) {
             arg = arg.replace("'", "\\'");
             arg = "'" + arg + "'";
         }
@@ -814,9 +814,7 @@ public class JavadocUtil {
             request.setProperties(properties);
         }
         File javaHome = getJavaHome(log);
-        if (javaHome != null) {
-            request.setJavaHome(javaHome);
-        }
+        request.setJavaHome(javaHome);
 
         if (log != null && log.isDebugEnabled()) {
             log.debug("Invoking Maven for the goals: " + goals + " with "
@@ -1090,11 +1088,11 @@ public class JavadocUtil {
             }
         }
 
-        if (javaHome == null || !javaHome.exists()) {
+        if (!javaHome.exists()) {
             javaHome = new File(javaHomeValue);
         }
 
-        if (javaHome == null || !javaHome.exists()) {
+        if (!javaHome.exists()) {
             if (log != null && log.isErrorEnabled()) {
                 log.error("Cannot find Java application directory. Either specify 'java.home' system property, or "
                         + "JAVA_HOME environment variable.");
@@ -1452,12 +1450,8 @@ public class JavadocUtil {
                 public void close() throws IOException {
                     super.close();
 
-                    if (httpMethod != null) {
-                        httpMethod.releaseConnection();
-                    }
-                    if (httpClient != null) {
-                        httpClient.close();
-                    }
+                    httpMethod.releaseConnection();
+                    httpClient.close();
                 }
             };
         }
