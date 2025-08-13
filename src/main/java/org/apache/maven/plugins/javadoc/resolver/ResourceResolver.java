@@ -289,14 +289,13 @@ public final class ResourceResolver {
      * @param propagateErrors
      * @return list of <dependencyConflictId, absolutePath>
      * @throws ArtifactResolutionException if an exception occurs
-     * @throws ArtifactNotFoundException if an exception occurs
      */
     private Collection<Path> resolveAndUnpack(
             final List<org.eclipse.aether.artifact.Artifact> artifacts,
             final SourceResolverConfig config,
             final List<String> validClassifiers,
             final boolean propagateErrors)
-            throws ArtifactResolutionException, ArtifactNotFoundException {
+            throws ArtifactResolutionException {
         // NOTE: Since these are '-sources' and '-test-sources' artifacts, they won't actually
         // resolve transitively...this is just used to aggregate resolution failures into a single
         // exception.
