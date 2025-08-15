@@ -293,7 +293,7 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
 
         File outputDirectory = new File(getOutputDirectory());
 
-        String filename = getOutputName() + ".html";
+        String filename = getOutputPath() + ".html";
 
         Locale locale = SiteTool.DEFAULT_LOCALE;
 
