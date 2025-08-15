@@ -44,8 +44,6 @@ public class CustomConfigurationMavenProjectStub extends MavenProjectStub {
         setName("Maven Javadoc Plugin Custom configuration Test");
         setUrl("http://maven.apache.org");
         setPackaging("jar");
-        // setExecutionRoot( true );
-        // setDescription( "Sample Maven Project" );
 
         Scm scm = new Scm();
         scm.setConnection("scm:svn:http://svn.apache.org/maven/sample/trunk");
