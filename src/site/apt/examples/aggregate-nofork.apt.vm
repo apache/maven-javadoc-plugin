@@ -24,14 +24,14 @@
 
 Generate aggregate Javadoc without duplicate execution of phase compile.
 
- * The standard goals <<<aggregate>>> and <<<test-aggregate>>> invoke separate lifecyles
+ * The standard goals <<<aggregate>>> and <<<test-aggregate>>> invoke separate lifecycles
  <<<compile>>> and <<<test-compile>>>.
 
  * In a CI environment you now might execute something like <<<mvn clean deploy site site-deploy>>>.
 
  * During <<<site>>> build the standard reports will trigger <<<compile>>> or
  <<<test-compile>>> again, depending on your build this may take some time, because
- stuff like <<<enforcer>>> or generating stubs from a WDSL will be invoked again, which may lead
+ stuff like <<<enforcer>>> or generating stubs from a WSDL will be invoked again, which may lead
  to longer build times.
 
  * As of version 3.0.1 two new reports are defined, <<<aggregate-no-fork>>> and <<<test-aggregate-no-fork>>>

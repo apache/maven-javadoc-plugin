@@ -1023,10 +1023,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      *
      * <b>Notes</b>:
      * <ol>
-     * <li>This option is ignored if the plugin is run in offline mode (using the {@code <offline>}
-     * setting or specifying {@code -o, --offline} or {@code -Dmaven.javadoc.offline=true} on the
+     * <li>This option is ignored if the plugin is run in offline mode using the {@code <offline>}
+     * setting or by specifying {@code -o, --offline} or {@code -Dmaven.javadoc.offline=true} on the
      * command line.</li>
-     * <li>all given links should have a fetchable <code>/package-list</code> or <code>/element-list</code>
+     * <li>All given links should have a fetchable <code>/package-list</code> or <code>/element-list</code>
      * (since Java 10). For instance:
      * <pre>
      * &lt;links&gt;

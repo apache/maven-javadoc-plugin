@@ -152,7 +152,7 @@ public class JavadocUtil {
      *
      * @param project the current Maven project not null
      * @param dirs the collection of directories that will be validated
-     * @return a list of valid claspath elements as absolute paths
+     * @return a list of valid classpath elements as absolute paths
      */
     public static Collection<Path> pruneDirs(MavenProject project, Collection<String> dirs) {
         return prunePaths(project, dirs, false);

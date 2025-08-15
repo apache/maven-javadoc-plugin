@@ -129,7 +129,7 @@ javadoc.exe(or .sh) @options @packages | @argfile
 
 * Examples
 
-   The following examples show how to use the Javadoc Plugin in more advanced usecases:
+   The following examples show how to use the Javadoc Plugin in more advanced use cases:
 
    * {{{./examples/aggregate.html}Aggregating Javadocs for Multi-Projects}}
 
