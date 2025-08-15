@@ -2412,9 +2412,8 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      * @param javaExecutable a given method not null
      * @return <code>true</code> if Clirr said that this method is added from the last version,
      *         <code>false</code> otherwise or if {@link #clirrNewMethods} is null.
-     * @throws MojoExecutionException if any
      */
-    private boolean isNewMethodFromLastRevision(JavaExecutable javaExecutable) throws MojoExecutionException {
+    private boolean isNewMethodFromLastRevision(JavaExecutable javaExecutable) {
         if (clirrNewMethods == null) {
             return false;
         }
