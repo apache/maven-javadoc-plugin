@@ -180,9 +180,9 @@ public class JavadocUtil {
      * Determine whether a file should be excluded from the provided list of paths, based on whether it exists and is
      * already present in the list.
      *
-     * @param f The files.
-     * @param pruned The list of pruned files..
-     * @return true if the file could be pruned false otherwise.
+     * @param f the files
+     * @param pruned the list of pruned files
+     * @return true if the file could be pruned, false otherwise
      */
     public static boolean shouldPruneFile(String f, List<String> pruned) {
         if (f != null) {
@@ -573,7 +573,7 @@ public class JavadocUtil {
 
     /**
      * Parse a memory string which be used in the JVM arguments <code>-Xms</code> or <code>-Xmx</code>. <br>
-     * Here are some supported memory string depending the JDK used:
+     * Here are some supported memory string depending on the JDK used:
      * <table><caption>Memory argument support per JDK</caption>
      * <tr>
      * <th>JDK</th>
@@ -639,7 +639,7 @@ public class JavadocUtil {
     /**
      * Validate if a charset is supported on this platform.
      *
-     * @param charsetName the charsetName to be check.
+     * @param charsetName the charsetName to check
      * @return <code>true</code> if the given charset is supported by the JVM, <code>false</code> otherwise.
      */
     protected static boolean validateEncoding(String charsetName) {
@@ -874,7 +874,7 @@ public class JavadocUtil {
     }
 
     /**
-     * Split the given path with colon and semi-colon, to support Solaris and Windows path. Examples:
+     * Split the given path with colon and semicolon, to support Unix and Windows paths. Examples:
      *
      * <pre>
      * splitPath( "/home:/tmp" )     = ["/home", "/tmp"]
@@ -1132,7 +1132,7 @@ public class JavadocUtil {
         private String lookahead = null;
 
         /**
-         * Flag to indicate whether or not we are running on a platform with a DOS style filesystem
+         * Flag to indicate whether we are running on a platform with a DOS style filesystem
          */
         private boolean dosStyleFilesystem;
 

@@ -863,7 +863,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * Process the given {@link JavaClass}, ie add missing javadoc tags depending user parameters.
+     * Process the given {@link JavaClass}, ie add missing javadoc tags depending on user parameters.
      *
      * @param javaClass not null
      * @throws IOException            if any
@@ -1069,7 +1069,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
 
     /**
      * @param modifiers list of modifiers (public, private, protected, package)
-     * @return <code>true</code> if modifier is align with <code>level</code>.
+     * @return <code>true</code> if modifier is aligned with <code>level</code>.
      */
     private boolean isInLevel(List<String> modifiers) {
         if (LEVEL_PUBLIC.equalsIgnoreCase(level.trim())) {

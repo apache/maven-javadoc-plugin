@@ -515,7 +515,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * Detect the Java API link for the current build, e.g. <code>https://docs.oracle.com/javase/1.4.2/docs/api/</code>
      * for Java source 1.4.
      * <br/>
-     * By default, the goal detects the Javadoc API link depending the value of the <code>source</code>
+     * By default, the goal detects the Javadoc API link depending on the value of the <code>source</code>
      * parameter in the <code>org.apache.maven.plugins:maven-compiler-plugin</code>
      * (defined in <code>${project.build.plugins}</code> or in <code>${project.build.pluginManagement}</code>),
      * or try to compute it from the {@code javadocExecutable} version.
@@ -528,7 +528,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private boolean detectJavaApiLink;
 
     /**
-     * Use this parameter <b>only</b> if if you want to override the default URLs.
+     * Use this parameter <b>only</b> if you want to override the default URLs.
      *
      * The key should match {@code api_x}, where {@code x} matches the Java version.
      *
@@ -846,7 +846,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     // ----------------------------------------------------------------------
 
     /**
-     * Specifies whether or not the author text is included in the generated Javadocs.
+     * Specifies whether the author text is included in the generated Javadocs.
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option author</a>.
      */
     @Parameter(property = "author", defaultValue = "true")
@@ -1149,7 +1149,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private String noqualifier;
 
     /**
-     * Omits from the generated docs the "Since" sections associated with the since tags.
+     * Omits the "Since" sections from the generated docs.
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option nosince</a>.
      */
     @Parameter(property = "nosince", defaultValue = "false")
@@ -1345,8 +1345,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private TagletArtifact tagletArtifact;
 
     /**
-     * Specifies several Taglet artifacts containing the taglet class files (.class). These taglets class names will be
-     * auto-detect and so no need to specify them.
+     * Specifies several Taglet artifacts containing the taglet class files (.class). These taglet class names will be
+     * auto-detected and so no need to specify them.
      * <br/>
      * Example:
      * <pre>
@@ -2111,7 +2111,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                         sourceDirectory, sourceFileIncludes, sourceFileExcludes, excludedPackages));
 
                 // in the aggregate goal (and theoretically in others too), there can be
-                // more then one module-info.java. Filter out all of them.
+                // more than one module-info.java. Filter out all of them.
                 if (autoExclude && files.removeIf(s -> s.endsWith("module-info.java"))) {
                     getLog().debug("Auto exclude module-info.java due to source value");
                 }
@@ -3377,7 +3377,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * Get the path of the Javadoc tool executable depending the user entry or try to find it depending the OS
+     * Get the path of the Javadoc tool executable depending on the user entry or try to find it depending on the OS
      * or the <code>java.home</code> system property or the <code>JAVA_HOME</code> environment variable.
      *
      * @return the path of the Javadoc tool
@@ -3586,7 +3586,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
     /**
      * Convenience method to add an argument to the <code>command line</code>
-     * if the the value is not null or empty.
+     * if the value is not null or empty.
      * <p/>
      * Moreover, the value could be comma separated.
      *
@@ -3601,7 +3601,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
     /**
      * Convenience method to add an argument to the <code>command line</code>
-     * if the the value is not null or empty.
+     * if the value is not null or empty.
      * <p/>
      * Moreover, the value could be comma separated.
      *
@@ -3635,7 +3635,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
     /**
      * Convenience method to add an argument to the <code>command line</code>
-     * if the the value is not null or empty.
+     * if the value is not null or empty.
      * <p/>
      * Moreover, the value could be comma separated.
      *
@@ -3673,7 +3673,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
     /**
      * Convenience method to add an argument to the <code>command line</code>
-     * if the the value is not null or empty.
+     * if the value is not null or empty.
      * <p/>
      * Moreover, the value could be comma separated.
      *
@@ -3774,7 +3774,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * If {@code detectLinks}, try to add javadoc apidocs according Maven conventions for all dependencies given
      * in the project.
      * <br/>
-     * According the Javadoc documentation, all defined links should have <code>${link}/package-list</code> fetchable.
+     * According to the Javadoc documentation, all defined links should have <code>${link}/package-list</code> fetchable.
      * <br/>
      * <b>Note</b>: when a link is not fetchable:
      * <ul>
@@ -4165,8 +4165,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * Generate a file called <code>argfile</code> (or <code>files</code>, depending the JDK) to hold files and add
-     * the <code>@argfile</code> (or <code>@file</code>, depending the JDK) in the command line.
+     * Generate a file called <code>argfile</code> (or <code>files</code>, depending on the JDK) to hold files and add
+     * the <code>@argfile</code> (or <code>@file</code>, depending on the JDK) in the command line.
      *
      * @param cmd                    not null
      * @param javadocOutputDirectory not null
@@ -4392,7 +4392,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 if (aggregatedProject != null && !"pom".equals(aggregatedProject.getPackaging())) {
                     ResolvePathResult result = null;
 
-                    // Prefer jar over outputDirectory, since it may may contain an automatic module name
+                    // Prefer jar over outputDirectory, since it may contain an automatic module name
                     File artifactFile = getClassesFile(aggregatedProject);
                     if (artifactFile != null) {
                         ResolvePathRequest<File> request = ResolvePathRequest.ofFile(artifactFile);
@@ -5402,7 +5402,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                         throw new MavenReportException(e.getMessage(), e);
                     }
                 } finally {
-                    // just create the directory to prevent repeated invocations..
+                    // just create the directory to prevent repeated invocations.
                     if (!location.exists()) {
                         getLog().warn("Creating fake javadoc directory to prevent repeated invocations: " + location);
                         location.mkdirs();

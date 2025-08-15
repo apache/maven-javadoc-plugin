@@ -43,7 +43,7 @@ public class StaleHelper {
     /**
      * Compute the encoding of the stale javadoc
      *
-     * @return the the encoding of the stale data
+     * @return the encoding of the stale data
      */
     private static Charset getDataCharset() {
         if (JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("9")
