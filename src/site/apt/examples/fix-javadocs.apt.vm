@@ -40,9 +40,9 @@ Fixing Javadoc Comments
 
 * Features Summary
 
- The user can skip the class/field/method Javadoc fixing using specific parameters, i.e.
+ The user can skip the class/field/method Javadoc fixing using specific parameters, e.g.
  {{{../fix-mojo.html#fixClassComment}\<fixClassComment/\>}}.
- Also, the user can specify a {{{../fix-mojo.html#level}\<level/\>}}, i.e. public, to fix only class/field/method with
+ Also, the user can specify a {{{../fix-mojo.html#level}\<level/\>}} such as public to fix only class/field/method with
  the given level.
 
  These goals can fix all Javadoc tags (by default, see {{{../fix-mojo.html#fixTags}\<fixTags/\>}}) or

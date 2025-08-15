@@ -106,11 +106,11 @@ javadoc.exe(or .sh) @options @packages | @argfile]]></source>
       <answer>
         <p>
           You could need to add more J options (i.e. runtime system java options that runs Javadoc tool like -J-Xss)
-          to be process by the Javadoc Tool. For this, you should use the <i>&lt;additionalJOption/&gt;</i> parameter
+          to be processed by the Javadoc Tool. For this, you should use the <i>&lt;additionalJOption/&gt;</i> parameter
           in your Javadoc Plugin configuration.
         </p>
         <p>
-          The Javadoc Plugin calls the Javadoc tool with J options, i.e.:
+          The Javadoc Plugin calls the Javadoc tool with J options, e.g.:
           <source><![CDATA[
 ${project.reporting.outputDirectory}/apidocs/javadoc.exe(or .sh) \
     -J-Xss128m \
@@ -176,7 +176,7 @@ ${project.reporting.outputDirectory}/apidocs/javadoc.exe(or .sh) \
   ...
 </settings>
 ]]></source>
-          With this, the Javadoc tool will be called with networking J options, i.e.:
+          With this, the Javadoc tool will be called with networking J options, e.g.:
           <source><![CDATA[
 ${project.reporting.outputDirectory}/apidocs/javadoc.exe(or .sh) \
     -J-Dhttp.proxySet=true \
@@ -192,7 +192,7 @@ ${project.reporting.outputDirectory}/apidocs/javadoc.exe(or .sh) \
           <b>Note</b>: If your proxy needs more JVM
           <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/net/properties.html">networking properties</a>
           (like NTLM), you could always add JVM options using the <i>&lt;additionalJOption/&gt;</i> parameter
-          in your Javadoc Plugin configuration, i.e.:
+          in your Javadoc Plugin configuration, e.g.:
           <source><![CDATA[
 <configuration>
   <additionalJOption>-J-Dhttp.auth.ntlm.domain=MYDOMAIN</additionalJOption>
@@ -284,7 +284,7 @@ mvn deploy:deploy-file \
       <answer>
         <p>
           You need to configure the <i><a href="./javadoc-mojo.html#links">&lt;links/&gt;</a></i> parameter. Also, you
-          should correctly write references in your Javadoc, i.e.:
+          should correctly write references in your Javadoc. That is,
         </p>
         <ul>
           <li><code>@see MyMojo</code> or <code>{@link MyMojo}</code> will <strong>NOT work</strong>.</li>

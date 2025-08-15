@@ -98,8 +98,8 @@ yourproject
 
   <<Notes>>:
 
-  [[1]] If you don't set \<testDoctitle/\> or \<testWindowtitle/\> parameters, the Test Javadoc report use the same
- configuration (i.e. \<doctitle/\> or \<windowtitle/\> parameters) that Javadoc report (backward compatible reasons).
+  [[1]] If you don't set \<testDoctitle/\> or \<testWindowtitle/\> parameters, the Test Javadoc report uses the same
+ configuration (i.e. \<doctitle/\> or \<windowtitle/\> parameters) that Javadoc report uses (backward compatible reasons).
 
   [[2]] To run the reports selectively, you need to include only the reports that you prefer.
   Read the {{{./selective-javadocs-report.html}Selective Javadocs Reports}} part for more information.
