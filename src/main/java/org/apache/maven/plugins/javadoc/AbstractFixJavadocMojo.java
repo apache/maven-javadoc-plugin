@@ -1022,7 +1022,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
 
         String javadocComment = trimRight(extractOriginalJavadoc(originalContent, entity));
         String extraComment = javadocComment.substring(javadocComment.indexOf(END_JAVADOC) + END_JAVADOC.length());
-        if (extraComment != null && !extraComment.isEmpty()) {
+        if (!extraComment.isEmpty()) {
             if (extraComment.contains(EOL)) {
                 stringWriter.write(extraComment.substring(extraComment.indexOf(EOL) + EOL.length()));
             } else {
@@ -1882,7 +1882,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
             return;
         }
 
-        if ((originalJavadocTag != null && !originalJavadocTag.isEmpty())
+        if (!originalJavadocTag.isEmpty()
                 && javaMethod.getReturns() != null
                 && !javaMethod.getReturns().isVoid()) {
             sb.append(originalJavadocTag);
