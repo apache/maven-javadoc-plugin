@@ -4324,7 +4324,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         // all options in alphabetical order
 
-        if (getLog().isWarnEnabled()) {
+        if (old && getLog().isWarnEnabled()) {
             getLog().warn("Javadoc 1.4+ doesn't support the -1.1 switch anymore. Ignore this option.");
         }
 
