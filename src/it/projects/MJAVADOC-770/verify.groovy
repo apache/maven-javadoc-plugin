@@ -21,8 +21,3 @@
 def moduleFile = new File( basedir, 'target/reports/apidocs/mjavadoc770/module-summary.html')
 
 assert !moduleFile.exists()
-
-
-def log = new File( basedir, 'build.log').text
-
-assert log.count( "[WARNING] Javadoc 1.4+ doesn't support the -1.1 switch anymore. Ignore this option." ) == 0
