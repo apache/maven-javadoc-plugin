@@ -5393,7 +5393,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 } catch (MavenInvocationException e) {
                     logError("MavenInvocationException: " + e.getMessage(), e);
 
-                    String invokerLogContent = JavadocUtil.readFile(invokerLogFile, null /* platform encoding */);
+                    String invokerLogContent = JavadocUtil.readFile(invokerLogFile, "UTF-8");
 
                     // TODO: Why are we only interested in cases where the JVM won't start?
                     // [MJAVADOC-275][jdcasey] I changed the logic here to only throw an error WHEN
