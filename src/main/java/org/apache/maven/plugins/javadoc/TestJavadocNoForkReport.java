@@ -48,6 +48,17 @@ import org.eclipse.aether.RepositorySystem;
 public class TestJavadocNoForkReport extends TestJavadocReport {
 
     @Inject
+    /**
+     * <p>Constructor for TestJavadocNoForkReport.</p>
+     *
+     * @param siteTool a {@link org.apache.maven.doxia.tools.SiteTool} object
+     * @param archiverManager a {@link org.codehaus.plexus.archiver.manager.ArchiverManager} object
+     * @param resourceResolver a {@link org.apache.maven.plugins.javadoc.resolver.ResourceResolver} object
+     * @param repoSystem a {@link org.eclipse.aether.RepositorySystem} object
+     * @param artifactHandlerManager a {@link org.apache.maven.artifact.handler.manager.ArtifactHandlerManager} object
+     * @param mavenProjectBuilder a {@link org.apache.maven.project.ProjectBuilder} object
+     * @param toolchainManager a {@link org.apache.maven.toolchain.ToolchainManager} object
+     */
     public TestJavadocNoForkReport(
             SiteTool siteTool,
             ArchiverManager archiverManager,

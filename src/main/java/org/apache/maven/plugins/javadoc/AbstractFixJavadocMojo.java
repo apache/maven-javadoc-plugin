@@ -220,6 +220,11 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      */
     private InputHandler inputHandler;
 
+    /**
+     * <p>Constructor for AbstractFixJavadocMojo.</p>
+     *
+     * @param inputHandler a {@link org.codehaus.plexus.components.interactivity.InputHandler} object
+     */
     public AbstractFixJavadocMojo(InputHandler inputHandler) {
         this.inputHandler = inputHandler;
     }
@@ -397,9 +402,7 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
      */
     private List<String> sinceClasses;
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (!fixClassComment && !fixFieldComment && !fixMethodComment) {
@@ -450,11 +453,18 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
     // protected methods
     // ----------------------------------------------------------------------
 
+    /**
+     * <p>Getter for the field <code>project</code>.</p>
+     *
+     * @return a {@link org.apache.maven.project.MavenProject} object
+     */
     protected final MavenProject getProject() {
         return project;
     }
 
     /**
+     * <p>getArtifactType.</p>
+     *
      * @param p not null maven project.
      * @return the artifact type.
      */
@@ -463,6 +473,8 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
     }
 
     /**
+     * <p>getProjectSourceRoots.</p>
+     *
      * @param p not null maven project.
      * @return the list of source paths for the given project.
      */
@@ -473,9 +485,11 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
     }
 
     /**
+     * <p>getCompileClasspathElements.</p>
+     *
      * @param p not null
      * @return the compile classpath elements
-     * @throws DependencyResolutionRequiredException
+     * @throws org.apache.maven.artifact.DependencyResolutionRequiredException
      *          if any
      */
     protected List<String> getCompileClasspathElements(MavenProject p) throws DependencyResolutionRequiredException {
@@ -485,6 +499,8 @@ public abstract class AbstractFixJavadocMojo extends AbstractMojo {
     }
 
     /**
+     * <p>getJavaMethodAsString.</p>
+     *
      * @param javaExecutable not null
      * @return the fully qualify name of javaMethod with signature
      */

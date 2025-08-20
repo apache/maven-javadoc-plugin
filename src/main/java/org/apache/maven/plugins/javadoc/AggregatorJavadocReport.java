@@ -46,6 +46,17 @@ import org.eclipse.aether.RepositorySystem;
 public class AggregatorJavadocReport extends JavadocReport {
 
     @Inject
+    /**
+     * <p>Constructor for AggregatorJavadocReport.</p>
+     *
+     * @param siteTool a {@link org.apache.maven.doxia.tools.SiteTool} object
+     * @param archiverManager a {@link org.codehaus.plexus.archiver.manager.ArchiverManager} object
+     * @param resourceResolver a {@link org.apache.maven.plugins.javadoc.resolver.ResourceResolver} object
+     * @param repoSystem a {@link org.eclipse.aether.RepositorySystem} object
+     * @param artifactHandlerManager a {@link org.apache.maven.artifact.handler.manager.ArtifactHandlerManager} object
+     * @param mavenProjectBuilder a {@link org.apache.maven.project.ProjectBuilder} object
+     * @param toolchainManager a {@link org.apache.maven.toolchain.ToolchainManager} object
+     */
     public AggregatorJavadocReport(
             SiteTool siteTool,
             ArchiverManager archiverManager,
@@ -64,6 +75,7 @@ public class AggregatorJavadocReport extends JavadocReport {
                 toolchainManager);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isAggregator() {
         return true;

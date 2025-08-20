@@ -253,6 +253,17 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
     private ToolchainManager toolchainManager;
 
+    /**
+     * <p>Constructor for AbstractJavadocMojo.</p>
+     *
+     * @param siteTool a {@link org.apache.maven.doxia.tools.SiteTool} object
+     * @param archiverManager a {@link org.codehaus.plexus.archiver.manager.ArchiverManager} object
+     * @param resourceResolver a {@link org.apache.maven.plugins.javadoc.resolver.ResourceResolver} object
+     * @param repoSystem a {@link org.eclipse.aether.RepositorySystem} object
+     * @param artifactHandlerManager a {@link org.apache.maven.artifact.handler.manager.ArtifactHandlerManager} object
+     * @param mavenProjectBuilder a {@link org.apache.maven.project.ProjectBuilder} object
+     * @param toolchainManager a {@link org.apache.maven.toolchain.ToolchainManager} object
+     */
     public AbstractJavadocMojo(
             SiteTool siteTool,
             ArchiverManager archiverManager,
@@ -1694,6 +1705,11 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         return false;
     }
 
+    /**
+     * <p>Getter for the field <code>outputDirectory</code>.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     protected String getOutputDirectory() {
         return outputDirectory.getAbsolutePath();
     }
@@ -1708,11 +1724,18 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         return getOutputDirectory() + "/" + (isTest() ? "test" : "") + "apidocs";
     }
 
+    /**
+     * <p>Getter for the field <code>project</code>.</p>
+     *
+     * @return a {@link org.apache.maven.project.MavenProject} object
+     */
     protected MavenProject getProject() {
         return project;
     }
 
     /**
+     * <p>getProjectBuildOutputDirs.</p>
+     *
      * @param p not null maven project
      * @return the list of directories where compiled classes are placed for the given project. These dirs are
      *         added to the javadoc classpath.
@@ -1726,6 +1749,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
+     * <p>getClassesFile.</p>
+     *
      * @param project the project in which to find a classes file
      * @return null, the attached artifact file, or outputDirectory.
      */
@@ -1756,6 +1781,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
+     * <p>getProjectSourceRoots.</p>
+     *
      * @param p not null maven project
      * @return the list of source paths for the given project
      */
@@ -1770,6 +1797,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
+     * <p>getExecutionProjectSourceRoots.</p>
+     *
      * @param p not null maven project
      * @return the list of source paths for the execution project of the given project
      */
@@ -1784,6 +1813,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
+     * <p>Getter for the field <code>javadocDirectory</code>.</p>
+     *
      * @return the current javadoc directory
      */
     protected File getJavadocDirectory() {
@@ -1791,6 +1822,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
+     * <p>Getter for the field <code>doclint</code>.</p>
+     *
      * @return the doclint specific checks configuration
      */
     protected String getDoclint() {
@@ -1798,6 +1831,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
+     * <p>Getter for the field <code>doctitle</code>.</p>
+     *
      * @return the title to be placed near the top of the overview summary file
      */
     protected String getDoctitle() {
@@ -1805,6 +1840,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
+     * <p>Getter for the field <code>overview</code>.</p>
+     *
      * @return the overview documentation file from the user parameter or from the <code>javadocdirectory</code>
      */
     protected File getOverview() {
@@ -1812,6 +1849,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
+     * <p>Getter for the field <code>windowtitle</code>.</p>
+     *
      * @return the title to be placed in the HTML title tag
      */
     protected String getWindowtitle() {
@@ -1841,6 +1880,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 : encoding;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         verifyRemovedParameter("aggregator");
@@ -1851,8 +1891,19 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         doExecute();
     }
 
+    /**
+     * <p>doExecute.</p>
+     *
+     * @throws org.apache.maven.plugin.MojoExecutionException if any.
+     * @throws org.apache.maven.plugin.MojoFailureException if any.
+     */
     protected abstract void doExecute() throws MojoExecutionException, MojoFailureException;
 
+    /**
+     * <p>verifyRemovedParameter.</p>
+     *
+     * @param paramName a {@link java.lang.String} object
+     */
     protected final void verifyRemovedParameter(String paramName) {
         Xpp3Dom configDom = mojoExecution.getConfiguration();
         if (configDom != null) {
@@ -1878,7 +1929,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * Javadoc Options used by this Plugin.
      *
      * @param unusedLocale the wanted locale (actually unused).
-     * @throws MavenReportException if any
+     * @throws org.apache.maven.reporting.MavenReportException if any
      */
     protected void executeReport(Locale unusedLocale) throws MavenReportException {
         if (getLog().isDebugEnabled()) {
@@ -2087,7 +2138,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      *
      * @param sourcePaths a Collection that contains the paths to the source files
      * @return a List that contains the specific path for every source file
-     * @throws MavenReportException {@link MavenReportException} issue while generating report
+     * @throws org.apache.maven.reporting.MavenReportException {@link org.apache.maven.reporting.org.apache.maven.reporting.MavenReportException} issue while generating report
      */
     protected Map<Path, Collection<String>> getFiles(Collection<Path> sourcePaths) throws MavenReportException {
         Map<Path, Collection<String>> mappedFiles = new LinkedHashMap<>(sourcePaths.size());
@@ -2128,7 +2179,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * source roots of the project will be used.
      *
      * @return a Map of the project absolute source paths per projects key (G:A)
-     * @throws MavenReportException {@link MavenReportException} issue while generating report
+     * @throws org.apache.maven.reporting.MavenReportException {@link org.apache.maven.reporting.org.apache.maven.reporting.MavenReportException} issue while generating report
      * @see JavadocUtil#pruneDirs(MavenProject, Collection)
      */
     protected Collection<JavadocModule> getSourcePaths() throws MavenReportException {
@@ -2279,8 +2330,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     /**
      * Override this method to customize the configuration for resolving dependency sources. The default
      * behavior enables the resolution of -sources jar files.
-     * @param config {@link SourceResolverConfig}
-     * @return {@link SourceResolverConfig}
+     *
+     * @param config {@link org.apache.maven.plugins.javadoc.resolver.SourceResolverConfig}
+     * @return {@link org.apache.maven.plugins.javadoc.resolver.SourceResolverConfig}
      */
     protected SourceResolverConfig configureDependencySourceResolution(final SourceResolverConfig config) {
         return config.withCompileSources();
@@ -2288,9 +2340,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
     /**
      * Resolve dependency sources so they can be included directly in the javadoc process. To customize this,
-     * override {@link AbstractJavadocMojo#configureDependencySourceResolution(SourceResolverConfig)}.
+     * override {@link org.apache.maven.plugins.javadoc.AbstractJavadocMojo#configureDependencySourceResolution(SourceResolverConfig)}.
+     *
      * @return List of source paths.
-     * @throws MavenReportException {@link MavenReportException}
+     * @throws org.apache.maven.reporting.MavenReportException {@link org.apache.maven.reporting.org.apache.maven.reporting.MavenReportException}
      */
     protected final Collection<JavadocModule> getDependencySourcePaths() throws MavenReportException {
         try {
@@ -2585,15 +2638,22 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         return classpathElements;
     }
 
+    /**
+     * <p>getDependencyScopeFilter.</p>
+     *
+     * @return a {@link org.eclipse.aether.util.filter.ScopeDependencyFilter} object
+     */
     protected ScopeDependencyFilter getDependencyScopeFilter() {
         return new ScopeDependencyFilter(
                 Arrays.asList(Artifact.SCOPE_COMPILE, Artifact.SCOPE_PROVIDED, Artifact.SCOPE_SYSTEM), null);
     }
 
     /**
-     * @param dependency {@link Dependency}
-     * @return {@link Artifact}
-     * @throws MavenReportException when artifact could not be resolved
+     * <p>resolveDependency.</p>
+     *
+     * @param dependency {@link org.apache.maven.model.Dependency}
+     * @return {@link org.apache.maven.artifact.Artifact}
+     * @throws org.apache.maven.reporting.MavenReportException when artifact could not be resolved
      */
     public Artifact resolveDependency(Dependency dependency) throws MavenReportException {
         ArtifactTypeRegistry registry = RepositoryUtils.newArtifactTypeRegistry(artifactHandlerManager);
@@ -2609,6 +2669,11 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
     }
 
+    /**
+     * <p>getToolchain.</p>
+     *
+     * @return a {@link org.apache.maven.toolchain.Toolchain} object
+     */
     protected final Toolchain getToolchain() {
         Toolchain tc = null;
 
@@ -5496,6 +5561,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
+     * <p>getDefaultJavadocApiLink.</p>
+     *
      * @return if {@code detectJavaApiLink}, the Java API link based on the {@code javaApiLinks} properties and the
      *         value of the <code>source</code> parameter in the
      *         <code>org.apache.maven.plugins:maven-compiler-plugin</code>
@@ -5632,6 +5699,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
+     * <p>isValidJavadocLink.</p>
+     *
      * @param link not null
      * @param detecting <code>true</code> if the link is generated by
      * <code>detectLinks</code>, or <code>false</code> otherwise
@@ -5838,7 +5907,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * Construct the output file for the generated javadoc-options XML file, after creating the
      * javadocOptionsDir if necessary. This method does NOT write to the file in question.
      *
-     * @return The options {@link File} file.
+     * @return The options {@link java.io.File} file.
      * @since 2.7
      */
     protected final File getJavadocOptionsFile() {
@@ -5854,8 +5923,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * supplying to a distro module in a includeDependencySources configuration, so the javadoc options
      * from this execution can be reconstructed and merged in the distro build.
      *
-     * @return {@link JavadocOptions}
-     * @throws IOException {@link IOException}
+     * @return {@link org.apache.maven.plugins.javadoc.options.JavadocOptions}
+     * @throws java.io.IOException {@link java.io.java.io.IOException}
      * @since 2.7
      */
     protected final JavadocOptions buildJavadocOptions() throws IOException {
@@ -5914,14 +5983,21 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>reactorProjects</code>.</p>
+     *
+     * @return a {@link java.util.List} object
+     */
     protected List<MavenProject> getReactorProjects() {
         return reactorProjects;
     }
 
     /**
+     * <p>failOnError.</p>
+     *
      * @param prefix the prefix of the exception
      * @param e the exception
-     * @throws MojoExecutionException {@link MojoExecutionException} issue while generating report
+     * @throws org.apache.maven.plugin.MojoExecutionException {@link org.apache.maven.plugin.org.apache.maven.plugin.MojoExecutionException} issue while generating report
      */
     protected void failOnError(String prefix, Exception e) throws MojoExecutionException {
         if (failOnError) {
@@ -5954,6 +6030,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
+     * <p>isSkippedModule.</p>
+     *
      * @param mavenProject the project that might be skipped
      * @return <code>true</code> if the project needs to be skipped from aggregate generation
      */
@@ -5978,6 +6056,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
+     * <p>isSkippedJavadoc.</p>
+     *
      * @param mavenProject the project that might be skipped
      * @return <code>true</code> if the pom configuration skips javadoc generation for the project
      */

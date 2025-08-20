@@ -38,12 +38,24 @@ import org.eclipse.aether.RepositorySystem;
  *
  * @version $Id$
  * @since 3.0.1
+ * @author elharo
  */
 @Mojo(name = "test-aggregate-no-fork", requiresDependencyResolution = ResolutionScope.TEST)
 @Execute(phase = LifecyclePhase.NONE)
 public class AggregatorTestJavadocNoForkReport extends AggregatorTestJavadocReport {
 
     @Inject
+    /**
+     * <p>Constructor for AggregatorTestJavadocNoForkReport.</p>
+     *
+     * @param siteTool a {@link org.apache.maven.doxia.tools.SiteTool} object
+     * @param archiverManager a {@link org.codehaus.plexus.archiver.manager.ArchiverManager} object
+     * @param resourceResolver a {@link org.apache.maven.plugins.javadoc.resolver.ResourceResolver} object
+     * @param repoSystem a {@link org.eclipse.aether.RepositorySystem} object
+     * @param artifactHandlerManager a {@link org.apache.maven.artifact.handler.manager.ArtifactHandlerManager} object
+     * @param mavenProjectBuilder a {@link org.apache.maven.project.ProjectBuilder} object
+     * @param toolchainManager a {@link org.apache.maven.toolchain.ToolchainManager} object
+     */
     public AggregatorTestJavadocNoForkReport(
             SiteTool siteTool,
             ArchiverManager archiverManager,

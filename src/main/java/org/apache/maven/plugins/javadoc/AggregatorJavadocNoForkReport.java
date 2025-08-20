@@ -37,6 +37,7 @@ import org.eclipse.aether.RepositorySystem;
  * <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">Javadoc Tool</a>.
  *
  * @since 3.1.0
+ * @author elharo
  */
 @Mojo(name = "aggregate-no-fork", requiresDependencyResolution = ResolutionScope.COMPILE)
 @Execute(phase = LifecyclePhase.NONE)
@@ -44,6 +45,17 @@ public class AggregatorJavadocNoForkReport extends AggregatorJavadocReport {
 
     // CHECKSTYLE_OFF: ParameterNumber
     @Inject
+    /**
+     * <p>Constructor for AggregatorJavadocNoForkReport.</p>
+     *
+     * @param siteTool a {@link org.apache.maven.doxia.tools.SiteTool} object
+     * @param archiverManager a {@link org.codehaus.plexus.archiver.manager.ArchiverManager} object
+     * @param resourceResolver a {@link org.apache.maven.plugins.javadoc.resolver.ResourceResolver} object
+     * @param repoSystem a {@link org.eclipse.aether.RepositorySystem} object
+     * @param artifactHandlerManager a {@link org.apache.maven.artifact.handler.manager.ArtifactHandlerManager} object
+     * @param mavenProjectBuilder a {@link org.apache.maven.project.ProjectBuilder} object
+     * @param toolchainManager a {@link org.apache.maven.toolchain.ToolchainManager} object
+     */
     public AggregatorJavadocNoForkReport(
             SiteTool siteTool,
             ArchiverManager archiverManager,

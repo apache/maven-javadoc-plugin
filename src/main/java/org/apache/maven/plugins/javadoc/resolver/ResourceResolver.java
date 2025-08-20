@@ -65,7 +65,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <p>ResourceResolver class.</p>
  *
+ * @author elharo
  */
 @Named
 @Singleton
@@ -96,9 +98,11 @@ public final class ResourceResolver {
             AbstractJavadocMojo.TEST_JAVADOC_RESOURCES_ATTACHMENT_CLASSIFIER);
 
     /**
-     * @param config {@link SourceResolverConfig}
-     * @return list of {@link JavadocBundle}.
-     * @throws IOException {@link IOException}
+     * <p>resolveDependencyJavadocBundles.</p>
+     *
+     * @param config {@link org.apache.maven.plugins.javadoc.resolver.SourceResolverConfig}
+     * @return list of {@link org.apache.maven.plugins.javadoc.resolver.JavadocBundle}.
+     * @throws java.io.IOException {@link java.io.java.io.IOException}
      */
     public List<JavadocBundle> resolveDependencyJavadocBundles(final SourceResolverConfig config) throws IOException {
         final List<JavadocBundle> bundles = new ArrayList<>();
@@ -128,10 +132,12 @@ public final class ResourceResolver {
     }
 
     /**
-     * @param config {@link SourceResolverConfig}
+     * <p>resolveDependencySourcePaths.</p>
+     *
+     * @param config {@link org.apache.maven.plugins.javadoc.resolver.SourceResolverConfig}
      * @return The list of resolved dependencies.
-     * @throws ArtifactResolutionException {@link ArtifactResolutionException}
-     * @throws ArtifactNotFoundException {@link ArtifactNotFoundException}
+     * @throws org.apache.maven.artifact.resolver.ArtifactResolutionException {@link org.apache.maven.artifact.resolver.org.apache.maven.artifact.resolver.ArtifactResolutionException}
+     * @throws org.apache.maven.artifact.resolver.ArtifactNotFoundException {@link org.apache.maven.artifact.resolver.org.apache.maven.artifact.resolver.ArtifactNotFoundException}
      */
     public Collection<JavadocModule> resolveDependencySourcePaths(final SourceResolverConfig config)
             throws ArtifactResolutionException, ArtifactNotFoundException {

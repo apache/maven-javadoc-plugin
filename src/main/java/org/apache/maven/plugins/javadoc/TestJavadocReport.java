@@ -140,6 +140,17 @@ public class TestJavadocReport extends JavadocReport {
     // ----------------------------------------------------------------------
 
     @Inject
+    /**
+     * <p>Constructor for TestJavadocReport.</p>
+     *
+     * @param siteTool a {@link org.apache.maven.doxia.tools.SiteTool} object
+     * @param archiverManager a {@link org.codehaus.plexus.archiver.manager.ArchiverManager} object
+     * @param resourceResolver a {@link org.apache.maven.plugins.javadoc.resolver.ResourceResolver} object
+     * @param repoSystem a {@link org.eclipse.aether.RepositorySystem} object
+     * @param artifactHandlerManager a {@link org.apache.maven.artifact.handler.manager.ArtifactHandlerManager} object
+     * @param mavenProjectBuilder a {@link org.apache.maven.project.ProjectBuilder} object
+     * @param toolchainManager a {@link org.apache.maven.toolchain.ToolchainManager} object
+     */
     public TestJavadocReport(
             SiteTool siteTool,
             ArchiverManager archiverManager,
@@ -158,6 +169,7 @@ public class TestJavadocReport extends JavadocReport {
                 toolchainManager);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void executeReport(Locale unusedLocale) throws MavenReportException {
         addMainJavadocLink();
@@ -165,6 +177,7 @@ public class TestJavadocReport extends JavadocReport {
         super.executeReport(unusedLocale);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getName(Locale locale) {
         if (testName == null || testName.isEmpty()) {
@@ -174,6 +187,7 @@ public class TestJavadocReport extends JavadocReport {
         return testName;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getDescription(Locale locale) {
         if (testDescription == null || testDescription.isEmpty()) {
@@ -188,6 +202,7 @@ public class TestJavadocReport extends JavadocReport {
     // Important Note: should be inline with methods defined in TestJavadocJar
     // ----------------------------------------------------------------------
 
+    /** {@inheritDoc} */
     @Override
     protected List<File> getProjectBuildOutputDirs(MavenProject p) {
         List<File> dirs = new ArrayList<>();
@@ -201,6 +216,7 @@ public class TestJavadocReport extends JavadocReport {
         return dirs;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected List<String> getProjectSourceRoots(MavenProject p) {
         if ("pom".equalsIgnoreCase(p.getPackaging())) {
@@ -212,6 +228,7 @@ public class TestJavadocReport extends JavadocReport {
                 : new LinkedList<>(p.getTestCompileSourceRoots());
     }
 
+    /** {@inheritDoc} */
     @Override
     protected List<String> getExecutionProjectSourceRoots(MavenProject p) {
         if ("pom".equals(p.getExecutionProject().getPackaging().toLowerCase(Locale.ENGLISH))) {
@@ -223,26 +240,31 @@ public class TestJavadocReport extends JavadocReport {
                 : new LinkedList<>(p.getExecutionProject().getTestCompileSourceRoots());
     }
 
+    /** {@inheritDoc} */
     @Override
     protected File getJavadocDirectory() {
         return testJavadocDirectory;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getDoctitle() {
         return testDoctitle;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected File getOverview() {
         return testOverview;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getWindowtitle() {
         return testWindowtitle;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected ScopeDependencyFilter getDependencyScopeFilter() {
         return new ScopeDependencyFilter(
@@ -288,6 +310,7 @@ public class TestJavadocReport extends JavadocReport {
                 .withTestSources();
     }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isTest() {
         return true;

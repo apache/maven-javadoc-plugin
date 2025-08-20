@@ -37,6 +37,8 @@ import org.codehaus.plexus.util.cli.Commandline;
 /**
  * Helper class to compute and write data used to detect a
  * stale javadoc.
+ *
+ * @author elharo
  */
 public class StaleHelper {
 
@@ -59,7 +61,7 @@ public class StaleHelper {
      *
      * @param cmd the command line
      * @return the stale data
-     * @throws MavenReportException if an error occurs
+     * @throws org.apache.maven.reporting.MavenReportException if an error occurs
      */
     public static List<String> getStaleData(Commandline cmd) throws MavenReportException {
         try {
@@ -117,7 +119,7 @@ public class StaleHelper {
      *
      * @param cmd the command line
      * @param path the stale data path
-     * @throws MavenReportException if an error occurs
+     * @throws org.apache.maven.reporting.MavenReportException if an error occurs
      */
     public static void writeStaleData(Commandline cmd, Path path) throws MavenReportException {
         try {

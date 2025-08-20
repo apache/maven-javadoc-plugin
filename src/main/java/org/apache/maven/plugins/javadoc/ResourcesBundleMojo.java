@@ -43,12 +43,13 @@ import org.codehaus.plexus.archiver.util.DefaultFileSet;
 import org.eclipse.aether.RepositorySystem;
 
 /**
- * Bundle {@link AbstractJavadocMojo#javadocDirectory}, along with javadoc configuration options such
+ * Bundle {@link org.apache.maven.plugins.javadoc.AbstractJavadocMojo#javadocDirectory}, along with javadoc configuration options such
  * as taglet, doclet, and link information into a deployable artifact. This artifact can then be consumed
  * by the javadoc plugin mojos when used by the <code>includeDependencySources</code> option, to generate
  * javadocs that are somewhat consistent with those generated in the original project itself.
  *
  * @since 2.7
+ * @author elharo
  */
 @Mojo(
         name = "resource-bundle",
@@ -88,6 +89,18 @@ public class ResourcesBundleMojo extends AbstractJavadocMojo {
 
     // CHECKSTYLE_OFF: ParameterNumber
     @Inject
+    /**
+     * <p>Constructor for ResourcesBundleMojo.</p>
+     *
+     * @param projectHelper a {@link org.apache.maven.project.MavenProjectHelper} object
+     * @param siteTool a {@link org.apache.maven.doxia.tools.SiteTool} object
+     * @param archiverManager a {@link org.codehaus.plexus.archiver.manager.ArchiverManager} object
+     * @param resourceResolver a {@link org.apache.maven.plugins.javadoc.resolver.ResourceResolver} object
+     * @param repoSystem a {@link org.eclipse.aether.RepositorySystem} object
+     * @param artifactHandlerManager a {@link org.apache.maven.artifact.handler.manager.ArtifactHandlerManager} object
+     * @param mavenProjectBuilder a {@link org.apache.maven.project.ProjectBuilder} object
+     * @param toolchainManager a {@link org.apache.maven.toolchain.ToolchainManager} object
+     */
     public ResourcesBundleMojo(
             MavenProjectHelper projectHelper,
             SiteTool siteTool,

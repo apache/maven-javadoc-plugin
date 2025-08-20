@@ -42,6 +42,7 @@ import org.eclipse.aether.RepositorySystem;
  * <p>Since version 3.1.0 an aggregated jar is created for every module of a Maven multimodule project.</p>
  *
  * @since 2.6
+ * @author elharo
  */
 @Mojo(
         name = "test-aggregate-jar",
@@ -53,6 +54,19 @@ public class AggregatorTestJavadocJarMojo extends TestJavadocJarMojo {
 
     // CHECKSTYLE_OFF: ParameterNumber
     @Inject
+    /**
+     * <p>Constructor for AggregatorTestJavadocJarMojo.</p>
+     *
+     * @param projectHelper a {@link org.apache.maven.project.MavenProjectHelper} object
+     * @param jarArchiver a {@link org.codehaus.plexus.archiver.jar.JarArchiver} object
+     * @param siteTool a {@link org.apache.maven.doxia.tools.SiteTool} object
+     * @param archiverManager a {@link org.codehaus.plexus.archiver.manager.ArchiverManager} object
+     * @param resourceResolver a {@link org.apache.maven.plugins.javadoc.resolver.ResourceResolver} object
+     * @param repoSystem a {@link org.eclipse.aether.RepositorySystem} object
+     * @param artifactHandlerManager a {@link org.apache.maven.artifact.handler.manager.ArtifactHandlerManager} object
+     * @param mavenProjectBuilder a {@link org.apache.maven.project.ProjectBuilder} object
+     * @param toolchainManager a {@link org.apache.maven.toolchain.ToolchainManager} object
+     */
     public AggregatorTestJavadocJarMojo(
             MavenProjectHelper projectHelper,
             JarArchiver jarArchiver,
@@ -76,6 +90,7 @@ public class AggregatorTestJavadocJarMojo extends TestJavadocJarMojo {
     }
     // CHECKSTYLE_ON: ParameterNumber
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isAggregator() {
         return true;

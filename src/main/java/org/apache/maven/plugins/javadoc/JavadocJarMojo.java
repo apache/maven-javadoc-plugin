@@ -53,6 +53,7 @@ import org.eclipse.aether.RepositorySystem;
  * Javadoc Tool</a>.
  *
  * @since 2.0
+ * @author elharo
  */
 @Mojo(
         name = "jar",
@@ -96,6 +97,19 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
 
     // CHECKSTYLE_OFF: ParameterNumber
     @Inject
+    /**
+     * <p>Constructor for JavadocJarMojo.</p>
+     *
+     * @param projectHelper a {@link org.apache.maven.project.MavenProjectHelper} object
+     * @param jarArchiver a {@link org.codehaus.plexus.archiver.jar.JarArchiver} object
+     * @param siteTool a {@link org.apache.maven.doxia.tools.SiteTool} object
+     * @param archiverManager a {@link org.codehaus.plexus.archiver.manager.ArchiverManager} object
+     * @param resourceResolver a {@link org.apache.maven.plugins.javadoc.resolver.ResourceResolver} object
+     * @param repoSystem a {@link org.eclipse.aether.RepositorySystem} object
+     * @param artifactHandlerManager a {@link org.apache.maven.artifact.handler.manager.ArtifactHandlerManager} object
+     * @param mavenProjectBuilder a {@link org.apache.maven.project.ProjectBuilder} object
+     * @param toolchainManager a {@link org.apache.maven.toolchain.ToolchainManager} object
+     */
     public JavadocJarMojo(
             MavenProjectHelper projectHelper,
             JarArchiver jarArchiver,
@@ -230,6 +244,8 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
     // ----------------------------------------------------------------------
 
     /**
+     * <p>Getter for the field <code>classifier</code>.</p>
+     *
      * @return the wanted classifier, i.e. <code>javadoc</code> or <code>test-javadoc</code>
      */
     protected String getClassifier() {

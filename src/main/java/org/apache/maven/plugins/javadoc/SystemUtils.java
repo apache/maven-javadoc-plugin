@@ -137,7 +137,7 @@ class SystemUtils {
      * </p>
      *
      * @return a directory
-     * @throws SecurityException if a security manager exists and its {@code checkPropertyAccess} method doesn't allow
+     * @throws java.lang.SecurityException if a security manager exists and its {@code checkPropertyAccess} method doesn't allow
      *             access to the specified system property.
      * @see System#getProperty(String)
      * @since 2.1

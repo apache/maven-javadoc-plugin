@@ -277,7 +277,7 @@ public class JavadocUtil {
      * @param outputDirectory the output directory
      * @param javadocDir the javadoc directory
      * @param excludedocfilessubdir the excludedocfilessubdir parameter
-     * @throws IOException if any
+     * @throws java.io.IOException if any
      * @since 2.5
      */
     protected static void copyJavadocResources(File outputDirectory, File javadocDir, String excludedocfilessubdir)
@@ -450,10 +450,9 @@ public class JavadocUtil {
      *
      * @param javadocExe not null file
      * @return the javadoc version as float
-     * @throws IOException if javadocExe is null, doesn't exist or is not a file
-     * @throws CommandLineException if any
-     * @throws IllegalArgumentException if no output was found in the command line
-     * @throws PatternSyntaxException if the output contains a syntax error in the regular-expression pattern.
+     * @throws java.io.IOException if javadocExe is null, doesn't exist or is not a file
+     * @throws org.codehaus.plexus.util.cli.CommandLineException if any
+     * @throws java.lang.IllegalArgumentException if no output was found in the command line
      * @see #extractJavadocVersion(String)
      */
     protected static JavaVersion getJavadocVersion(File javadocExe)
@@ -530,10 +529,8 @@ public class JavadocUtil {
      *
      * @param output of 'javadoc -J-version'
      * @return the version of the javadoc for the output, only digits and dots
-     * @throws PatternSyntaxException if the output doesn't match the output pattern
-     *             {@code (?s).*?[^a-zA-Z]([0-9]+\\.?[0-9]*)(\\.([0-9]+))?.*}.
-     * @throws NullPointerException if the output is null
-     * @throws IllegalArgumentException if the output is empty
+     * @throws java.lang.NullPointerException if the output is null
+     * @throws java.lang.IllegalArgumentException if the output is empty
      */
     protected static String extractJavadocVersion(String output) {
         if (output == null) {
@@ -597,8 +594,8 @@ public class JavadocUtil {
      * @return the memory parsed with a supported unit. If no unit is specified in the <code>memory</code> argument, the
      *         default unit is <code>m</code>. The units <code>g | gb</code> or <code>t | tb</code> will be converted in
      *         <code>m</code>.
-     * @throws NullPointerException if the <code>memory</code> argument is null
-     * @throws IllegalArgumentException if the <code>memory</code> argument doesn't match any pattern.
+     * @throws java.lang.NullPointerException if the <code>memory</code> argument is null
+     * @throws java.lang.IllegalArgumentException if the <code>memory</code> argument doesn't match any pattern.
      */
     protected static String parseJavadocMemory(String memory) {
         if (memory == null) {
@@ -662,10 +659,10 @@ public class JavadocUtil {
      *
      * @param jarFile not null
      * @return the list of <code>com.sun.tools.doclets.Taglet</code> class names from a given jarFile.
-     * @throws IOException if jarFile is invalid or not found, or if the <code>JAVA_HOME/lib/tools.jar</code> is not
+     * @throws java.io.IOException if jarFile is invalid or not found, or if the <code>JAVA_HOME/lib/tools.jar</code> is not
      *             found.
-     * @throws ClassNotFoundException if any
-     * @throws NoClassDefFoundError if any
+     * @throws java.lang.ClassNotFoundException if any
+     * @throws java.lang.NoClassDefFoundError if any
      */
     protected static List<String> getTagletClassNames(File jarFile)
             throws IOException, ClassNotFoundException, NoClassDefFoundError {
@@ -713,7 +710,7 @@ public class JavadocUtil {
      *
      * @param url not null url
      * @param file not null file where the url will be created
-     * @throws IOException if any
+     * @throws java.io.IOException if any
      * @since 2.6
      */
     protected static void copyResource(URL url, File file) throws IOException {
@@ -743,7 +740,7 @@ public class JavadocUtil {
      * @param userSettingsFile reference to user settings file, could be null.
      * @param globalToolchainsFile reference to toolchains file, could be null.
      * @param userToolchainsFile reference to user toolchains file, could be null.
-     * @throws MavenInvocationException if any
+     * @throws org.apache.maven.shared.invoker.MavenInvocationException if any
      * @since 2.6
      */
     protected static void invokeMaven(
@@ -1261,7 +1258,12 @@ public class JavadocUtil {
     }
 
     /**
-     * @deprecated use {@link Path#relativize(Path)} () instead
+     * <p>toRelative.</p>
+     *
+     * @deprecated use {@link java.nio.file.Path#relativize(Path)} () instead
+     * @param basedir a {@link java.io.File} object
+     * @param absolutePath a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
      */
     @Deprecated
     public static String toRelative(File basedir, String absolutePath) {
@@ -1287,6 +1289,7 @@ public class JavadocUtil {
 
     /**
      * Convenience method to determine that a collection is not empty or null.
+     *
      * @param collection the collection to verify
      * @return {@code true} if not {@code null} and not empty, otherwise {@code false}
      */
@@ -1296,6 +1299,7 @@ public class JavadocUtil {
 
     /**
      * Convenience method to determine that a collection is empty or null.
+     *
      * @param collection the collection to verify
      * @return {@code true} if {@code null} or empty, otherwise {@code false}
      */
@@ -1310,7 +1314,7 @@ public class JavadocUtil {
      * @param url URL
      * @param settings Maven settings
      * @return final URL after all redirects have been followed
-     * @throws IOException if there was an error during the HTTP request
+     * @throws java.io.IOException if there was an error during the HTTP request
      */
     protected static URL getRedirectUrl(URL url, Settings settings) throws IOException {
         String protocol = url.getProtocol();
@@ -1362,7 +1366,7 @@ public class JavadocUtil {
      *            <code>false</code> to only check the existence of the <code>package-list</code> resource.
      * @return <code>true</code> if <code>url</code> points to a valid <code>package-list</code> resource;
      *         <code>false</code> else.
-     * @throws IOException if reading the resource fails.
+     * @throws java.io.IOException if reading the resource fails.
      * @see #createHttpClient(org.apache.maven.settings.Settings, java.net.URL)
      * @since 2.8
      */
@@ -1384,6 +1388,15 @@ public class JavadocUtil {
         }
     }
 
+    /**
+     * <p>isValidElementList.</p>
+     *
+     * @param url a {@link java.net.URL} object
+     * @param settings a {@link org.apache.maven.settings.Settings} object
+     * @param validateContent a boolean
+     * @return a boolean
+     * @throws java.io.IOException if any.
+     */
     protected static boolean isValidElementList(URL url, Settings settings, boolean validateContent)
             throws IOException {
         if (url == null) {

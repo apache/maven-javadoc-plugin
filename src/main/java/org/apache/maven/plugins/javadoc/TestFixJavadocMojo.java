@@ -46,6 +46,11 @@ import org.codehaus.plexus.components.interactivity.InputHandler;
 public class TestFixJavadocMojo extends AbstractFixJavadocMojo {
 
     @Inject
+    /**
+     * <p>Constructor for TestFixJavadocMojo.</p>
+     *
+     * @param inputHandler a {@link org.codehaus.plexus.components.interactivity.InputHandler} object
+     */
     public TestFixJavadocMojo(InputHandler inputHandler) {
         super(inputHandler);
     }

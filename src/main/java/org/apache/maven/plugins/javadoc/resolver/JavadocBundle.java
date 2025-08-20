@@ -23,7 +23,9 @@ import java.io.File;
 import org.apache.maven.plugins.javadoc.options.JavadocOptions;
 
 /**
+ * <p>JavadocBundle class.</p>
  *
+ * @author elharo
  */
 public class JavadocBundle {
 
@@ -32,7 +34,9 @@ public class JavadocBundle {
     private final JavadocOptions options;
 
     /**
-     * @param options {@link JavadocOptions}
+     * <p>Constructor for JavadocBundle.</p>
+     *
+     * @param options {@link org.apache.maven.plugins.javadoc.options.JavadocOptions}
      * @param resourcesDirectory The resources directory.
      */
     public JavadocBundle(final JavadocOptions options, final File resourcesDirectory) {
@@ -41,6 +45,8 @@ public class JavadocBundle {
     }
 
     /**
+     * <p>Getter for the field <code>resourcesDirectory</code>.</p>
+     *
      * @return {@link #resourcesDirectory}
      */
     public File getResourcesDirectory() {
@@ -48,6 +54,8 @@ public class JavadocBundle {
     }
 
     /**
+     * <p>Getter for the field <code>options</code>.</p>
+     *
      * @return {@link #options}
      */
     public JavadocOptions getOptions() {
