@@ -827,12 +827,11 @@ public class JavadocUtil {
 
         if (result.getExitCode() != 0) {
             try {
-                String invokerLogContent = new String(Files.readAllBytes(invokerLog.toPath()),
-                    StandardCharsets.UTF_8);
+                String invokerLogContent = new String(Files.readAllBytes(invokerLog.toPath()), StandardCharsets.UTF_8);
 
                 // see DefaultMaven
                 if (!invokerLogContent.contains("Scanning for projects...")
-                    || invokerLogContent.contains(OutOfMemoryError.class.getName())) {
+                        || invokerLogContent.contains(OutOfMemoryError.class.getName())) {
                     if (log != null) {
                         log.error("Error occurred during initialization of VM, trying to use an empty MAVEN_OPTS...");
 
@@ -842,19 +841,18 @@ public class JavadocUtil {
                     }
                 }
             } catch (IOException e) {
-              // ignore
+                // ignore
             }
             result = invoke(log, invoker, request, invokerLog, goals, properties, "");
         }
 
         if (result.getExitCode() != 0) {
             try {
-                String invokerLogContent = new String(Files.readAllBytes(invokerLog.toPath()),
-                    StandardCharsets.UTF_8);
+                String invokerLogContent = new String(Files.readAllBytes(invokerLog.toPath()), StandardCharsets.UTF_8);
 
                 // see DefaultMaven
                 if (!invokerLogContent.contains("Scanning for projects...")
-                                || invokerLogContent.contains(OutOfMemoryError.class.getName())) {
+                        || invokerLogContent.contains(OutOfMemoryError.class.getName())) {
                     throw new MavenInvocationException(ERROR_INIT_VM);
                 }
 
