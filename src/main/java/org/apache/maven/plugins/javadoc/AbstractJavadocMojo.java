@@ -733,6 +733,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * Javadoc 1.1. This is no longer supported since Javadoc 1.4 (shipped with JDK 1.4)
      *
      * @see <a href="https://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#a1.1">Javadoc option 1.1</a>.
+     * @deprecated No longer used.
      */
     @Parameter(property = "old", defaultValue = "false")
     @Deprecated
@@ -4323,10 +4324,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         addArgIfNotEmpty(arguments, "-locale", JavadocUtil.quotedArgument(this.locale));
 
         // all options in alphabetical order
-
-        if (getLog().isWarnEnabled()) {
-            getLog().warn("Javadoc 1.4+ doesn't support the -1.1 switch anymore. Ignore this option.");
-        }
 
         addArgIfNotEmpty(arguments, "-bootclasspath", JavadocUtil.quotedPathArgument(getBootclassPath()));
 
