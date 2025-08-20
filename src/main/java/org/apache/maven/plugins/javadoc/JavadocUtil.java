@@ -861,8 +861,9 @@ public class JavadocUtil {
                 throw new MavenInvocationException(
                         "Error when invoking Maven, consult the invoker log file: " + invokerLog.getAbsolutePath());
             } catch (IOException ex) {
-                throw new MavenInvocationException(ERROR_INIT_VM);
+                // ignore
             }
+            throw new MavenInvocationException(ERROR_INIT_VM);
         }
     }
 
@@ -871,7 +872,7 @@ public class JavadocUtil {
      *
      * @param javaFile the file to read; not null
      * @param encoding a character set name; not null
-     * @return the content of the given java file using the given encoding; null if an IOException occurs
+     * @return the content of the given file using the given encoding; null if an IOException occurs
      * @since 2.6.1
      * @throws java.nio.charset.UnsupportedCharsetException if the named charset is not supported
      * @throws NullPointerException if the javaFile or encoding is null
