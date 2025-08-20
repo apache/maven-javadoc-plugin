@@ -35,6 +35,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -825,46 +826,58 @@ public class JavadocUtil {
         InvocationResult result = invoke(log, invoker, request, invokerLog, goals, properties, null);
 
         if (result.getExitCode() != 0) {
-            String invokerLogContent = readFile(invokerLog, "UTF-8");
+            try {
+                String invokerLogContent = new String(Files.readAllBytes(invokerLog.toPath()),
+                    StandardCharsets.UTF_8);
 
-            // see DefaultMaven
-            if (invokerLogContent != null
-                    && (!invokerLogContent.contains("Scanning for projects...")
-                            || invokerLogContent.contains(OutOfMemoryError.class.getName()))) {
-                if (log != null) {
-                    log.error("Error occurred during initialization of VM, trying to use an empty MAVEN_OPTS...");
+                // see DefaultMaven
+                if (!invokerLogContent.contains("Scanning for projects...")
+                    || invokerLogContent.contains(OutOfMemoryError.class.getName())) {
+                    if (log != null) {
+                        log.error("Error occurred during initialization of VM, trying to use an empty MAVEN_OPTS...");
 
-                    if (log.isDebugEnabled()) {
-                        log.debug("Reinvoking Maven for the goals: " + goals + " with an empty MAVEN_OPTS...");
+                        if (log.isDebugEnabled()) {
+                            log.debug("Reinvoking Maven for the goals: " + goals + " with an empty MAVEN_OPTS...");
+                        }
                     }
                 }
-                result = invoke(log, invoker, request, invokerLog, goals, properties, "");
+            } catch (IOException e) {
+              // ignore
             }
+            result = invoke(log, invoker, request, invokerLog, goals, properties, "");
         }
 
         if (result.getExitCode() != 0) {
-            String invokerLogContent = readFile(invokerLog, "UTF-8");
+            try {
+                String invokerLogContent = new String(Files.readAllBytes(invokerLog.toPath()),
+                    StandardCharsets.UTF_8);
 
-            // see DefaultMaven
-            if (invokerLogContent != null
-                    && (!invokerLogContent.contains("Scanning for projects...")
-                            || invokerLogContent.contains(OutOfMemoryError.class.getName()))) {
+                // see DefaultMaven
+                if (!invokerLogContent.contains("Scanning for projects...")
+                                || invokerLogContent.contains(OutOfMemoryError.class.getName())) {
+                    throw new MavenInvocationException(ERROR_INIT_VM);
+                }
+
+                throw new MavenInvocationException(
+                        "Error when invoking Maven, consult the invoker log file: " + invokerLog.getAbsolutePath());
+            } catch (IOException ex) {
                 throw new MavenInvocationException(ERROR_INIT_VM);
             }
-
-            throw new MavenInvocationException(
-                    "Error when invoking Maven, consult the invoker log file: " + invokerLog.getAbsolutePath());
         }
     }
 
     /**
      * Read the given file and return the content or null if an IOException occurs.
      *
-     * @param javaFile not null
-     * @param encoding could be null
-     * @return the content of the given javaFile using the given encoding
+     * @param javaFile the file to read; not null
+     * @param encoding a character set name; not null
+     * @return the content of the given java file using the given encoding; null if an IOException occurs
      * @since 2.6.1
+     * @throws java.nio.charset.UnsupportedCharsetException if the named charset is not supported
+     * @throws NullPointerException if the javaFile or encoding is null
+     * @deprecated use Files.readString(Path, Charset) in Java 11+ or new String(Files.readAllBytes(Path), Charset) in Java 8
      */
+    @Deprecated
     protected static String readFile(final File javaFile, final String encoding) {
         try {
             return new String(Files.readAllBytes(javaFile.toPath()), Charset.forName(encoding));
