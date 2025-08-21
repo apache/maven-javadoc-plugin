@@ -109,7 +109,7 @@ import org.codehaus.plexus.util.cli.Commandline;
  * @since 2.4
  */
 public class JavadocUtil {
-    /** The default timeout used when fetching url, i.e. 2000. */
+    /** The default timeout used when fetching a URL in milliseconds. The default value is 2000. */
     public static final int DEFAULT_TIMEOUT = 2000;
 
     /** Error message when VM could not be started using invoker. */
@@ -1512,9 +1512,9 @@ public class JavadocUtil {
     /**
      * Creates a new {@code HttpClient} instance.
      *
-     * @param settings The settings to use for setting up the client or {@code null}.
-     * @param url The {@code URL} to use for setting up the client or {@code null}.
-     * @return A new {@code HttpClient} instance.
+     * @param settings the settings to use for setting up the client or {@code null}
+     * @param url the {@code URL} to use for setting up the client or {@code null}
+     * @return a new {@code HttpClient} instance
      * @see #DEFAULT_TIMEOUT
      * @since 2.8
      */
