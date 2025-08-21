@@ -5390,13 +5390,18 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 } catch (MavenInvocationException e) {
                     logError("MavenInvocationException: " + e.getMessage(), e);
 
-                    String invokerLogContent = JavadocUtil.readFile(invokerLogFile, null /* platform encoding */);
-
-                    // TODO: Why are we only interested in cases where the JVM won't start?
-                    // [MJAVADOC-275][jdcasey] I changed the logic here to only throw an error WHEN
-                    //   the JVM won't start (opposite of what it was).
-                    if (invokerLogContent != null && invokerLogContent.contains(JavadocUtil.ERROR_INIT_VM)) {
-                        throw new MavenReportException(e.getMessage(), e);
+                    try {
+                        String invokerLogContent =
+                                new String(Files.readAllBytes(invokerLogFile.toPath()), StandardCharsets.UTF_8);
+                        // TODO: Why are we only interested in cases where the JVM won't start?
+                        // probably we should throw an error in all cases
+                        // [MJAVADOC-275][jdcasey] I changed the logic here to only throw an error WHEN
+                        //   the JVM won't start (opposite of what it was).
+                        if (invokerLogContent.contains(JavadocUtil.ERROR_INIT_VM)) {
+                            throw new MavenReportException(e.getMessage(), e);
+                        }
+                    } catch (IOException ex) {
+                        // ignore
                     }
                 } finally {
                     // just create the directory to prevent repeated invocations.
