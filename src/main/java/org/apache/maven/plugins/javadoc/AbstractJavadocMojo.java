@@ -2664,12 +2664,15 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * Method that sets the bottom text that will be displayed on the bottom of the
-     * javadocs.
+     * Method that sets the text that will be displayed on the bottom of the javadocs.
      *
      * @return a String that contains the text that will be displayed at the bottom of the javadoc
      */
     private String getBottomText() {
+        if (this.bottom == null) {
+            return null;
+        }
+
         final String inceptionYear = project.getInceptionYear();
 
         // get Reproducible Builds outputTimestamp date value or the current local date.
@@ -2679,32 +2682,29 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         final String currentYear = Integer.toString(localDate.getYear());
 
-        String theBottom = StringUtils.replace(this.bottom, "{currentYear}", currentYear);
+        String theBottom = this.bottom.replace("{currentYear}", currentYear);
 
         if ((inceptionYear == null) || inceptionYear.equals(currentYear)) {
-            theBottom = StringUtils.replace(theBottom, "{inceptionYear}&#x2013;", "");
+            theBottom = theBottom.replace("{inceptionYear}&#x2013;", "");
         } else {
-            theBottom = StringUtils.replace(theBottom, "{inceptionYear}", inceptionYear);
+            theBottom = theBottom.replace("{inceptionYear}", inceptionYear);
         }
 
         if (project.getOrganization() == null) {
-            theBottom = StringUtils.replace(theBottom, " {organizationName}", "");
+            theBottom = theBottom.replace(" {organizationName}", "");
         } else {
             if (StringUtils.isNotEmpty(project.getOrganization().getName())) {
                 if (StringUtils.isNotEmpty(project.getOrganization().getUrl())) {
-                    theBottom = StringUtils.replace(
-                            theBottom,
+                    theBottom = theBottom.replace(
                             "{organizationName}",
                             "<a href=\"" + project.getOrganization().getUrl() + "\">"
                                     + project.getOrganization().getName() + "</a>");
                 } else {
-                    theBottom = StringUtils.replace(
-                            theBottom,
-                            "{organizationName}",
-                            project.getOrganization().getName());
+                    theBottom = theBottom.replace(
+                            "{organizationName}", project.getOrganization().getName());
                 }
             } else {
-                theBottom = StringUtils.replace(theBottom, " {organizationName}", "");
+                theBottom = theBottom.replace(" {organizationName}", "");
             }
         }
 
@@ -4810,7 +4810,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                     getLog().warn("A group option is empty. Ignore this option.");
                 }
             } else {
-                String groupTitle = StringUtils.replace(group.getTitle(), ",", "&#44;");
+                String groupTitle = group.getTitle().replace(",", "&#44;");
                 addArgIfNotEmpty(
                         arguments,
                         "-group",
