@@ -373,7 +373,7 @@ public class JavadocUtil {
         try {
             Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<Path>() {
                 @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                     if (file.getFileName().toString().endsWith(".java")) {
                         fileList.add(
                                 sourceDirectory.relativize(file.getParent()).toString());
