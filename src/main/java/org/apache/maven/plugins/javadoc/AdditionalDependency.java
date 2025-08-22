@@ -22,7 +22,9 @@ import org.apache.maven.model.Dependency;
 
 /**
  * Provides syntactic sugar for using the standard {@code Dependency}
- * model as a parameter to {@link AbstractJavadocMojo}'s {@code additionalDependencies}.
+ * model as a parameter to {@link org.apache.maven.plugins.javadoc.AbstractJavadocMojo}'s {@code additionalDependencies}.
+ *
+ * @author elharo
  */
 public class AdditionalDependency extends Dependency {
     // no op

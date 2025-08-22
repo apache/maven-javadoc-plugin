@@ -24,7 +24,6 @@ package org.apache.maven.plugins.javadoc;
  * <strong>Note: </strong> Ensure the methods match, although parse+compareTo+toString should be enough.
  * </p>
  *
- *
  * @author Robert Scholte
  * @since 3.0.0
  * @deprecated Use {@link org.codehaus.plexus.languages.java.version.JavaVersion} instead
@@ -50,6 +49,7 @@ public class JavadocVersion implements Comparable<JavadocVersion> {
         return new JavadocVersion(s);
     }
 
+    /** {@inheritDoc} */
     @Override
     public int compareTo(JavadocVersion other) {
         String[] thisSegments = this.rawVersion.split("\\.");
@@ -71,6 +71,7 @@ public class JavadocVersion implements Comparable<JavadocVersion> {
         return thisSegments.length - otherSegments.length;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return rawVersion;

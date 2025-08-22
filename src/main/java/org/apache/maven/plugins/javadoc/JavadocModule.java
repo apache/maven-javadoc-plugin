@@ -29,6 +29,7 @@ import org.codehaus.plexus.languages.java.jpms.ModuleNameSource;
  * Represents a unit of Javadoc referring to the binary and java source paths
  *
  * @since 3.3.0
+ * @author elharo
  */
 public class JavadocModule {
     private final String gav;
@@ -41,10 +42,26 @@ public class JavadocModule {
 
     private final ModuleNameSource moduleNameSource;
 
+    /**
+     * <p>Constructor for JavadocModule.</p>
+     *
+     * @param gav a {@link java.lang.String} object
+     * @param artifactFile a {@link java.io.File} object
+     * @param sourcePaths a {@link java.util.Collection} object
+     */
     public JavadocModule(String gav, File artifactFile, Collection<Path> sourcePaths) {
         this(gav, artifactFile, sourcePaths, null, null);
     }
 
+    /**
+     * <p>Constructor for JavadocModule.</p>
+     *
+     * @param gav a {@link java.lang.String} object
+     * @param artifactFile a {@link java.io.File} object
+     * @param sourcePaths a {@link java.util.Collection} object
+     * @param moduleDescriptor a {@link org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor} object
+     * @param moduleNameSource a {@link org.codehaus.plexus.languages.java.jpms.ModuleNameSource} object
+     */
     public JavadocModule(
             String gav,
             File artifactFile,
@@ -58,22 +75,47 @@ public class JavadocModule {
         this.moduleNameSource = moduleNameSource;
     }
 
+    /**
+     * <p>Getter for the field <code>gav</code>.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     public String getGav() {
         return gav;
     }
 
+    /**
+     * <p>Getter for the field <code>sourcePaths</code>.</p>
+     *
+     * @return a {@link java.util.Collection} object
+     */
     public Collection<Path> getSourcePaths() {
         return sourcePaths;
     }
 
+    /**
+     * <p>Getter for the field <code>artifactFile</code>.</p>
+     *
+     * @return a {@link java.io.File} object
+     */
     public File getArtifactFile() {
         return artifactFile;
     }
 
+    /**
+     * <p>Getter for the field <code>moduleDescriptor</code>.</p>
+     *
+     * @return a {@link org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor} object
+     */
     public JavaModuleDescriptor getModuleDescriptor() {
         return moduleDescriptor;
     }
 
+    /**
+     * <p>Getter for the field <code>moduleNameSource</code>.</p>
+     *
+     * @return a {@link org.codehaus.plexus.languages.java.jpms.ModuleNameSource} object
+     */
     public ModuleNameSource getModuleNameSource() {
         return moduleNameSource;
     }
