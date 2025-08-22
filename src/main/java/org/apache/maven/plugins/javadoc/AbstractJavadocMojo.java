@@ -100,7 +100,6 @@ import org.apache.maven.shared.artifact.filter.resolve.AndFilter;
 import org.apache.maven.shared.artifact.filter.resolve.PatternExclusionsFilter;
 import org.apache.maven.shared.artifact.filter.resolve.PatternInclusionsFilter;
 import org.apache.maven.shared.artifact.filter.resolve.TransformableFilter;
-import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.ToolchainManager;
 import org.apache.maven.wagon.PathUtils;
@@ -5364,53 +5363,57 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
             File location = new File(p.getBasedir(), javadocDirRelative);
 
-            if (!location.exists()) {
-                String javadocGoal = getFullJavadocGoal();
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug("Javadoc directory not found: " + location);
-                    getLog().debug("The goal '" + javadocGoal + "' has not been previously called for the module: '"
-                            + p.getId() + "'. Trying to invoke it...");
-                }
-
-                File invokerDir = new File(project.getBuild().getDirectory(), "invoker");
-                invokerDir.mkdirs();
-                File invokerLogFile = FileUtils.createTempFile("maven-javadoc-plugin", ".txt", invokerDir);
-                try {
-                    JavadocUtil.invokeMaven(
-                            getLog(),
-                            session.getRepositorySession().getLocalRepository().getBasedir(),
-                            p.getFile(),
-                            Collections.singletonList(javadocGoal),
-                            null,
-                            invokerLogFile,
-                            session.getRequest().getGlobalSettingsFile(),
-                            session.getRequest().getUserSettingsFile(),
-                            session.getRequest().getGlobalToolchainsFile(),
-                            session.getRequest().getUserToolchainsFile());
-                } catch (MavenInvocationException e) {
-                    logError("MavenInvocationException: " + e.getMessage(), e);
-
-                    try {
-                        String invokerLogContent =
-                                new String(Files.readAllBytes(invokerLogFile.toPath()), StandardCharsets.UTF_8);
-                        // TODO: Why are we only interested in cases where the JVM won't start?
-                        // probably we should throw an error in all cases
-                        // [MJAVADOC-275][jdcasey] I changed the logic here to only throw an error WHEN
-                        //   the JVM won't start (opposite of what it was).
-                        if (invokerLogContent.contains(JavadocUtil.ERROR_INIT_VM)) {
-                            throw new MavenReportException(e.getMessage(), e);
-                        }
-                    } catch (IOException ex) {
-                        // ignore
-                    }
-                } finally {
-                    // just create the directory to prevent repeated invocations.
-                    if (!location.exists()) {
-                        getLog().warn("Creating fake javadoc directory to prevent repeated invocations: " + location);
-                        location.mkdirs();
-                    }
-                }
-            }
+            //            if (!location.exists()) {
+            //                String javadocGoal = getFullJavadocGoal();
+            //                if (getLog().isDebugEnabled()) {
+            //                    getLog().debug("Javadoc directory not found: " + location);
+            //                    getLog().debug("The goal '" + javadocGoal + "' has not been previously called for the
+            // module: '"
+            //                            + p.getId() + "'. Trying to invoke it...");
+            //                }
+            //
+            //                File invokerDir = new File(project.getBuild().getDirectory(), "invoker");
+            //                invokerDir.mkdirs();
+            //                File invokerLogFile = FileUtils.createTempFile("maven-javadoc-plugin", ".txt",
+            // invokerDir);
+            //                try {
+            //                    JavadocUtil.invokeMaven(
+            //                            getLog(),
+            //                            session.getRepositorySession().getLocalRepository().getBasedir(),
+            //                            p.getFile(),
+            //                            Collections.singletonList(javadocGoal),
+            //                            null,
+            //                            invokerLogFile,
+            //                            session.getRequest().getGlobalSettingsFile(),
+            //                            session.getRequest().getUserSettingsFile(),
+            //                            session.getRequest().getGlobalToolchainsFile(),
+            //                            session.getRequest().getUserToolchainsFile());
+            //                } catch (MavenInvocationException e) {
+            //                    logError("MavenInvocationException: " + e.getMessage(), e);
+            //
+            //                    try {
+            //                        String invokerLogContent =
+            //                                new String(Files.readAllBytes(invokerLogFile.toPath()),
+            // StandardCharsets.UTF_8);
+            //                        // TODO: Why are we only interested in cases where the JVM won't start?
+            //                        // probably we should throw an error in all cases
+            //                        // [MJAVADOC-275][jdcasey] I changed the logic here to only throw an error WHEN
+            //                        //   the JVM won't start (opposite of what it was).
+            //                        if (invokerLogContent.contains(JavadocUtil.ERROR_INIT_VM)) {
+            //                            throw new MavenReportException(e.getMessage(), e);
+            //                        }
+            //                    } catch (IOException ex) {
+            //                        // ignore
+            //                    }
+            //                } finally {
+            //                    // just create the directory to prevent repeated invocations.
+            //                    if (!location.exists()) {
+            //                        getLog().warn("Creating fake javadoc directory to prevent repeated invocations: "
+            // + location);
+            //                        location.mkdirs();
+            //                    }
+            //                }
+            //            }
 
             if (location.exists()) {
                 String url = getJavadocLink(p);
