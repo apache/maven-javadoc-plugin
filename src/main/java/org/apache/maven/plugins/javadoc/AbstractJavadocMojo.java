@@ -5331,6 +5331,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         return sb.toString();
     }
 
+    protected boolean isDetectOfflineLinks() {
+        return detectOfflineLinks;
+    }
+
     /**
      * Using Maven, a Javadoc link is given by <code>${project.url}/apidocs</code>.
      *
@@ -5343,7 +5347,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      */
     private List<OfflineLink> getModulesLinks() throws MavenReportException {
         List<MavenProject> aggregatedProjects = reactorProjects;
-        if (!detectOfflineLinks || isAggregator() || aggregatedProjects.isEmpty()) {
+        if (!isDetectOfflineLinks() || isAggregator() || aggregatedProjects.isEmpty()) {
             return Collections.emptyList();
         }
 

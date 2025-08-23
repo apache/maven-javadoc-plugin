@@ -94,6 +94,8 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
      */
     private JarArchiver jarArchiver;
 
+
+
     // CHECKSTYLE_OFF: ParameterNumber
     @Inject
     public JavadocJarMojo(
@@ -175,6 +177,25 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
      */
     @Parameter(property = "maven.javadoc.classifier", defaultValue = "javadoc", required = true)
     private String classifier;
+
+    /**
+     * Detect the links for all modules defined in the project.
+     * <br/>
+     * If {@code reactorProjects} is defined in a non-aggregator way, it generates default offline links
+     * between modules based on the defined project's urls. For instance, if a parent project has two projects
+     * <code>module1</code> and <code>module2</code>, the <code>-linkoffline</code> will be:
+     * <br/>
+     * The added Javadoc <code>-linkoffline</code> parameter for <b>module1</b> will be
+     * <code>/absolute/path/to/</code><b>module2</b><code>/target/site/apidocs</code>
+     * <br/>
+     * The added Javadoc <code>-linkoffline</code> parameter for <b>module2</b> will be
+     * <code>/absolute/path/to/</code><b>module1</b><code>/target/site/apidocs</code>
+     *
+     * @see #offlineLinks
+     * @since 2.6
+     */
+    @Parameter(property = "detectOfflineLinks", defaultValue = "false")
+    private boolean detectOfflineLinks;
 
     /** {@inheritDoc} */
     @Override
@@ -290,4 +311,10 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
 
         return outputFile;
     }
+
+    @Override
+    public boolean isDetectOfflineLinks() {
+        return detectOfflineLinks;
+    }
+
 }
