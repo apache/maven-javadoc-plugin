@@ -94,8 +94,6 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
      */
     private JarArchiver jarArchiver;
 
-
-
     // CHECKSTYLE_OFF: ParameterNumber
     @Inject
     public JavadocJarMojo(
@@ -316,5 +314,4 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
     public boolean isDetectOfflineLinks() {
         return detectOfflineLinks;
     }
-
 }
