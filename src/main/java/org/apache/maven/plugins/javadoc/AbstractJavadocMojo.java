@@ -496,7 +496,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * Detect the links for all modules defined in the project.
      * <br/>
      * If {@code reactorProjects} is defined in a non-aggregator way, it generates default offline links
-     * between modules based on the defined project's urls. For instance, if a parent project has two projects
+     * between modules based on the defined project's URLs. For instance, if a parent project has two projects
      * <code>module1</code> and <code>module2</code>, the <code>-linkoffline</code> will be:
      * <br/>
      * The added Javadoc <code>-linkoffline</code> parameter for <b>module1</b> will be
@@ -5331,6 +5331,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         return sb.toString();
     }
 
+    protected boolean isDetectOfflineLinks() {
+        return detectOfflineLinks;
+    }
+
     /**
      * Using Maven, a Javadoc link is given by <code>${project.url}/apidocs</code>.
      *
@@ -5343,7 +5347,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      */
     private List<OfflineLink> getModulesLinks() throws MavenReportException {
         List<MavenProject> aggregatedProjects = reactorProjects;
-        if (!detectOfflineLinks || isAggregator() || aggregatedProjects.isEmpty()) {
+        if (!isDetectOfflineLinks() || isAggregator() || aggregatedProjects.isEmpty()) {
             return Collections.emptyList();
         }
 
