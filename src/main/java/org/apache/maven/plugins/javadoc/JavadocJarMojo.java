@@ -180,7 +180,7 @@ public class JavadocJarMojo extends AbstractJavadocMojo {
      * Detect the links for all modules defined in the project.
      * <br/>
      * If {@code reactorProjects} is defined in a non-aggregator way, it generates default offline links
-     * between modules based on the defined project's urls. For instance, if a parent project has two projects
+     * between modules based on the defined project's URLs. For instance, if a parent project has two projects
      * <code>module1</code> and <code>module2</code>, the <code>-linkoffline</code> will be:
      * <br/>
      * The added Javadoc <code>-linkoffline</code> parameter for <b>module1</b> will be
