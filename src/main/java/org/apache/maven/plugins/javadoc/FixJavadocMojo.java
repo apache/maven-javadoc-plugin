@@ -28,6 +28,7 @@ import org.codehaus.plexus.components.interactivity.InputHandler;
 
 /**
  * Fix Javadoc documentation and tags for the <code>Java code</code> for the project.
+ *
  * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/javadoc/doc-comment-spec.html#where-tags-can-be-used">Where Tags
  * Can Be Used</a>
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
@@ -38,6 +39,11 @@ import org.codehaus.plexus.components.interactivity.InputHandler;
 public class FixJavadocMojo extends AbstractFixJavadocMojo {
 
     @Inject
+    /**
+     * <p>Constructor for FixJavadocMojo.</p>
+     *
+     * @param inputHandler a {@link org.codehaus.plexus.components.interactivity.InputHandler} object
+     */
     public FixJavadocMojo(InputHandler inputHandler) {
         super(inputHandler);
     }

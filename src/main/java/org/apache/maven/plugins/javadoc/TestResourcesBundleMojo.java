@@ -36,13 +36,14 @@ import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.eclipse.aether.RepositorySystem;
 
 /**
- * Bundle {@link TestJavadocJarMojo#testJavadocDirectory}, along with javadoc configuration options from
- * {@link AbstractJavadocMojo} such as taglet, doclet, and link information into a deployable
+ * Bundle {@link org.apache.maven.plugins.javadoc.TestJavadocJarMojo#testJavadocDirectory}, along with javadoc configuration options from
+ * {@link org.apache.maven.plugins.javadoc.AbstractJavadocMojo} such as taglet, doclet, and link information into a deployable
  * artifact. This artifact can then be consumed by the javadoc plugin mojos when used by the
  * <code>includeDependencySources</code> option, to generate javadocs that are somewhat consistent
  * with those generated in the original project itself.
  *
  * @since 2.7
+ * @author elharo
  */
 @Mojo(
         name = "test-resource-bundle",
@@ -53,6 +54,18 @@ public class TestResourcesBundleMojo extends ResourcesBundleMojo {
 
     // CHECKSTYLE_OFF: ParameterNumber
     @Inject
+    /**
+     * <p>Constructor for TestResourcesBundleMojo.</p>
+     *
+     * @param projectHelper a {@link org.apache.maven.project.MavenProjectHelper} object
+     * @param siteTool a {@link org.apache.maven.doxia.tools.SiteTool} object
+     * @param archiverManager a {@link org.codehaus.plexus.archiver.manager.ArchiverManager} object
+     * @param resourceResolver a {@link org.apache.maven.plugins.javadoc.resolver.ResourceResolver} object
+     * @param repoSystem a {@link org.eclipse.aether.RepositorySystem} object
+     * @param artifactHandlerManager a {@link org.apache.maven.artifact.handler.manager.ArtifactHandlerManager} object
+     * @param mavenProjectBuilder a {@link org.apache.maven.project.ProjectBuilder} object
+     * @param toolchainManager a {@link org.apache.maven.toolchain.ToolchainManager} object
+     */
     public TestResourcesBundleMojo(
             MavenProjectHelper projectHelper,
             SiteTool siteTool,
@@ -80,16 +93,19 @@ public class TestResourcesBundleMojo extends ResourcesBundleMojo {
     @Parameter(alias = "javadocDirectory", defaultValue = "${basedir}/src/test/javadoc")
     private File testJavadocDirectory;
 
+    /** {@inheritDoc} */
     @Override
     protected String getAttachmentClassifier() {
         return TEST_JAVADOC_RESOURCES_ATTACHMENT_CLASSIFIER;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected File getJavadocDirectory() {
         return testJavadocDirectory;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isTest() {
         return true;

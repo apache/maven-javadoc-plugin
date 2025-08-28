@@ -24,8 +24,12 @@ import org.apache.maven.archiver.MavenArchiveConfiguration;
  * For backwards compatibility, a custom archive configuration that defaults to not including the Maven descriptor.
  *
  * @see <a href="https://issues.apache.org/browse/MJAVADOC-431">MJAVADOC-431</a>
+ * @author elharo
  */
 public class JavadocArchiveConfiguration extends MavenArchiveConfiguration {
+    /**
+     * <p>Constructor for JavadocArchiveConfiguration.</p>
+     */
     public JavadocArchiveConfiguration() {
         setAddMavenDescriptor(false);
     }
