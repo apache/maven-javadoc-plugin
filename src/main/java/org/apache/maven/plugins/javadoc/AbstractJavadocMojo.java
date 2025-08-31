@@ -4614,8 +4614,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         } else if (mainResolvePathResult == null
                 || ModuleNameSource.MODULEDESCRIPTOR.equals(mainResolvePathResult.getModuleNameSource())) {
+            // modified for MJAVADOC-806 
             addArgIfNotEmpty(
-                    arguments, "--module-source-path", JavadocUtil.quotedPathArgument(moduleSourceDir.toString()));
+                    arguments, "--source-path", JavadocUtil.quotedPathArgument(getSourcePath(sourcePaths)));
         }
 
         addArgIfNotEmpty(arguments, "-subpackages", subpackages);
