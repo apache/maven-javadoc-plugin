@@ -22,8 +22,19 @@
 
     <url>https://github.com/apache/maven-javadoc-plugin/issues/1242</url>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>@maven.compiler.source@</maven.compiler.source>
+        <maven.compiler.target>@maven.compiler.target@</maven.compiler.target>
+    </properties>
+
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>@compilerPluginVersion@</version>
+            </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>@project.version@</version>
