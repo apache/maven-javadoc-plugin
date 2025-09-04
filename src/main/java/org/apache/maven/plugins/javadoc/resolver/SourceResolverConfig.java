@@ -26,7 +26,9 @@ import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.shared.artifact.filter.resolve.AndFilter;
 
 /**
+ * <p>SourceResolverConfig class.</p>
  *
+ * @author elharo
  */
 public class SourceResolverConfig {
     private ProjectBuildingRequest buildingRequest;
@@ -44,8 +46,10 @@ public class SourceResolverConfig {
     private boolean testSourceIncluded;
 
     /**
-     * @param project {@link MavenProject}
-     * @param buildingRequest {@link ProjectBuildingRequest}
+     * <p>Constructor for SourceResolverConfig.</p>
+     *
+     * @param project {@link org.apache.maven.project.MavenProject}
+     * @param buildingRequest {@link org.apache.maven.project.ProjectBuildingRequest}
      * @param outputBasedir The output base directory.
      */
     public SourceResolverConfig(
@@ -56,8 +60,10 @@ public class SourceResolverConfig {
     }
 
     /**
-     * @param filter {@link AndFilter}
-     * @return {@link SourceResolverConfig}
+     * <p>withFilter.</p>
+     *
+     * @param filter {@link org.apache.maven.shared.artifact.filter.resolve.AndFilter}
+     * @return {@link org.apache.maven.plugins.javadoc.resolver.SourceResolverConfig}
      */
     public SourceResolverConfig withFilter(final AndFilter filter) {
         this.filter = filter;
@@ -65,8 +71,10 @@ public class SourceResolverConfig {
     }
 
     /**
+     * <p>withReactorProjects.</p>
+     *
      * @param reactorProjects The list of reactor projects.
-     * @return {@link SourceResolverConfig}
+     * @return {@link org.apache.maven.plugins.javadoc.resolver.SourceResolverConfig}
      */
     public SourceResolverConfig withReactorProjects(final List<MavenProject> reactorProjects) {
         this.reactorProjects = reactorProjects;
@@ -74,7 +82,9 @@ public class SourceResolverConfig {
     }
 
     /**
-     * @return {@link SourceResolverConfig}
+     * <p>withCompileSources.</p>
+     *
+     * @return {@link org.apache.maven.plugins.javadoc.resolver.SourceResolverConfig}
      */
     public SourceResolverConfig withCompileSources() {
         compileSourceIncluded = true;
@@ -82,7 +92,9 @@ public class SourceResolverConfig {
     }
 
     /**
-     * @return {@link SourceResolverConfig}
+     * <p>withoutCompileSources.</p>
+     *
+     * @return {@link org.apache.maven.plugins.javadoc.resolver.SourceResolverConfig}
      */
     public SourceResolverConfig withoutCompileSources() {
         compileSourceIncluded = false;
@@ -90,7 +102,9 @@ public class SourceResolverConfig {
     }
 
     /**
-     * @return {@link SourceResolverConfig}
+     * <p>withTestSources.</p>
+     *
+     * @return {@link org.apache.maven.plugins.javadoc.resolver.SourceResolverConfig}
      */
     public SourceResolverConfig withTestSources() {
         testSourceIncluded = true;
@@ -98,7 +112,9 @@ public class SourceResolverConfig {
     }
 
     /**
-     * @return {@link SourceResolverConfig}
+     * <p>withoutTestSources.</p>
+     *
+     * @return {@link org.apache.maven.plugins.javadoc.resolver.SourceResolverConfig}
      */
     public SourceResolverConfig withoutTestSources() {
         testSourceIncluded = false;
@@ -106,34 +122,44 @@ public class SourceResolverConfig {
     }
 
     /**
-     * @return {@link MavenProject}
+     * <p>project.</p>
+     *
+     * @return {@link org.apache.maven.project.MavenProject}
      */
     public MavenProject project() {
         return project;
     }
 
     /**
-     * @return {@link ProjectBuildingRequest}
+     * <p>Getter for the field <code>buildingRequest</code>.</p>
+     *
+     * @return {@link org.apache.maven.project.ProjectBuildingRequest}
      */
     public ProjectBuildingRequest getBuildingRequest() {
         return buildingRequest;
     }
 
     /**
-     * @return {@link AndFilter}
+     * <p>filter.</p>
+     *
+     * @return {@link org.apache.maven.shared.artifact.filter.resolve.AndFilter}
      */
     public AndFilter filter() {
         return filter;
     }
 
     /**
-     * @return list of {@link MavenProject}
+     * <p>reactorProjects.</p>
+     *
+     * @return list of {@link org.apache.maven.project.MavenProject}
      */
     public List<MavenProject> reactorProjects() {
         return reactorProjects;
     }
 
     /**
+     * <p>outputBasedir.</p>
+     *
      * @return {@link #outputBasedir}
      */
     public File outputBasedir() {
@@ -141,6 +167,8 @@ public class SourceResolverConfig {
     }
 
     /**
+     * <p>includeCompileSources.</p>
+     *
      * @return {@link #compileSourceIncluded}
      */
     public boolean includeCompileSources() {
@@ -148,6 +176,8 @@ public class SourceResolverConfig {
     }
 
     /**
+     * <p>includeTestSources.</p>
+     *
      * @return {@link #testSourceIncluded}
      */
     public boolean includeTestSources() {

@@ -63,6 +63,19 @@ public class TestJavadocJarMojo extends JavadocJarMojo {
 
     // CHECKSTYLE_OFF: ParameterNumber
     @Inject
+    /**
+     * <p>Constructor for TestJavadocJarMojo.</p>
+     *
+     * @param projectHelper a {@link org.apache.maven.project.MavenProjectHelper} object
+     * @param jarArchiver a {@link org.codehaus.plexus.archiver.jar.JarArchiver} object
+     * @param siteTool a {@link org.apache.maven.doxia.tools.SiteTool} object
+     * @param archiverManager a {@link org.codehaus.plexus.archiver.manager.ArchiverManager} object
+     * @param resourceResolver a {@link org.apache.maven.plugins.javadoc.resolver.ResourceResolver} object
+     * @param repoSystem a {@link org.eclipse.aether.RepositorySystem} object
+     * @param artifactHandlerManager a {@link org.apache.maven.artifact.handler.manager.ArtifactHandlerManager} object
+     * @param mavenProjectBuilder a {@link org.apache.maven.project.ProjectBuilder} object
+     * @param toolchainManager a {@link org.apache.maven.toolchain.ToolchainManager} object
+     */
     public TestJavadocJarMojo(
             MavenProjectHelper projectHelper,
             JarArchiver jarArchiver,
@@ -146,6 +159,7 @@ public class TestJavadocJarMojo extends JavadocJarMojo {
     // Protected methods
     // ----------------------------------------------------------------------
 
+    /** {@inheritDoc} */
     @Override
     protected String getClassifier() {
         return testClassifier;
@@ -155,26 +169,31 @@ public class TestJavadocJarMojo extends JavadocJarMojo {
     // Important Note: should be inline with methods defined in TestJavadocReport
     // ----------------------------------------------------------------------
 
+    /** {@inheritDoc} */
     @Override
     protected File getJavadocDirectory() {
         return testJavadocDirectory;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getDoctitle() {
         return testDoctitle;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected File getOverview() {
         return testOverview;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getWindowtitle() {
         return testWindowtitle;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected List<File> getProjectBuildOutputDirs(MavenProject p) {
         List<File> dirs = new ArrayList<>();
@@ -188,6 +207,7 @@ public class TestJavadocJarMojo extends JavadocJarMojo {
         return dirs;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected List<String> getProjectSourceRoots(MavenProject p) {
         if ("pom".equals(p.getPackaging().toLowerCase(Locale.ENGLISH))) {
@@ -197,6 +217,7 @@ public class TestJavadocJarMojo extends JavadocJarMojo {
         return p.getTestCompileSourceRoots();
     }
 
+    /** {@inheritDoc} */
     @Override
     protected List<String> getExecutionProjectSourceRoots(MavenProject p) {
         if ("pom".equals(p.getExecutionProject().getPackaging().toLowerCase(Locale.ENGLISH))) {
@@ -206,6 +227,7 @@ public class TestJavadocJarMojo extends JavadocJarMojo {
         return p.getExecutionProject().getTestCompileSourceRoots();
     }
 
+    /** {@inheritDoc} */
     @Override
     protected ScopeDependencyFilter getDependencyScopeFilter() {
         return new ScopeDependencyFilter(
@@ -226,6 +248,7 @@ public class TestJavadocJarMojo extends JavadocJarMojo {
                 .withTestSources();
     }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isTest() {
         return true;

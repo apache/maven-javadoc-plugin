@@ -87,6 +87,17 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     private String description;
 
     @Inject
+    /**
+     * <p>Constructor for JavadocReport.</p>
+     *
+     * @param siteTool a {@link org.apache.maven.doxia.tools.SiteTool} object
+     * @param archiverManager a {@link org.codehaus.plexus.archiver.manager.ArchiverManager} object
+     * @param resourceResolver a {@link org.apache.maven.plugins.javadoc.resolver.ResourceResolver} object
+     * @param repoSystem a {@link org.eclipse.aether.RepositorySystem} object
+     * @param artifactHandlerManager a {@link org.apache.maven.artifact.handler.manager.ArtifactHandlerManager} object
+     * @param mavenProjectBuilder a {@link org.apache.maven.project.ProjectBuilder} object
+     * @param toolchainManager a {@link org.apache.maven.toolchain.ToolchainManager} object
+     */
     public JavadocReport(
             SiteTool siteTool,
             ArchiverManager archiverManager,
@@ -148,9 +159,7 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
         }
     }
 
-    /**
-     * @deprecated use getOutputPath() instead
-     */
+    /** {@inheritDoc} */
     @Override
     @Deprecated
     public String getOutputName() {
