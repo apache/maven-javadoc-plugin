@@ -4603,7 +4603,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         if (moduleSourceDir == null) {
-            if (!disableSourcepathUsage && !legacyMode) {
+            if (!disableSourcepathUsage) {
                 addArgIfNotEmpty(
                         arguments,
                         "-sourcepath",
