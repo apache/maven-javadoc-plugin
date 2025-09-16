@@ -70,7 +70,7 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
 
     /**
      * The name of the Javadoc report to be displayed in the Maven Generated Reports page
-     * (i.e. <code>project-reports.html</code>).
+     * (e.g. <code>project-reports.html</code>).
      *
      * @since 2.1
      */
@@ -293,7 +293,7 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
 
         File outputDirectory = new File(getOutputDirectory());
 
-        String filename = getOutputName() + ".html";
+        String filename = getOutputPath() + ".html";
 
         Locale locale = SiteTool.DEFAULT_LOCALE;
 

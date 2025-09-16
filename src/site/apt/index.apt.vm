@@ -95,12 +95,6 @@ javadoc.exe(or .sh) @options @packages | @argfile
    * {{{./test-aggregate-jar-mojo.html}javadoc:test-aggregate-jar}} creates an archive file of the generated Test
      Javadocs for an aggregator project.
 
-   * {{{./fix-mojo.html}javadoc:fix}} is an interactive goal which fixes the Javadoc documentation and tags for the
-     Java files.
-
-   * {{{./test-fix-mojo.html}javadoc:test-fix}} is an interactive goal which fixes the Javadoc documentation and tags
-     for the test Java files.
-
    * {{{./resource-bundle-mojo.html}javadoc:resource-bundle}} bundles the <<<javadocDirectory>>> along with Javadoc
      configuration options such as taglet, doclet, and link information into a deployable artifact.
 
@@ -129,7 +123,7 @@ javadoc.exe(or .sh) @options @packages | @argfile
 
 * Examples
 
-   The following examples show how to use the Javadoc Plugin in more advanced usecases:
+   The following examples show how to use the Javadoc Plugin in more advanced use cases:
 
    * {{{./examples/aggregate.html}Aggregating Javadocs for Multi-Projects}}
 

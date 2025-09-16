@@ -136,7 +136,7 @@ org.test:project-distro:0.1
   This is a pretty common direct dependency for projects that provide command-line execution options. But consider
   what happens if commons-cli doesn't provide a <<<sources>>> jar: dependency-driven javadoc aggregation would fail
   for any project that contained commons-cli as a direct dependency. To avoid this case, you have the option to fine-tune
-  which dependencies get included in the javadoc aggregation process. In your distribution project, add configuraiton
+  which dependencies get included in the javadoc aggregation process. In your distribution project, add configuration
   for the <<<maven-javadoc-plugin>>> similar to the following:
   
 +-----+

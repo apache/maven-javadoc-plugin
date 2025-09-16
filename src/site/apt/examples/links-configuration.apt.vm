@@ -88,8 +88,8 @@ Configuring <<<links>>> Parameter
   executable. To skip this link, you need to configure
   {{{../javadoc-mojo.html#detectJavaApiLink}\<detectJavaApiLink/\>}} to <<<false>>>.
 
-  <<Note>>: if you are using an unsupported JDK like 7.0, you can add its Javadoc API url using the
-  {{{../javadoc-mojo.html#javaApiLinks}\<javaApiLinks/\>}} parameter, i.e.:
+  <<Note>>: if you are using an unsupported JDK like 7.0, you can add its Javadoc API URL using the
+  {{{../javadoc-mojo.html#javaApiLinks}\<javaApiLinks/\>}} parameter. For example:
 
 +-----+
 <configuration>
@@ -109,7 +109,7 @@ Configuring <<<links>>> Parameter
 Configuring <<<offlineLinks>>> Parameter
 
   If your project has modules, you can add cross reference links to your modules when your goals are not aggregator
-  goals. For instance, if your project has two modules i.e.:
+  goals. For instance, if your project has two modules, for example:
 
 +-----+
 <project>

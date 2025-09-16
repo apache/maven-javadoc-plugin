@@ -35,6 +35,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -108,7 +109,7 @@ import org.codehaus.plexus.util.cli.Commandline;
  * @since 2.4
  */
 public class JavadocUtil {
-    /** The default timeout used when fetching url, i.e. 2000. */
+    /** The default timeout used when fetching a URL in milliseconds. The default value is 2000. */
     public static final int DEFAULT_TIMEOUT = 2000;
 
     /** Error message when VM could not be started using invoker. */
@@ -152,7 +153,7 @@ public class JavadocUtil {
      *
      * @param project the current Maven project not null
      * @param dirs the collection of directories that will be validated
-     * @return a list of valid claspath elements as absolute paths
+     * @return a list of valid classpath elements as absolute paths
      */
     public static Collection<Path> pruneDirs(MavenProject project, Collection<String> dirs) {
         return prunePaths(project, dirs, false);
@@ -180,9 +181,9 @@ public class JavadocUtil {
      * Determine whether a file should be excluded from the provided list of paths, based on whether it exists and is
      * already present in the list.
      *
-     * @param f The files.
-     * @param pruned The list of pruned files..
-     * @return true if the file could be pruned false otherwise.
+     * @param f the files
+     * @param pruned the list of pruned files
+     * @return true if the file could be pruned, false otherwise
      */
     public static boolean shouldPruneFile(String f, List<String> pruned) {
         if (f != null) {
@@ -372,7 +373,7 @@ public class JavadocUtil {
         try {
             Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<Path>() {
                 @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                     if (file.getFileName().toString().endsWith(".java")) {
                         fileList.add(
                                 sourceDirectory.relativize(file.getParent()).toString());
@@ -573,7 +574,7 @@ public class JavadocUtil {
 
     /**
      * Parse a memory string which be used in the JVM arguments <code>-Xms</code> or <code>-Xmx</code>. <br>
-     * Here are some supported memory string depending the JDK used:
+     * Here are some supported memory string depending on the JDK used:
      * <table><caption>Memory argument support per JDK</caption>
      * <tr>
      * <th>JDK</th>
@@ -639,7 +640,7 @@ public class JavadocUtil {
     /**
      * Validate if a charset is supported on this platform.
      *
-     * @param charsetName the charsetName to be check.
+     * @param charsetName the charsetName to check
      * @return <code>true</code> if the given charset is supported by the JVM, <code>false</code> otherwise.
      */
     protected static boolean validateEncoding(String charsetName) {
@@ -823,46 +824,57 @@ public class JavadocUtil {
         InvocationResult result = invoke(log, invoker, request, invokerLog, goals, properties, null);
 
         if (result.getExitCode() != 0) {
-            String invokerLogContent = readFile(invokerLog, "UTF-8");
+            try {
+                String invokerLogContent = new String(Files.readAllBytes(invokerLog.toPath()), StandardCharsets.UTF_8);
 
-            // see DefaultMaven
-            if (invokerLogContent != null
-                    && (!invokerLogContent.contains("Scanning for projects...")
-                            || invokerLogContent.contains(OutOfMemoryError.class.getName()))) {
-                if (log != null) {
-                    log.error("Error occurred during initialization of VM, trying to use an empty MAVEN_OPTS...");
+                // see DefaultMaven
+                if (!invokerLogContent.contains("Scanning for projects...")
+                        || invokerLogContent.contains(OutOfMemoryError.class.getName())) {
+                    if (log != null) {
+                        log.error("Error occurred during initialization of VM, trying to use an empty MAVEN_OPTS...");
 
-                    if (log.isDebugEnabled()) {
-                        log.debug("Reinvoking Maven for the goals: " + goals + " with an empty MAVEN_OPTS...");
+                        if (log.isDebugEnabled()) {
+                            log.debug("Reinvoking Maven for the goals: " + goals + " with an empty MAVEN_OPTS...");
+                        }
                     }
                 }
-                result = invoke(log, invoker, request, invokerLog, goals, properties, "");
+            } catch (IOException e) {
+                // ignore
             }
+            result = invoke(log, invoker, request, invokerLog, goals, properties, "");
         }
 
         if (result.getExitCode() != 0) {
-            String invokerLogContent = readFile(invokerLog, "UTF-8");
+            try {
+                String invokerLogContent = new String(Files.readAllBytes(invokerLog.toPath()), StandardCharsets.UTF_8);
 
-            // see DefaultMaven
-            if (invokerLogContent != null
-                    && (!invokerLogContent.contains("Scanning for projects...")
-                            || invokerLogContent.contains(OutOfMemoryError.class.getName()))) {
-                throw new MavenInvocationException(ERROR_INIT_VM);
+                // see DefaultMaven
+                if (!invokerLogContent.contains("Scanning for projects...")
+                        || invokerLogContent.contains(OutOfMemoryError.class.getName())) {
+                    throw new MavenInvocationException(ERROR_INIT_VM);
+                }
+
+                throw new MavenInvocationException(
+                        "Error when invoking Maven, consult the invoker log file: " + invokerLog.getAbsolutePath());
+            } catch (IOException ex) {
+                // ignore
             }
-
-            throw new MavenInvocationException(
-                    "Error when invoking Maven, consult the invoker log file: " + invokerLog.getAbsolutePath());
+            throw new MavenInvocationException(ERROR_INIT_VM);
         }
     }
 
     /**
      * Read the given file and return the content or null if an IOException occurs.
      *
-     * @param javaFile not null
-     * @param encoding could be null
-     * @return the content of the given javaFile using the given encoding
+     * @param javaFile the file to read; not null
+     * @param encoding a character set name; not null
+     * @return the content of the given file using the given encoding; null if an IOException occurs
      * @since 2.6.1
+     * @throws java.nio.charset.UnsupportedCharsetException if the named charset is not supported
+     * @throws NullPointerException if the javaFile or encoding is null
+     * @deprecated use Files.readString(Path, Charset) in Java 11+ or new String(Files.readAllBytes(Path), Charset) in Java 8
      */
+    @Deprecated
     protected static String readFile(final File javaFile, final String encoding) {
         try {
             return new String(Files.readAllBytes(javaFile.toPath()), Charset.forName(encoding));
@@ -872,7 +884,7 @@ public class JavadocUtil {
     }
 
     /**
-     * Split the given path with colon and semi-colon, to support Solaris and Windows path. Examples:
+     * Split the given path with colon and semicolon, to support Unix and Windows paths. Examples:
      *
      * <pre>
      * splitPath( "/home:/tmp" )     = ["/home", "/tmp"]
@@ -1130,7 +1142,7 @@ public class JavadocUtil {
         private String lookahead = null;
 
         /**
-         * Flag to indicate whether or not we are running on a platform with a DOS style filesystem
+         * Flag to indicate whether we are running on a platform with a DOS style filesystem
          */
         private boolean dosStyleFilesystem;
 
@@ -1494,9 +1506,9 @@ public class JavadocUtil {
     /**
      * Creates a new {@code HttpClient} instance.
      *
-     * @param settings The settings to use for setting up the client or {@code null}.
-     * @param url The {@code URL} to use for setting up the client or {@code null}.
-     * @return A new {@code HttpClient} instance.
+     * @param settings the settings to use for setting up the client or {@code null}
+     * @param url the {@code URL} to use for setting up the client or {@code null}
+     * @return a new {@code HttpClient} instance
      * @see #DEFAULT_TIMEOUT
      * @since 2.8
      */

@@ -58,8 +58,8 @@ Using Alternate Javadoc Tool
 +-----+
 
   <<IMPORTANT NOTE>>: by using {{{../javadoc-mojo.html#javadocExecutable}\<javadocExecutable/\>}} parameter, the build
-  will be plateform dependent! A good practice is to define an environnement variable (i.e. JAVA_1.6_HOME), so you
-  could specify it: (i.e. \<javadocExecutable\>\u0024\{env.JAVA_1.6_HOME\}/bin/javadoc\</javadocExecutable\>). An other
+  will be platform dependent! A good practice is to define an environment variable (e.g. JAVA_1.6_HOME), so you
+  could specify it: (e.g. \<javadocExecutable\>\u0024\{env.JAVA_1.6_HOME\}/bin/javadoc\</javadocExecutable\>). An other
   ways is to define a POM property using \<project\>\<properties/\>\</project\>.
 
 * Using Alternate Javadoc Version

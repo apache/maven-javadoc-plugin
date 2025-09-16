@@ -28,7 +28,7 @@ under the License.
   </parent>
 
   <artifactId>maven-javadoc-plugin</artifactId>
-  <version>3.11.4-SNAPSHOT</version>
+  <version>3.12.1-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Apache Maven Javadoc Plugin</name>
@@ -127,7 +127,7 @@ under the License.
     <jarPluginVersion>3.3.0</jarPluginVersion>
     <sitePluginVersion>3.20.0</sitePluginVersion>
     <projectInfoReportsPluginVersion>3.7.0</projectInfoReportsPluginVersion>
-    <project.build.outputTimestamp>2025-08-13T07:56:16Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2025-09-16T08:27:46Z</project.build.outputTimestamp>
     <slf4jVersion>1.7.36</slf4jVersion>
   </properties>
 
@@ -541,7 +541,7 @@ under the License.
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>mrm-maven-plugin</artifactId>
-            <version>1.6.0</version>
+            <version>1.7.0</version>
             <executions>
               <execution>
                 <id>repository</id>
