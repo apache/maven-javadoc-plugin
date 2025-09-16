@@ -28,7 +28,7 @@ under the License.
   </parent>
 
   <artifactId>maven-javadoc-plugin</artifactId>
-  <version>3.12.0-SNAPSHOT</version>
+  <version>3.12.0</version>
   <packaging>maven-plugin</packaging>
 
   <name>Apache Maven Javadoc Plugin</name>
@@ -91,7 +91,7 @@ under the License.
   <scm>
     <connection>scm:git:https://github.com/apache/maven-javadoc-plugin.git</connection>
     <developerConnection>scm:git:https://github.com/apache/maven-javadoc-plugin.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>maven-javadoc-plugin-3.12.0</tag>
     <url>https://github.com/apache/maven-javadoc-plugin/tree/${project.scm.tag}</url>
   </scm>
   <issueManagement>
@@ -127,7 +127,7 @@ under the License.
     <jarPluginVersion>3.3.0</jarPluginVersion>
     <sitePluginVersion>3.20.0</sitePluginVersion>
     <projectInfoReportsPluginVersion>3.7.0</projectInfoReportsPluginVersion>
-    <project.build.outputTimestamp>2025-09-16T08:24:23Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2025-09-16T08:27:36Z</project.build.outputTimestamp>
     <slf4jVersion>1.7.36</slf4jVersion>
   </properties>
 
