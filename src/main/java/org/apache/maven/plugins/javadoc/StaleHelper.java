@@ -20,6 +20,8 @@ package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,8 +58,12 @@ public class StaleHelper {
             for (String arg : args) {
                 if (arg.startsWith("@")) {
                     String name = arg.substring(1);
-                    options.addAll(Files.readAllLines(dir.resolve(name), UTF_8));
                     ignored.add(name);
+                    try {
+                        options.addAll(Files.readAllLines(dir.resolve(name), UTF_8));
+                    } catch (CharacterCodingException e) {
+                        options.addAll(Files.readAllLines(dir.resolve(name), Charset.defaultCharset()));
+                    }
                 }
             }
             List<String> state = new ArrayList<>(options);
