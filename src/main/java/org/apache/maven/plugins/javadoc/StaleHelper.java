@@ -20,7 +20,6 @@ package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -31,7 +30,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.reporting.MavenReportException;
-import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.cli.Commandline;
 
 /**
@@ -41,21 +39,7 @@ import org.codehaus.plexus.util.cli.Commandline;
 public class StaleHelper {
 
     /**
-     * Compute the encoding of the stale javadoc
-     *
-     * @return the encoding of the stale data
-     */
-    private static Charset getDataCharset() {
-        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("9")
-                && JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("12")) {
-            return StandardCharsets.UTF_8;
-        } else {
-            return Charset.defaultCharset();
-        }
-    }
-
-    /**
-     * Compute the data used to detect a stale javadoc
+     * Compute the data used to detect a stale javadoc.
      *
      * @param cmd the command line
      * @return the stale data
@@ -72,7 +56,7 @@ public class StaleHelper {
             for (String arg : args) {
                 if (arg.startsWith("@")) {
                     String name = arg.substring(1);
-                    options.addAll(Files.readAllLines(dir.resolve(name), getDataCharset()));
+                    options.addAll(Files.readAllLines(dir.resolve(name), StandardCharsets.UTF_8));
                     ignored.add(name);
                 }
             }
@@ -113,7 +97,7 @@ public class StaleHelper {
     }
 
     /**
-     * Write the data used to detect a stale javadoc
+     * Write the data used to detect a stale javadoc.
      *
      * @param cmd the command line
      * @param path the stale data path
@@ -121,9 +105,9 @@ public class StaleHelper {
      */
     public static void writeStaleData(Commandline cmd, Path path) throws MavenReportException {
         try {
-            List<String> curdata = getStaleData(cmd);
+            List<String> currentData = getStaleData(cmd);
             Files.createDirectories(path.getParent());
-            Files.write(path, curdata, getDataCharset());
+            Files.write(path, currentData, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new MavenReportException("Error checking stale data", e);
         }
