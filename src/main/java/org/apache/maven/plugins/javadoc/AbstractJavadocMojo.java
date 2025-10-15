@@ -678,16 +678,23 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * <code>-subpackages</code>. Multiple packages can be separated by commas (<code>,</code>), colons (<code>:</code>)
      * or semicolons (<code>;</code>).
      * <p>
-     * Wildcards work as followed:
+     * Wildcards work as follows:
      * <ul>
-     *   <li>a wildcard at the beginning should match one or more directories</li>
-     *   <li>any other wildcard must match exactly one directory</li>
+     *   <li>a wildcard at the beginning should match one or more package name segments</li>
+     *   <li>a wildcard at the end should match one or more package name segments (to include all subpackages)</li>
+     *   <li>a wildcard in the middle should match exactly one package name segment</li>
      * </ul>
      * </p>
      * Example:
      * <pre>
      * &lt;excludePackageNames&gt;*.internal:org.acme.exclude1.*:org.acme.exclude2&lt;/excludePackageNames&gt;
      * </pre>
+     * This will exclude:
+     * <ul>
+     *   <li>All packages ending with <code>.internal</code> (e.g., <code>com.example.internal</code>, <code>org.internal</code>)</li>
+     *   <li>All subpackages under <code>org.acme.exclude1</code> (e.g., <code>org.acme.exclude1.sub</code>, <code>org.acme.exclude1.sub.deep</code>)</li>
+     *   <li>Only the package <code>org.acme.exclude2</code> (not its subpackages)</li>
+     * </ul>
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#options-for-javadoc">Javadoc option exclude</a>.
      */
     @Parameter(property = "excludePackageNames")
