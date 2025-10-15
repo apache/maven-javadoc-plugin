@@ -20,8 +20,8 @@ package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,29 +31,15 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.reporting.MavenReportException;
-import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.cli.Commandline;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Helper class to compute and write data used to detect a
  * stale javadoc.
  */
 public class StaleHelper {
-
-    /**
-     * Compute the encoding of the stale javadoc
-     *
-     * @return the encoding of the stale data
-     */
-    private static Charset getDataCharset() {
-        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("9")
-                && JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("12")) {
-            return StandardCharsets.UTF_8;
-        } else {
-            return Charset.defaultCharset();
-        }
-    }
-
     /**
      * Compute the data used to detect a stale javadoc
      *
@@ -72,8 +58,12 @@ public class StaleHelper {
             for (String arg : args) {
                 if (arg.startsWith("@")) {
                     String name = arg.substring(1);
-                    options.addAll(Files.readAllLines(dir.resolve(name), getDataCharset()));
                     ignored.add(name);
+                    try {
+                        options.addAll(Files.readAllLines(dir.resolve(name), UTF_8));
+                    } catch (CharacterCodingException e) {
+                        options.addAll(Files.readAllLines(dir.resolve(name), Charset.defaultCharset()));
+                    }
                 }
             }
             List<String> state = new ArrayList<>(options);
@@ -123,7 +113,7 @@ public class StaleHelper {
         try {
             List<String> curdata = getStaleData(cmd);
             Files.createDirectories(path.getParent());
-            Files.write(path, curdata, getDataCharset());
+            Files.write(path, curdata, UTF_8);
         } catch (IOException e) {
             throw new MavenReportException("Error checking stale data", e);
         }
