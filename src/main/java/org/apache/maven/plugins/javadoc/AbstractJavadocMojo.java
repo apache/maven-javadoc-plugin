@@ -4149,14 +4149,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         StringBuilder options = new StringBuilder();
         options.append(StringUtils.join(arguments.iterator(), SystemUtils.LINE_SEPARATOR));
 
-        Charset outputFileEncoding;
-        if (JAVA_VERSION.isAtLeast("9") && JAVA_VERSION.isBefore("12")) {
-            outputFileEncoding = StandardCharsets.UTF_8;
-        } else {
-            outputFileEncoding = Charset.defaultCharset();
-        }
         try {
-            Files.write(optionsFile.toPath(), Collections.singleton(options), outputFileEncoding);
+            Files.write(optionsFile.toPath(), Collections.singleton(options), SystemUtils.getExpectedEncoding());
         } catch (IOException e) {
             throw new MavenReportException(
                     "Unable to write '" + optionsFile.getName() + "' temporary file for command execution", e);
@@ -4194,16 +4188,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             quotedFiles.add(JavadocUtil.quotedPathArgument(file));
         }
 
-        Charset cs;
-        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("9")
-                && JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("12")) {
-            cs = StandardCharsets.UTF_8;
-        } else {
-            cs = Charset.defaultCharset();
-        }
-
         try {
-            Files.write(argfileFile.toPath(), quotedFiles, cs);
+            Files.write(argfileFile.toPath(), quotedFiles, SystemUtils.getExpectedEncoding());
         } catch (IOException e) {
             throw new MavenReportException(
                     "Unable to write '" + argfileFile.getName() + "' temporary file for command execution", e);
@@ -5005,7 +4991,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             Path cacheData = staleDataPath.toPath();
             List<String> prvdata;
             if (Files.isRegularFile(cacheData)) {
-                prvdata = Files.lines(cacheData, StandardCharsets.UTF_8).collect(Collectors.toList());
+                prvdata = Files.lines(cacheData, SystemUtils.getExpectedEncoding())
+                        .collect(Collectors.toList());
             } else {
                 prvdata = null;
             }
