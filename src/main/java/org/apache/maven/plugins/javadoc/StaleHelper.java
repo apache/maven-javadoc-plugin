@@ -20,8 +20,6 @@ package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,13 +31,12 @@ import java.util.List;
 import org.apache.maven.reporting.MavenReportException;
 import org.codehaus.plexus.util.cli.Commandline;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 /**
  * Helper class to compute and write data used to detect a
  * stale javadoc.
  */
 public class StaleHelper {
+
     /**
      * Compute the data used to detect a stale javadoc
      *
@@ -58,12 +55,8 @@ public class StaleHelper {
             for (String arg : args) {
                 if (arg.startsWith("@")) {
                     String name = arg.substring(1);
+                    options.addAll(Files.readAllLines(dir.resolve(name), SystemUtils.getExpectedEncoding()));
                     ignored.add(name);
-                    try {
-                        options.addAll(Files.readAllLines(dir.resolve(name), UTF_8));
-                    } catch (CharacterCodingException e) {
-                        options.addAll(Files.readAllLines(dir.resolve(name), Charset.defaultCharset()));
-                    }
                 }
             }
             List<String> state = new ArrayList<>(options);
@@ -113,7 +106,7 @@ public class StaleHelper {
         try {
             List<String> curdata = getStaleData(cmd);
             Files.createDirectories(path.getParent());
-            Files.write(path, curdata, UTF_8);
+            Files.write(path, curdata, SystemUtils.getExpectedEncoding());
         } catch (IOException e) {
             throw new MavenReportException("Error checking stale data", e);
         }

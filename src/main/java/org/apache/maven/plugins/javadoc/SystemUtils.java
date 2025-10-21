@@ -19,6 +19,10 @@
 package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
+import org.codehaus.plexus.languages.java.version.JavaVersion;
 
 /**
  * Contains several OS-specific methods from Commons-Lang3's SystemUtils. We don't want to use that class because it
@@ -144,6 +148,21 @@ class SystemUtils {
      */
     public static File getJavaHome() {
         return new File(System.getProperty(JAVA_HOME_KEY));
+    }
+
+    /**
+     * Compute the encoding that Javadoc expects for reading and writing of data
+     *
+     * @return the expected encoding
+     * @since 3.12.1
+     */
+    public static Charset getExpectedEncoding() {
+        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("9")
+                && JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("12")) {
+            return StandardCharsets.UTF_8;
+        } else {
+            return Charset.defaultCharset();
+        }
     }
 
     /**
