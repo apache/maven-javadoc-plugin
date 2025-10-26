@@ -681,4 +681,80 @@ public class JavadocUtilTest extends PlexusTestCase {
         List<String> values = JavadocUtil.toList(value);
         assertThat(values).containsExactly("*.internal", "org.acme.exclude1.*", "org.acme.exclude2");
     }
+
+    /**
+     * Test for getExcludedPackages with wildcard patterns
+     */
+    public void testGetExcludedPackages() throws Exception {
+        // Create test directory structure
+        File testDir = new File(getBasedir(), "target/test/unit/exclude-packages-test");
+        if (testDir.exists()) {
+            FileUtils.deleteDirectory(testDir);
+        }
+
+        // Create package structure:
+        // org.example (with Main.java)
+        // org.example.sub1 (with Class1.java)
+        // org.example.sub2 (with Class2.java)
+        // org.example.sub2.subsub (with Class3.java)
+        // org.other (with Other.java)
+        // com.internal (with Internal.java)
+
+        File orgExample = new File(testDir, "org/example");
+        File orgExampleSub1 = new File(testDir, "org/example/sub1");
+        File orgExampleSub2 = new File(testDir, "org/example/sub2");
+        File orgExampleSub2Subsub = new File(testDir, "org/example/sub2/subsub");
+        File orgOther = new File(testDir, "org/other");
+        File comInternal = new File(testDir, "com/internal");
+
+        assertTrue(orgExample.mkdirs());
+        assertTrue(orgExampleSub1.mkdirs());
+        assertTrue(orgExampleSub2.mkdirs());
+        assertTrue(orgExampleSub2Subsub.mkdirs());
+        assertTrue(orgOther.mkdirs());
+        assertTrue(comInternal.mkdirs());
+
+        // Create Java files in each directory
+        new File(orgExample, "Main.java").createNewFile();
+        new File(orgExampleSub1, "Class1.java").createNewFile();
+        new File(orgExampleSub2, "Class2.java").createNewFile();
+        new File(orgExampleSub2Subsub, "Class3.java").createNewFile();
+        new File(orgOther, "Other.java").createNewFile();
+        new File(comInternal, "Internal.java").createNewFile();
+
+        Path testPath = testDir.toPath();
+
+        // Test 1: org.example.* should match all subpackages of org.example
+        // Expected: org.example.sub1, org.example.sub2, org.example.sub2.subsub
+        Collection<String> excludes1 = Collections.singletonList("org.example.*");
+        Collection<String> result1 = JavadocUtil.getExcludedPackages(testPath, excludes1);
+        assertThat(result1)
+                .as("org.example.* should match all subpackages of org.example")
+                .containsExactlyInAnyOrder("org.example.sub1", "org.example.sub2", "org.example.sub2.subsub");
+
+        // Test 2: org.example should match only org.example itself
+        Collection<String> excludes2 = Collections.singletonList("org.example");
+        Collection<String> result2 = JavadocUtil.getExcludedPackages(testPath, excludes2);
+        assertThat(result2)
+                .as("org.example should match only org.example package")
+                .containsExactly("org.example");
+
+        // Test 3: *.internal should match any package ending with .internal
+        Collection<String> excludes3 = Collections.singletonList("*.internal");
+        Collection<String> result3 = JavadocUtil.getExcludedPackages(testPath, excludes3);
+        assertThat(result3).as("*.internal should match com.internal").containsExactly("com.internal");
+
+        // Test 4: org.*.sub1 should match org.example.sub1 (wildcard in the middle matches exactly one level)
+        Collection<String> excludes4 = Collections.singletonList("org.*.sub1");
+        Collection<String> result4 = JavadocUtil.getExcludedPackages(testPath, excludes4);
+        assertThat(result4).as("org.*.sub1 should match org.example.sub1").containsExactly("org.example.sub1");
+
+        // Test 5: Multiple patterns
+        Collection<String> excludes5 = Arrays.asList("org.example.*", "org.other");
+        Collection<String> result5 = JavadocUtil.getExcludedPackages(testPath, excludes5);
+        assertThat(result5)
+                .as("Multiple patterns should work together")
+                .containsExactlyInAnyOrder(
+                        "org.example.sub1", "org.example.sub2", "org.example.sub2.subsub", "org.other");
+    }
 }

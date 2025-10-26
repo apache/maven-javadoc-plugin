@@ -389,13 +389,19 @@ public class JavadocUtil {
         for (String excludePackagename : excludePackagenames) {
             // Usage of wildcard was bad specified and bad implemented, i.e. using String.contains()
             //   without respecting surrounding context
-            // Following implementation should match requirements as defined in the examples:
+            // Following implementation should match requirements as aligned with javadoc -exclude behavior:
             // - A wildcard at the beginning should match one or more directories
-            // - Any other wildcard must match exactly one directory
-            Pattern p = Pattern.compile(excludePackagename
-                    .replace(".", regexFileSeparator)
-                    .replaceFirst("^\\*", ".+")
-                    .replace("*", "[^" + regexFileSeparator + "]+"));
+            // - A wildcard at the end should match one or more directories (to include all subpackages)
+            // - A wildcard in the middle should match exactly one directory
+            String pattern = excludePackagename.replace(".", regexFileSeparator);
+            // Handle leading wildcard: match one or more directory levels
+            pattern = pattern.replaceFirst("^\\*", ".+");
+            // Handle trailing wildcard: match one or more directory levels (for subpackages)
+            pattern = pattern.replaceFirst("\\*$", ".+");
+            // Handle wildcards in the middle: match exactly one directory level
+            pattern = pattern.replace("*", "[^" + regexFileSeparator + "]+");
+
+            Pattern p = Pattern.compile(pattern);
 
             for (String aFileList : fileList) {
                 if (p.matcher(aFileList).matches()) {
