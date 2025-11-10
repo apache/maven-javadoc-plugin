@@ -2472,10 +2472,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         List<String> result = new ArrayList<>(items.size());
         for (String item : items) {
             String trimmed = item.trim();
-            if (trimmed == null || trimmed.isEmpty()) {
-                continue;
+            if (!trimmed.isEmpty()) {
+                result.add(trimmed);
             }
-            result.add(trimmed);
         }
         return result;
     }
@@ -3658,7 +3657,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 while (token.hasMoreTokens()) {
                     String current = token.nextToken().trim();
 
-                    if (current != null && !current.isEmpty()) {
+                    if (!current.isEmpty()) {
                         arguments.add(current);
 
                         if (token.hasMoreTokens() && repeatKey) {
@@ -3891,9 +3890,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         if (dependencyJavadocBundles == null) {
             dependencyJavadocBundles =
                     resourceResolver.resolveDependencyJavadocBundles(getDependencySourceResolverConfig());
-            if (dependencyJavadocBundles == null) {
-                dependencyJavadocBundles = new ArrayList<>();
-            }
         }
     }
 
@@ -4916,45 +4912,38 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         tagletsPath = JavadocUtil.pruneFiles(tagletsPath);
 
         for (String tagletJar : tagletsPath) {
-            if (!tagletJar.toLowerCase(Locale.ENGLISH).endsWith(".jar")) {
-                continue;
-            }
-
-            List<String> tagletClasses;
-            try {
-                tagletClasses = JavadocUtil.getTagletClassNames(new File(tagletJar));
-            } catch (IOException e) {
-                if (getLog().isWarnEnabled()) {
-                    getLog().warn("Unable to auto-detect Taglet class names from '" + tagletJar
-                            + "'. Try to specify them with <taglets/>.");
-                }
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug("IOException: " + e.getMessage(), e);
-                }
-                continue;
-            } catch (ClassNotFoundException e) {
-                if (getLog().isWarnEnabled()) {
-                    getLog().warn("Unable to auto-detect Taglet class names from '" + tagletJar
-                            + "'. Try to specify them with <taglets/>.");
-                }
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug("ClassNotFoundException: " + e.getMessage(), e);
-                }
-                continue;
-            } catch (NoClassDefFoundError e) {
-                if (getLog().isWarnEnabled()) {
-                    getLog().warn("Unable to auto-detect Taglet class names from '" + tagletJar
-                            + "'. Try to specify them with <taglets/>.");
-                }
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug("NoClassDefFoundError: " + e.getMessage(), e);
-                }
-                continue;
-            }
-
-            if (tagletClasses != null && !tagletClasses.isEmpty()) {
-                for (String tagletClass : tagletClasses) {
-                    addArgIfNotEmpty(arguments, "-taglet", JavadocUtil.quotedArgument(tagletClass));
+            if (tagletJar.toLowerCase(Locale.ENGLISH).endsWith(".jar")) {
+                try {
+                    List<String> tagletClasses = JavadocUtil.getTagletClassNames(new File(tagletJar));
+                    if (!tagletClasses.isEmpty()) {
+                        for (String tagletClass : tagletClasses) {
+                            addArgIfNotEmpty(arguments, "-taglet", JavadocUtil.quotedArgument(tagletClass));
+                        }
+                    }
+                } catch (IOException e) {
+                    if (getLog().isWarnEnabled()) {
+                        getLog().warn("Unable to auto-detect Taglet class names from '" + tagletJar
+                                + "'. Try to specify them with <taglets/>.");
+                    }
+                    if (getLog().isDebugEnabled()) {
+                        getLog().debug("IOException: " + e.getMessage(), e);
+                    }
+                } catch (ClassNotFoundException e) {
+                    if (getLog().isWarnEnabled()) {
+                        getLog().warn("Unable to auto-detect Taglet class names from '" + tagletJar
+                                + "'. Try to specify them with <taglets/>.");
+                    }
+                    if (getLog().isDebugEnabled()) {
+                        getLog().debug("ClassNotFoundException: " + e.getMessage(), e);
+                    }
+                } catch (NoClassDefFoundError e) {
+                    if (getLog().isWarnEnabled()) {
+                        getLog().warn("Unable to auto-detect Taglet class names from '" + tagletJar
+                                + "'. Try to specify them with <taglets/>.");
+                    }
+                    if (getLog().isDebugEnabled()) {
+                        getLog().debug("NoClassDefFoundError: " + e.getMessage(), e);
+                    }
                 }
             }
         }
@@ -5059,9 +5048,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 }
                 writeDebugJavadocScript(cmdLine, javadocOutputDirectory);
 
-                if ((output != null && !output.isEmpty())
-                        && StringUtils.isEmpty(err.getOutput())
-                        && isJavadocVMInitError(output)) {
+                if (output != null && StringUtils.isEmpty(err.getOutput()) && isJavadocVMInitError(output)) {
                     throw new MavenReportException(output + '\n' + '\n' + JavadocUtil.ERROR_INIT_VM + '\n'
                             + "Or, try to reduce the Java heap size for the Javadoc goal using "
                             + "-Dminmemory=<size> and -Dmaxmemory=<size>." + '\n' + '\n' + "Command line was: "
@@ -5070,7 +5057,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                             + "' dir.\n");
                 }
 
-                if (output != null && !output.isEmpty()) {
+                if (output != null) {
                     getLog().info(output);
                 }
 
@@ -5101,7 +5088,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 throw new MavenReportException(msg.toString());
             }
 
-            if (output != null && !output.isEmpty()) {
+            if (output != null) {
                 getLog().info(output);
             }
         } catch (CommandLineException e) {
