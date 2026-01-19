@@ -36,6 +36,10 @@ import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.repository.LocalRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AggregatorJavadocReportTest extends AbstractMojoTestCase {
     private static final char LINE_SEPARATOR = ' ';
@@ -48,8 +52,8 @@ public class AggregatorJavadocReportTest extends AbstractMojoTestCase {
     private File localRepo;
 
     /** {@inheritDoc} */
-    @Override
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp();
 
         unit = new File(getBasedir(), "src/test/resources/unit");
@@ -179,6 +183,7 @@ public class AggregatorJavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testAggregate() throws Exception {
         File testPom = new File(unit, "aggregate-test/aggregate-test-plugin-config.xml");
         JavadocReport mojo = lookupMojo(testPom);
@@ -204,6 +209,7 @@ public class AggregatorJavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testAggregateJavadocResources() throws Exception {
         File testPom = new File(unit, "aggregate-resources-test/aggregate-resources-test-plugin-config.xml");
         JavadocReport mojo = lookupMojo(testPom);
@@ -230,6 +236,7 @@ public class AggregatorJavadocReportTest extends AbstractMojoTestCase {
         assertTrue(new File(apidocs, "resources/test/doc-files/maven-feather.png").exists());
     }
 
+    @Test
     public void testAggregateWithModulsNotInSubDirectories() throws Exception {
         File testPom = new File(unit, "aggregate-modules-not-in-subdirectories-test/all/pom.xml");
         JavadocReport mojo = lookupMojo(testPom);

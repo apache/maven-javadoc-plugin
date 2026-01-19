@@ -21,8 +21,8 @@ package org.apache.maven.plugins.javadoc;
 import java.io.File;
 
 import org.apache.maven.plugin.logging.Log;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 public class AbstractJavadocMojoTest {
     AbstractJavadocMojo mojo;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         mojo = new AbstractJavadocMojo(null, null, null, null, null, null, null) {
             @Override

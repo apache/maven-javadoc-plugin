@@ -56,6 +56,9 @@ import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.repository.LocalRepository;
 import org.hamcrest.MatcherAssert;
 import org.junit.AssumptionViolatedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +68,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assume.assumeThat;
+import static org.hamcrest.junit.MatcherAssume.assumeThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -90,8 +97,8 @@ public class JavadocReportTest extends AbstractMojoTestCase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JavadocReportTest.class);
 
-    @Override
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp();
 
         tempDirectory = Files.createTempDirectory("JavadocReportTest");
@@ -101,8 +108,8 @@ public class JavadocReportTest extends AbstractMojoTestCase {
         createTestRepo();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    public void tearDown() throws Exception {
         try {
             deleteDirectory(tempDirectory.toFile());
         } catch (IOException ex) {
@@ -240,6 +247,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testDefaultConfiguration() throws Exception {
         Path testPom = unit.resolve("default-configuration/default-configuration-plugin-config.xml");
         JavadocReport mojo = lookupMojo(testPom);
@@ -334,6 +342,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testSubpackages() throws Exception {
         Path testPom = unit.resolve("subpackages-test/subpackages-test-plugin-config.xml");
         JavadocReport mojo = lookupMojo(testPom);
@@ -354,6 +363,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
                 .exists();
     }
 
+    @Test
     public void testIncludesExcludes() throws Exception {
         Path testPom = unit.resolve("file-include-exclude-test/file-include-exclude-plugin-config.xml");
         JavadocReport mojo = lookupMojo(testPom);
@@ -377,6 +387,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testDocfiles() throws Exception {
         // Should be an assumption, but not supported by TestCase
         // Seems like a bug in Javadoc 9 and above
@@ -410,6 +421,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testCustomConfiguration() throws Exception {
         Path testPom = unit.resolve("custom-configuration/custom-configuration-plugin-config.xml");
         JavadocReport mojo = lookupMojo(testPom);
@@ -480,6 +492,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testDoclets() throws Exception {
         if (JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("13")) {
             // As of JDK 13, the com.sun.javadoc API is no longer supported.
@@ -546,6 +559,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testQuotedPath() throws Exception {
         Path testPom = unit.resolve("quotedpath'test/quotedpath-test-plugin-config.xml");
         JavadocReport mojo = lookupMojo(testPom);
@@ -579,6 +593,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testOptionsUmlautEncoding() throws Exception {
         Path testPom = unit.resolve("optionsumlautencoding-test/optionsumlautencoding-test-plugin-config.xml");
         JavadocReport mojo = lookupMojo(testPom);
@@ -629,6 +644,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testTaglets() throws Exception {
         // ----------------------------------------------------------------------
         // taglet-test: check if a taglet is used
@@ -676,6 +692,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testJdk5() throws Exception {
         // Should be an assumption, but not supported by TestCase
         // Java 5 not supported by Java9 anymore
@@ -708,6 +725,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testToFindJavadoc() throws Exception {
         String oldJreHome = System.getProperty("java.home");
         System.setProperty("java.home", "foo/bar");
@@ -724,6 +742,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testJavadocResources() throws Exception {
         Path testPom = unit.resolve("resources-test/resources-test-plugin-config.xml");
         JavadocReport mojo = lookupMojo(testPom);
@@ -784,6 +803,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testPom() throws Exception {
         Path testPom = unit.resolve("pom-test/pom-test-plugin-config.xml");
         JavadocReport mojo = lookupMojo(testPom);
@@ -798,6 +818,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testTag() throws Exception {
         Path testPom = unit.resolve("tag-test/tag-test-plugin-config.xml");
         JavadocReport mojo = lookupMojo(testPom);
@@ -823,6 +844,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testHeaderFooter() throws Exception {
         Path testPom = unit.resolve("header-footer-test/header-footer-test-plugin-config.xml");
         JavadocReport mojo = lookupMojo(testPom);
@@ -838,6 +860,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testNewline() throws Exception {
         Path testPom = unit.resolve("newline-test/newline-test-plugin-config.xml");
         JavadocReport mojo = lookupMojo(testPom);
@@ -853,6 +876,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testJdk6() throws Exception {
         // Should be an assumption, but not supported by TestCase
         // Java 6 not supported by Java 12 anymore
@@ -902,6 +926,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testProxy() throws Exception {
         Settings settings = new Settings();
         Proxy proxy = new Proxy();
@@ -1044,6 +1069,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testValidateOptions() throws Exception {
         // encoding
         Path testPom = unit.resolve("validate-options-test/wrong-encoding-test-plugin-config.xml");
@@ -1052,7 +1078,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
             mojo.execute();
             fail("No wrong encoding catch");
         } catch (MojoExecutionException e) {
-            assertTrue("No wrong encoding catch", e.getMessage().contains("Unsupported option <encoding/>"));
+            assertTrue(e.getMessage().contains("Unsupported option <encoding/>"), "No wrong encoding catch");
         }
         testPom = unit.resolve("validate-options-test/wrong-docencoding-test-plugin-config.xml");
         mojo = lookupMojo(testPom);
@@ -1060,7 +1086,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
             mojo.execute();
             fail("No wrong docencoding catch");
         } catch (MojoExecutionException e) {
-            assertTrue("No wrong docencoding catch", e.getMessage().contains("Unsupported option <docencoding/>"));
+            assertTrue(e.getMessage().contains("Unsupported option <docencoding/>"), "No wrong docencoding catch");
         }
         testPom = unit.resolve("validate-options-test/wrong-charset-test-plugin-config.xml");
         mojo = lookupMojo(testPom);
@@ -1068,13 +1094,13 @@ public class JavadocReportTest extends AbstractMojoTestCase {
             mojo.execute();
             fail("No wrong charset catch");
         } catch (MojoExecutionException e) {
-            assertTrue("No wrong charset catch", e.getMessage().contains("Unsupported option <charset/>"));
+            assertTrue(e.getMessage().contains("Unsupported option <charset/>"), "No wrong charset catch");
         }
 
         testPom = unit.resolve("validate-options-test/wrong-locale-with-variant-test-plugin-config.xml");
         mojo = lookupMojo(testPom);
         mojo.execute();
-        assertTrue("No wrong locale catch", true);
+        assertTrue(true, "No wrong locale catch");
 
         // conflict options
         testPom = unit.resolve("validate-options-test/conflict-options-test-plugin-config.xml");
@@ -1083,7 +1109,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
             mojo.execute();
             fail("No conflict catch");
         } catch (MojoExecutionException e) {
-            assertTrue("No conflict catch", e.getMessage().contains("Option <nohelp/> conflicts with <helpfile/>"));
+            assertTrue(e.getMessage().contains("Option <nohelp/> conflicts with <helpfile/>"), "No conflict catch");
         }
     }
 
@@ -1092,6 +1118,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testTagletArtifacts() throws Exception {
         // Should be an assumption, but not supported by TestCase
         // com.sun.tools.doclets.Taglet not supported by Java 10 anymore
@@ -1130,6 +1157,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testStylesheetfile() throws Exception {
         Path testPom = unit.resolve("stylesheetfile-test/pom.xml");
 
@@ -1232,6 +1260,7 @@ public class JavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testHelpfile() throws Exception {
         Path testPom = unit.resolve("helpfile-test/pom.xml");
 
