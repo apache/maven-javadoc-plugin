@@ -49,7 +49,7 @@ public class AggregateTestMavenProjectStub extends MavenProjectStub {
 
         build = new Build();
         build.setFinalName(getModel().getArtifactId());
-        build.setDirectory(super.getBasedir() + "/target/test/unit/aggregate-test/target");
+        build.setDirectory(super.getBasedir() + "/target");
 
         List<String> compileSourceRoots = new ArrayList<>();
         compileSourceRoots.add(getBasedir() + "/src/main/java");
@@ -68,7 +68,7 @@ public class AggregateTestMavenProjectStub extends MavenProjectStub {
 
     @Override
     public File getBasedir() {
-        return new File(super.getBasedir() + "/src/test/resources/unit/aggregate-test");
+        return new File(super.getBasedir() + "/aggregate-test");
     }
 
     @Override
