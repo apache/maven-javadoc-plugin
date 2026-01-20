@@ -53,6 +53,6 @@ public class ResourcesTestMavenProjectStub extends MavenProjectStub {
     /** {@inheritDoc} */
     @Override
     public File getBasedir() {
-        return new File(super.getBasedir() + "/src/test/resources/unit/resources-test");
+        return new File(super.getBasedir() + "/resources-test");
     }
 }
