@@ -48,7 +48,7 @@ public class SubpackagesTestMavenProjectStub extends MavenProjectStub {
 
         Build build = new Build();
         build.setFinalName("subpackages-test");
-        build.setDirectory(super.getBasedir() + "/target/test/unit/subpackages-test/target");
+        build.setDirectory(super.getBasedir() + "/subpackages-test/target");
         setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
@@ -71,6 +71,6 @@ public class SubpackagesTestMavenProjectStub extends MavenProjectStub {
     /** {@inheritDoc} */
     @Override
     public File getBasedir() {
-        return new File(super.getBasedir() + "/src/test/resources/unit/subpackages-test");
+        return new File(super.getBasedir() + "/subpackages-test");
     }
 }

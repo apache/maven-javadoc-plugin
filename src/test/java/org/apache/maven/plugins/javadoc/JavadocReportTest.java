@@ -341,31 +341,32 @@ public class JavadocReportTest {
         }
     }
 
-//    /**
-//     * Method for testing the subpackages and excludePackageNames parameter
-//     *
-//     * @throws Exception if any
-//     */
-//    @Test
-//    public void testSubpackages() throws Exception {
-//        Path testPom = unit.resolve("subpackages-test/subpackages-test-plugin-config.xml");
-//        JavadocReport mojo = lookupMojo(testPom);
-//        mojo.execute();
-//
-//        Path apidocs = new File(getBasedir(), "target/test/unit/subpackages-test/target/site/apidocs").toPath();
-//
-//        // check the excluded packages
-//        assertThat(apidocs.resolve("subpackages/test/excluded")).doesNotExist();
-//        assertThat(apidocs.resolve("subpackages/test/included/exclude")).doesNotExist();
-//
-//        // check if the classes in the specified subpackages were included
-//        assertThat(apidocs.resolve("subpackages/test/App.html")).exists();
-//        assertThat(apidocs.resolve("subpackages/test/AppSample.html")).exists();
-//        assertThat(apidocs.resolve("subpackages/test/included/IncludedApp.html"))
-//                .exists();
-//        assertThat(apidocs.resolve("subpackages/test/included/IncludedAppSample.html"))
-//                .exists();
-//    }
+    /**
+     * Method for testing the subpackages and excludePackageNames parameter
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "aggregate", pom = "subpackages-test/subpackages-test-plugin-config.xml")
+    @Basedir("/unit")
+    @Test
+    public void testSubpackages(JavadocReport mojo) throws Exception {
+        Path testPom = unit.resolve("subpackages-test/subpackages-test-plugin-config.xml");
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "subpackages-test/target/site/apidocs").toPath();
+
+        // check the excluded packages
+        assertThat(apidocs.resolve("subpackages/test/excluded")).doesNotExist();
+        assertThat(apidocs.resolve("subpackages/test/included/exclude")).doesNotExist();
+
+        // check if the classes in the specified subpackages were included
+        assertThat(apidocs.resolve("subpackages/test/App.html")).exists();
+        assertThat(apidocs.resolve("subpackages/test/AppSample.html")).exists();
+        assertThat(apidocs.resolve("subpackages/test/included/IncludedApp.html"))
+                .exists();
+        assertThat(apidocs.resolve("subpackages/test/included/IncludedAppSample.html"))
+                .exists();
+    }
 //
 //    @Test
 //    public void testIncludesExcludes() throws Exception {
