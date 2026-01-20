@@ -582,57 +582,56 @@ public class JavadocReportTest {
             }
         }
 
-//        /**
-//         * Method to test when the options file has umlauts.
-//         *
-//         * @throws Exception if any
-//         */
-//        @Test
-//        public void testOptionsUmlautEncoding() throws Exception {
-//            Path testPom = unit.resolve("optionsumlautencoding-test/optionsumlautencoding-test-plugin-config.xml");
-//            JavadocReport mojo = lookupMojo(testPom);
-//            mojo.execute();
-//
-//            Path optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
-//            assertThat(optionsFile).exists();
-//
-//            // check for a part of the window title
-//            String content;
-//            String expected;
-//            if (JavaVersion.JAVA_VERSION.isAtLeast("9") && JavaVersion.JAVA_VERSION.isBefore("12")) {
-//                content = readFile(optionsFile, StandardCharsets.UTF_8);
-//                expected = OPTIONS_UMLAUT_ENCODING;
-//            } else {
-//                content = readFile(optionsFile, Charset.defaultCharset());
-//                expected = new String(OPTIONS_UMLAUT_ENCODING.getBytes(Charset.defaultCharset()));
-//            }
-//
-//            assertThat(content).contains(expected);
-//
-//            Path apidocs =
-//                    new File(getBasedir(),
-//     "target/test/unit/optionsumlautencoding-test/target/site/apidocs").toPath();
-//
-//            // package level generated javadoc files
-//            assertThat(apidocs.resolve("optionsumlautencoding/test/App.html")).exists();
-//            assertThat(apidocs.resolve("optionsumlautencoding/test/AppSample.html")).exists();
-//
-//            // project level generated javadoc files
-//            assertThat(apidocs.resolve("index-all.html")).exists();
-//            assertThat(apidocs.resolve("index.html")).exists();
-//            assertThat(apidocs.resolve("overview-tree.html")).exists();
-//            if (JavaVersion.JAVA_VERSION.isAtLeast("23")) {
-//                assertThat(apidocs.resolve("resource-files/stylesheet.css")).exists();
-//            } else {
-//                assertThat(apidocs.resolve("stylesheet.css")).exists();
-//            }
-//
-//            if (JavaVersion.JAVA_VERSION.isBefore("10")) {
-//                assertThat(apidocs.resolve("package-list")).exists();
-//            } else {
-//                assertThat(apidocs.resolve("element-list")).exists();
-//            }
-//        }
+        /**
+         * Method to test when the options file has umlauts.
+         *
+         * @throws Exception if any
+         */
+        @InjectMojo(goal = "aggregate", pom = "optionsumlautencoding-test/optionsumlautencoding-test-plugin-config.xml")
+        @Basedir("/unit")
+        @Test
+        public void testOptionsUmlautEncoding(JavadocReport mojo) throws Exception {
+            mojo.execute();
+
+            Path optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
+            assertThat(optionsFile).exists();
+
+            // check for a part of the window title
+            String content;
+            String expected;
+            if (JavaVersion.JAVA_VERSION.isAtLeast("9") && JavaVersion.JAVA_VERSION.isBefore("12")) {
+                content = readFile(optionsFile, StandardCharsets.UTF_8);
+                expected = OPTIONS_UMLAUT_ENCODING;
+            } else {
+                content = readFile(optionsFile, Charset.defaultCharset());
+                expected = new String(OPTIONS_UMLAUT_ENCODING.getBytes(Charset.defaultCharset()));
+            }
+
+            assertThat(content).contains(expected);
+
+            Path apidocs =
+                    new File(getBasedir(),"optionsumlautencoding-test/target/site/apidocs").toPath();
+
+            // package level generated javadoc files
+            assertThat(apidocs.resolve("optionsumlautencoding/test/App.html")).exists();
+            assertThat(apidocs.resolve("optionsumlautencoding/test/AppSample.html")).exists();
+
+            // project level generated javadoc files
+            assertThat(apidocs.resolve("index-all.html")).exists();
+            assertThat(apidocs.resolve("index.html")).exists();
+            assertThat(apidocs.resolve("overview-tree.html")).exists();
+            if (JavaVersion.JAVA_VERSION.isAtLeast("23")) {
+                assertThat(apidocs.resolve("resource-files/stylesheet.css")).exists();
+            } else {
+                assertThat(apidocs.resolve("stylesheet.css")).exists();
+            }
+
+            if (JavaVersion.JAVA_VERSION.isBefore("10")) {
+                assertThat(apidocs.resolve("package-list")).exists();
+            } else {
+                assertThat(apidocs.resolve("element-list")).exists();
+            }
+        }
     //
     //    /**
     //     * Method to test the taglet artifact configuration

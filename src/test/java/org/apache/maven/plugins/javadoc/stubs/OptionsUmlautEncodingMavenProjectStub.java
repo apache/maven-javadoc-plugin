@@ -45,7 +45,7 @@ public class OptionsUmlautEncodingMavenProjectStub extends MavenProjectStub {
 
         Build build = new Build();
         build.setFinalName("optionsumlautencoding-test");
-        build.setDirectory(super.getBasedir() + "/target/test/unit/optionsumlautencoding-test/target");
+        build.setDirectory(super.getBasedir() + "/optionsumlautencoding-test/target");
         setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
@@ -68,6 +68,6 @@ public class OptionsUmlautEncodingMavenProjectStub extends MavenProjectStub {
     /** {@inheritDoc} */
     @Override
     public File getBasedir() {
-        return new File(super.getBasedir() + "/src/test/resources/unit/optionsumlautencoding-test");
+        return new File(super.getBasedir() + "/optionsumlautencoding-test");
     }
 }
