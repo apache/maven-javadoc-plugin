@@ -632,54 +632,34 @@ public class JavadocReportTest {
                 assertThat(apidocs.resolve("element-list")).exists();
             }
         }
-    //
-    //    /**
-    //     * Method to test the taglet artifact configuration
-    //     *
-    //     * @throws Exception if any
-    //     */
-    //    @Test
-    //    public void testTaglets() throws Exception {
-    //        // ----------------------------------------------------------------------
-    //        // taglet-test: check if a taglet is used
-    //        // ----------------------------------------------------------------------
-    //
-    //        // Should be an assumption, but not supported by TestCase
-    //        // com.sun.tools.doclets.Taglet not supported by Java9 anymore
-    //        // Should be refactored with jdk.javadoc.doclet.Taglet
-    //        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("10")) {
-    //            return;
-    //        }
-    //
-    //        Path testPom = unit.resolve("taglet-test/taglet-test-plugin-config.xml");
-    //        JavadocReport mojo = lookupMojo(testPom);
-    //
-    //        MavenSession session = spy(newMavenSession(mojo.project));
-    //        ProjectBuildingRequest buildingRequest = mock(ProjectBuildingRequest.class);
-    //        when(buildingRequest.getRemoteRepositories()).thenReturn(mojo.project.getRemoteArtifactRepositories());
-    //        when(session.getProjectBuildingRequest()).thenReturn(buildingRequest);
-    //        DefaultRepositorySystemSession repositorySession = new DefaultRepositorySystemSession();
-    //        repositorySession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
-    //                .newInstance(repositorySession, new LocalRepository(localRepo)));
-    //        when(buildingRequest.getRepositorySession()).thenReturn(repositorySession);
-    //        when(session.getRepositorySession()).thenReturn(repositorySession);
-    //        LegacySupport legacySupport = lookup(LegacySupport.class);
-    //        legacySupport.setSession(session);
-    //
-    //        setVariableValueToObject(mojo, "session", session);
-    //        setVariableValueToObject(mojo, "repoSession", repositorySession);
-    //
-    //        mojo.execute();
-    //
-    //        Path apidocs = new File(getBasedir(), "target/test/unit/taglet-test/target/site/apidocs").toPath();
-    //
-    //        assertThat(apidocs.resolve("index.html")).exists();
-    //
-    //        Path appFile = apidocs.resolve("taglet/test/App.html");
-    //        assertThat(appFile).exists();
-    //        String appString = readFile(appFile);
-    //        assertThat(appString).contains("<b>To Do:</b>");
-    //    }
+
+        /**
+         * Method to test the taglet artifact configuration
+         *
+         * @throws Exception if any
+         */
+        @InjectMojo(goal = "aggregate", pom = "taglet-test/taglet-test-plugin-config.xml")
+        @Basedir("/unit")
+        @Test
+        @EnabledForJreRange(max = JRE.JAVA_9)
+        public void testTaglets(JavadocReport mojo) throws Exception {
+            // ----------------------------------------------------------------------
+            // taglet-test: check if a taglet is used
+            // ----------------------------------------------------------------------
+            // com.sun.tools.doclets.Taglet not supported by Java9 anymore
+            // Should be refactored with jdk.javadoc.doclet.Taglet
+
+            mojo.execute();
+
+            Path apidocs = new File(getBasedir(), "taglet-test/target/site/apidocs").toPath();
+
+            assertThat(apidocs.resolve("index.html")).exists();
+
+            Path appFile = apidocs.resolve("taglet/test/App.html");
+            assertThat(appFile).exists();
+            String appString = readFile(appFile);
+            assertThat(appString).contains("<b>To Do:</b>");
+        }
     //
     //    /**
     //     * Method to test the jdk5 javadoc
