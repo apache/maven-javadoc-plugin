@@ -367,25 +367,25 @@ public class JavadocReportTest {
         assertThat(apidocs.resolve("subpackages/test/included/IncludedAppSample.html"))
                 .exists();
     }
-//
-//    @Test
-//    public void testIncludesExcludes() throws Exception {
-//        Path testPom = unit.resolve("file-include-exclude-test/file-include-exclude-plugin-config.xml");
-//        JavadocReport mojo = lookupMojo(testPom);
-//        mojo.execute();
-//
-//        Path apidocs =
-//                new File(getBasedir(), "target/test/unit/file-include-exclude-test/target/site/apidocs").toPath();
-//
-//        // check if the classes in the specified subpackages were included
-//        assertThat(apidocs.resolve("subpackages/test/App.html")).exists();
-//        assertThat(apidocs.resolve("subpackages/test/AppSample.html")).exists();
-//        assertThat(apidocs.resolve("subpackages/test/included/IncludedApp.html"))
-//                .exists();
-//        assertThat(apidocs.resolve("subpackages/test/included/IncludedAppSample.html"))
-//                .exists();
-//        assertThat(apidocs.resolve("subpackages/test/PariahApp.html")).doesNotExist();
-//    }
+
+    @InjectMojo(goal = "aggregate", pom = "file-include-exclude-test/file-include-exclude-plugin-config.xml")
+    @Basedir("/unit")
+    @Test
+    public void testIncludesExcludes(JavadocReport mojo) throws Exception {
+        mojo.execute();
+
+        Path apidocs =
+                new File(getBasedir(), "file-include-exclude-test/target/site/apidocs").toPath();
+
+        // check if the classes in the specified subpackages were included
+        assertThat(apidocs.resolve("subpackages/test/App.html")).exists();
+        assertThat(apidocs.resolve("subpackages/test/AppSample.html")).exists();
+        assertThat(apidocs.resolve("subpackages/test/included/IncludedApp.html"))
+                .exists();
+        assertThat(apidocs.resolve("subpackages/test/included/IncludedAppSample.html"))
+                .exists();
+        assertThat(apidocs.resolve("subpackages/test/PariahApp.html")).doesNotExist();
+    }
 //
 //    /**
 //     * Test the recursion and exclusion of the doc-files subdirectories.

@@ -34,8 +34,8 @@ under the License.
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <project implementation="org.apache.maven.plugins.javadoc.stubs.SubpackagesTestMavenProjectStub"/>
-          <outputDirectory>${basedir}/target/test/unit/file-include-exclude-test/target/site</outputDirectory>
-          <javadocOptionsDir>${basedir}/target/test/unit/file-include-exclude-test/target/javadoc-bundle-options</javadocOptionsDir>
+          <outputDirectory>${basedir}/file-include-exclude-test/target/site</outputDirectory>
+          <javadocOptionsDir>${basedir}/file-include-exclude-test/target/javadoc-bundle-options</javadocOptionsDir>
           <breakiterator>false</breakiterator>
           <old>false</old>
           <show>protected</show>
@@ -61,7 +61,7 @@ under the License.
           <use>true</use>
           <version>true</version>
           <windowtitle>Maven Javadoc Plugin Subpackages Test 1.0-SNAPSHOT API</windowtitle>
-          <sourcepath>${basedir}/src/test/resources/unit/file-include-exclude-test</sourcepath>
+          <sourcepath>${basedir}/file-include-exclude-test</sourcepath>
           <sourceFileExcludes>
             <sourceFileExclude>**/Pariah*</sourceFileExclude>
           </sourceFileExcludes>
