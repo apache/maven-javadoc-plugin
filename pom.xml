@@ -120,13 +120,13 @@ under the License.
     <jetty.version>9.4.55.v20240627</jetty.version>
     <version.plexus-utils>4.0.2</version.plexus-utils>
     <!-- for ITs -->
-    <compilerPluginVersion>3.13.0</compilerPluginVersion>
-    <sourcePluginVersion>3.3.0</sourcePluginVersion>
-    <enforcerPluginVersion>3.4.1</enforcerPluginVersion>
-    <pluginPluginVersion>3.15.0</pluginPluginVersion>
-    <jarPluginVersion>3.3.0</jarPluginVersion>
-    <sitePluginVersion>3.20.0</sitePluginVersion>
-    <projectInfoReportsPluginVersion>3.7.0</projectInfoReportsPluginVersion>
+    <compilerPluginVersion>${version.maven-compiler-plugin}</compilerPluginVersion>
+    <sourcePluginVersion>${version.maven-source-plugin}</sourcePluginVersion>
+    <enforcerPluginVersion>${version.maven-enforcer-plugin}</enforcerPluginVersion>
+    <pluginPluginVersion>${version.maven-plugin-tools}</pluginPluginVersion>
+    <jarPluginVersion>${version.maven-jar-plugin}</jarPluginVersion>
+    <sitePluginVersion>${version.maven-site-plugin}</sitePluginVersion>
+    <projectInfoReportsPluginVersion>${version.maven-project-info-reports-plugin}</projectInfoReportsPluginVersion>
     <project.build.outputTimestamp>2025-09-16T08:27:46Z</project.build.outputTimestamp>
     <slf4jVersion>1.7.36</slf4jVersion>
   </properties>
@@ -517,12 +517,9 @@ under the License.
               </pomExcludes>
               <properties combine.self="override" />
               <filterProperties>
-                <maven.compiler.source>${maven.compiler.source}</maven.compiler.source>
-                <maven.compiler.target>${maven.compiler.target}</maven.compiler.target>
                 <mrm.3rdparty.url>${mrm.3rdparty.url}</mrm.3rdparty.url>
               </filterProperties>
               <environmentVariables>
-                <JENKINS_MAVEN_AGENT_DISABLED>true</JENKINS_MAVEN_AGENT_DISABLED>
                 <!-- required for MJAVADOC-538 -->
                 <_JAVA_OPTIONS>-Dabc=def</_JAVA_OPTIONS>
               </environmentVariables>
