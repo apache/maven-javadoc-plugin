@@ -842,56 +842,52 @@ public class JavadocReportTest {
                 fail("Doesn't handle correctly newline for string parameters. See options and packages files.");
             }
         }
-    //
-    //    /**
-    //     * Method to test the jdk6 javadoc
-    //     *
-    //     * @throws Exception if any
-    //     */
-    //    @Test
-    //    public void testJdk6() throws Exception {
-    //        // Should be an assumption, but not supported by TestCase
-    //        // Java 6 not supported by Java 12 anymore
-    //        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("12")) {
-    //            return;
-    //        }
-    //
-    //        Path testPom = unit.resolve("jdk6-test/jdk6-test-plugin-config.xml");
-    //        JavadocReport mojo = lookupMojo(testPom);
-    //        mojo.execute();
-    //
-    //        Path apidocs = new File(getBasedir(), "target/test/unit/jdk6-test/target/site/apidocs").toPath();
-    //        assertThat(apidocs.resolve("index.html")).exists();
-    //
-    //        Path overview;
-    //        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("11")) {
-    //            overview = apidocs.resolve("overview-summary.html");
-    //        } else {
-    //            overview = apidocs.resolve("index.html");
-    //        }
-    //
-    //        assertThat(overview).exists();
-    //        String content = readFile(overview);
-    //        assertThat(content)
-    //                .contains("Top - Copyright &#169; All rights reserved.")
-    //                .contains("Header - Copyright &#169; All rights reserved.");
-    //        // IBM dist of adopt-openj9 does not support the footer param
-    //        if (!System.getProperty("java.vm.name").contains("OpenJ9")) {
-    //            assertThat(content).contains("Footer - Copyright &#169; All rights reserved.");
-    //        }
-    //
-    //        Path packageSummary = apidocs.resolve("jdk6/test/package-summary.html");
-    //        assertThat(packageSummary).exists();
-    //        content = readFile(packageSummary);
-    //        assertThat(content)
-    //                .contains("Top - Copyright &#169; All rights reserved.")
-    //                .contains("Header - Copyright &#169; All rights reserved.");
-    //
-    //        // IBM dist of adopt-openj9 does not support the footer param
-    //        if (!System.getProperty("java.vm.name").contains("OpenJ9")) {
-    //            assertThat(content).contains("Footer - Copyright &#169; All rights reserved.");
-    //        }
-    //    }
+
+        /**
+         * Method to test the jdk6 javadoc
+         *
+         * @throws Exception if any
+         */
+        @InjectMojo(goal = "aggregate", pom = "jdk6-test/jdk6-test-plugin-config.xml")
+        @Basedir("/unit")
+        @EnabledForJreRange(max = JRE.JAVA_11)
+        @Test
+        public void testJdk6(JavadocReport mojo) throws Exception {
+            // Java 6 not supported by Java 12 anymore
+            mojo.execute();
+
+            Path apidocs = new File(getBasedir(), "jdk6-test/target/site/apidocs").toPath();
+            assertThat(apidocs.resolve("index.html")).exists();
+
+            Path overview;
+            if (JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("11")) {
+                overview = apidocs.resolve("overview-summary.html");
+            } else {
+                overview = apidocs.resolve("index.html");
+            }
+
+            assertThat(overview).exists();
+            String content = readFile(overview);
+            assertThat(content)
+                    .contains("Top - Copyright &#169; All rights reserved.")
+                    .contains("Header - Copyright &#169; All rights reserved.");
+            // IBM dist of adopt-openj9 does not support the footer param
+            if (!System.getProperty("java.vm.name").contains("OpenJ9")) {
+                assertThat(content).contains("Footer - Copyright &#169; All rights reserved.");
+            }
+
+            Path packageSummary = apidocs.resolve("jdk6/test/package-summary.html");
+            assertThat(packageSummary).exists();
+            content = readFile(packageSummary);
+            assertThat(content)
+                    .contains("Top - Copyright &#169; All rights reserved.")
+                    .contains("Header - Copyright &#169; All rights reserved.");
+
+            // IBM dist of adopt-openj9 does not support the footer param
+            if (!System.getProperty("java.vm.name").contains("OpenJ9")) {
+                assertThat(content).contains("Footer - Copyright &#169; All rights reserved.");
+            }
+        }
     //
     //    /**
     //     * Method to test proxy support in the javadoc
