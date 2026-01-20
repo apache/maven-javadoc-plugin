@@ -63,6 +63,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -386,39 +388,34 @@ public class JavadocReportTest {
                 .exists();
         assertThat(apidocs.resolve("subpackages/test/PariahApp.html")).doesNotExist();
     }
-//
-//    /**
-//     * Test the recursion and exclusion of the doc-files subdirectories.
-//     *
-//     * @throws Exception if any
-//     */
-//    @Test
-//    public void testDocfiles() throws Exception {
-//        // Should be an assumption, but not supported by TestCase
-//        // Seems like a bug in Javadoc 9 and above
-//        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("9")) {
-//            return;
-//        }
-//
-//        Path testPom = unit.resolve("docfiles-test/docfiles-test-plugin-config.xml");
-//        JavadocReport mojo = lookupMojo(testPom);
-//        mojo.execute();
-//
-//        Path apidocs = new File(getBasedir(), "target/test/unit/docfiles-test/target/site/apidocs/").toPath();
-//
-//        // check if the doc-files subdirectories were copied
-//        assertThat(apidocs.resolve("docfiles/test/doc-files")).exists();
-//        assertThat(apidocs.resolve("docfiles/test/doc-files/included-dir1/sample-included1.gif"))
-//                .exists();
-//        assertThat(apidocs.resolve("docfiles/test/doc-files/included-dir2/sample-included2.gif"))
-//                .exists();
-//        assertThat(apidocs.resolve("docfiles/test/doc-files/excluded-dir1")).doesNotExist();
-//        assertThat(apidocs.resolve("docfiles/test/doc-files/excluded-dir2")).doesNotExist();
-//
+
+    /**
+     * Test the recursion and exclusion of the doc-files subdirectories.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "aggregate", pom = "docfiles-test/docfiles-test-plugin-config.xml")
+    @Basedir("/unit")
+    @Test
+    @EnabledOnJre(JRE.JAVA_8)
+    public void testDocfiles(JavadocReport mojo) throws Exception {
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "docfiles-test/target/site/apidocs/").toPath();
+
+        // check if the doc-files subdirectories were copied
+        assertThat(apidocs.resolve("docfiles/test/doc-files")).exists();
+        assertThat(apidocs.resolve("docfiles/test/doc-files/included-dir1/sample-included1.gif"))
+                .exists();
+        assertThat(apidocs.resolve("docfiles/test/doc-files/included-dir2/sample-included2.gif"))
+                .exists();
+        assertThat(apidocs.resolve("docfiles/test/doc-files/excluded-dir1")).doesNotExist();
+        assertThat(apidocs.resolve("docfiles/test/doc-files/excluded-dir2")).doesNotExist();
+
 //        testPom = unit.resolve("docfiles-with-java-test/docfiles-with-java-test-plugin-config.xml");
 //        mojo = lookupMojo(testPom);
 //        mojo.execute();
-//    }
+    }
 //
 //    /**
 //     * Test javadoc plugin using custom configuration. noindex, notree and nodeprecated parameters

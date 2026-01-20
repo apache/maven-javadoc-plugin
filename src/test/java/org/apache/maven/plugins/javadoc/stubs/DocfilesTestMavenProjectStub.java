@@ -49,7 +49,7 @@ public class DocfilesTestMavenProjectStub extends MavenProjectStub {
 
         Build build = new Build();
         build.setFinalName("docfiles-test");
-        build.setDirectory(super.getBasedir() + "/target/test/unit/docfiles-test/target");
+        build.setDirectory(super.getBasedir() + "/docfiles-test/target");
         setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
@@ -72,6 +72,6 @@ public class DocfilesTestMavenProjectStub extends MavenProjectStub {
     /** {@inheritDoc} */
     @Override
     public File getBasedir() {
-        return new File(super.getBasedir() + "/src/test/resources/unit/docfiles-test/");
+        return new File(super.getBasedir() + "/docfiles-test/");
     }
 }
