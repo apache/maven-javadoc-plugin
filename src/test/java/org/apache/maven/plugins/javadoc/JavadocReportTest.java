@@ -37,6 +37,7 @@ import org.apache.maven.api.plugin.testing.Basedir;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.shared.utils.io.FileUtils;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.hamcrest.MatcherAssert;
@@ -55,6 +56,7 @@ import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.apache.maven.api.plugin.testing.MojoExtension.getVariableValueFromObject;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
@@ -808,38 +810,38 @@ public class JavadocReportTest {
                                 .contains("</dt>" + LINE_SEPARATOR + "<dd>1.0</dd>" /* JDK 8 */));
             }
         }
-    //
-    //    /**
-    //     * Test newline in the header/footer parameter
-    //     *
-    //     * @throws Exception if any
-    //     */
-    //    @Test
-    //    public void testHeaderFooter() throws Exception {
-    //        Path testPom = unit.resolve("header-footer-test/header-footer-test-plugin-config.xml");
-    //        JavadocReport mojo = lookupMojo(testPom);
-    //        try {
-    //            mojo.execute();
-    //        } catch (MojoExecutionException e) {
-    //            fail("Doesnt handle correctly newline for header or footer parameter");
-    //        }
-    //    }
-    //
-    //    /**
-    //     * Test newline in various string parameters
-    //     *
-    //     * @throws Exception if any
-    //     */
-    //    @Test
-    //    public void testNewline() throws Exception {
-    //        Path testPom = unit.resolve("newline-test/newline-test-plugin-config.xml");
-    //        JavadocReport mojo = lookupMojo(testPom);
-    //        try {
-    //            mojo.execute();
-    //        } catch (MojoExecutionException e) {
-    //            fail("Doesn't handle correctly newline for string parameters. See options and packages files.");
-    //        }
-    //    }
+
+        /**
+         * Test newline in the header/footer parameter
+         *
+         * @throws Exception if any
+         */
+        @InjectMojo(goal = "aggregate", pom = "header-footer-test/header-footer-test-plugin-config.xml")
+        @Basedir("/unit")
+        @Test
+        public void testHeaderFooter(JavadocReport mojo) throws Exception {
+            try {
+                mojo.execute();
+            } catch (MojoExecutionException e) {
+                fail("Doesnt handle correctly newline for header or footer parameter");
+            }
+        }
+//
+//        /**
+//         * Test newline in various string parameters
+//         *
+//         * @throws Exception if any
+//         */
+//        @Test
+//        public void testNewline() throws Exception {
+//            Path testPom = unit.resolve("newline-test/newline-test-plugin-config.xml");
+//            JavadocReport mojo = lookupMojo(testPom);
+//            try {
+//                mojo.execute();
+//            } catch (MojoExecutionException e) {
+//                fail("Doesn't handle correctly newline for string parameters. See options and packages files.");
+//            }
+//        }
     //
     //    /**
     //     * Method to test the jdk6 javadoc
