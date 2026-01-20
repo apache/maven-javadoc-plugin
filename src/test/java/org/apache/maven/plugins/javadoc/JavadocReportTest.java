@@ -429,78 +429,79 @@ public class JavadocReportTest {
         assertThat(apidocs.resolve("test/App.html"))
                 .exists();
     }
-//
-//    /**
-//     * Test javadoc plugin using custom configuration. noindex, notree and nodeprecated parameters
-//     * were set to true.
-//     *
-//     * @throws Exception if any
-//     */
-//    @Test
-//    public void testCustomConfiguration() throws Exception {
-//        Path testPom = unit.resolve("custom-configuration/custom-configuration-plugin-config.xml");
-//        JavadocReport mojo = lookupMojo(testPom);
-//        mojo.execute();
-//
-//        Path apidocs = new File(getBasedir(), "target/test/unit/custom-configuration/target/site/apidocs").toPath();
-//
-//        // check if there is a tree page generated (notree == true)
-//        assertThat(apidocs.resolve("overview-tree.html")).doesNotExist();
-//        assertThat(apidocs.resolve("custom/configuration/package-tree.html")).doesNotExist();
-//
-//        // check if the main index page was generated (noindex == true)
-//        assertThat(apidocs.resolve("index-all.html")).doesNotExist();
-//
-//        // check if the deprecated list and the deprecated api were generated (nodeprecated == true)
-//        // @todo Fix: the class-use of the deprecated api is still created eventhough the deprecated api of that class
-//        // is no longer generated
-//        assertThat(apidocs.resolve("deprecated-list.html")).doesNotExist();
-//        assertThat(apidocs.resolve("custom/configuration/App.html")).doesNotExist();
-//
-//        // read the contents of the html files based on some of the parameter values
-//        // author == false
-//        String str = readFile(apidocs.resolve("custom/configuration/AppSample.html"));
-//        assertFalse(str.toLowerCase(Locale.ENGLISH).contains("author"));
-//
-//        // bottom
-//        assertTrue(str.toUpperCase(Locale.ENGLISH).contains("SAMPLE BOTTOM CONTENT"));
-//
-//        // offlineLinks
-//        if (JavaVersion.JAVA_VERSION.isBefore("11.0.2")) {
-//            assertThat(str)
-//                    .containsIgnoringCase("href=\"http://java.sun.com/j2se/1.4.2/docs/api/java/lang/string.html");
-//        } else {
-//            assertTrue(str.toLowerCase(Locale.ENGLISH)
-//                    .contains("href=\"http://java.sun.com/j2se/1.4.2/docs/api/java.base/java/lang/string.html"));
-//        }
-//
-//        // header
-//        assertTrue(str.toUpperCase(Locale.ENGLISH).contains("MAVEN JAVADOC PLUGIN TEST"));
-//
-//        // footer
-//        if (JavaVersion.JAVA_VERSION.isBefore("16-ea")
-//                && !System.getProperty("java.vm.name").contains("OpenJ9")) {
-//            assertTrue(str.toUpperCase(Locale.ENGLISH).contains("MAVEN JAVADOC PLUGIN TEST FOOTER"));
-//        }
-//
-//        // nohelp == true
-//        assertFalse(str.toUpperCase(Locale.ENGLISH).contains("/HELP-DOC.HTML"));
-//
-//        // check the wildcard (*) package exclusions -- excludePackageNames parameter
-//        assertThat(apidocs.resolve("custom/configuration/exclude1/Exclude1App.html"))
-//                .exists();
-//        assertThat(apidocs.resolve("custom/configuration/exclude1/subexclude/SubexcludeApp.html"))
-//                .doesNotExist();
-//        assertThat(apidocs.resolve("custom/configuration/exclude2/Exclude2App.html"))
-//                .doesNotExist();
-//
-//        assertThat(apidocs.resolve("options")).isRegularFile();
-//
-//        String contentOptions = new String(Files.readAllBytes(apidocs.resolve("options")), StandardCharsets.UTF_8);
-//
-//        assertNotNull(contentOptions);
-//        assertThat(contentOptions).contains("-link").contains("http://java.sun.com/j2se/");
-//    }
+
+    /**
+     * Test javadoc plugin using custom configuration. noindex, notree and nodeprecated parameters
+     * were set to true.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "aggregate", pom = "custom-configuration/custom-configuration-plugin-config.xml")
+    @Basedir("/unit")
+    @Test
+    public void testCustomConfiguration(JavadocReport mojo) throws Exception {
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "custom-configuration/target/site/apidocs").toPath();
+
+        // check if there is a tree page generated (notree == true)
+        assertThat(apidocs.resolve("overview-tree.html")).doesNotExist();
+        assertThat(apidocs.resolve("custom/configuration/package-tree.html")).doesNotExist();
+
+        // check if the main index page was generated (noindex == true)
+        assertThat(apidocs.resolve("index-all.html")).doesNotExist();
+
+        // check if the deprecated list and the deprecated api were generated (nodeprecated == true)
+        // @todo Fix: the class-use of the deprecated api is still created eventhough the deprecated api of that class
+        // is no longer generated
+        assertThat(apidocs.resolve("deprecated-list.html")).doesNotExist();
+        assertThat(apidocs.resolve("custom/configuration/App.html")).doesNotExist();
+
+        // read the contents of the html files based on some of the parameter values
+        // author == false
+        String str = readFile(apidocs.resolve("custom/configuration/AppSample.html"));
+        assertFalse(str.toLowerCase(Locale.ENGLISH).contains("author"));
+
+        // bottom
+        assertTrue(str.toUpperCase(Locale.ENGLISH).contains("SAMPLE BOTTOM CONTENT"));
+
+        // offlineLinks
+        if (JavaVersion.JAVA_VERSION.isBefore("11.0.2")) {
+            // some java 8 jdks produce a link to oracle
+            assertThat(str).containsAnyOf("href=\"http://java.sun.com/j2se/1.4.2/docs/api/java/lang/string.html", "href=\"https://docs.oracle.com/javase/8/docs/api/java/lang/String.html");
+
+        } else {
+            assertTrue(str.toLowerCase(Locale.ENGLISH)
+                    .contains("href=\"http://java.sun.com/j2se/1.4.2/docs/api/java.base/java/lang/string.html"));
+        }
+
+        // header
+        assertTrue(str.toUpperCase(Locale.ENGLISH).contains("MAVEN JAVADOC PLUGIN TEST"));
+
+        // footer
+        if (JavaVersion.JAVA_VERSION.isBefore("16-ea")
+                && !System.getProperty("java.vm.name").contains("OpenJ9")) {
+            assertTrue(str.toUpperCase(Locale.ENGLISH).contains("MAVEN JAVADOC PLUGIN TEST FOOTER"));
+        }
+
+        // nohelp == true
+        assertFalse(str.toUpperCase(Locale.ENGLISH).contains("/HELP-DOC.HTML"));
+
+        // check the wildcard (*) package exclusions -- excludePackageNames parameter
+        assertThat(apidocs.resolve("custom/configuration/exclude1/Exclude1App.html"))
+                .exists();
+        assertThat(apidocs.resolve("custom/configuration/exclude1/subexclude/SubexcludeApp.html"))
+                .doesNotExist();
+        assertThat(apidocs.resolve("custom/configuration/exclude2/Exclude2App.html"))
+                .doesNotExist();
+
+        assertThat(apidocs.resolve("options")).isRegularFile();
+
+        String contentOptions = new String(Files.readAllBytes(apidocs.resolve("options")), StandardCharsets.UTF_8);
+
+        assertNotNull(contentOptions);
+        assertThat(contentOptions).contains("-link").contains("http://java.sun.com/j2se/");
+    }
 //
 //    /**
 //     * Method to test the doclet artifact configuration
