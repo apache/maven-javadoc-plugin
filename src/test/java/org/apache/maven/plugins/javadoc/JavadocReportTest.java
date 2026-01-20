@@ -766,21 +766,21 @@ public class JavadocReportTest {
             assertThat(apidocs.resolve("resources/test2/doc-files/maven-feather.png"))
                     .exists();
     }
-    //
-    //    /**
-    //     * Test the javadoc for a POM project.
-    //     *
-    //     * @throws Exception if any
-    //     */
-    //    @Test
-    //    public void testPom() throws Exception {
-    //        Path testPom = unit.resolve("pom-test/pom-test-plugin-config.xml");
-    //        JavadocReport mojo = lookupMojo(testPom);
-    //        mojo.execute();
-    //
-    //        assertThat(new File(getBasedir(), "target/test/unit/pom-test/target/site"))
-    //                .doesNotExist();
-    //    }
+
+        /**
+         * Test the javadoc for a POM project.
+         *
+         * @throws Exception if any
+         */
+        @InjectMojo(goal = "aggregate", pom = "pom-test/pom-test-plugin-config.xml")
+        @Basedir("/unit")
+        @Test
+        public void testPom(JavadocReport mojo ) throws Exception {
+            mojo.execute();
+
+            assertThat(new File(getBasedir(), "target/test/unit/pom-test/target/site"))
+                    .doesNotExist();
+        }
     //
     //    /**
     //     * Test the javadoc with tag.

@@ -41,11 +41,11 @@ public class PomMavenProjectStub extends MavenProjectStub {
 
         Build build = new Build();
         build.setFinalName(getModel().getArtifactId());
-        build.setDirectory(super.getBasedir() + "/target/test/unit/pom-test/target");
+        build.setDirectory(super.getBasedir() + "/pom-test/target");
         build.setSourceDirectory(getBasedir() + "/src/main/java");
-        build.setOutputDirectory(super.getBasedir() + "/target/test/unit/pom-test/target/classes");
+        build.setOutputDirectory(super.getBasedir() + "/pom-test/target/classes");
         build.setTestSourceDirectory(getBasedir() + "/src/test/java");
-        build.setTestOutputDirectory(super.getBasedir() + "/target/test/unit/pom-test/target/test-classes");
+        build.setTestOutputDirectory(super.getBasedir() + "/pom-test/target/test-classes");
         setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
@@ -60,6 +60,6 @@ public class PomMavenProjectStub extends MavenProjectStub {
     /** {@inheritDoc} */
     @Override
     public File getBasedir() {
-        return new File(super.getBasedir() + "/src/test/resources/unit/pom-test");
+        return new File(super.getBasedir() + "/pom-test");
     }
 }
