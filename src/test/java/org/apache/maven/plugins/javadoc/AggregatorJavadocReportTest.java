@@ -45,14 +45,11 @@ import org.mockito.Mockito;
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@MojoTest
+@MojoTest(realRepositorySession = true)
 public class AggregatorJavadocReportTest {
 
     @Inject
     private MavenSession mavenSession;
-
-    @Inject
-    private DefaultRepositorySystemSessionFactory repoSessionFactory;
 
     private static final char LINE_SEPARATOR = ' ';
 
@@ -70,13 +67,7 @@ public class AggregatorJavadocReportTest {
         localRepo = new File(getBasedir(), "target/local-repo/");
         createTestRepo();
 
-        ArtifactRepository localRepoMock = Mockito.mock(ArtifactRepository.class);
-        Mockito.when(localRepoMock.getBasedir()).thenReturn(localRepo.getAbsolutePath());
-
-        MavenExecutionRequest request = new DefaultMavenExecutionRequest();
-        request.setLocalRepository(localRepoMock);
-        DefaultRepositorySystemSession systemSession = repoSessionFactory.newRepositorySession(request);
-        Mockito.when(mavenSession.getRepositorySession()).thenReturn(systemSession);
+        mavenSession.getRequest().setLocalRepositoryPath(localRepo);
     }
 
     /**
