@@ -660,38 +660,35 @@ public class JavadocReportTest {
             String appString = readFile(appFile);
             assertThat(appString).contains("<b>To Do:</b>");
         }
-    //
-    //    /**
-    //     * Method to test the jdk5 javadoc
-    //     *
-    //     * @throws Exception if any
-    //     */
-    //    @Test
-    //    public void testJdk5() throws Exception {
-    //        // Should be an assumption, but not supported by TestCase
-    //        // Java 5 not supported by Java9 anymore
-    //        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("9")) {
-    //            return;
-    //        }
-    //
-    //        Path testPom = unit.resolve("jdk5-test/jdk5-test-plugin-config.xml");
-    //        JavadocReport mojo = lookupMojo(testPom);
-    //        mojo.execute();
-    //
-    //        Path apidocs = new File(getBasedir(), "target/test/unit/jdk5-test/target/site/apidocs").toPath();
-    //
-    //        assertThat(apidocs.resolve("index.html")).exists();
-    //
-    //        Path overviewSummary = apidocs.resolve("overview-summary.html");
-    //        assertThat(overviewSummary).exists();
-    //        String content = readFile(overviewSummary);
-    //        assertThat(content).contains("<b>Test the package-info</b>");
-    //
-    //        Path packageSummary = apidocs.resolve("jdk5/test/package-summary.html");
-    //        assertThat(packageSummary).exists();
-    //        content = readFile(packageSummary);
-    //        assertThat(content).contains("<b>Test the package-info</b>");
-    //    }
+
+        /**
+         * Method to test the jdk5 javadoc
+         *
+         * @throws Exception if any
+         */
+        @InjectMojo(goal = "aggregate", pom = "jdk5-test/jdk5-test-plugin-config.xml")
+        @Basedir("/unit")
+        @Test
+        @EnabledForJreRange(max = JRE.JAVA_8)
+        public void testJdk5(JavadocReport mojo) throws Exception {
+            // Java 5 not supported by Java9 anymore
+
+            mojo.execute();
+
+            Path apidocs = new File(getBasedir(), "jdk5-test/target/site/apidocs").toPath();
+
+            assertThat(apidocs.resolve("index.html")).exists();
+
+            Path overviewSummary = apidocs.resolve("overview-summary.html");
+            assertThat(overviewSummary).exists();
+            String content = readFile(overviewSummary);
+            assertThat(content).contains("<b>Test the package-info</b>");
+
+            Path packageSummary = apidocs.resolve("jdk5/test/package-summary.html");
+            assertThat(packageSummary).exists();
+            content = readFile(packageSummary);
+            assertThat(content).contains("<b>Test the package-info</b>");
+        }
     //
     //    /**
     //     * Test to find the javadoc executable when <code>java.home</code> is not in the JDK_HOME. In this case, try
