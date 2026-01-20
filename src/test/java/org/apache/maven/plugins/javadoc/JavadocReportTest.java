@@ -781,33 +781,33 @@ public class JavadocReportTest {
             assertThat(new File(getBasedir(), "target/test/unit/pom-test/target/site"))
                     .doesNotExist();
         }
-    //
-    //    /**
-    //     * Test the javadoc with tag.
-    //     *
-    //     * @throws Exception if any
-    //     */
-    //    @Test
-    //    public void testTag() throws Exception {
-    //        Path testPom = unit.resolve("tag-test/tag-test-plugin-config.xml");
-    //        JavadocReport mojo = lookupMojo(testPom);
-    //        mojo.execute();
-    //
-    //        Path app = new File(getBasedir(),
-    // "target/test/unit/tag-test/target/site/apidocs/tag/test/App.html").toPath();
-    //        assertThat(app).exists();
-    //        String readed = readFile(app);
-    //        assertThat(readed).contains(">To do something:</").contains(">Generator Class:</");
-    //
-    //        // In javadoc-options-javadoc-resources.xml tag 'version' has only a name,
-    //        // which is not enough for Java 11 anymore
-    //        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("11")) {
-    //            assertThat(readed).contains(">Version:</");
-    //            assertTrue(readed.toLowerCase(Locale.ENGLISH).contains("</dt>" + LINE_SEPARATOR + "  <dd>1.0</dd>")
-    //                    || readed.toLowerCase(Locale.ENGLISH)
-    //                            .contains("</dt>" + LINE_SEPARATOR + "<dd>1.0</dd>" /* JDK 8 */));
-    //        }
-    //    }
+
+        /**
+         * Test the javadoc with tag.
+         *
+         * @throws Exception if any
+         */
+        @InjectMojo(goal = "aggregate", pom = "tag-test/tag-test-plugin-config.xml")
+        @Basedir("/unit")
+        @Test
+        public void testTag(JavadocReport mojo) throws Exception {
+            mojo.execute();
+
+            Path app = new File(getBasedir(),
+     "tag-test/target/site/apidocs/tag/test/App.html").toPath();
+            assertThat(app).exists();
+            String readed = readFile(app);
+            assertThat(readed).contains(">To do something:</").contains(">Generator Class:</");
+
+            // In javadoc-options-javadoc-resources.xml tag 'version' has only a name,
+            // which is not enough for Java 11 anymore
+            if (JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("11")) {
+                assertThat(readed).contains(">Version:</");
+                assertTrue(readed.toLowerCase(Locale.ENGLISH).contains("</dt>" + LINE_SEPARATOR + "  <dd>1.0</dd>")
+                        || readed.toLowerCase(Locale.ENGLISH)
+                                .contains("</dt>" + LINE_SEPARATOR + "<dd>1.0</dd>" /* JDK 8 */));
+            }
+        }
     //
     //    /**
     //     * Test newline in the header/footer parameter

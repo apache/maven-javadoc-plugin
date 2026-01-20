@@ -42,7 +42,7 @@ public class TagTestMavenProjectStub extends MavenProjectStub {
         Build build = new Build();
         build.setFinalName(getModel().getArtifactId());
         build.setSourceDirectory(getBasedir() + "/src/main/java");
-        build.setDirectory(super.getBasedir() + "/target/test/unit/tag-test/target");
+        build.setDirectory(super.getBasedir() + "/tag-test/target");
         setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
@@ -53,6 +53,6 @@ public class TagTestMavenProjectStub extends MavenProjectStub {
     /** {@inheritDoc} */
     @Override
     public File getBasedir() {
-        return new File(super.getBasedir() + "/src/test/resources/unit/tag-test");
+        return new File(super.getBasedir() + "/tag-test");
     }
 }
