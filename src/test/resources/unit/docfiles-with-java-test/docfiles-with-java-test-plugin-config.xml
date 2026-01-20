@@ -34,9 +34,9 @@ under the License.
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <project implementation="org.apache.maven.plugins.javadoc.stubs.DocfilesWithJavaTestMavenProjectStub"/>
-          <outputDirectory>${basedir}/target/test/unit/docfiles-with-java-test/target/site</outputDirectory>
-          <javadocOptionsDir>${basedir}/target/test/unit/docfiles-with-java-test/target/javadoc-bundle-options</javadocOptionsDir>
-          <javadocDirectory>${basedir}/src/test/resources/unit/docfiles-with-java-test/src/main</javadocDirectory>
+          <outputDirectory>${basedir}/docfiles-with-java-test/target/site</outputDirectory>
+          <javadocOptionsDir>${basedir}/docfiles-with-java-test/target/javadoc-bundle-options</javadocOptionsDir>
+          <javadocDirectory>${basedir}/docfiles-with-java-test/src/main</javadocDirectory>
           <breakiterator>false</breakiterator>
           <old>false</old>
           <show>protected</show>

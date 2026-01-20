@@ -411,10 +411,23 @@ public class JavadocReportTest {
                 .exists();
         assertThat(apidocs.resolve("docfiles/test/doc-files/excluded-dir1")).doesNotExist();
         assertThat(apidocs.resolve("docfiles/test/doc-files/excluded-dir2")).doesNotExist();
+    }
 
-//        testPom = unit.resolve("docfiles-with-java-test/docfiles-with-java-test-plugin-config.xml");
-//        mojo = lookupMojo(testPom);
-//        mojo.execute();
+    @InjectMojo(goal = "aggregate", pom = "docfiles-with-java-test/docfiles-with-java-test-plugin-config.xml")
+    @Basedir("/unit")
+    @Test
+    @EnabledOnJre(JRE.JAVA_8)
+    public void testDocfilesWithJava(JavadocReport mojo) throws Exception {
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "docfiles-with-java-test/target/site/apidocs/").toPath();
+
+        // check if the doc-files subdirectories were copied
+        assertThat(apidocs.resolve("test/doc-files")).exists();
+        assertThat(apidocs.resolve("test/doc-files/App.java"))
+                .exists();
+        assertThat(apidocs.resolve("test/App.html"))
+                .exists();
     }
 //
 //    /**
