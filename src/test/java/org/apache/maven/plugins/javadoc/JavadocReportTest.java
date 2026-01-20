@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 import static org.apache.commons.io.FileUtils.copyDirectory;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
+import static org.apache.maven.api.plugin.testing.MojoExtension.getVariableValueFromObject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -734,41 +735,37 @@ public class JavadocReportTest {
             assertThat(content).contains("<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">");
             assertThat(apidocs.resolve("resources/test2/doc-files/maven-feather.png"))
                     .doesNotExist();
-
-//            // with excludes
-//            testPom = unit.resolve("resources-with-excludes-test/resources-with-excludes-test-plugin-config.xml");
-//            mojo = lookupMojo(testPom);
-//            mojo.execute();
-//
-//            apidocs = new File(getBasedir(),
-//     "target/test/unit/resources-with-excludes-test/target/site/apidocs").toPath();
-//
-//            app = apidocs.resolve("resources/test/App.html");
-//            assertThat(app).exists();
-//            content = readFile(app);
-//            assertThat(content).contains("<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">");
-//
-//            JavaVersion javadocVersion = (JavaVersion) getVariableValueFromObject(mojo, "javadocRuntimeVersion");
-//            if (javadocVersion.isAtLeast("1.8") /* && javadocVersion.isBefore( "14" ) */) {
-//                // https://bugs.openjdk.java.net/browse/JDK-8032205
-//                assertThat(apidocs.resolve("resources/test/doc-files/maven-feather.png"))
-//                        .as("Javadoc runtime version: " + javadocVersion
-//                                + "\nThis bug appeared in JDK8 and was planned to be fixed in JDK9, see JDK-8032205")
-//                        .exists();
-//            } else {
-//                assertThat(apidocs.resolve("resources/test/doc-files/maven-feather.png"))
-//                        .doesNotExist();
-//            }
-//            assertThat(apidocs.resolve("resources/test2/doc-files/maven-feather.png"))
-//                    .exists();
-//
-//            app2 = apidocs.resolve("resources/test2/App2.html");
-//            assertThat(app2).exists();
-//            content = readFile(app2);
-//            assertThat(content).contains("<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">");
-//            assertThat(apidocs.resolve("resources/test2/doc-files/maven-feather.png"))
-//                    .exists();
         }
+
+    /**
+     * Test the javadoc resources.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "aggregate", pom = "resources-with-excludes-test/resources-with-excludes-test-plugin-config.xml")
+    @Basedir("/unit")
+    @Test
+    public void testJavadocResourcesWithExcludes(JavadocReport mojo) throws Exception {
+            mojo.execute();
+
+            Path apidocs = new File(getBasedir(),"resources-with-excludes-test/target/site/apidocs").toPath();
+
+            Path app = apidocs.resolve("resources/test/App.html");
+            assertThat(app).doesNotExist();
+
+            assertThat(apidocs.resolve("resources/test/doc-files/maven-feather.png"))
+                        .doesNotExist();
+
+            assertThat(apidocs.resolve("resources/test2/doc-files/maven-feather.png"))
+                    .exists();
+
+            Path app2 = apidocs.resolve("resources/test2/App2.html");
+            assertThat(app2).exists();
+            String content = readFile(app2);
+            assertThat(content).contains("<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">");
+            assertThat(apidocs.resolve("resources/test2/doc-files/maven-feather.png"))
+                    .exists();
+    }
     //
     //    /**
     //     * Test the javadoc for a POM project.
