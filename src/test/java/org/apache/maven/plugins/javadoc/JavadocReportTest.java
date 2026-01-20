@@ -689,25 +689,24 @@ public class JavadocReportTest {
             content = readFile(packageSummary);
             assertThat(content).contains("<b>Test the package-info</b>");
         }
-    //
-    //    /**
-    //     * Test to find the javadoc executable when <code>java.home</code> is not in the JDK_HOME. In this case, try
-    // to
-    //     * use the <code>JAVA_HOME</code> environment variable.
-    //     *
-    //     * @throws Exception if any
-    //     */
-    //    @Test
-    //    public void testToFindJavadoc() throws Exception {
-    //        String oldJreHome = System.getProperty("java.home");
-    //        System.setProperty("java.home", "foo/bar");
-    //
-    //        Path testPom = unit.resolve("javaHome-test/javaHome-test-plugin-config.xml");
-    //        JavadocReport mojo = lookupMojo(testPom);
-    //        mojo.execute();
-    //
-    //        System.setProperty("java.home", oldJreHome);
-    //    }
+
+        /**
+         * Test to find the javadoc executable when <code>java.home</code> is not in the JDK_HOME. In this case, try to
+         * use the <code>JAVA_HOME</code> environment variable.
+         *
+         * @throws Exception if any
+         */
+        @InjectMojo(goal = "aggregate", pom = "javaHome-test/javaHome-test-plugin-config.xml")
+        @Basedir("/unit")
+        @Test
+        public void testToFindJavadoc(JavadocReport mojo) throws Exception {
+            String oldJreHome = System.getProperty("java.home");
+            System.setProperty("java.home", "foo/bar");
+
+            mojo.execute();
+
+            System.setProperty("java.home", oldJreHome);
+        }
     //
     //    /**
     //     * Test the javadoc resources.
