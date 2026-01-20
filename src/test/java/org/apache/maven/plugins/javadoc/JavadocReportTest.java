@@ -826,22 +826,22 @@ public class JavadocReportTest {
                 fail("Doesnt handle correctly newline for header or footer parameter");
             }
         }
-//
-//        /**
-//         * Test newline in various string parameters
-//         *
-//         * @throws Exception if any
-//         */
-//        @Test
-//        public void testNewline() throws Exception {
-//            Path testPom = unit.resolve("newline-test/newline-test-plugin-config.xml");
-//            JavadocReport mojo = lookupMojo(testPom);
-//            try {
-//                mojo.execute();
-//            } catch (MojoExecutionException e) {
-//                fail("Doesn't handle correctly newline for string parameters. See options and packages files.");
-//            }
-//        }
+
+        /**
+         * Test newline in various string parameters
+         *
+         * @throws Exception if any
+         */
+        @InjectMojo(goal = "aggregate", pom = "newline-test/newline-test-plugin-config.xml")
+        @Basedir("/unit")
+        @Test
+        public void testNewline(JavadocReport mojo) throws Exception {
+            try {
+                mojo.execute();
+            } catch (MojoExecutionException e) {
+                fail("Doesn't handle correctly newline for string parameters. See options and packages files.");
+            }
+        }
     //
     //    /**
     //     * Method to test the jdk6 javadoc
