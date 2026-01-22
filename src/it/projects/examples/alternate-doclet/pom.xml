@@ -26,8 +26,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>@maven.compiler.source@</maven.compiler.source>
-    <maven.compiler.target>@maven.compiler.target@</maven.compiler.target>
   </properties>
   
   <url>http://maven.apache.org/plugins/maven-javadoc-plugin/examples/alternate-doclet.html</url>
