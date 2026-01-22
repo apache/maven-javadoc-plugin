@@ -35,9 +35,13 @@ import java.util.Objects;
 
 import org.apache.maven.api.plugin.testing.Basedir;
 import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.ProjectBuildingRequest;
+import org.apache.maven.settings.Proxy;
+import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.utils.io.FileUtils;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.hamcrest.MatcherAssert;
@@ -54,7 +58,6 @@ import org.slf4j.LoggerFactory;
 import static org.apache.commons.io.FileUtils.copyDirectory;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
-import static org.apache.maven.api.plugin.testing.MojoExtension.getVariableValueFromObject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.hamcrest.CoreMatchers.anyOf;
@@ -64,6 +67,8 @@ import static org.junit.Assume.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test {@link org.apache.maven.plugins.javadoc.JavadocReport} class.
@@ -238,7 +243,8 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "aggregate", pom = "default-configuration/default-configuration-plugin-config.xml")
+    @InjectMojo(goal = "javadoc", pom = "default-configuration/default-configuration-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testDefaultConfiguration(JavadocReport mojo) throws Exception {
@@ -333,7 +339,8 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "aggregate", pom = "subpackages-test/subpackages-test-plugin-config.xml")
+    @InjectMojo(goal = "javadoc", pom = "subpackages-test/subpackages-test-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testSubpackages(JavadocReport mojo) throws Exception {
@@ -354,7 +361,8 @@ public class JavadocReportTest {
                 .exists();
     }
 
-    @InjectMojo(goal = "aggregate", pom = "file-include-exclude-test/file-include-exclude-plugin-config.xml")
+    @InjectMojo(goal = "javadoc", pom = "file-include-exclude-test/file-include-exclude-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testIncludesExcludes(JavadocReport mojo) throws Exception {
@@ -377,7 +385,8 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "aggregate", pom = "docfiles-test/docfiles-test-plugin-config.xml")
+    @InjectMojo(goal = "javadoc", pom = "docfiles-test/docfiles-test-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     @EnabledOnJre(JRE.JAVA_8) // Seems like a bug in Javadoc 9 and above
@@ -396,7 +405,8 @@ public class JavadocReportTest {
         assertThat(apidocs.resolve("docfiles/test/doc-files/excluded-dir2")).doesNotExist();
     }
 
-    @InjectMojo(goal = "aggregate", pom = "docfiles-with-java-test/docfiles-with-java-test-plugin-config.xml")
+    @InjectMojo(goal = "javadoc", pom = "docfiles-with-java-test/docfiles-with-java-test-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     @EnabledOnJre(JRE.JAVA_8)
@@ -417,7 +427,8 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "aggregate", pom = "custom-configuration/custom-configuration-plugin-config.xml")
+    @InjectMojo(goal = "javadoc", pom = "custom-configuration/custom-configuration-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testCustomConfiguration(JavadocReport mojo) throws Exception {
@@ -487,437 +498,26 @@ public class JavadocReportTest {
         assertThat(contentOptions).contains("-link").contains("http://java.sun.com/j2se/");
     }
 
-//    /**
-//     * Method to test the doclet artifact configuration
-//     *
-//     * @throws Exception if any
-//     */
-//    @InjectMojo(goal = "aggregate", pom = "doclet-test/doclet-test-plugin-config.xml")
-//    @Basedir("/unit")
-//    @Test
-//    @EnabledForJreRange(max = JRE.JAVA_12) // As of JDK 13, the com.sun.javadoc API is no longer supported.
-//    public void testDoclets(JavadocReport mojo) throws Exception {
-
-        // ----------------------------------------------------------------------
-        // doclet-test: check if the file generated by UmlGraph exists and if
-        // doclet path contains the UmlGraph artifact
-        // ----------------------------------------------------------------------
-        //
-        //        MavenSession session = spy(newMavenSession(mojo.project));
-        //        ProjectBuildingRequest buildingRequest = mock(ProjectBuildingRequest.class);
-        //
-        // when(buildingRequest.getRemoteRepositories()).thenReturn(mojo.project.getRemoteArtifactRepositories());
-        //        when(session.getProjectBuildingRequest()).thenReturn(buildingRequest);
-        //        DefaultRepositorySystemSession repositorySession = new DefaultRepositorySystemSession();
-        //        repositorySession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
-        //                .newInstance(repositorySession, new LocalRepository(localRepo)));
-        //        when(buildingRequest.getRepositorySession()).thenReturn(repositorySession);
-        //        when(session.getRepositorySession()).thenReturn(repositorySession);
-        //        LegacySupport legacySupport = lookup(LegacySupport.class);
-        //        legacySupport.setSession(session);
-        //
-        //        setVariableValueToObject(mojo, "session", session);
-        //        setVariableValueToObject(mojo, "repoSession", repositorySession);
-//        mojo.execute();
-
-//        Path generatedFile = new File(getBasedir(), "doclet-test/target/site/apidocs/graph.dot").toPath();
-//        assertThat(generatedFile).exists();
-//
-//        Path optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
-//        assertThat(optionsFile).exists();
-//        String options = readFile(optionsFile);
-//        assertThat(options).contains("/target/local-repo/umlgraph/UMLGraph/2.1/UMLGraph-2.1.jar");
-
-        // ----------------------------------------------------------------------
-        // doclet-path: check if the file generated by UmlGraph exists and if
-        // doclet path contains the twice UmlGraph artifacts
-        // ----------------------------------------------------------------------
-        //
-        //        testPom = unit.resolve("doclet-path-test/doclet-path-test-plugin-config.xml");
-        //        mojo = lookupMojo(testPom);
-        //        setVariableValueToObject(mojo, "session", session);
-        //        setVariableValueToObject(mojo, "repoSession", repositorySession);
-        //        mojo.execute();
-        //
-        //        generatedFile = new File(getBasedir(),
-        // "target/test/unit/doclet-test/target/site/apidocs/graph.dot").toPath();
-        //        assertThat(generatedFile).exists();
-        //
-        //        optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
-        //        assertThat(optionsFile).exists();
-        //        options = readFile(optionsFile);
-        //        assertThat(options)
-        //                .contains("/target/local-repo/umlgraph/UMLGraph/2.1/UMLGraph-2.1.jar")
-        //                .contains("/target/local-repo/umlgraph/UMLGraph-bis/2.1/UMLGraph-bis-2.1.jar");
-//    }
-
-        /**
-         * Method to test when the path to the project sources has an apostrophe (')
-         *
-         * @throws Exception if any
-         */
-        @InjectMojo(goal = "aggregate", pom = "quotedpath'test/quotedpath-test-plugin-config.xml")
-        @Basedir("/unit")
-        @Test
-        public void testQuotedPath(JavadocReport mojo) throws Exception {
-            mojo.execute();
-
-            Path apidocs = new File(getBasedir(), "quotedpath'test/target/site/apidocs").toPath();
-
-            // package level generated javadoc files
-            assertThat(apidocs.resolve("quotedpath/test/App.html")).exists();
-            assertThat(apidocs.resolve("quotedpath/test/AppSample.html")).exists();
-
-            // project level generated javadoc files
-            assertThat(apidocs.resolve("index-all.html")).exists();
-            assertThat(apidocs.resolve("index.html")).exists();
-            assertThat(apidocs.resolve("overview-tree.html")).exists();
-            if (JavaVersion.JAVA_VERSION.isAtLeast("23")) {
-                assertThat(apidocs.resolve("resource-files/stylesheet.css")).exists();
-            } else {
-                assertThat(apidocs.resolve("stylesheet.css")).exists();
-            }
-
-            if (JavaVersion.JAVA_VERSION.isBefore("10")) {
-                assertThat(apidocs.resolve("package-list")).exists();
-            } else {
-                assertThat(apidocs.resolve("element-list")).exists();
-            }
-        }
-
-        /**
-         * Method to test when the options file has umlauts.
-         *
-         * @throws Exception if any
-         */
-        @InjectMojo(goal = "aggregate", pom = "optionsumlautencoding-test/optionsumlautencoding-test-plugin-config.xml")
-        @Basedir("/unit")
-        @Test
-        public void testOptionsUmlautEncoding(JavadocReport mojo) throws Exception {
-            mojo.execute();
-
-            Path optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
-            assertThat(optionsFile).exists();
-
-            // check for a part of the window title
-            String content;
-            String expected;
-            if (JavaVersion.JAVA_VERSION.isAtLeast("9") && JavaVersion.JAVA_VERSION.isBefore("12")) {
-                content = readFile(optionsFile, StandardCharsets.UTF_8);
-                expected = OPTIONS_UMLAUT_ENCODING;
-            } else {
-                content = readFile(optionsFile, Charset.defaultCharset());
-                expected = new String(OPTIONS_UMLAUT_ENCODING.getBytes(Charset.defaultCharset()));
-            }
-
-            assertThat(content).contains(expected);
-
-            Path apidocs =
-                    new File(getBasedir(),"optionsumlautencoding-test/target/site/apidocs").toPath();
-
-            // package level generated javadoc files
-            assertThat(apidocs.resolve("optionsumlautencoding/test/App.html")).exists();
-            assertThat(apidocs.resolve("optionsumlautencoding/test/AppSample.html")).exists();
-
-            // project level generated javadoc files
-            assertThat(apidocs.resolve("index-all.html")).exists();
-            assertThat(apidocs.resolve("index.html")).exists();
-            assertThat(apidocs.resolve("overview-tree.html")).exists();
-            if (JavaVersion.JAVA_VERSION.isAtLeast("23")) {
-                assertThat(apidocs.resolve("resource-files/stylesheet.css")).exists();
-            } else {
-                assertThat(apidocs.resolve("stylesheet.css")).exists();
-            }
-
-            if (JavaVersion.JAVA_VERSION.isBefore("10")) {
-                assertThat(apidocs.resolve("package-list")).exists();
-            } else {
-                assertThat(apidocs.resolve("element-list")).exists();
-            }
-        }
-
-        /**
-         * Method to test the taglet artifact configuration
-         *
-         * @throws Exception if any
-         */
-        @InjectMojo(goal = "aggregate", pom = "taglet-test/taglet-test-plugin-config.xml")
-        @Basedir("/unit")
-        @Test
-        @EnabledForJreRange(max = JRE.JAVA_9)
-        public void testTaglets(JavadocReport mojo) throws Exception {
-            // ----------------------------------------------------------------------
-            // taglet-test: check if a taglet is used
-            // ----------------------------------------------------------------------
-            // com.sun.tools.doclets.Taglet not supported by Java9 anymore
-            // Should be refactored with jdk.javadoc.doclet.Taglet
-
-            mojo.execute();
-
-            Path apidocs = new File(getBasedir(), "taglet-test/target/site/apidocs").toPath();
-
-            assertThat(apidocs.resolve("index.html")).exists();
-
-            Path appFile = apidocs.resolve("taglet/test/App.html");
-            assertThat(appFile).exists();
-            String appString = readFile(appFile);
-            assertThat(appString).contains("<b>To Do:</b>");
-        }
-
-        /**
-         * Method to test the jdk5 javadoc
-         *
-         * @throws Exception if any
-         */
-        @InjectMojo(goal = "aggregate", pom = "jdk5-test/jdk5-test-plugin-config.xml")
-        @Basedir("/unit")
-        @Test
-        @EnabledForJreRange(max = JRE.JAVA_8)
-        public void testJdk5(JavadocReport mojo) throws Exception {
-            // Java 5 not supported by Java9 anymore
-
-            mojo.execute();
-
-            Path apidocs = new File(getBasedir(), "jdk5-test/target/site/apidocs").toPath();
-
-            assertThat(apidocs.resolve("index.html")).exists();
-
-            Path overviewSummary = apidocs.resolve("overview-summary.html");
-            assertThat(overviewSummary).exists();
-            String content = readFile(overviewSummary);
-            assertThat(content).contains("<b>Test the package-info</b>");
-
-            Path packageSummary = apidocs.resolve("jdk5/test/package-summary.html");
-            assertThat(packageSummary).exists();
-            content = readFile(packageSummary);
-            assertThat(content).contains("<b>Test the package-info</b>");
-        }
-
-        /**
-         * Test to find the javadoc executable when <code>java.home</code> is not in the JDK_HOME. In this case, try to
-         * use the <code>JAVA_HOME</code> environment variable.
-         *
-         * @throws Exception if any
-         */
-        @InjectMojo(goal = "aggregate", pom = "javaHome-test/javaHome-test-plugin-config.xml")
-        @Basedir("/unit")
-        @Test
-        public void testToFindJavadoc(JavadocReport mojo) throws Exception {
-            String oldJreHome = System.getProperty("java.home");
-            System.setProperty("java.home", "foo/bar");
-
-            mojo.execute();
-
-            System.setProperty("java.home", oldJreHome);
-        }
-
-        /**
-         * Test the javadoc resources.
-         *
-         * @throws Exception if any
-         */
-        @InjectMojo(goal = "aggregate", pom = "resources-test/resources-test-plugin-config.xml")
-        @Basedir("/unit")
-        @Test
-        public void testJavadocResources(JavadocReport mojo) throws Exception {
-            mojo.execute();
-
-            Path apidocs = new File(getBasedir(), "resources-test/target/site/apidocs/").toPath();
-
-            Path app = apidocs.resolve("resources/test/App.html");
-            assertThat(app).exists();
-            String content = readFile(app);
-            assertThat(content).contains("<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">");
-            assertThat(apidocs.resolve("resources/test/doc-files/maven-feather.png"))
-                    .exists();
-
-            Path app2 = apidocs.resolve("resources/test2/App2.html");
-            assertThat(app2).exists();
-            content = readFile(app2);
-            assertThat(content).contains("<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">");
-            assertThat(apidocs.resolve("resources/test2/doc-files/maven-feather.png"))
-                    .doesNotExist();
-        }
-
-    /**
-     * Test the javadoc resources.
-     *
-     * @throws Exception if any
-     */
-    @InjectMojo(goal = "aggregate", pom = "resources-with-excludes-test/resources-with-excludes-test-plugin-config.xml")
-    @Basedir("/unit")
-    @Test
-    public void testJavadocResourcesWithExcludes(JavadocReport mojo) throws Exception {
-            mojo.execute();
-
-            Path apidocs = new File(getBasedir(),"resources-with-excludes-test/target/site/apidocs").toPath();
-
-            Path app = apidocs.resolve("resources/test/App.html");
-            assertThat(app).doesNotExist();
-
-            assertThat(apidocs.resolve("resources/test/doc-files/maven-feather.png"))
-                        .doesNotExist();
-
-            assertThat(apidocs.resolve("resources/test2/doc-files/maven-feather.png"))
-                    .exists();
-
-            Path app2 = apidocs.resolve("resources/test2/App2.html");
-            assertThat(app2).exists();
-            String content = readFile(app2);
-            assertThat(content).contains("<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">");
-            assertThat(apidocs.resolve("resources/test2/doc-files/maven-feather.png"))
-                    .exists();
-    }
-
-        /**
-         * Test the javadoc for a POM project.
-         *
-         * @throws Exception if any
-         */
-        @InjectMojo(goal = "aggregate", pom = "pom-test/pom-test-plugin-config.xml")
-        @Basedir("/unit")
-        @Test
-        public void testPom(JavadocReport mojo ) throws Exception {
-            mojo.execute();
-
-            assertThat(new File(getBasedir(), "target/test/unit/pom-test/target/site"))
-                    .doesNotExist();
-        }
-
-        /**
-         * Test the javadoc with tag.
-         *
-         * @throws Exception if any
-         */
-        @InjectMojo(goal = "aggregate", pom = "tag-test/tag-test-plugin-config.xml")
-        @Basedir("/unit")
-        @Test
-        public void testTag(JavadocReport mojo) throws Exception {
-            mojo.execute();
-
-            Path app = new File(getBasedir(),
-     "tag-test/target/site/apidocs/tag/test/App.html").toPath();
-            assertThat(app).exists();
-            String readed = readFile(app);
-            assertThat(readed).contains(">To do something:</").contains(">Generator Class:</");
-
-            // In javadoc-options-javadoc-resources.xml tag 'version' has only a name,
-            // which is not enough for Java 11 anymore
-            if (JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("11")) {
-                assertThat(readed).contains(">Version:</");
-                assertTrue(readed.toLowerCase(Locale.ENGLISH).contains("</dt>" + LINE_SEPARATOR + "  <dd>1.0</dd>")
-                        || readed.toLowerCase(Locale.ENGLISH)
-                                .contains("</dt>" + LINE_SEPARATOR + "<dd>1.0</dd>" /* JDK 8 */));
-            }
-        }
-
-        /**
-         * Test newline in the header/footer parameter
-         *
-         * @throws Exception if any
-         */
-        @InjectMojo(goal = "aggregate", pom = "header-footer-test/header-footer-test-plugin-config.xml")
-        @Basedir("/unit")
-        @Test
-        public void testHeaderFooter(JavadocReport mojo) throws Exception {
-            try {
-                mojo.execute();
-            } catch (MojoExecutionException e) {
-                fail("Doesnt handle correctly newline for header or footer parameter");
-            }
-        }
-
-        /**
-         * Test newline in various string parameters
-         *
-         * @throws Exception if any
-         */
-        @InjectMojo(goal = "aggregate", pom = "newline-test/newline-test-plugin-config.xml")
-        @Basedir("/unit")
-        @Test
-        public void testNewline(JavadocReport mojo) throws Exception {
-            try {
-                mojo.execute();
-            } catch (MojoExecutionException e) {
-                fail("Doesn't handle correctly newline for string parameters. See options and packages files.");
-            }
-        }
-
-        /**
-         * Method to test the jdk6 javadoc
-         *
-         * @throws Exception if any
-         */
-        @InjectMojo(goal = "aggregate", pom = "jdk6-test/jdk6-test-plugin-config.xml")
-        @Basedir("/unit")
-        @EnabledForJreRange(max = JRE.JAVA_11)
-        @Test
-        public void testJdk6(JavadocReport mojo) throws Exception {
-            // Java 6 not supported by Java 12 anymore
-            mojo.execute();
-
-            Path apidocs = new File(getBasedir(), "jdk6-test/target/site/apidocs").toPath();
-            assertThat(apidocs.resolve("index.html")).exists();
-
-            Path overview;
-            if (JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("11")) {
-                overview = apidocs.resolve("overview-summary.html");
-            } else {
-                overview = apidocs.resolve("index.html");
-            }
-
-            assertThat(overview).exists();
-            String content = readFile(overview);
-            assertThat(content)
-                    .contains("Top - Copyright &#169; All rights reserved.")
-                    .contains("Header - Copyright &#169; All rights reserved.");
-            // IBM dist of adopt-openj9 does not support the footer param
-            if (!System.getProperty("java.vm.name").contains("OpenJ9")) {
-                assertThat(content).contains("Footer - Copyright &#169; All rights reserved.");
-            }
-
-            Path packageSummary = apidocs.resolve("jdk6/test/package-summary.html");
-            assertThat(packageSummary).exists();
-            content = readFile(packageSummary);
-            assertThat(content)
-                    .contains("Top - Copyright &#169; All rights reserved.")
-                    .contains("Header - Copyright &#169; All rights reserved.");
-
-            // IBM dist of adopt-openj9 does not support the footer param
-            if (!System.getProperty("java.vm.name").contains("OpenJ9")) {
-                assertThat(content).contains("Footer - Copyright &#169; All rights reserved.");
-            }
-        }
-    //
     //    /**
-    //     * Method to test proxy support in the javadoc
+    //     * Method to test the doclet artifact configuration
     //     *
     //     * @throws Exception if any
     //     */
+    //    @InjectMojo(goal = "javadoc", pom = "doclet-test/doclet-test-plugin-config.xml")
+    //    @Basedir("/unit")
     //    @Test
-    //    public void testProxy() throws Exception {
-    //        Settings settings = new Settings();
-    //        Proxy proxy = new Proxy();
-    //
-    //        // dummy proxy
-    //        proxy.setActive(true);
-    //        proxy.setHost("127.0.0.1");
-    //        proxy.setPort(80);
-    //        proxy.setProtocol("http");
-    //        proxy.setUsername("toto");
-    //        proxy.setPassword("toto");
-    //        proxy.setNonProxyHosts("www.google.com|*.somewhere.com");
-    //        settings.addProxy(proxy);
-    //
-    //        Path testPom =
-    //                new File(getBasedir(),
-    // "src/test/resources/unit/proxy-test/proxy-test-plugin-config.xml").toPath();
-    //        JavadocReport mojo = lookupMojo(testPom);
+    //    @EnabledForJreRange(max = JRE.JAVA_12) // As of JDK 13, the com.sun.javadoc API is no longer supported.
+    //    public void testDoclets(JavadocReport mojo) throws Exception {
+
+    // ----------------------------------------------------------------------
+    // doclet-test: check if the file generated by UmlGraph exists and if
+    // doclet path contains the UmlGraph artifact
+    // ----------------------------------------------------------------------
     //
     //        MavenSession session = spy(newMavenSession(mojo.project));
     //        ProjectBuildingRequest buildingRequest = mock(ProjectBuildingRequest.class);
-    //        when(buildingRequest.getRemoteRepositories()).thenReturn(mojo.project.getRemoteArtifactRepositories());
-    //        when(buildingRequest.getRepositoryMerging()).thenReturn(RepositoryMerging.POM_DOMINANT);
+    //
+    // when(buildingRequest.getRemoteRepositories()).thenReturn(mojo.project.getRemoteArtifactRepositories());
     //        when(session.getProjectBuildingRequest()).thenReturn(buildingRequest);
     //        DefaultRepositorySystemSession repositorySession = new DefaultRepositorySystemSession();
     //        repositorySession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
@@ -927,113 +527,533 @@ public class JavadocReportTest {
     //        LegacySupport legacySupport = lookup(LegacySupport.class);
     //        legacySupport.setSession(session);
     //
-    //        setVariableValueToObject(mojo, "settings", settings);
+    //        setVariableValueToObject(mojo, "session", session);
+    //        setVariableValueToObject(mojo, "repoSession", repositorySession);
+    //        mojo.execute();
+
+    //        Path generatedFile = new File(getBasedir(), "doclet-test/target/site/apidocs/graph.dot").toPath();
+    //        assertThat(generatedFile).exists();
+    //
+    //        Path optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
+    //        assertThat(optionsFile).exists();
+    //        String options = readFile(optionsFile);
+    //        assertThat(options).contains("/target/local-repo/umlgraph/UMLGraph/2.1/UMLGraph-2.1.jar");
+
+    // ----------------------------------------------------------------------
+    // doclet-path: check if the file generated by UmlGraph exists and if
+    // doclet path contains the twice UmlGraph artifacts
+    // ----------------------------------------------------------------------
+    //
+    //        testPom = unit.resolve("doclet-path-test/doclet-path-test-plugin-config.xml");
+    //        mojo = lookupMojo(testPom);
     //        setVariableValueToObject(mojo, "session", session);
     //        setVariableValueToObject(mojo, "repoSession", repositorySession);
     //        mojo.execute();
     //
-    //        Path commandLine = new File(
-    //                        getBasedir(),
-    //                        "target/test/unit/proxy-test/target/site/apidocs/javadoc."
-    //                                + (SystemUtils.IS_OS_WINDOWS ? "bat" : "sh"))
-    //                .toPath();
-    //        assertThat(commandLine).exists();
-    //        String readed = readFile(commandLine);
-    //        assertThat(readed).contains("-J-Dhttp.proxyHost=127.0.0.1").contains("-J-Dhttp.proxyPort=80");
-    //        if (SystemUtils.IS_OS_WINDOWS) {
-    //            assertThat(readed).contains(" -J-Dhttp.nonProxyHosts=\"www.google.com^|*.somewhere.com\" ");
-    //        } else {
-    //            assertThat(readed).contains(" \"-J-Dhttp.nonProxyHosts=\\\"www.google.com^|*.somewhere.com\\\"\" ");
-    //        }
+    //        generatedFile = new File(getBasedir(),
+    // "target/test/unit/doclet-test/target/site/apidocs/graph.dot").toPath();
+    //        assertThat(generatedFile).exists();
     //
-    //        Path options = new File(getBasedir(), "target/test/unit/proxy-test/target/site/apidocs/options").toPath();
-    //        assertThat(options).exists();
-    //        String optionsContent = readFile(options);
-    //        // NO -link expected
-    //        assertThat(optionsContent).doesNotContain("-link");
-    //
-    //        // real proxy
-    //        ProxyServer proxyServer = null;
-    //        AuthAsyncProxyServlet proxyServlet;
-    //        try {
-    //            proxyServlet = new AuthAsyncProxyServlet();
-    //            proxyServer = new ProxyServer(proxyServlet);
-    //            proxyServer.start();
-    //
-    //            settings = new Settings();
-    //            proxy = new Proxy();
-    //            proxy.setActive(true);
-    //            proxy.setHost(proxyServer.getHostName());
-    //            proxy.setPort(proxyServer.getPort());
-    //            proxy.setProtocol("http");
-    //            settings.addProxy(proxy);
-    //
-    //            mojo = lookupMojo(testPom);
-    //            setVariableValueToObject(mojo, "settings", settings);
-    //            setVariableValueToObject(mojo, "session", session);
-    //            setVariableValueToObject(mojo, "repoSession", repositorySession);
-    //            mojo.execute();
-    //            readed = readFile(commandLine);
-    //            assertTrue(readed.contains("-J-Dhttp.proxyHost=" + proxyServer.getHostName()));
-    //            assertTrue(readed.contains("-J-Dhttp.proxyPort=" + proxyServer.getPort()));
-    //
-    //            optionsContent = readFile(options);
-    //            // -link expected
-    //            // TODO: This got disabled for now!
-    //            // This test fails since the last commit but I actually think it only ever worked by accident.
-    //            // It did rely on a commons-logging-1.0.4.pom which got resolved by a test which did run previously.
-    //            // But after updating to commons-logging.1.1.1 there is no pre-resolved artifact available in
-    //            // target/local-repo anymore, thus the javadoc link info cannot get built and the test fails
-    //            // I'll for now just disable this line of code, because the test as far as I can see _never_
-    //            // did go upstream. The remoteRepository list used is always empty!.
-    //            //
-    //            //            assertTrue( optionsContent.contains( "-link 'http://commons.apache.org/logging/apidocs'"
-    // ) );
-    //        } finally {
-    //            if (proxyServer != null) {
-    //                proxyServer.stop();
-    //            }
-    //        }
-    //
-    //        // auth proxy
-    //        Map<String, String> authentications = new HashMap<>();
-    //        authentications.put("foo", "bar");
-    //        try {
-    //            proxyServlet = new AuthAsyncProxyServlet(authentications);
-    //            proxyServer = new ProxyServer(proxyServlet);
-    //            proxyServer.start();
-    //
-    //            settings = new Settings();
-    //            proxy = new Proxy();
-    //            proxy.setActive(true);
-    //            proxy.setHost(proxyServer.getHostName());
-    //            proxy.setPort(proxyServer.getPort());
-    //            proxy.setProtocol("http");
-    //            proxy.setUsername("foo");
-    //            proxy.setPassword("bar");
-    //            settings.addProxy(proxy);
-    //
-    //            mojo = lookupMojo(testPom);
-    //            setVariableValueToObject(mojo, "settings", settings);
-    //            setVariableValueToObject(mojo, "session", session);
-    //            setVariableValueToObject(mojo, "repoSession", repositorySession);
-    //            mojo.execute();
-    //            readed = readFile(commandLine);
-    //            assertThat(readed)
-    //                    .contains("-J-Dhttp.proxyHost=" + proxyServer.getHostName())
-    //                    .contains("-J-Dhttp.proxyPort=" + proxyServer.getPort());
-    //
-    //            optionsContent = readFile(options);
-    //            // -link expected
-    //            // see comment above (line 829)
-    //            //             assertTrue( optionsContent.contains( "-link
-    // 'http://commons.apache.org/logging/apidocs'" ) );
-    //        } finally {
-    //            if (proxyServer != null) {
-    //                proxyServer.stop();
-    //            }
-    //        }
+    //        optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
+    //        assertThat(optionsFile).exists();
+    //        options = readFile(optionsFile);
+    //        assertThat(options)
+    //                .contains("/target/local-repo/umlgraph/UMLGraph/2.1/UMLGraph-2.1.jar")
+    //                .contains("/target/local-repo/umlgraph/UMLGraph-bis/2.1/UMLGraph-bis-2.1.jar");
     //    }
+
+    /**
+     * Method to test when the path to the project sources has an apostrophe (')
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "quotedpath'test/quotedpath-test-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    public void testQuotedPath(JavadocReport mojo) throws Exception {
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "quotedpath'test/target/site/apidocs").toPath();
+
+        // package level generated javadoc files
+        assertThat(apidocs.resolve("quotedpath/test/App.html")).exists();
+        assertThat(apidocs.resolve("quotedpath/test/AppSample.html")).exists();
+
+        // project level generated javadoc files
+        assertThat(apidocs.resolve("index-all.html")).exists();
+        assertThat(apidocs.resolve("index.html")).exists();
+        assertThat(apidocs.resolve("overview-tree.html")).exists();
+        if (JavaVersion.JAVA_VERSION.isAtLeast("23")) {
+            assertThat(apidocs.resolve("resource-files/stylesheet.css")).exists();
+        } else {
+            assertThat(apidocs.resolve("stylesheet.css")).exists();
+        }
+
+        if (JavaVersion.JAVA_VERSION.isBefore("10")) {
+            assertThat(apidocs.resolve("package-list")).exists();
+        } else {
+            assertThat(apidocs.resolve("element-list")).exists();
+        }
+    }
+
+    /**
+     * Method to test when the options file has umlauts.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "optionsumlautencoding-test/optionsumlautencoding-test-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    public void testOptionsUmlautEncoding(JavadocReport mojo) throws Exception {
+        mojo.execute();
+
+        Path optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
+        assertThat(optionsFile).exists();
+
+        // check for a part of the window title
+        String content;
+        String expected;
+        if (JavaVersion.JAVA_VERSION.isAtLeast("9") && JavaVersion.JAVA_VERSION.isBefore("12")) {
+            content = readFile(optionsFile, StandardCharsets.UTF_8);
+            expected = OPTIONS_UMLAUT_ENCODING;
+        } else {
+            content = readFile(optionsFile, Charset.defaultCharset());
+            expected = new String(OPTIONS_UMLAUT_ENCODING.getBytes(Charset.defaultCharset()));
+        }
+
+        assertThat(content).contains(expected);
+
+        Path apidocs = new File(getBasedir(), "optionsumlautencoding-test/target/site/apidocs").toPath();
+
+        // package level generated javadoc files
+        assertThat(apidocs.resolve("optionsumlautencoding/test/App.html")).exists();
+        assertThat(apidocs.resolve("optionsumlautencoding/test/AppSample.html")).exists();
+
+        // project level generated javadoc files
+        assertThat(apidocs.resolve("index-all.html")).exists();
+        assertThat(apidocs.resolve("index.html")).exists();
+        assertThat(apidocs.resolve("overview-tree.html")).exists();
+        if (JavaVersion.JAVA_VERSION.isAtLeast("23")) {
+            assertThat(apidocs.resolve("resource-files/stylesheet.css")).exists();
+        } else {
+            assertThat(apidocs.resolve("stylesheet.css")).exists();
+        }
+
+        if (JavaVersion.JAVA_VERSION.isBefore("10")) {
+            assertThat(apidocs.resolve("package-list")).exists();
+        } else {
+            assertThat(apidocs.resolve("element-list")).exists();
+        }
+    }
+
+    /**
+     * Method to test the taglet artifact configuration
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "taglet-test/taglet-test-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    @EnabledForJreRange(max = JRE.JAVA_9)
+    public void testTaglets(JavadocReport mojo) throws Exception {
+        // ----------------------------------------------------------------------
+        // taglet-test: check if a taglet is used
+        // ----------------------------------------------------------------------
+        // com.sun.tools.doclets.Taglet not supported by Java9 anymore
+        // Should be refactored with jdk.javadoc.doclet.Taglet
+
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "taglet-test/target/site/apidocs").toPath();
+
+        assertThat(apidocs.resolve("index.html")).exists();
+
+        Path appFile = apidocs.resolve("taglet/test/App.html");
+        assertThat(appFile).exists();
+        String appString = readFile(appFile);
+        assertThat(appString).contains("<b>To Do:</b>");
+    }
+
+    /**
+     * Method to test the jdk5 javadoc
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "jdk5-test/jdk5-test-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    @EnabledForJreRange(max = JRE.JAVA_8)
+    public void testJdk5(JavadocReport mojo) throws Exception {
+        // Java 5 not supported by Java9 anymore
+
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "jdk5-test/target/site/apidocs").toPath();
+
+        assertThat(apidocs.resolve("index.html")).exists();
+
+        Path overviewSummary = apidocs.resolve("overview-summary.html");
+        assertThat(overviewSummary).exists();
+        String content = readFile(overviewSummary);
+        assertThat(content).contains("<b>Test the package-info</b>");
+
+        Path packageSummary = apidocs.resolve("jdk5/test/package-summary.html");
+        assertThat(packageSummary).exists();
+        content = readFile(packageSummary);
+        assertThat(content).contains("<b>Test the package-info</b>");
+    }
+
+    /**
+     * Test to find the javadoc executable when <code>java.home</code> is not in the JDK_HOME. In this case, try to
+     * use the <code>JAVA_HOME</code> environment variable.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "javaHome-test/javaHome-test-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    public void testToFindJavadoc(JavadocReport mojo) throws Exception {
+        String oldJreHome = System.getProperty("java.home");
+        System.setProperty("java.home", "foo/bar");
+
+        mojo.execute();
+
+        System.setProperty("java.home", oldJreHome);
+    }
+
+    /**
+     * Test the javadoc resources.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "resources-test/resources-test-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    public void testJavadocResources(JavadocReport mojo) throws Exception {
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "resources-test/target/site/apidocs/").toPath();
+
+        Path app = apidocs.resolve("resources/test/App.html");
+        assertThat(app).exists();
+        String content = readFile(app);
+        assertThat(content).contains("<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">");
+        assertThat(apidocs.resolve("resources/test/doc-files/maven-feather.png"))
+                .exists();
+
+        Path app2 = apidocs.resolve("resources/test2/App2.html");
+        assertThat(app2).exists();
+        content = readFile(app2);
+        assertThat(content).contains("<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">");
+        assertThat(apidocs.resolve("resources/test2/doc-files/maven-feather.png"))
+                .doesNotExist();
+    }
+
+    /**
+     * Test the javadoc resources.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "resources-with-excludes-test/resources-with-excludes-test-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    public void testJavadocResourcesWithExcludes(JavadocReport mojo) throws Exception {
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "resources-with-excludes-test/target/site/apidocs").toPath();
+
+        Path app = apidocs.resolve("resources/test/App.html");
+        assertThat(app).exists();
+
+        assertThat(apidocs.resolve("resources/test/doc-files/maven-feather.png"))
+                .exists();
+
+        assertThat(apidocs.resolve("resources/test2/doc-files/maven-feather.png"))
+                .exists();
+
+        Path app2 = apidocs.resolve("resources/test2/App2.html");
+        assertThat(app2).exists();
+        String content = readFile(app2);
+        assertThat(content).contains("<img src=\"doc-files/maven-feather.png\" alt=\"Maven\">");
+        assertThat(apidocs.resolve("resources/test2/doc-files/maven-feather.png"))
+                .exists();
+    }
+
+    /**
+     * Test the javadoc for a POM project.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "pom-test/pom-test-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    public void testPom(JavadocReport mojo) throws Exception {
+        mojo.execute();
+
+        assertThat(new File(getBasedir(), "target/test/unit/pom-test/target/site"))
+                .doesNotExist();
+    }
+
+    /**
+     * Test the javadoc with tag.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "tag-test/tag-test-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    public void testTag(JavadocReport mojo) throws Exception {
+        mojo.execute();
+
+        Path app = new File(getBasedir(), "tag-test/target/site/apidocs/tag/test/App.html").toPath();
+        assertThat(app).exists();
+        String readed = readFile(app);
+        assertThat(readed).contains(">To do something:</").contains(">Generator Class:</");
+
+        // In javadoc-options-javadoc-resources.xml tag 'version' has only a name,
+        // which is not enough for Java 11 anymore
+        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("11")) {
+            assertThat(readed).contains(">Version:</");
+            assertTrue(readed.toLowerCase(Locale.ENGLISH).contains("</dt>" + LINE_SEPARATOR + "  <dd>1.0</dd>")
+                    || readed.toLowerCase(Locale.ENGLISH)
+                            .contains("</dt>" + LINE_SEPARATOR + "<dd>1.0</dd>" /* JDK 8 */));
+        }
+    }
+
+    /**
+     * Test newline in the header/footer parameter
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "header-footer-test/header-footer-test-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    public void testHeaderFooter(JavadocReport mojo) throws Exception {
+        try {
+            mojo.execute();
+        } catch (MojoExecutionException e) {
+            fail("Doesnt handle correctly newline for header or footer parameter");
+        }
+    }
+
+    /**
+     * Test newline in various string parameters
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "newline-test/newline-test-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    public void testNewline(JavadocReport mojo) throws Exception {
+        try {
+            mojo.execute();
+        } catch (MojoExecutionException e) {
+            fail("Doesn't handle correctly newline for string parameters. See options and packages files.");
+        }
+    }
+
+    /**
+     * Method to test the jdk6 javadoc
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "jdk6-test/jdk6-test-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @EnabledForJreRange(max = JRE.JAVA_11)
+    @Test
+    public void testJdk6(JavadocReport mojo) throws Exception {
+        // Java 6 not supported by Java 12 anymore
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "jdk6-test/target/site/apidocs").toPath();
+        assertThat(apidocs.resolve("index.html")).exists();
+
+        Path overview;
+        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("11")) {
+            overview = apidocs.resolve("overview-summary.html");
+        } else {
+            overview = apidocs.resolve("index.html");
+        }
+
+        assertThat(overview).exists();
+        String content = readFile(overview);
+        assertThat(content)
+                .contains("Top - Copyright &#169; All rights reserved.")
+                .contains("Header - Copyright &#169; All rights reserved.");
+        // IBM dist of adopt-openj9 does not support the footer param
+        if (!System.getProperty("java.vm.name").contains("OpenJ9")) {
+            assertThat(content).contains("Footer - Copyright &#169; All rights reserved.");
+        }
+
+        Path packageSummary = apidocs.resolve("jdk6/test/package-summary.html");
+        assertThat(packageSummary).exists();
+        content = readFile(packageSummary);
+        assertThat(content)
+                .contains("Top - Copyright &#169; All rights reserved.")
+                .contains("Header - Copyright &#169; All rights reserved.");
+
+        // IBM dist of adopt-openj9 does not support the footer param
+        if (!System.getProperty("java.vm.name").contains("OpenJ9")) {
+            assertThat(content).contains("Footer - Copyright &#169; All rights reserved.");
+        }
+    }
+
+    /**
+     * Method to test proxy support in the javadoc
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "proxy-test/proxy-test-plugin-config.xml")
+    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    public void testProxyWithDummy(JavadocReport mojo) throws Exception {
+//        Settings settings = new Settings();
+//        Proxy proxy = new Proxy();
+//
+//        // dummy proxy
+//        proxy.setActive(true);
+//        proxy.setHost("127.0.0.1");
+//        proxy.setPort(80);
+//        proxy.setProtocol("http");
+//        proxy.setUsername("toto");
+//        proxy.setPassword("toto");
+//        proxy.setNonProxyHosts("www.google.com|*.somewhere.com");
+//        settings.addProxy(proxy);
+//
+//        ProjectBuildingRequest buildingRequest = mock(ProjectBuildingRequest.class);
+//        when(buildingRequest.getRemoteRepositories()).thenReturn(mojo.project.getRemoteArtifactRepositories());
+//        when(buildingRequest.getRepositoryMerging()).thenReturn(ProjectBuildingRequest.RepositoryMerging.POM_DOMINANT);
+//        when(mavenSession.getProjectBuildingRequest()).thenReturn(buildingRequest);
+//        //            MavenSession session = spy(newMavenSession(mojo.project));
+//        //            DefaultRepositorySystemSession repositorySession = new DefaultRepositorySystemSession();
+//        //            repositorySession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
+//        //                    .newInstance(repositorySession, new LocalRepository(localRepo)));
+//        //            when(buildingRequest.getRepositorySession()).thenReturn(repositorySession);
+//        //            when(session.getRepositorySession()).thenReturn(repositorySession);
+//        //            LegacySupport legacySupport = lookup(LegacySupport.class);
+//        //            legacySupport.setSession(session);
+//        //
+//        //            setVariableValueToObject(mojo, "settings", settings);
+//        //            setVariableValueToObject(mojo, "session", session);
+//        //            setVariableValueToObject(mojo, "repoSession", repositorySession);
+//        mojo.execute();
+//
+//        Path commandLine = new File(
+//                        getBasedir(),
+//                        "proxy-test/target/site/apidocs/javadoc." + (SystemUtils.IS_OS_WINDOWS ? "bat" : "sh"))
+//                .toPath();
+//        assertThat(commandLine).exists();
+//        String readed = readFile(commandLine);
+//        assertThat(readed).contains("-J-Dhttp.proxyHost=127.0.0.1").contains("-J-Dhttp.proxyPort=80");
+//        if (SystemUtils.IS_OS_WINDOWS) {
+//            assertThat(readed).contains(" -J-Dhttp.nonProxyHosts=\"www.google.com^|*.somewhere.com\" ");
+//        } else {
+//            assertThat(readed).contains(" \"-J-Dhttp.nonProxyHosts=\\\"www.google.com^|*.somewhere.com\\\"\" ");
+//        }
+//
+//        Path options = new File(getBasedir(), "proxy-test/target/site/apidocs/options").toPath();
+//        assertThat(options).exists();
+//        String optionsContent = readFile(options);
+//        // NO -link expected
+//        assertThat(optionsContent).doesNotContain("-link");
+
+        //            // real proxy
+        //            ProxyServer proxyServer = null;
+        //            ProxyServer.AuthAsyncProxyServlet proxyServlet;
+        //            try {
+        //                proxyServlet = new ProxyServer.AuthAsyncProxyServlet();
+        //                proxyServer = new ProxyServer(proxyServlet);
+        //                proxyServer.start();
+        //
+        //                settings = new Settings();
+        //                proxy = new Proxy();
+        //                proxy.setActive(true);
+        //                proxy.setHost(proxyServer.getHostName());
+        //                proxy.setPort(proxyServer.getPort());
+        //                proxy.setProtocol("http");
+        //                settings.addProxy(proxy);
+        //
+        //                mojo = lookupMojo(testPom);
+        //                setVariableValueToObject(mojo, "settings", settings);
+        //                setVariableValueToObject(mojo, "session", session);
+        //                setVariableValueToObject(mojo, "repoSession", repositorySession);
+        //                mojo.execute();
+        //                readed = readFile(commandLine);
+        //                assertTrue(readed.contains("-J-Dhttp.proxyHost=" + proxyServer.getHostName()));
+        //                assertTrue(readed.contains("-J-Dhttp.proxyPort=" + proxyServer.getPort()));
+        //
+        //                optionsContent = readFile(options);
+        //                // -link expected
+        //                // TODO: This got disabled for now!
+        //                // This test fails since the last commit but I actually think it only ever worked by accident.
+        //                // It did rely on a commons-logging-1.0.4.pom which got resolved by a test which did run
+        // previously.
+        //                // But after updating to commons-logging.1.1.1 there is no pre-resolved artifact available in
+        //                // target/local-repo anymore, thus the javadoc link info cannot get built and the test fails
+        //                // I'll for now just disable this line of code, because the test as far as I can see _never_
+        //                // did go upstream. The remoteRepository list used is always empty!.
+        //                //
+        //                //            assertTrue( optionsContent.contains( "-link
+        // 'http://commons.apache.org/logging/apidocs'"
+        //     ) );
+        //            } finally {
+        //                if (proxyServer != null) {
+        //                    proxyServer.stop();
+        //                }
+        //            }
+        //
+        //            // auth proxy
+        //            Map<String, String> authentications = new HashMap<>();
+        //            authentications.put("foo", "bar");
+        //            try {
+        //                proxyServlet = new AuthAsyncProxyServlet(authentications);
+        //                proxyServer = new ProxyServer(proxyServlet);
+        //                proxyServer.start();
+        //
+        //                settings = new Settings();
+        //                proxy = new Proxy();
+        //                proxy.setActive(true);
+        //                proxy.setHost(proxyServer.getHostName());
+        //                proxy.setPort(proxyServer.getPort());
+        //                proxy.setProtocol("http");
+        //                proxy.setUsername("foo");
+        //                proxy.setPassword("bar");
+        //                settings.addProxy(proxy);
+        //
+        //                mojo = lookupMojo(testPom);
+        //                setVariableValueToObject(mojo, "settings", settings);
+        //                setVariableValueToObject(mojo, "session", session);
+        //                setVariableValueToObject(mojo, "repoSession", repositorySession);
+        //                mojo.execute();
+        //                readed = readFile(commandLine);
+        //                assertThat(readed)
+        //                        .contains("-J-Dhttp.proxyHost=" + proxyServer.getHostName())
+        //                        .contains("-J-Dhttp.proxyPort=" + proxyServer.getPort());
+        //
+        //                optionsContent = readFile(options);
+        //                // -link expected
+        //                // see comment above (line 829)
+        //                //             assertTrue( optionsContent.contains( "-link
+        //     'http://commons.apache.org/logging/apidocs'" ) );
+        //            } finally {
+        //                if (proxyServer != null) {
+        //                    proxyServer.stop();
+        //                }
+        //            }
+    }
     //
     //    /**
     //     * Method to test error or conflict in Javadoc options and in standard doclet options.

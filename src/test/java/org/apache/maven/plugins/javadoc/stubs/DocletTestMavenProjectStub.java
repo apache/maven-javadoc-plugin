@@ -49,7 +49,7 @@ public class DocletTestMavenProjectStub extends MavenProjectStub {
 
         Build build = new Build();
         build.setFinalName(getModel().getArtifactId());
-        build.setDirectory(super.getBasedir() + "/target/test/unit/doclet-test/target");
+        build.setDirectory(super.getBasedir() + "/doclet-test/target");
         setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
@@ -72,6 +72,6 @@ public class DocletTestMavenProjectStub extends MavenProjectStub {
     /** {@inheritDoc} */
     @Override
     public File getBasedir() {
-        return new File(super.getBasedir() + "/src/test/resources/unit/doclet-test");
+        return new File(super.getBasedir() + "/doclet-test");
     }
 }
