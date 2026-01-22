@@ -29,8 +29,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import org.apache.maven.api.plugin.testing.Basedir;
@@ -44,6 +46,9 @@ import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.utils.io.FileUtils;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
+import org.eclipse.aether.repository.LocalRepository;
 import org.hamcrest.MatcherAssert;
 import org.junit.AssumptionViolatedException;
 import org.junit.jupiter.api.AfterEach;
@@ -58,6 +63,7 @@ import org.slf4j.LoggerFactory;
 import static org.apache.commons.io.FileUtils.copyDirectory;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
+import static org.apache.maven.api.plugin.testing.MojoExtension.setVariableValueToObject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.hamcrest.CoreMatchers.anyOf;
@@ -244,7 +250,9 @@ public class JavadocReportTest {
      * @throws Exception if any
      */
     @InjectMojo(goal = "javadoc", pom = "default-configuration/default-configuration-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testDefaultConfiguration(JavadocReport mojo) throws Exception {
@@ -340,7 +348,9 @@ public class JavadocReportTest {
      * @throws Exception if any
      */
     @InjectMojo(goal = "javadoc", pom = "subpackages-test/subpackages-test-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testSubpackages(JavadocReport mojo) throws Exception {
@@ -362,7 +372,9 @@ public class JavadocReportTest {
     }
 
     @InjectMojo(goal = "javadoc", pom = "file-include-exclude-test/file-include-exclude-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testIncludesExcludes(JavadocReport mojo) throws Exception {
@@ -386,7 +398,9 @@ public class JavadocReportTest {
      * @throws Exception if any
      */
     @InjectMojo(goal = "javadoc", pom = "docfiles-test/docfiles-test-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     @EnabledOnJre(JRE.JAVA_8) // Seems like a bug in Javadoc 9 and above
@@ -406,7 +420,9 @@ public class JavadocReportTest {
     }
 
     @InjectMojo(goal = "javadoc", pom = "docfiles-with-java-test/docfiles-with-java-test-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     @EnabledOnJre(JRE.JAVA_8)
@@ -428,7 +444,9 @@ public class JavadocReportTest {
      * @throws Exception if any
      */
     @InjectMojo(goal = "javadoc", pom = "custom-configuration/custom-configuration-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testCustomConfiguration(JavadocReport mojo) throws Exception {
@@ -568,7 +586,9 @@ public class JavadocReportTest {
      * @throws Exception if any
      */
     @InjectMojo(goal = "javadoc", pom = "quotedpath'test/quotedpath-test-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testQuotedPath(JavadocReport mojo) throws Exception {
@@ -603,7 +623,9 @@ public class JavadocReportTest {
      * @throws Exception if any
      */
     @InjectMojo(goal = "javadoc", pom = "optionsumlautencoding-test/optionsumlautencoding-test-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testOptionsUmlautEncoding(JavadocReport mojo) throws Exception {
@@ -654,7 +676,9 @@ public class JavadocReportTest {
      * @throws Exception if any
      */
     @InjectMojo(goal = "javadoc", pom = "taglet-test/taglet-test-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     @EnabledForJreRange(max = JRE.JAVA_9)
@@ -683,7 +707,9 @@ public class JavadocReportTest {
      * @throws Exception if any
      */
     @InjectMojo(goal = "javadoc", pom = "jdk5-test/jdk5-test-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     @EnabledForJreRange(max = JRE.JAVA_8)
@@ -714,7 +740,9 @@ public class JavadocReportTest {
      * @throws Exception if any
      */
     @InjectMojo(goal = "javadoc", pom = "javaHome-test/javaHome-test-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testToFindJavadoc(JavadocReport mojo) throws Exception {
@@ -732,7 +760,9 @@ public class JavadocReportTest {
      * @throws Exception if any
      */
     @InjectMojo(goal = "javadoc", pom = "resources-test/resources-test-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testJavadocResources(JavadocReport mojo) throws Exception {
@@ -761,7 +791,9 @@ public class JavadocReportTest {
      * @throws Exception if any
      */
     @InjectMojo(goal = "javadoc", pom = "resources-with-excludes-test/resources-with-excludes-test-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testJavadocResourcesWithExcludes(JavadocReport mojo) throws Exception {
@@ -792,7 +824,9 @@ public class JavadocReportTest {
      * @throws Exception if any
      */
     @InjectMojo(goal = "javadoc", pom = "pom-test/pom-test-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testPom(JavadocReport mojo) throws Exception {
@@ -808,7 +842,9 @@ public class JavadocReportTest {
      * @throws Exception if any
      */
     @InjectMojo(goal = "javadoc", pom = "tag-test/tag-test-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testTag(JavadocReport mojo) throws Exception {
@@ -835,7 +871,9 @@ public class JavadocReportTest {
      * @throws Exception if any
      */
     @InjectMojo(goal = "javadoc", pom = "header-footer-test/header-footer-test-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testHeaderFooter(JavadocReport mojo) throws Exception {
@@ -852,7 +890,9 @@ public class JavadocReportTest {
      * @throws Exception if any
      */
     @InjectMojo(goal = "javadoc", pom = "newline-test/newline-test-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testNewline(JavadocReport mojo) throws Exception {
@@ -869,7 +909,9 @@ public class JavadocReportTest {
      * @throws Exception if any
      */
     @InjectMojo(goal = "javadoc", pom = "jdk6-test/jdk6-test-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @EnabledForJreRange(max = JRE.JAVA_11)
     @Test
@@ -916,143 +958,203 @@ public class JavadocReportTest {
      * @throws Exception if any
      */
     @InjectMojo(goal = "javadoc", pom = "proxy-test/proxy-test-plugin-config.xml")
-    @MojoParameter(name = "detectOfflineLinks", value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
     @Basedir("/unit")
     @Test
     public void testProxyWithDummy(JavadocReport mojo) throws Exception {
-//        Settings settings = new Settings();
-//        Proxy proxy = new Proxy();
-//
-//        // dummy proxy
-//        proxy.setActive(true);
-//        proxy.setHost("127.0.0.1");
-//        proxy.setPort(80);
-//        proxy.setProtocol("http");
-//        proxy.setUsername("toto");
-//        proxy.setPassword("toto");
-//        proxy.setNonProxyHosts("www.google.com|*.somewhere.com");
-//        settings.addProxy(proxy);
-//
-//        ProjectBuildingRequest buildingRequest = mock(ProjectBuildingRequest.class);
-//        when(buildingRequest.getRemoteRepositories()).thenReturn(mojo.project.getRemoteArtifactRepositories());
-//        when(buildingRequest.getRepositoryMerging()).thenReturn(ProjectBuildingRequest.RepositoryMerging.POM_DOMINANT);
-//        when(mavenSession.getProjectBuildingRequest()).thenReturn(buildingRequest);
-//        //            MavenSession session = spy(newMavenSession(mojo.project));
-//        //            DefaultRepositorySystemSession repositorySession = new DefaultRepositorySystemSession();
-//        //            repositorySession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
-//        //                    .newInstance(repositorySession, new LocalRepository(localRepo)));
-//        //            when(buildingRequest.getRepositorySession()).thenReturn(repositorySession);
-//        //            when(session.getRepositorySession()).thenReturn(repositorySession);
-//        //            LegacySupport legacySupport = lookup(LegacySupport.class);
-//        //            legacySupport.setSession(session);
-//        //
-//        //            setVariableValueToObject(mojo, "settings", settings);
-//        //            setVariableValueToObject(mojo, "session", session);
-//        //            setVariableValueToObject(mojo, "repoSession", repositorySession);
-//        mojo.execute();
-//
-//        Path commandLine = new File(
-//                        getBasedir(),
-//                        "proxy-test/target/site/apidocs/javadoc." + (SystemUtils.IS_OS_WINDOWS ? "bat" : "sh"))
-//                .toPath();
-//        assertThat(commandLine).exists();
-//        String readed = readFile(commandLine);
-//        assertThat(readed).contains("-J-Dhttp.proxyHost=127.0.0.1").contains("-J-Dhttp.proxyPort=80");
-//        if (SystemUtils.IS_OS_WINDOWS) {
-//            assertThat(readed).contains(" -J-Dhttp.nonProxyHosts=\"www.google.com^|*.somewhere.com\" ");
-//        } else {
-//            assertThat(readed).contains(" \"-J-Dhttp.nonProxyHosts=\\\"www.google.com^|*.somewhere.com\\\"\" ");
-//        }
-//
-//        Path options = new File(getBasedir(), "proxy-test/target/site/apidocs/options").toPath();
-//        assertThat(options).exists();
-//        String optionsContent = readFile(options);
-//        // NO -link expected
-//        assertThat(optionsContent).doesNotContain("-link");
+        Settings settings = new Settings();
+        Proxy proxy = new Proxy();
 
-        //            // real proxy
-        //            ProxyServer proxyServer = null;
-        //            ProxyServer.AuthAsyncProxyServlet proxyServlet;
-        //            try {
-        //                proxyServlet = new ProxyServer.AuthAsyncProxyServlet();
-        //                proxyServer = new ProxyServer(proxyServlet);
-        //                proxyServer.start();
-        //
-        //                settings = new Settings();
-        //                proxy = new Proxy();
-        //                proxy.setActive(true);
-        //                proxy.setHost(proxyServer.getHostName());
-        //                proxy.setPort(proxyServer.getPort());
-        //                proxy.setProtocol("http");
-        //                settings.addProxy(proxy);
-        //
-        //                mojo = lookupMojo(testPom);
-        //                setVariableValueToObject(mojo, "settings", settings);
-        //                setVariableValueToObject(mojo, "session", session);
-        //                setVariableValueToObject(mojo, "repoSession", repositorySession);
-        //                mojo.execute();
-        //                readed = readFile(commandLine);
-        //                assertTrue(readed.contains("-J-Dhttp.proxyHost=" + proxyServer.getHostName()));
-        //                assertTrue(readed.contains("-J-Dhttp.proxyPort=" + proxyServer.getPort()));
-        //
-        //                optionsContent = readFile(options);
-        //                // -link expected
-        //                // TODO: This got disabled for now!
-        //                // This test fails since the last commit but I actually think it only ever worked by accident.
-        //                // It did rely on a commons-logging-1.0.4.pom which got resolved by a test which did run
-        // previously.
-        //                // But after updating to commons-logging.1.1.1 there is no pre-resolved artifact available in
-        //                // target/local-repo anymore, thus the javadoc link info cannot get built and the test fails
-        //                // I'll for now just disable this line of code, because the test as far as I can see _never_
-        //                // did go upstream. The remoteRepository list used is always empty!.
-        //                //
-        //                //            assertTrue( optionsContent.contains( "-link
-        // 'http://commons.apache.org/logging/apidocs'"
-        //     ) );
-        //            } finally {
-        //                if (proxyServer != null) {
-        //                    proxyServer.stop();
-        //                }
-        //            }
-        //
-        //            // auth proxy
-        //            Map<String, String> authentications = new HashMap<>();
-        //            authentications.put("foo", "bar");
-        //            try {
-        //                proxyServlet = new AuthAsyncProxyServlet(authentications);
-        //                proxyServer = new ProxyServer(proxyServlet);
-        //                proxyServer.start();
-        //
-        //                settings = new Settings();
-        //                proxy = new Proxy();
-        //                proxy.setActive(true);
-        //                proxy.setHost(proxyServer.getHostName());
-        //                proxy.setPort(proxyServer.getPort());
-        //                proxy.setProtocol("http");
-        //                proxy.setUsername("foo");
-        //                proxy.setPassword("bar");
-        //                settings.addProxy(proxy);
-        //
-        //                mojo = lookupMojo(testPom);
-        //                setVariableValueToObject(mojo, "settings", settings);
-        //                setVariableValueToObject(mojo, "session", session);
-        //                setVariableValueToObject(mojo, "repoSession", repositorySession);
-        //                mojo.execute();
-        //                readed = readFile(commandLine);
-        //                assertThat(readed)
-        //                        .contains("-J-Dhttp.proxyHost=" + proxyServer.getHostName())
-        //                        .contains("-J-Dhttp.proxyPort=" + proxyServer.getPort());
-        //
-        //                optionsContent = readFile(options);
-        //                // -link expected
-        //                // see comment above (line 829)
-        //                //             assertTrue( optionsContent.contains( "-link
-        //     'http://commons.apache.org/logging/apidocs'" ) );
-        //            } finally {
-        //                if (proxyServer != null) {
-        //                    proxyServer.stop();
-        //                }
-        //            }
+        // dummy proxy
+        proxy.setActive(true);
+        proxy.setHost("127.0.0.1");
+        proxy.setPort(80);
+        proxy.setProtocol("http");
+        proxy.setUsername("toto");
+        proxy.setPassword("toto");
+        proxy.setNonProxyHosts("www.google.com|*.somewhere.com");
+        settings.addProxy(proxy);
+        setVariableValueToObject(mojo, "settings", settings);
+        DefaultRepositorySystemSession repositorySession = new DefaultRepositorySystemSession();
+        repositorySession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
+                .newInstance(repositorySession, new LocalRepository(localRepo)));
+
+        ProjectBuildingRequest buildingRequest = mock(ProjectBuildingRequest.class);
+        when(buildingRequest.getRemoteRepositories()).thenReturn(mojo.project.getRemoteArtifactRepositories());
+        when(buildingRequest.getRepositoryMerging()).thenReturn(ProjectBuildingRequest.RepositoryMerging.POM_DOMINANT);
+        when(buildingRequest.getRepositorySession()).thenReturn(repositorySession);
+        when(mavenSession.getProjectBuildingRequest()).thenReturn(buildingRequest);
+        mojo.execute();
+
+        Path commandLine = new File(
+                        getBasedir(),
+                        "proxy-test/target/site/apidocs/javadoc." + (SystemUtils.IS_OS_WINDOWS ? "bat" : "sh"))
+                .toPath();
+        assertThat(commandLine).exists();
+        String readed = readFile(commandLine);
+        assertThat(readed).contains("-J-Dhttp.proxyHost=127.0.0.1").contains("-J-Dhttp.proxyPort=80");
+        if (SystemUtils.IS_OS_WINDOWS) {
+            assertThat(readed).contains(" -J-Dhttp.nonProxyHosts=\"www.google.com^|*.somewhere.com\" ");
+        } else {
+            assertThat(readed).contains(" \"-J-Dhttp.nonProxyHosts=\\\"www.google.com^|*.somewhere.com\\\"\" ");
+        }
+
+        Path options = new File(getBasedir(), "proxy-test/target/site/apidocs/options").toPath();
+        assertThat(options).exists();
+        String optionsContent = readFile(options);
+        // NO -link expected
+        assertThat(optionsContent).doesNotContain("-link");
+    }
+
+    /**
+     * Method to test proxy support in the javadoc
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "proxy-test/proxy-test-plugin-config.xml")
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    public void testRealProxy(JavadocReport mojo) throws Exception {
+        // real proxy
+        ProxyServer proxyServer = null;
+        ProxyServer.AuthAsyncProxyServlet proxyServlet;
+        try {
+            proxyServlet = new ProxyServer.AuthAsyncProxyServlet();
+            proxyServer = new ProxyServer(proxyServlet);
+            proxyServer.start();
+
+            Settings settings = new Settings();
+            Proxy proxy = new Proxy();
+            proxy.setActive(true);
+            proxy.setHost(proxyServer.getHostName());
+            proxy.setPort(proxyServer.getPort());
+            proxy.setProtocol("http");
+            settings.addProxy(proxy);
+
+            setVariableValueToObject(mojo, "settings", settings);
+            DefaultRepositorySystemSession repositorySession = new DefaultRepositorySystemSession();
+            repositorySession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
+                    .newInstance(repositorySession, new LocalRepository(localRepo)));
+
+            ProjectBuildingRequest buildingRequest = mock(ProjectBuildingRequest.class);
+            when(buildingRequest.getRemoteRepositories()).thenReturn(mojo.project.getRemoteArtifactRepositories());
+            when(buildingRequest.getRepositoryMerging())
+                    .thenReturn(ProjectBuildingRequest.RepositoryMerging.POM_DOMINANT);
+            when(buildingRequest.getRepositorySession()).thenReturn(repositorySession);
+            when(mavenSession.getProjectBuildingRequest()).thenReturn(buildingRequest);
+
+            mojo.execute();
+            Path commandLine = new File(
+                            getBasedir(),
+                            "proxy-test/target/site/apidocs/javadoc." + (SystemUtils.IS_OS_WINDOWS ? "bat" : "sh"))
+                    .toPath();
+            String readed = readFile(commandLine);
+            assertTrue(readed.contains("-J-Dhttp.proxyHost=" + proxyServer.getHostName()));
+            assertTrue(readed.contains("-J-Dhttp.proxyPort=" + proxyServer.getPort()));
+
+            Path options = new File(getBasedir(), "proxy-test/target/site/apidocs/options").toPath();
+            assertThat(options).exists();
+            String optionsContent = readFile(options);
+            // -link expected
+            // TODO: This got disabled for now!
+            // This test fails since the last commit but I actually think it only ever worked by accident.
+            // It did rely on a commons-logging-1.0.4.pom which got resolved by a test which did run
+            //         previously.
+            // But after updating to commons-logging.1.1.1 there is no pre-resolved artifact available in
+            // target/local-repo anymore, thus the javadoc link info cannot get built and the test fails
+            // I'll for now just disable this line of code, because the test as far as I can see _never_
+            // did go upstream. The remoteRepository list used is always empty!.
+            //
+            //            assertTrue( optionsContent.contains( "-link
+            //         'http://commons.apache.org/logging/apidocs'"
+            //             ) );
+        } finally {
+            if (proxyServer != null) {
+                proxyServer.stop();
+            }
+        }
+
+    }
+
+    /**
+     * Method to test proxy support in the javadoc
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "proxy-test/proxy-test-plugin-config.xml")
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    public void testAuthProxy(JavadocReport mojo) throws Exception {
+        // auth proxy
+        Map<String, String> authentications = new HashMap<>();
+        authentications.put("foo", "bar");
+        ProxyServer proxyServer = null;
+        ProxyServer.AuthAsyncProxyServlet proxyServlet;
+        try {
+            proxyServlet = new ProxyServer.AuthAsyncProxyServlet(authentications);
+            proxyServer = new ProxyServer(proxyServlet);
+            proxyServer.start();
+
+            Settings settings = new Settings();
+            Proxy proxy = new Proxy();
+            proxy.setActive(true);
+            proxy.setHost(proxyServer.getHostName());
+            proxy.setPort(proxyServer.getPort());
+            proxy.setProtocol("http");
+            proxy.setUsername("foo");
+            proxy.setPassword("bar");
+            settings.addProxy(proxy);
+
+            setVariableValueToObject(mojo, "settings", settings);
+            DefaultRepositorySystemSession repositorySession = new DefaultRepositorySystemSession();
+            repositorySession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
+                    .newInstance(repositorySession, new LocalRepository(localRepo)));
+
+            ProjectBuildingRequest buildingRequest = mock(ProjectBuildingRequest.class);
+            when(buildingRequest.getRemoteRepositories()).thenReturn(mojo.project.getRemoteArtifactRepositories());
+            when(buildingRequest.getRepositoryMerging())
+                    .thenReturn(ProjectBuildingRequest.RepositoryMerging.POM_DOMINANT);
+            when(buildingRequest.getRepositorySession()).thenReturn(repositorySession);
+            when(mavenSession.getProjectBuildingRequest()).thenReturn(buildingRequest);
+
+            mojo.execute();
+            Path commandLine = new File(
+                            getBasedir(),
+                            "proxy-test/target/site/apidocs/javadoc." + (SystemUtils.IS_OS_WINDOWS ? "bat" : "sh"))
+                    .toPath();
+            String readed = readFile(commandLine);
+            assertTrue(readed.contains("-J-Dhttp.proxyHost=" + proxyServer.getHostName()));
+            assertTrue(readed.contains("-J-Dhttp.proxyPort=" + proxyServer.getPort()));
+
+            Path options = new File(getBasedir(), "proxy-test/target/site/apidocs/options").toPath();
+            assertThat(options).exists();
+            String optionsContent = readFile(options);
+            // -link expected
+            // TODO: This got disabled for now!
+            // This test fails since the last commit but I actually think it only ever worked by accident.
+            // It did rely on a commons-logging-1.0.4.pom which got resolved by a test which did run
+            //         previously.
+            // But after updating to commons-logging.1.1.1 there is no pre-resolved artifact available in
+            // target/local-repo anymore, thus the javadoc link info cannot get built and the test fails
+            // I'll for now just disable this line of code, because the test as far as I can see _never_
+            // did go upstream. The remoteRepository list used is always empty!.
+            //
+            //            assertTrue( optionsContent.contains( "-link
+            //         'http://commons.apache.org/logging/apidocs'"
+            //             ) );
+        } finally {
+            if (proxyServer != null) {
+                proxyServer.stop();
+            }
+        }
     }
     //
     //    /**
