@@ -70,6 +70,7 @@ import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assume.assumeThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -1078,7 +1079,6 @@ public class JavadocReportTest {
                 proxyServer.stop();
             }
         }
-
     }
 
     /**
@@ -1156,57 +1156,102 @@ public class JavadocReportTest {
             }
         }
     }
-    //
-    //    /**
-    //     * Method to test error or conflict in Javadoc options and in standard doclet options.
-    //     *
-    //     * @throws Exception if any
-    //     */
-    //    @Test
-    //    public void testValidateOptions() throws Exception {
-    //        // encoding
-    //        Path testPom = unit.resolve("validate-options-test/wrong-encoding-test-plugin-config.xml");
-    //        JavadocReport mojo = lookupMojo(testPom);
-    //        try {
-    //            mojo.execute();
-    //            fail("No wrong encoding catch");
-    //        } catch (MojoExecutionException e) {
-    //            assertEquals(e.getMessage().contains("Unsupported option <encoding/>"), "No wrong encoding catch");
-    //        }
-    //        testPom = unit.resolve("validate-options-test/wrong-docencoding-test-plugin-config.xml");
-    //        mojo = lookupMojo(testPom);
-    //        try {
-    //            mojo.execute();
-    //            fail("No wrong docencoding catch");
-    //        } catch (MojoExecutionException e) {
-    //            assertEquals(e.getMessage().contains("Unsupported option <docencoding/>"), "No wrong docencoding
-    // catch");
-    //        }
-    //        testPom = unit.resolve("validate-options-test/wrong-charset-test-plugin-config.xml");
-    //        mojo = lookupMojo(testPom);
-    //        try {
-    //            mojo.execute();
-    //            fail("No wrong charset catch");
-    //        } catch (MojoExecutionException e) {
-    //            assertEquals(e.getMessage().contains("Unsupported option <charset/>"), "No wrong charset catch");
-    //        }
-    //
-    //        testPom = unit.resolve("validate-options-test/wrong-locale-with-variant-test-plugin-config.xml");
-    //        mojo = lookupMojo(testPom);
-    //        mojo.execute();
-    //        Assertions.assertTrue(true, "No wrong locale catch");
-    //
-    //        // conflict options
-    //        testPom = unit.resolve("validate-options-test/conflict-options-test-plugin-config.xml");
-    //        mojo = lookupMojo(testPom);
-    //        try {
-    //            mojo.execute();
-    //            fail("No conflict catch");
-    //        } catch (MojoExecutionException e) {
-    //            Assertions.assertTrue(
-    //                    e.getMessage().contains("Option <nohelp/> conflicts with <helpfile/>"), "No conflict catch");
-    //        }
-    //    }
+
+    /**
+     * Method to test error or conflict in Javadoc options and in standard doclet options.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "validate-options-test/wrong-encoding-test-plugin-config.xml")
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    public void testValidateOptionsWrongEncoding(JavadocReport mojo) throws Exception {
+        // encoding
+        try {
+            mojo.execute();
+            fail("No wrong encoding catch");
+        } catch (MojoExecutionException e) {
+            assertTrue(e.getMessage().contains("Unsupported option <encoding/>"), "No wrong encoding catch");
+        }
+    }
+    /**
+     * Method to test error or conflict in Javadoc options and in standard doclet options.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "validate-options-test/wrong-docencoding-test-plugin-config.xml")
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    public void testValidateOptionsWrongDocencoding(JavadocReport mojo) throws Exception {
+        try {
+            mojo.execute();
+            fail("No wrong docencoding catch");
+        } catch (MojoExecutionException e) {
+            assertTrue(e.getMessage().contains("Unsupported option <docencoding/>"), "No wrong docencoding catch");
+        }
+    }
+    /**
+     * Method to test error or conflict in Javadoc options and in standard doclet options.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "validate-options-test/wrong-charset-test-plugin-config.xml")
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    public void testValidateOptionsWrongCharset(JavadocReport mojo) throws Exception {
+        try {
+            mojo.execute();
+            fail("No wrong charset catch");
+        } catch (MojoExecutionException e) {
+            assertTrue(e.getMessage().contains("Unsupported option <charset/>"), "No wrong charset catch");
+        }
+    }
+
+    /**
+     * Method to test error or conflict in Javadoc options and in standard doclet options.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "validate-options-test/wrong-locale-with-variant-test-plugin-config.xml")
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    public void testValidateOptionsWrongLocale(JavadocReport mojo) throws Exception {
+        mojo.execute();
+        assertTrue(true, "No wrong locale catch");
+    }
+
+    /**
+     * Method to test error or conflict in Javadoc options and in standard doclet options.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "validate-options-test/conflict-options-test-plugin-config.xml")
+    @MojoParameter(
+            name = "detectOfflineLinks",
+            value = "false") // before refactoring this parameter was set to false (root cause unknown)
+    @Basedir("/unit")
+    @Test
+    public void testValidateOptionsConflicts(JavadocReport mojo) throws Exception {
+        try {
+            mojo.execute();
+            fail("No conflict catch");
+        } catch (MojoExecutionException e) {
+            assertTrue(e.getMessage().contains("Option <nohelp/> conflicts with <helpfile/>"), "No conflict catch");
+        }
+    }
+
     //
     //    /**
     //     * Method to test the <code>&lt;tagletArtifacts/&gt;</code> parameter.
