@@ -26,6 +26,7 @@ import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.FileUtils;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,6 +39,7 @@ public class TestJavadocReportTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testTestJavadoc() throws Exception {
         File testPom =
                 new File(getBasedir(), "src/test/resources/unit/test-javadoc-test/test-javadoc-test-plugin-config.xml");

@@ -42,7 +42,7 @@ public class StandardDocletConflictOptionsTestMavenProjectStub extends MavenProj
         Build build = new Build();
         build.setFinalName(getModel().getArtifactId());
         build.setSourceDirectory(getBasedir() + "/src/main/java");
-        build.setDirectory(super.getBasedir() + "/target/test/unit/validate-options-test/target");
+        build.setDirectory(super.getBasedir() + "/validate-options-test/target");
         setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
@@ -53,6 +53,6 @@ public class StandardDocletConflictOptionsTestMavenProjectStub extends MavenProj
     /** {@inheritDoc} */
     @Override
     public File getBasedir() {
-        return new File(super.getBasedir() + "/src/test/resources/unit/validate-options-test");
+        return new File(super.getBasedir() + "/validate-options-test");
     }
 }

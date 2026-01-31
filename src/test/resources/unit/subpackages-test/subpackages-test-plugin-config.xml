@@ -34,8 +34,8 @@ under the License.
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <project implementation="org.apache.maven.plugins.javadoc.stubs.SubpackagesTestMavenProjectStub"/>
-          <outputDirectory>${basedir}/target/test/unit/subpackages-test/target/site</outputDirectory>
-          <javadocOptionsDir>${basedir}/target/test/unit/subpackages-test/target/javadoc-bundle-options</javadocOptionsDir>
+          <outputDirectory>${basedir}/subpackages-test/target/site</outputDirectory>
+          <javadocOptionsDir>${basedir}/subpackages-test/target/javadoc-bundle-options</javadocOptionsDir>
           <breakiterator>false</breakiterator>
           <old>false</old>
           <show>protected</show>
@@ -61,7 +61,7 @@ under the License.
           <use>true</use>
           <version>true</version>
           <windowtitle>Maven Javadoc Plugin Subpackages Test 1.0-SNAPSHOT API</windowtitle>
-          <sourcepath>${basedir}/src/test/resources/unit/subpackages-test</sourcepath>
+          <sourcepath>${basedir}/subpackages-test</sourcepath>
           <subpackages>subpackages.test</subpackages>
           <excludePackageNames>subpackages.test.excluded:subpackages.test.included.exclude</excludePackageNames>
           <debug>true</debug>

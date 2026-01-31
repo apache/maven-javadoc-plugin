@@ -40,15 +40,15 @@ under the License.
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <project implementation="org.apache.maven.plugins.javadoc.stubs.PomMavenProjectStub"/>
-          <outputDirectory>${basedir}/target/test/unit/pom-test/target/site</outputDirectory>
-          <javadocOptionsDir>${basedir}/target/test/unit/pom-test/target/javadoc-bundle-options</javadocOptionsDir>
+          <outputDirectory>${basedir}/pom-test/target/site</outputDirectory>
+          <javadocOptionsDir>${basedir}/pom-test/target/javadoc-bundle-options</javadocOptionsDir>
           <show>protected</show>
           <encoding>ISO-8859-1</encoding>
           <groups/>
           <tags/>
           <windowtitle>Maven Pom 1.0-SNAPSHOT API</windowtitle>
           <quiet>true</quiet>
-          <javadocDirectory>${basedir}/src/test/resources/unit/pom-test/src/test/javadoc</javadocDirectory>
+          <javadocDirectory>${basedir}/pom-test/src/test/javadoc</javadocDirectory>
           <stylesheet>java</stylesheet>
           <debug>true</debug>
           <failOnError>true</failOnError>

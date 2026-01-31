@@ -48,7 +48,7 @@ public class QuotedPathMavenProjectStub extends MavenProjectStub {
 
         Build build = new Build();
         build.setFinalName("quotedpath-test");
-        build.setDirectory(super.getBasedir() + "/target/test/unit/quotedpath'test/target");
+        build.setDirectory(super.getBasedir() + "/quotedpath'test/target");
         setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
@@ -71,6 +71,6 @@ public class QuotedPathMavenProjectStub extends MavenProjectStub {
     /** {@inheritDoc} */
     @Override
     public File getBasedir() {
-        return new File(super.getBasedir() + "/src/test/resources/unit/quotedpath'test");
+        return new File(super.getBasedir() + "/quotedpath'test");
     }
 }

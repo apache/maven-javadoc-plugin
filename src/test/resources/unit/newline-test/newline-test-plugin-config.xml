@@ -34,8 +34,8 @@ under the License.
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <project implementation="org.apache.maven.plugins.javadoc.stubs.NewlineTestMavenProjectStub"/>
-          <outputDirectory>${basedir}/target/test/unit/newline-test/target/site</outputDirectory>
-          <javadocOptionsDir>${basedir}/target/test/unit/newline-test/target/javadoc-bundle-options</javadocOptionsDir>
+          <outputDirectory>${basedir}/newline-test/target/site</outputDirectory>
+          <javadocOptionsDir>${basedir}/newline-test/target/javadoc-bundle-options</javadocOptionsDir>
           <show>protected</show>
           <encoding>ISO-8859-1</encoding>
           <groups/>

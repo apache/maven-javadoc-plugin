@@ -50,7 +50,7 @@ public class ProxyTestMavenProjectStub extends MavenProjectStub {
         Build build = new Build();
         build.setFinalName(getModel().getArtifactId());
         build.setSourceDirectory(getBasedir() + "/src/main/java");
-        build.setDirectory(super.getBasedir() + "/target/test/unit/proxy-test/target");
+        build.setDirectory(super.getBasedir() + "/proxy-test/target");
         setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
@@ -74,7 +74,7 @@ public class ProxyTestMavenProjectStub extends MavenProjectStub {
     /** {@inheritDoc} */
     @Override
     public File getBasedir() {
-        return new File(super.getBasedir() + "/src/test/resources/unit/proxy-test");
+        return new File(super.getBasedir() + "/proxy-test");
     }
 
     @Override

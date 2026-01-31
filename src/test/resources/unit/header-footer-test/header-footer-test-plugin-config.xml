@@ -34,8 +34,8 @@ under the License.
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <project implementation="org.apache.maven.plugins.javadoc.stubs.HeaderFooterTestMavenProjectStub"/>
-          <outputDirectory>${basedir}/target/test/unit/header-footer-test/target/site</outputDirectory>
-          <javadocOptionsDir>${basedir}/target/test/unit/header-footer-test/target/javadoc-bundle-options</javadocOptionsDir>
+          <outputDirectory>${basedir}/header-footer-test/target/site</outputDirectory>
+          <javadocOptionsDir>${basedir}/header-footer-test/target/javadoc-bundle-options</javadocOptionsDir>
           <show>protected</show>
           <encoding>ISO-8859-1</encoding>
           <groups/>

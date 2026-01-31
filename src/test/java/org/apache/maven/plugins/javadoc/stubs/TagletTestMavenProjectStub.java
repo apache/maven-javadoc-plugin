@@ -48,7 +48,7 @@ public class TagletTestMavenProjectStub extends MavenProjectStub {
 
         Build build = new Build();
         build.setFinalName(getModel().getArtifactId());
-        build.setDirectory(super.getBasedir() + "/target/test/unit/taglet-test/target");
+        build.setDirectory(super.getBasedir() + "/taglet-test/target");
         setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
@@ -71,6 +71,6 @@ public class TagletTestMavenProjectStub extends MavenProjectStub {
     /** {@inheritDoc} */
     @Override
     public File getBasedir() {
-        return new File(super.getBasedir() + "/src/test/resources/unit/taglet-test");
+        return new File(super.getBasedir() + "/taglet-test");
     }
 }

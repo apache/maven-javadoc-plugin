@@ -51,7 +51,7 @@ public class CustomConfigurationMavenProjectStub extends MavenProjectStub {
 
         Build build = new Build();
         build.setFinalName("default-configuration");
-        build.setDirectory(super.getBasedir() + "/target/test/unit/custom-configuration/target");
+        build.setDirectory(super.getBasedir() + "/custom-configuration/target");
         setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
@@ -90,6 +90,6 @@ public class CustomConfigurationMavenProjectStub extends MavenProjectStub {
     /** {@inheritDoc} */
     @Override
     public File getBasedir() {
-        return new File(super.getBasedir() + "/src/test/resources/unit/custom-configuration/");
+        return new File(super.getBasedir() + "/custom-configuration/");
     }
 }

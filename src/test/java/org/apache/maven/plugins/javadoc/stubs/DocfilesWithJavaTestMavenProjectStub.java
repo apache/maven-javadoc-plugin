@@ -39,7 +39,7 @@ public class DocfilesWithJavaTestMavenProjectStub extends MavenProjectStub {
 
         Build build = new Build();
         build.setFinalName("docfiles-with-java-test");
-        build.setDirectory(super.getBasedir() + "/target/test/unit/docfiles-with-java-test/target");
+        build.setDirectory(super.getBasedir() + "/docfiles-with-java-test/target");
         setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
@@ -50,6 +50,6 @@ public class DocfilesWithJavaTestMavenProjectStub extends MavenProjectStub {
     /** {@inheritDoc} */
     @Override
     public File getBasedir() {
-        return new File(super.getBasedir(), "/src/test/resources/unit/docfiles-with-java-test");
+        return new File(super.getBasedir(), "/docfiles-with-java-test");
     }
 }

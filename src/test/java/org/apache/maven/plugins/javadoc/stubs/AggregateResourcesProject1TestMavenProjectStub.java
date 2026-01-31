@@ -23,9 +23,6 @@ package org.apache.maven.plugins.javadoc.stubs;
  */
 public class AggregateResourcesProject1TestMavenProjectStub extends AbstractAggregateChildMavenProjectStub {
     public AggregateResourcesProject1TestMavenProjectStub() {
-        super(
-                "/src/test/resources/unit/aggregate-resources-test/project1",
-                "pom.xml",
-                "/target/test/unit/aggregate-resources-test/project1/target");
+        super("/aggregate-resources-test/project1", "pom.xml", "/aggregate-resources-test/project1/target");
     }
 }

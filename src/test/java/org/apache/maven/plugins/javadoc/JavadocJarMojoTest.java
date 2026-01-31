@@ -38,8 +38,11 @@ import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.repository.LocalRepository;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
@@ -75,6 +78,7 @@ public class JavadocJarMojoTest extends AbstractMojoTestCase {
      *
      * @throws Exception if any
      */
+    @Test
     public void testDefaultConfig() throws Exception {
         File testPom = new File(
                 getBasedir(), "src/test/resources/unit/javadocjar-default/javadocjar-default-plugin-config.xml");
@@ -138,6 +142,7 @@ public class JavadocJarMojoTest extends AbstractMojoTestCase {
         assertThat(generatedFile).exists();
     }
 
+    @Test
     public void testContinueIfFailOnErrorIsFalse() throws Exception {
         File testPom = new File(
                 getBasedir(),
@@ -151,6 +156,7 @@ public class JavadocJarMojoTest extends AbstractMojoTestCase {
         assertThat(generatedFile).exists();
     }
 
+    @Test
     public void testIncludeMavenDescriptorWhenExplicitlyConfigured() throws Exception {
         File testPom = new File(
                 getBasedir(), "src/test/resources/unit/javadocjar-archive-config/javadocjar-archive-config.xml");
@@ -182,6 +188,7 @@ public class JavadocJarMojoTest extends AbstractMojoTestCase {
                         "META-INF/maven/org.apache.maven.plugins.maven-javadoc-plugin.unit/javadocjar-archive-config/pom.properties");
     }
 
+    @Test
     public void testStale() throws Exception {
         File testPom = new File(getBasedir(), "src/test/resources/unit/stale-test/stale-test-plugin-config.xml");
         JavadocJarMojo mojo = lookupMojo(testPom);

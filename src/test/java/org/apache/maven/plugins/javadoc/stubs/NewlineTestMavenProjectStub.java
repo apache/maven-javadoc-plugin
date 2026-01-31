@@ -42,7 +42,7 @@ public class NewlineTestMavenProjectStub extends MavenProjectStub {
         Build build = new Build();
         build.setFinalName(getModel().getArtifactId());
         build.setSourceDirectory(getBasedir() + "/src/main/java");
-        build.setDirectory(super.getBasedir() + "/target/test/unit/newline-test/target");
+        build.setDirectory(super.getBasedir() + "/newline-test/target");
         setBuild(build);
 
         List<String> compileSourceRoots = new ArrayList<>();
@@ -53,6 +53,6 @@ public class NewlineTestMavenProjectStub extends MavenProjectStub {
     /** {@inheritDoc} */
     @Override
     public File getBasedir() {
-        return new File(super.getBasedir() + "/src/test/resources/unit/newline-test");
+        return new File(super.getBasedir() + "/newline-test");
     }
 }
