@@ -33,9 +33,9 @@ under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <project implementation="org.apache.maven.plugins.javadoc.stubs.DocfilesTestMavenProjectStub"/>
-          <outputDirectory>${basedir}/docfiles-test/target/site</outputDirectory>
-          <javadocOptionsDir>${basedir}/docfiles-test/target/javadoc-bundle-options</javadocOptionsDir>
+          <sourcepath>${basedir}</sourcepath>
+          <outputDirectory>${basedir}/target/site</outputDirectory>
+          <javadocOptionsDir>${basedir}/target/javadoc-bundle-options</javadocOptionsDir>
           <breakiterator>false</breakiterator>
           <old>false</old>
           <show>protected</show>
@@ -64,9 +64,6 @@ under the License.
           <excludedocfilessubdir>excluded-dir1:excluded-dir2</excludedocfilessubdir>
           <debug>true</debug>
           <failOnError>true</failOnError>
-          <reactorProjects>
-            <project implementation="org.apache.maven.plugins.javadoc.stubs.DocfilesTestMavenProjectStub"/>
-          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>

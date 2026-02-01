@@ -29,53 +29,51 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.api.plugin.testing.Basedir;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.ProjectBuildingRequest;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
-import org.apache.maven.shared.utils.io.FileUtils;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
-import org.eclipse.aether.DefaultRepositorySystemSession;
-import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
-import org.eclipse.aether.repository.LocalRepository;
 import org.hamcrest.MatcherAssert;
-import org.junit.AssumptionViolatedException;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.api.io.TempDir;
+import org.opentest4j.TestAbortedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.apache.commons.io.FileUtils.copyDirectory;
-import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
+import static org.apache.maven.api.plugin.testing.MojoExtension.getTestFile;
 import static org.apache.maven.api.plugin.testing.MojoExtension.setVariableValueToObject;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assume.assumeThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test {@link org.apache.maven.plugins.javadoc.JavadocReport} class.
@@ -84,131 +82,26 @@ import static org.mockito.Mockito.when;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
 @MojoTest(realRepositorySession = true)
-public class JavadocReportTest {
+class JavadocReportTest {
 
     @Inject
     private MavenSession mavenSession;
 
+    @Inject
+    private Log log;
+
     private static final char LINE_SEPARATOR = ' ';
 
-    public static final String OPTIONS_UMLAUT_ENCODING = "Options Umlaut Encoding ö ä ü ß";
-
-    private Path unit;
-
-    private Path tempDirectory;
+    private static final String OPTIONS_UMLAUT_ENCODING = "Options Umlaut Encoding ö ä ü ß";
 
     private File localRepo;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JavadocReportTest.class);
 
     @BeforeEach
-    public void setUp() throws Exception {
-
-        tempDirectory = Files.createTempDirectory("JavadocReportTest");
+    void setUp(@TempDir Path tempDirectory) throws Exception {
         localRepo = tempDirectory.resolve(Paths.get("target/local-repo/")).toFile();
-        unit = new File(getBasedir()).toPath();
-
-        createTestRepo();
-
         mavenSession.getRequest().setLocalRepositoryPath(localRepo);
-    }
-
-    @AfterEach
-    public void tearDown() throws Exception {
-        try {
-            deleteDirectory(tempDirectory.toFile());
-        } catch (IOException ex) {
-            // CI servers can have problems deleting files.
-            // It will get cleared out eventually, and since
-            // temporary directories have unique names,
-            // it shouldn't affect subsequent tests.
-        }
-    }
-
-    //    private JavadocReport lookupMojo(Path testPom) throws Exception {
-    //        JavadocReport mojo = (JavadocReport) lookupMojo("javadoc", testPom.toFile());
-    //
-    //        Plugin p = new Plugin();
-    //        p.setGroupId("org.apache.maven.plugins");
-    //        p.setArtifactId("maven-javadoc-plugin");
-    //        MojoExecution mojoExecution = new MojoExecution(p, "javadoc", null);
-    //
-    //        setVariableValueToObject(mojo, "mojoExecution", mojoExecution);
-    //
-    //        MavenProject currentProject = new MavenProjectStub();
-    //        currentProject.setGroupId("GROUPID");
-    //        currentProject.setArtifactId("ARTIFACTID");
-    //
-    //        List<MavenProject> reactorProjects =
-    //                mojo.getReactorProjects() != null ? mojo.getReactorProjects() : Collections.emptyList();
-    //        MavenSession session = newMavenSession(currentProject);
-    //        setVariableValueToObject(mojo, "session", session);
-    //        setVariableValueToObject(mojo, "repoSession", session.getRepositorySession());
-    //        setVariableValueToObject(mojo, "reactorProjects", reactorProjects);
-    //        return mojo;
-    //    }
-
-    /**
-     * Create test repository in target directory.
-     *
-     * @throws IOException if any
-     */
-    private void createTestRepo() throws IOException {
-        assertTrue(localRepo.mkdirs());
-
-        // ----------------------------------------------------------------------
-        // UMLGraph
-        // ----------------------------------------------------------------------
-
-        Path sourceDir = unit.resolve("doclet-test/artifact-doclet");
-        assertThat(sourceDir).exists();
-        copyDirectory(sourceDir.toFile(), localRepo);
-
-        // ----------------------------------------------------------------------
-        // UMLGraph-bis
-        // ----------------------------------------------------------------------
-
-        sourceDir = unit.resolve("doclet-path-test/artifact-doclet");
-        assertThat(sourceDir).exists();
-        copyDirectory(sourceDir.toFile(), localRepo);
-
-        // ----------------------------------------------------------------------
-        // commons-attributes-compiler
-        // https://www.tullmann.org/pat/taglets/
-        // ----------------------------------------------------------------------
-
-        sourceDir = unit.resolve("taglet-test/artifact-taglet");
-        assertThat(sourceDir).exists();
-        copyDirectory(sourceDir.toFile(), localRepo);
-
-        // ----------------------------------------------------------------------
-        // stylesheetfile-test
-        // ----------------------------------------------------------------------
-
-        sourceDir = unit.resolve("stylesheetfile-test/artifact-stylesheetfile");
-        assertThat(sourceDir).exists();
-        copyDirectory(sourceDir.toFile(), localRepo);
-
-        // ----------------------------------------------------------------------
-        // helpfile-test
-        // ----------------------------------------------------------------------
-
-        sourceDir = unit.resolve("helpfile-test/artifact-helpfile");
-        assertThat(sourceDir).exists();
-        copyDirectory(sourceDir.toFile(), localRepo);
-
-        // Remove SCM files
-        List<String> files = FileUtils.getFileAndDirectoryNames(
-                localRepo, FileUtils.getDefaultExcludesAsString(), null, true, true, true, true);
-        for (String filename : files) {
-            File file = new File(filename);
-
-            if (file.isDirectory()) {
-                deleteDirectory(file);
-            } else {
-                file.delete();
-            }
-        }
     }
 
     /**
@@ -250,17 +143,17 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "default-configuration/default-configuration-plugin-config.xml")
+    @InjectMojo(goal = "javadoc", pom = "default-configuration-plugin-config.xml")
     @MojoParameter(
             name = "detectOfflineLinks",
             value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @Basedir("/unit/default-configuration")
     @Test
-    public void testDefaultConfiguration(JavadocReport mojo) throws Exception {
+    void testDefaultConfiguration(JavadocReport mojo) throws Exception {
         mojo.execute();
 
         // package level generated javadoc files
-        Path apidocs = new File(getBasedir(), "default-configuration/target/site/apidocs").toPath();
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
 
         String appHtml = "def/configuration/App.html";
         Path generatedFile = apidocs.resolve(appHtml);
@@ -274,7 +167,7 @@ public class JavadocReportTest {
                 // only test when URL can be reached
                 if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     try {
-                        assumeThat(connection.getURL().toString(), is(url));
+                        assumeThat(connection.getURL().toString()).isEqualTo(url);
 
                         // https://bugs.openjdk.java.net/browse/JDK-8216497
                         MatcherAssert.assertThat(
@@ -283,7 +176,7 @@ public class JavadocReportTest {
                                 anyOf(
                                         containsString("/docs/api/java/lang/Object.html"),
                                         containsString("/docs/api/java.base/java/lang/Object.html")));
-                    } catch (AssumptionViolatedException e) {
+                    } catch (TestAbortedException e) {
                         LOGGER.warn("ignoring defaultAPI check: {}", e.getMessage());
                     }
                 }
@@ -348,16 +241,13 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "subpackages-test/subpackages-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "subpackages-test-plugin-config.xml")
+    @Basedir("/unit/subpackages-test")
     @Test
-    public void testSubpackages(JavadocReport mojo) throws Exception {
+    void testSubpackages(JavadocReport mojo) throws Exception {
         mojo.execute();
 
-        Path apidocs = new File(getBasedir(), "subpackages-test/target/site/apidocs").toPath();
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
 
         // check the excluded packages
         assertThat(apidocs.resolve("subpackages/test/excluded")).doesNotExist();
@@ -372,16 +262,13 @@ public class JavadocReportTest {
                 .exists();
     }
 
-    @InjectMojo(goal = "javadoc", pom = "file-include-exclude-test/file-include-exclude-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "file-include-exclude-plugin-config.xml")
+    @Basedir("/unit/file-include-exclude-test")
     @Test
-    public void testIncludesExcludes(JavadocReport mojo) throws Exception {
+    void testIncludesExcludes(JavadocReport mojo) throws Exception {
         mojo.execute();
 
-        Path apidocs = new File(getBasedir(), "file-include-exclude-test/target/site/apidocs").toPath();
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
 
         // check if the classes in the specified subpackages were included
         assertThat(apidocs.resolve("subpackages/test/App.html")).exists();
@@ -398,17 +285,14 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "docfiles-test/docfiles-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "docfiles-test-plugin-config.xml")
+    @Basedir("/unit/docfiles-test")
     @Test
     @EnabledOnJre(JRE.JAVA_8) // Seems like a bug in Javadoc 9 and above
-    public void testDocfiles(JavadocReport mojo) throws Exception {
+    void testDocfiles(JavadocReport mojo) throws Exception {
         mojo.execute();
 
-        Path apidocs = new File(getBasedir(), "docfiles-test/target/site/apidocs/").toPath();
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs/").toPath();
 
         // check if the doc-files subdirectories were copied
         assertThat(apidocs.resolve("docfiles/test/doc-files")).exists();
@@ -420,17 +304,14 @@ public class JavadocReportTest {
         assertThat(apidocs.resolve("docfiles/test/doc-files/excluded-dir2")).doesNotExist();
     }
 
-    @InjectMojo(goal = "javadoc", pom = "docfiles-with-java-test/docfiles-with-java-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "docfiles-with-java-test-plugin-config.xml")
+    @Basedir("/unit/docfiles-with-java-test")
     @Test
     @EnabledOnJre(JRE.JAVA_8)
-    public void testDocfilesWithJava(JavadocReport mojo) throws Exception {
+    void testDocfilesWithJava(JavadocReport mojo) throws Exception {
         mojo.execute();
 
-        Path apidocs = new File(getBasedir(), "docfiles-with-java-test/target/site/apidocs/").toPath();
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs/").toPath();
 
         // check if the doc-files subdirectories were copied
         assertThat(apidocs.resolve("test/doc-files")).exists();
@@ -444,16 +325,13 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "custom-configuration/custom-configuration-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "custom-configuration-plugin-config.xml")
+    @Basedir("/unit/custom-configuration")
     @Test
-    public void testCustomConfiguration(JavadocReport mojo) throws Exception {
+    void testCustomConfiguration(JavadocReport mojo) throws Exception {
         mojo.execute();
 
-        Path apidocs = new File(getBasedir(), "custom-configuration/target/site/apidocs").toPath();
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
 
         // check if there is a tree page generated (notree == true)
         assertThat(apidocs.resolve("overview-tree.html")).doesNotExist();
@@ -517,85 +395,81 @@ public class JavadocReportTest {
         assertThat(contentOptions).contains("-link").contains("http://java.sun.com/j2se/");
     }
 
-    //    /**
-    //     * Method to test the doclet artifact configuration
-    //     *
-    //     * @throws Exception if any
-    //     */
-    //    @InjectMojo(goal = "javadoc", pom = "doclet-test/doclet-test-plugin-config.xml")
-    //    @Basedir("/unit")
-    //    @Test
-    //    @EnabledForJreRange(max = JRE.JAVA_12) // As of JDK 13, the com.sun.javadoc API is no longer supported.
-    //    public void testDoclets(JavadocReport mojo) throws Exception {
+    /**
+     * Method to test the doclet artifact configuration
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "doclet-test-plugin-config.xml")
+    @Basedir("/unit/doclet-test")
+    @Test
+    @EnabledForJreRange(max = JRE.JAVA_12) // As of JDK 13, the com.sun.javadoc API is no longer supported.
+    void testDoclets(JavadocReport mojo) throws Exception {
 
-    // ----------------------------------------------------------------------
-    // doclet-test: check if the file generated by UmlGraph exists and if
-    // doclet path contains the UmlGraph artifact
-    // ----------------------------------------------------------------------
-    //
-    //        MavenSession session = spy(newMavenSession(mojo.project));
-    //        ProjectBuildingRequest buildingRequest = mock(ProjectBuildingRequest.class);
-    //
-    // when(buildingRequest.getRemoteRepositories()).thenReturn(mojo.project.getRemoteArtifactRepositories());
-    //        when(session.getProjectBuildingRequest()).thenReturn(buildingRequest);
-    //        DefaultRepositorySystemSession repositorySession = new DefaultRepositorySystemSession();
-    //        repositorySession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
-    //                .newInstance(repositorySession, new LocalRepository(localRepo)));
-    //        when(buildingRequest.getRepositorySession()).thenReturn(repositorySession);
-    //        when(session.getRepositorySession()).thenReturn(repositorySession);
-    //        LegacySupport legacySupport = lookup(LegacySupport.class);
-    //        legacySupport.setSession(session);
-    //
-    //        setVariableValueToObject(mojo, "session", session);
-    //        setVariableValueToObject(mojo, "repoSession", repositorySession);
-    //        mojo.execute();
+        // ----------------------------------------------------------------------
+        // doclet-test: check if the file generated by UmlGraph exists and if
+        // doclet path contains the UmlGraph artifact
+        // ----------------------------------------------------------------------
 
-    //        Path generatedFile = new File(getBasedir(), "doclet-test/target/site/apidocs/graph.dot").toPath();
-    //        assertThat(generatedFile).exists();
-    //
-    //        Path optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
-    //        assertThat(optionsFile).exists();
-    //        String options = readFile(optionsFile);
-    //        assertThat(options).contains("/target/local-repo/umlgraph/UMLGraph/2.1/UMLGraph-2.1.jar");
+        File sourceDir = getTestFile("artifact-doclet");
+        assertThat(sourceDir).exists();
+        copyDirectory(sourceDir, localRepo);
 
-    // ----------------------------------------------------------------------
-    // doclet-path: check if the file generated by UmlGraph exists and if
-    // doclet path contains the twice UmlGraph artifacts
-    // ----------------------------------------------------------------------
-    //
-    //        testPom = unit.resolve("doclet-path-test/doclet-path-test-plugin-config.xml");
-    //        mojo = lookupMojo(testPom);
-    //        setVariableValueToObject(mojo, "session", session);
-    //        setVariableValueToObject(mojo, "repoSession", repositorySession);
-    //        mojo.execute();
-    //
-    //        generatedFile = new File(getBasedir(),
-    // "target/test/unit/doclet-test/target/site/apidocs/graph.dot").toPath();
-    //        assertThat(generatedFile).exists();
-    //
-    //        optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
-    //        assertThat(optionsFile).exists();
-    //        options = readFile(optionsFile);
-    //        assertThat(options)
-    //                .contains("/target/local-repo/umlgraph/UMLGraph/2.1/UMLGraph-2.1.jar")
-    //                .contains("/target/local-repo/umlgraph/UMLGraph-bis/2.1/UMLGraph-bis-2.1.jar");
-    //    }
+        mojo.execute();
+
+        Path generatedFile = new File(getBasedir(), "/target/site/apidocs/graph.dot").toPath();
+        assertThat(generatedFile).exists();
+
+        Path optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
+        assertThat(optionsFile).exists();
+        String options = readFile(optionsFile);
+        assertThat(options).contains("/target/local-repo/umlgraph/UMLGraph/2.1/UMLGraph-2.1.jar");
+    }
+
+    @InjectMojo(goal = "javadoc", pom = "doclet-path-test-plugin-config.xml")
+    @Basedir("/unit/doclet-path-test")
+    @Test
+    @EnabledForJreRange(max = JRE.JAVA_12) // As of JDK 13, the com.sun.javadoc API is no longer supported.
+    void testDocletsPath(JavadocReport mojo) throws Exception {
+
+        ////     ----------------------------------------------------------------------
+        ////     doclet-path: check if the file generated by UmlGraph exists and if
+        ////     doclet path contains the twice UmlGraph artifacts
+        ////     ----------------------------------------------------------------------
+
+        File sourceDir = getTestFile("artifact-doclet");
+        assertThat(sourceDir).exists();
+        copyDirectory(sourceDir, localRepo);
+
+        sourceDir = getTestFile("../doclet-test/artifact-doclet");
+        assertThat(sourceDir).exists();
+        copyDirectory(sourceDir, localRepo);
+
+        mojo.execute();
+
+        Path generatedFile = new File(getBasedir(), "/target/site/apidocs/graph.dot").toPath();
+        assertThat(generatedFile).exists();
+
+        Path optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
+        assertThat(optionsFile).exists();
+        String options = readFile(optionsFile);
+        assertThat(options)
+                .contains("/target/local-repo/umlgraph/UMLGraph/2.1/UMLGraph-2.1.jar")
+                .contains("/target/local-repo/umlgraph/UMLGraph-bis/2.1/UMLGraph-bis-2.1.jar");
+    }
 
     /**
      * Method to test when the path to the project sources has an apostrophe (')
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "quotedpath'test/quotedpath-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "quotedpath-test-plugin-config.xml")
+    @Basedir("/unit/quotedpath'test")
     @Test
-    public void testQuotedPath(JavadocReport mojo) throws Exception {
+    void testQuotedPath(JavadocReport mojo) throws Exception {
         mojo.execute();
 
-        Path apidocs = new File(getBasedir(), "quotedpath'test/target/site/apidocs").toPath();
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
 
         // package level generated javadoc files
         assertThat(apidocs.resolve("quotedpath/test/App.html")).exists();
@@ -623,13 +497,10 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "optionsumlautencoding-test/optionsumlautencoding-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "optionsumlautencoding-test-plugin-config.xml")
+    @Basedir("/unit/optionsumlautencoding-test")
     @Test
-    public void testOptionsUmlautEncoding(JavadocReport mojo) throws Exception {
+    void testOptionsUmlautEncoding(JavadocReport mojo) throws Exception {
         mojo.execute();
 
         Path optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
@@ -648,7 +519,7 @@ public class JavadocReportTest {
 
         assertThat(content).contains(expected);
 
-        Path apidocs = new File(getBasedir(), "optionsumlautencoding-test/target/site/apidocs").toPath();
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
 
         // package level generated javadoc files
         assertThat(apidocs.resolve("optionsumlautencoding/test/App.html")).exists();
@@ -676,23 +547,24 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "taglet-test/taglet-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "taglet-test-plugin-config.xml")
+    @Basedir("/unit/taglet-test")
     @Test
     @EnabledForJreRange(max = JRE.JAVA_9)
-    public void testTaglets(JavadocReport mojo) throws Exception {
+    void testTaglets(JavadocReport mojo) throws Exception {
         // ----------------------------------------------------------------------
         // taglet-test: check if a taglet is used
         // ----------------------------------------------------------------------
         // com.sun.tools.doclets.Taglet not supported by Java9 anymore
         // Should be refactored with jdk.javadoc.doclet.Taglet
 
+        File sourceDir = getTestFile("artifact-taglet");
+        assertThat(sourceDir).exists();
+        copyDirectory(sourceDir, localRepo);
+
         mojo.execute();
 
-        Path apidocs = new File(getBasedir(), "taglet-test/target/site/apidocs").toPath();
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
 
         assertThat(apidocs.resolve("index.html")).exists();
 
@@ -707,19 +579,16 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "jdk5-test/jdk5-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "jdk5-test-plugin-config.xml")
+    @Basedir("/unit/jdk5-test")
     @Test
     @EnabledForJreRange(max = JRE.JAVA_8)
-    public void testJdk5(JavadocReport mojo) throws Exception {
+    void testJdk5(JavadocReport mojo) throws Exception {
         // Java 5 not supported by Java9 anymore
 
         mojo.execute();
 
-        Path apidocs = new File(getBasedir(), "jdk5-test/target/site/apidocs").toPath();
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
 
         assertThat(apidocs.resolve("index.html")).exists();
 
@@ -740,13 +609,10 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "javaHome-test/javaHome-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "javaHome-test-plugin-config.xml")
+    @Basedir("/unit/javaHome-test")
     @Test
-    public void testToFindJavadoc(JavadocReport mojo) throws Exception {
+    void testToFindJavadoc(JavadocReport mojo) throws Exception {
         String oldJreHome = System.getProperty("java.home");
         System.setProperty("java.home", "foo/bar");
 
@@ -760,16 +626,13 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "resources-test/resources-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "resources-test-plugin-config.xml")
+    @Basedir("/unit/resources-test")
     @Test
-    public void testJavadocResources(JavadocReport mojo) throws Exception {
+    void testJavadocResources(JavadocReport mojo) throws Exception {
         mojo.execute();
 
-        Path apidocs = new File(getBasedir(), "resources-test/target/site/apidocs/").toPath();
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs/").toPath();
 
         Path app = apidocs.resolve("resources/test/App.html");
         assertThat(app).exists();
@@ -791,16 +654,13 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "resources-with-excludes-test/resources-with-excludes-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "resources-with-excludes-test-plugin-config.xml")
+    @Basedir("/unit/resources-with-excludes-test")
     @Test
-    public void testJavadocResourcesWithExcludes(JavadocReport mojo) throws Exception {
+    void testJavadocResourcesWithExcludes(JavadocReport mojo) throws Exception {
         mojo.execute();
 
-        Path apidocs = new File(getBasedir(), "resources-with-excludes-test/target/site/apidocs").toPath();
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
 
         Path app = apidocs.resolve("resources/test/App.html");
         assertThat(app).exists();
@@ -824,17 +684,18 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "pom-test/pom-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "pom-test-plugin-config.xml")
+    @Basedir("/unit/pom-test")
     @Test
-    public void testPom(JavadocReport mojo) throws Exception {
+    void testPom(JavadocReport mojo) throws Exception {
+
+        mojo.getProject().setPackaging("pom");
+
         mojo.execute();
 
-        assertThat(new File(getBasedir(), "target/test/unit/pom-test/target/site"))
-                .doesNotExist();
+        assertThat(new File(getBasedir(), "/target/site")).doesNotExist();
+
+        verify(log).info(contains("Skipping org.apache.maven.plugins:maven-javadoc-plugin"));
     }
 
     /**
@@ -842,16 +703,13 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "tag-test/tag-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "tag-test-plugin-config.xml")
+    @Basedir("/unit/tag-test")
     @Test
-    public void testTag(JavadocReport mojo) throws Exception {
+    void testTag(JavadocReport mojo) throws Exception {
         mojo.execute();
 
-        Path app = new File(getBasedir(), "tag-test/target/site/apidocs/tag/test/App.html").toPath();
+        Path app = new File(getBasedir(), "/target/site/apidocs/tag/test/App.html").toPath();
         assertThat(app).exists();
         String readed = readFile(app);
         assertThat(readed).contains(">To do something:</").contains(">Generator Class:</");
@@ -871,13 +729,10 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "header-footer-test/header-footer-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "header-footer-test-plugin-config.xml")
+    @Basedir("/unit/header-footer-test")
     @Test
-    public void testHeaderFooter(JavadocReport mojo) throws Exception {
+    void testHeaderFooter(JavadocReport mojo) throws Exception {
         try {
             mojo.execute();
         } catch (MojoExecutionException e) {
@@ -890,13 +745,10 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "newline-test/newline-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "newline-test-plugin-config.xml")
+    @Basedir("/unit/newline-test")
     @Test
-    public void testNewline(JavadocReport mojo) throws Exception {
+    void testNewline(JavadocReport mojo) throws Exception {
         try {
             mojo.execute();
         } catch (MojoExecutionException e) {
@@ -909,18 +761,15 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "jdk6-test/jdk6-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "jdk6-test-plugin-config.xml")
+    @Basedir("/unit/jdk6-test")
     @EnabledForJreRange(max = JRE.JAVA_11)
     @Test
-    public void testJdk6(JavadocReport mojo) throws Exception {
+    void testJdk6(JavadocReport mojo) throws Exception {
         // Java 6 not supported by Java 12 anymore
         mojo.execute();
 
-        Path apidocs = new File(getBasedir(), "jdk6-test/target/site/apidocs").toPath();
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
         assertThat(apidocs.resolve("index.html")).exists();
 
         Path overview;
@@ -958,13 +807,13 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "proxy-test/proxy-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "proxy-test-plugin-config.xml")
+    @Basedir("/unit/proxy-test")
     @Test
-    public void testProxyWithDummy(JavadocReport mojo) throws Exception {
+    void testProxyWithDummy(JavadocReport mojo) throws Exception {
+
+        mojo.getProject().setDependencyArtifacts(Collections.emptySet());
+
         Settings settings = new Settings();
         Proxy proxy = new Proxy();
 
@@ -977,21 +826,13 @@ public class JavadocReportTest {
         proxy.setPassword("toto");
         proxy.setNonProxyHosts("www.google.com|*.somewhere.com");
         settings.addProxy(proxy);
-        setVariableValueToObject(mojo, "settings", settings);
-        DefaultRepositorySystemSession repositorySession = new DefaultRepositorySystemSession();
-        repositorySession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
-                .newInstance(repositorySession, new LocalRepository(localRepo)));
 
-        ProjectBuildingRequest buildingRequest = mock(ProjectBuildingRequest.class);
-        when(buildingRequest.getRemoteRepositories()).thenReturn(mojo.project.getRemoteArtifactRepositories());
-        when(buildingRequest.getRepositoryMerging()).thenReturn(ProjectBuildingRequest.RepositoryMerging.POM_DOMINANT);
-        when(buildingRequest.getRepositorySession()).thenReturn(repositorySession);
-        when(mavenSession.getProjectBuildingRequest()).thenReturn(buildingRequest);
+        setVariableValueToObject(mojo, "settings", settings);
+
         mojo.execute();
 
         Path commandLine = new File(
-                        getBasedir(),
-                        "proxy-test/target/site/apidocs/javadoc." + (SystemUtils.IS_OS_WINDOWS ? "bat" : "sh"))
+                        getBasedir(), "/target/site/apidocs/javadoc." + (SystemUtils.IS_OS_WINDOWS ? "bat" : "sh"))
                 .toPath();
         assertThat(commandLine).exists();
         String readed = readFile(commandLine);
@@ -1002,7 +843,7 @@ public class JavadocReportTest {
             assertThat(readed).contains(" \"-J-Dhttp.nonProxyHosts=\\\"www.google.com^|*.somewhere.com\\\"\" ");
         }
 
-        Path options = new File(getBasedir(), "proxy-test/target/site/apidocs/options").toPath();
+        Path options = new File(getBasedir(), "/target/site/apidocs/options").toPath();
         assertThat(options).exists();
         String optionsContent = readFile(options);
         // NO -link expected
@@ -1014,13 +855,15 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "proxy-test/proxy-test-plugin-config.xml")
+    @InjectMojo(goal = "javadoc", pom = "proxy-test-plugin-config.xml")
     @MojoParameter(
             name = "detectOfflineLinks",
             value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @Basedir("/unit/proxy-test")
     @Test
-    public void testRealProxy(JavadocReport mojo) throws Exception {
+    void testRealProxy(JavadocReport mojo) throws Exception {
+        mojo.getProject().setDependencyArtifacts(Collections.emptySet());
+
         // real proxy
         ProxyServer proxyServer = null;
         ProxyServer.AuthAsyncProxyServlet proxyServlet;
@@ -1038,29 +881,18 @@ public class JavadocReportTest {
             settings.addProxy(proxy);
 
             setVariableValueToObject(mojo, "settings", settings);
-            DefaultRepositorySystemSession repositorySession = new DefaultRepositorySystemSession();
-            repositorySession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
-                    .newInstance(repositorySession, new LocalRepository(localRepo)));
-
-            ProjectBuildingRequest buildingRequest = mock(ProjectBuildingRequest.class);
-            when(buildingRequest.getRemoteRepositories()).thenReturn(mojo.project.getRemoteArtifactRepositories());
-            when(buildingRequest.getRepositoryMerging())
-                    .thenReturn(ProjectBuildingRequest.RepositoryMerging.POM_DOMINANT);
-            when(buildingRequest.getRepositorySession()).thenReturn(repositorySession);
-            when(mavenSession.getProjectBuildingRequest()).thenReturn(buildingRequest);
 
             mojo.execute();
             Path commandLine = new File(
-                            getBasedir(),
-                            "proxy-test/target/site/apidocs/javadoc." + (SystemUtils.IS_OS_WINDOWS ? "bat" : "sh"))
+                            getBasedir(), "/target/site/apidocs/javadoc." + (SystemUtils.IS_OS_WINDOWS ? "bat" : "sh"))
                     .toPath();
             String readed = readFile(commandLine);
             assertTrue(readed.contains("-J-Dhttp.proxyHost=" + proxyServer.getHostName()));
             assertTrue(readed.contains("-J-Dhttp.proxyPort=" + proxyServer.getPort()));
 
-            Path options = new File(getBasedir(), "proxy-test/target/site/apidocs/options").toPath();
+            Path options = new File(getBasedir(), "/target/site/apidocs/options").toPath();
             assertThat(options).exists();
-            String optionsContent = readFile(options);
+            //            String optionsContent = readFile(options);
             // -link expected
             // TODO: This got disabled for now!
             // This test fails since the last commit but I actually think it only ever worked by accident.
@@ -1086,13 +918,12 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "proxy-test/proxy-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "proxy-test-plugin-config.xml")
+    @Basedir("/unit/proxy-test")
     @Test
-    public void testAuthProxy(JavadocReport mojo) throws Exception {
+    void testAuthProxy(JavadocReport mojo) throws Exception {
+        mojo.getProject().setDependencyArtifacts(Collections.emptySet());
+
         // auth proxy
         Map<String, String> authentications = new HashMap<>();
         authentications.put("foo", "bar");
@@ -1114,29 +945,18 @@ public class JavadocReportTest {
             settings.addProxy(proxy);
 
             setVariableValueToObject(mojo, "settings", settings);
-            DefaultRepositorySystemSession repositorySession = new DefaultRepositorySystemSession();
-            repositorySession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
-                    .newInstance(repositorySession, new LocalRepository(localRepo)));
-
-            ProjectBuildingRequest buildingRequest = mock(ProjectBuildingRequest.class);
-            when(buildingRequest.getRemoteRepositories()).thenReturn(mojo.project.getRemoteArtifactRepositories());
-            when(buildingRequest.getRepositoryMerging())
-                    .thenReturn(ProjectBuildingRequest.RepositoryMerging.POM_DOMINANT);
-            when(buildingRequest.getRepositorySession()).thenReturn(repositorySession);
-            when(mavenSession.getProjectBuildingRequest()).thenReturn(buildingRequest);
 
             mojo.execute();
             Path commandLine = new File(
-                            getBasedir(),
-                            "proxy-test/target/site/apidocs/javadoc." + (SystemUtils.IS_OS_WINDOWS ? "bat" : "sh"))
+                            getBasedir(), "/target/site/apidocs/javadoc." + (SystemUtils.IS_OS_WINDOWS ? "bat" : "sh"))
                     .toPath();
             String readed = readFile(commandLine);
             assertTrue(readed.contains("-J-Dhttp.proxyHost=" + proxyServer.getHostName()));
             assertTrue(readed.contains("-J-Dhttp.proxyPort=" + proxyServer.getPort()));
 
-            Path options = new File(getBasedir(), "proxy-test/target/site/apidocs/options").toPath();
+            Path options = new File(getBasedir(), "/target/site/apidocs/options").toPath();
             assertThat(options).exists();
-            String optionsContent = readFile(options);
+            //            String optionsContent = readFile(options);
             // -link expected
             // TODO: This got disabled for now!
             // This test fails since the last commit but I actually think it only ever worked by accident.
@@ -1162,13 +982,10 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "validate-options-test/wrong-encoding-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "wrong-encoding-test-plugin-config.xml")
+    @Basedir("/unit/validate-options-test")
     @Test
-    public void testValidateOptionsWrongEncoding(JavadocReport mojo) throws Exception {
+    void testValidateOptionsWrongEncoding(JavadocReport mojo) throws Exception {
         // encoding
         try {
             mojo.execute();
@@ -1182,13 +999,10 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "validate-options-test/wrong-docencoding-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "wrong-docencoding-test-plugin-config.xml")
+    @Basedir("/unit/validate-options-test")
     @Test
-    public void testValidateOptionsWrongDocencoding(JavadocReport mojo) throws Exception {
+    void testValidateOptionsWrongDocencoding(JavadocReport mojo) throws Exception {
         try {
             mojo.execute();
             fail("No wrong docencoding catch");
@@ -1196,18 +1010,16 @@ public class JavadocReportTest {
             assertTrue(e.getMessage().contains("Unsupported option <docencoding/>"), "No wrong docencoding catch");
         }
     }
+
     /**
      * Method to test error or conflict in Javadoc options and in standard doclet options.
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "validate-options-test/wrong-charset-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "wrong-charset-test-plugin-config.xml")
+    @Basedir("/unit/validate-options-test")
     @Test
-    public void testValidateOptionsWrongCharset(JavadocReport mojo) throws Exception {
+    void testValidateOptionsWrongCharset(JavadocReport mojo) throws Exception {
         try {
             mojo.execute();
             fail("No wrong charset catch");
@@ -1221,13 +1033,10 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "validate-options-test/wrong-locale-with-variant-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "wrong-locale-with-variant-test-plugin-config.xml")
+    @Basedir("/unit/validate-options-test")
     @Test
-    public void testValidateOptionsWrongLocale(JavadocReport mojo) throws Exception {
+    void testValidateOptionsWrongLocale(JavadocReport mojo) throws Exception {
         mojo.execute();
         assertTrue(true, "No wrong locale catch");
     }
@@ -1237,13 +1046,10 @@ public class JavadocReportTest {
      *
      * @throws Exception if any
      */
-    @InjectMojo(goal = "javadoc", pom = "validate-options-test/conflict-options-test-plugin-config.xml")
-    @MojoParameter(
-            name = "detectOfflineLinks",
-            value = "false") // before refactoring this parameter was set to false (root cause unknown)
-    @Basedir("/unit")
+    @InjectMojo(goal = "javadoc", pom = "conflict-options-test-plugin-config.xml")
+    @Basedir("/unit/validate-options-test")
     @Test
-    public void testValidateOptionsConflicts(JavadocReport mojo) throws Exception {
+    void testValidateOptionsConflicts(JavadocReport mojo) throws Exception {
         try {
             mojo.execute();
             fail("No conflict catch");
@@ -1252,234 +1058,223 @@ public class JavadocReportTest {
         }
     }
 
-    //
-    //    /**
-    //     * Method to test the <code>&lt;tagletArtifacts/&gt;</code> parameter.
-    //     *
-    //     * @throws Exception if any
-    //     */
-    //    @Test
-    //    public void testTagletArtifacts() throws Exception {
-    //        // Should be an assumption, but not supported by TestCase
-    //        // com.sun.tools.doclets.Taglet not supported by Java 10 anymore
-    //        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("10")) {
-    //            return;
-    //        }
-    //
-    //        Path testPom = unit.resolve("tagletArtifacts-test/tagletArtifacts-test-plugin-config.xml");
-    //        JavadocReport mojo = lookupMojo(testPom);
-    //
-    //        MavenSession session = newMavenSession(mojo.project);
-    //        DefaultRepositorySystemSession repoSysSession = (DefaultRepositorySystemSession)
-    // session.getRepositorySession();
-    //        repoSysSession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
-    //                .newInstance(session.getRepositorySession(), new LocalRepository(new File("target/local-repo"))));
-    //        // Ensure remote repo connection uses SSL
-    //        LegacySupport legacySupport = lookup(LegacySupport.class);
-    //        legacySupport.setSession(session);
-    //        setVariableValueToObject(mojo, "session", session);
-    //        setVariableValueToObject(mojo, "repoSession", repoSysSession);
-    //        mojo.execute();
-    //
-    //        Path optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
-    //        assertThat(optionsFile).exists();
-    //        String options = readFile(optionsFile);
-    //        // count -taglet
-    //        assertThat(StringUtils.countMatches(options, LINE_SEPARATOR + "-taglet" + LINE_SEPARATOR))
-    //                .isEqualTo(3);
-    //        assertThat(options)
-    //                .contains("org.codehaus.plexus.javadoc.PlexusConfigurationTaglet")
-    //                .contains("org.codehaus.plexus.javadoc.PlexusRequirementTaglet")
-    //                .contains("org.codehaus.plexus.javadoc.PlexusComponentTaglet");
-    //    }
-    //
-    //    /**
-    //     * Method to test the <code>&lt;stylesheetfile/&gt;</code> parameter.
-    //     *
-    //     * @throws Exception if any
-    //     */
-    //    @Test
-    //    public void testStylesheetfile() throws Exception {
-    //        Path testPom = unit.resolve("stylesheetfile-test/pom.xml");
-    //
-    //        JavadocReport mojo = lookupMojo(testPom);
-    //        assertNotNull(mojo);
-    //
-    //        MavenSession session = spy(newMavenSession(mojo.project));
-    //        ProjectBuildingRequest buildingRequest = mock(ProjectBuildingRequest.class);
-    //        when(buildingRequest.getRemoteRepositories()).thenReturn(mojo.project.getRemoteArtifactRepositories());
-    //        when(session.getProjectBuildingRequest()).thenReturn(buildingRequest);
-    //        DefaultRepositorySystemSession repositorySession = new DefaultRepositorySystemSession();
-    //        repositorySession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
-    //                .newInstance(repositorySession, new LocalRepository(localRepo)));
-    //        when(buildingRequest.getRepositorySession()).thenReturn(repositorySession);
-    //        when(session.getRepositorySession()).thenReturn(repositorySession);
-    //        LegacySupport legacySupport = lookup(LegacySupport.class);
-    //        legacySupport.setSession(session);
-    //        setVariableValueToObject(mojo, "session", session);
-    //        setVariableValueToObject(mojo, "repoSession", repositorySession);
-    //
-    //        Path apidocs = new File(getBasedir(),
-    // "target/test/unit/stylesheetfile-test/target/site/apidocs").toPath();
-    //
-    //        Path stylesheetfile = apidocs.resolve("stylesheet.css");
-    //        if (JavaVersion.JAVA_VERSION.isAtLeast("23")) {
-    //            stylesheetfile = apidocs.resolve("resource-files/stylesheet.css");
-    //        }
-    //        Path options = apidocs.resolve("options");
-    //
-    //        // stylesheet == maven OR java
-    //        setVariableValueToObject(mojo, "stylesheet", "javamaven");
-    //
-    //        try {
-    //            mojo.execute();
-    //            fail();
-    //        } catch (MojoExecutionException | MojoFailureException e) {
-    //        }
-    //
-    //        // stylesheet == java
-    //        setVariableValueToObject(mojo, "stylesheet", "java");
-    //        mojo.execute();
-    //
-    //        String content = readFile(stylesheetfile);
-    //        if (JavaVersion.JAVA_VERSION.isAtLeast("13-ea")) {
-    //            assertTrue(content.contains("/*" + LINE_SEPARATOR + " * Javadoc style sheet" + LINE_SEPARATOR + "
-    // */"));
-    //        } else if (JavaVersion.JAVA_VERSION.isAtLeast("10")) {
-    //            assertTrue(content.contains("/* " + LINE_SEPARATOR + " * Javadoc style sheet" + LINE_SEPARATOR + "
-    // */"));
-    //        } else {
-    //            assertTrue(content.contains("/* Javadoc style sheet */"));
-    //        }
-    //
-    //        String optionsContent = readFile(options);
-    //        assertFalse(optionsContent.contains("-stylesheetfile"));
-    //
-    //        // stylesheetfile defined as a project resource
-    //        setVariableValueToObject(mojo, "stylesheet", null);
-    //        setVariableValueToObject(mojo, "stylesheetfile", "com/mycompany/app/javadoc/css/stylesheet.css");
-    //        mojo.execute();
-    //
-    //        content = readFile(stylesheetfile);
-    //        assertTrue(content.contains("/* Custom Javadoc style sheet in project */"));
-    //
-    //        optionsContent = readFile(options);
-    //        assertTrue(optionsContent.contains("-stylesheetfile"));
-    //        Path stylesheetResource =
-    //
-    // unit.resolve("stylesheetfile-test/src/main/resources/com/mycompany/app/javadoc/css/stylesheet.css");
-    //        assertTrue(optionsContent.contains(
-    //                "'" + stylesheetResource.toFile().getAbsolutePath().replaceAll("\\\\", "/") + "'"));
-    //
-    //        // stylesheetfile defined in a javadoc plugin dependency
-    //        setVariableValueToObject(mojo, "stylesheetfile", "com/mycompany/app/javadoc/css2/stylesheet.css");
-    //        mojo.execute();
-    //
-    //        content = readFile(stylesheetfile);
-    //        assertTrue(content.contains("/* Custom Javadoc style sheet in artefact */"));
-    //
-    //        optionsContent = readFile(options);
-    //        assertTrue(optionsContent.contains("-stylesheetfile"));
-    //
-    //        assertThat(optionsContent)
-    //                .contains("'" + stylesheetfile.toFile().getAbsolutePath().replaceAll("\\\\", "/") + "'");
-    //
-    //        // stylesheetfile defined as file
-    //        Path css =
-    // unit.resolve("stylesheetfile-test/src/main/resources/com/mycompany/app/javadoc/css3/stylesheet.css");
-    //        setVariableValueToObject(mojo, "stylesheetfile", css.toFile().getAbsolutePath());
-    //        mojo.execute();
-    //
-    //        content = readFile(stylesheetfile);
-    //        assertTrue(content.contains("/* Custom Javadoc style sheet as file */"));
-    //
-    //        optionsContent = readFile(options);
-    //        assertTrue(optionsContent.contains("-stylesheetfile"));
-    //        stylesheetResource =
-    //
-    // unit.resolve("stylesheetfile-test/src/main/resources/com/mycompany/app/javadoc/css3/stylesheet.css");
-    //        assertTrue(optionsContent.contains(
-    //                "'" + stylesheetResource.toFile().getAbsolutePath().replaceAll("\\\\", "/") + "'"));
-    //    }
-    //
-    //    /**
-    //     * Method to test the <code>&lt;helpfile/&gt;</code> parameter.
-    //     *
-    //     * @throws Exception if any
-    //     */
-    //    @Test
-    //    public void testHelpfile() throws Exception {
-    //        Path testPom = unit.resolve("helpfile-test/pom.xml");
-    //
-    //        JavadocReport mojo = lookupMojo(testPom);
-    //        assertNotNull(mojo);
-    //
-    //        MavenSession session = spy(newMavenSession(mojo.project));
-    //        ProjectBuildingRequest buildingRequest = mock(ProjectBuildingRequest.class);
-    //        when(buildingRequest.getRemoteRepositories()).thenReturn(mojo.project.getRemoteArtifactRepositories());
-    //        when(session.getProjectBuildingRequest()).thenReturn(buildingRequest);
-    //        DefaultRepositorySystemSession repositorySession = new DefaultRepositorySystemSession();
-    //        repositorySession.setLocalRepositoryManager(new SimpleLocalRepositoryManagerFactory()
-    //                .newInstance(repositorySession, new LocalRepository(localRepo)));
-    //        when(buildingRequest.getRepositorySession()).thenReturn(repositorySession);
-    //        when(session.getRepositorySession()).thenReturn(repositorySession);
-    //        LegacySupport legacySupport = lookup(LegacySupport.class);
-    //        legacySupport.setSession(session);
-    //        setVariableValueToObject(mojo, "session", session);
-    //        setVariableValueToObject(mojo, "repoSession", repositorySession);
-    //
-    //        Path apidocs = new File(getBasedir(), "target/test/unit/helpfile-test/target/site/apidocs").toPath();
-    //
-    //        Path helpfile = apidocs.resolve("help-doc.html");
-    //        Path options = apidocs.resolve("options");
-    //
-    //        // helpfile by default
-    //        mojo.execute();
-    //
-    //        String content = readFile(helpfile);
-    //        assertTrue(content.contains("<!-- Generated by javadoc"));
-    //
-    //        String optionsContent = readFile(options);
-    //        assertFalse(optionsContent.contains("-helpfile"));
-    //
-    //        // helpfile defined in a javadoc plugin dependency
-    //        setVariableValueToObject(mojo, "helpfile", "com/mycompany/app/javadoc/helpfile/help-doc.html");
-    //
-    //        setVariableValueToObject(mojo, "session", session);
-    //        setVariableValueToObject(mojo, "repoSession", repositorySession);
-    //
-    //        mojo.execute();
-    //
-    //        content = readFile(helpfile);
-    //        assertTrue(content.contains("<!--  Help file from artefact -->"));
-    //
-    //        optionsContent = readFile(options);
-    //        assertTrue(optionsContent.contains("-helpfile"));
-    //        Path help = apidocs.resolve("help-doc.html");
-    //        assertTrue(optionsContent.contains("'" + help.toFile().getAbsolutePath().replaceAll("\\\\", "/") + "'"));
-    //
-    //        // helpfile defined as a project resource
-    //        setVariableValueToObject(mojo, "helpfile", "com/mycompany/app/javadoc/helpfile2/help-doc.html");
-    //        mojo.execute();
-    //
-    //        content = readFile(helpfile);
-    //        assertTrue(content.contains("<!--  Help file from file -->"));
-    //
-    //        optionsContent = readFile(options);
-    //        assertTrue(optionsContent.contains("-helpfile"));
-    //        help = unit.resolve("helpfile-test/src/main/resources/com/mycompany/app/javadoc/helpfile2/help-doc.html");
-    //        assertTrue(optionsContent.contains("'" + help.toFile().getAbsolutePath().replaceAll("\\\\", "/") + "'"));
-    //
-    //        // helpfile defined as file
-    //        help = unit.resolve("helpfile-test/src/main/resources/com/mycompany/app/javadoc/helpfile2/help-doc.html");
-    //        setVariableValueToObject(mojo, "helpfile", help.toFile().getAbsolutePath());
-    //        mojo.execute();
-    //
-    //        content = readFile(helpfile);
-    //        assertTrue(content.contains("<!--  Help file from file -->"));
-    //
-    //        optionsContent = readFile(options);
-    //        assertTrue(optionsContent.contains("-helpfile"));
-    //        assertTrue(optionsContent.contains("'" + help.toFile().getAbsolutePath().replaceAll("\\\\", "/") + "'"));
-    //    }
+    /**
+     * Method to test the <code>&lt;tagletArtifacts/&gt;</code> parameter.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "tagletArtifacts-test-plugin-config.xml")
+    @Basedir("/unit/tagletArtifacts-test")
+    @Test
+    @EnabledForJreRange(max = JRE.JAVA_9)
+    void testTagletArtifacts(JavadocReport mojo) throws Exception {
+
+        mojo.execute();
+
+        Path optionsFile = new File(mojo.getPluginReportOutputDirectory(), "options").toPath();
+        assertThat(optionsFile).exists();
+        String options = readFile(optionsFile);
+        // count -taglet
+        assertThat(StringUtils.countMatches(options, LINE_SEPARATOR + "-taglet" + LINE_SEPARATOR))
+                .isEqualTo(3);
+        assertThat(options)
+                .contains("org.codehaus.plexus.javadoc.PlexusConfigurationTaglet")
+                .contains("org.codehaus.plexus.javadoc.PlexusRequirementTaglet")
+                .contains("org.codehaus.plexus.javadoc.PlexusComponentTaglet");
+    }
+
+    /**
+     * Method to test the <code>&lt;stylesheetfile/&gt;</code> parameter.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "pom.xml")
+    @Basedir("/unit/stylesheetfile-test")
+    @Test
+    void testStylesheetfile(JavadocReport mojo) throws Exception {
+
+        // bug in testing framework - wrong resource dir name
+        mojo.getProject()
+                .getBuild()
+                .getResources()
+                .get(0)
+                .setDirectory(getTestFile("src/main/resources").getAbsolutePath());
+
+        // add dependency to find the stylesheetfile in a plugin dependency
+        Plugin plugin = new Plugin();
+        plugin.setGroupId("org.apache.maven.plugins");
+        plugin.setArtifactId("maven-javadoc-plugin");
+        Dependency dependency = new Dependency();
+        dependency.setGroupId("org.apache.maven.plugins.maven-javadoc-plugin.unit");
+        dependency.setArtifactId("stylesheetfile-test");
+        dependency.setVersion("1.0-SNAPSHOT");
+        plugin.addDependency(dependency);
+
+        mojo.getProject().getBuild().setPlugins(Collections.singletonList(plugin));
+
+        File testArtifactDir = getTestFile("/artifact-stylesheetfile");
+        assertThat(testArtifactDir).exists();
+        copyDirectory(testArtifactDir, localRepo);
+
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
+
+        Path stylesheetfile = apidocs.resolve("stylesheet.css");
+        if (JavaVersion.JAVA_VERSION.isAtLeast("23")) {
+            stylesheetfile = apidocs.resolve("resource-files/stylesheet.css");
+        }
+        Path options = apidocs.resolve("options");
+
+        // stylesheet == maven OR java
+        setVariableValueToObject(mojo, "stylesheet", "javamaven");
+
+        try {
+            mojo.execute();
+            fail();
+        } catch (MojoExecutionException | MojoFailureException e) {
+        }
+
+        // stylesheet == java
+        setVariableValueToObject(mojo, "stylesheet", "java");
+        mojo.execute();
+
+        String content = readFile(stylesheetfile);
+        if (JavaVersion.JAVA_VERSION.isAtLeast("13-ea")) {
+            assertTrue(content.contains("/*" + LINE_SEPARATOR + " * Javadoc style sheet" + LINE_SEPARATOR + " */"));
+        } else if (JavaVersion.JAVA_VERSION.isAtLeast("10")) {
+            assertTrue(content.contains("/* " + LINE_SEPARATOR + " * Javadoc style sheet" + LINE_SEPARATOR + " */"));
+        } else {
+            assertTrue(content.contains("/* Javadoc style sheet */"));
+        }
+
+        String optionsContent = readFile(options);
+        assertFalse(optionsContent.contains("-stylesheetfile"));
+
+        // stylesheetfile defined as a project resource
+        setVariableValueToObject(mojo, "stylesheet", null);
+        setVariableValueToObject(mojo, "stylesheetfile", "/com/mycompany/app/javadoc/css/stylesheet.css");
+        mojo.execute();
+
+        content = readFile(stylesheetfile);
+        assertTrue(content.contains("/* Custom Javadoc style sheet in project */"));
+
+        optionsContent = readFile(options);
+        assertTrue(optionsContent.contains("-stylesheetfile"));
+        File stylesheetResource = getTestFile("/src/main/resources/com/mycompany/app/javadoc/css/stylesheet.css");
+        assertTrue(optionsContent.contains(
+                "'" + stylesheetResource.getAbsolutePath().replaceAll("\\\\", "/") + "'"));
+
+        // stylesheetfile defined in a javadoc plugin dependency
+        setVariableValueToObject(mojo, "stylesheetfile", "/com/mycompany/app/javadoc/css2/stylesheet.css");
+        mojo.execute();
+
+        content = readFile(stylesheetfile);
+        assertTrue(content.contains("/* Custom Javadoc style sheet in artefact */"));
+
+        optionsContent = readFile(options);
+        assertTrue(optionsContent.contains("-stylesheetfile"));
+
+        assertThat(optionsContent)
+                .contains("'" + stylesheetfile.toFile().getAbsolutePath().replaceAll("\\\\", "/") + "'");
+
+        // stylesheetfile defined as file
+        File css = getTestFile("/src/main/resources/com/mycompany/app/javadoc/css3/stylesheet.css");
+        setVariableValueToObject(mojo, "stylesheetfile", css.getAbsolutePath());
+        mojo.execute();
+
+        content = readFile(stylesheetfile);
+        assertTrue(content.contains("/* Custom Javadoc style sheet as file */"));
+
+        optionsContent = readFile(options);
+        assertTrue(optionsContent.contains("-stylesheetfile"));
+        stylesheetResource = getTestFile("/src/main/resources/com/mycompany/app/javadoc/css3/stylesheet.css");
+        assertTrue(optionsContent.contains(
+                "'" + stylesheetResource.getAbsolutePath().replaceAll("\\\\", "/") + "'"));
+    }
+
+    /**
+     * Method to test the <code>&lt;helpfile/&gt;</code> parameter.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "pom.xml")
+    @Basedir("/unit/helpfile-test")
+    @Test
+    void testHelpfile(JavadocReport mojo) throws Exception {
+
+        // bug in testing framework - wrong resource dir name
+        mojo.getProject()
+                .getBuild()
+                .getResources()
+                .get(0)
+                .setDirectory(getTestFile("src/main/resources").getAbsolutePath());
+
+        // add dependency to find the helpfile in a plugin dependency
+        Plugin plugin = new Plugin();
+        plugin.setGroupId("org.apache.maven.plugins");
+        plugin.setArtifactId("maven-javadoc-plugin");
+        Dependency dependency = new Dependency();
+        dependency.setGroupId("org.apache.maven.plugins.maven-javadoc-plugin.unit");
+        dependency.setArtifactId("helpfile-test");
+        dependency.setVersion("1.0-SNAPSHOT");
+        plugin.addDependency(dependency);
+
+        mojo.getProject().getBuild().setPlugins(Collections.singletonList(plugin));
+
+        File testArtifactDir = getTestFile("/artifact-helpfile");
+        assertThat(testArtifactDir).exists();
+        copyDirectory(testArtifactDir, localRepo);
+
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
+
+        Path helpfile = apidocs.resolve("help-doc.html");
+        Path options = apidocs.resolve("options");
+
+        // helpfile by default
+        mojo.execute();
+
+        String content = readFile(helpfile);
+        assertTrue(content.contains("<!-- Generated by javadoc"));
+
+        String optionsContent = readFile(options);
+        assertFalse(optionsContent.contains("-helpfile"));
+
+        // helpfile defined in a javadoc plugin dependency
+        setVariableValueToObject(mojo, "helpfile", "com/mycompany/app/javadoc/helpfile/help-doc.html");
+
+        mojo.execute();
+
+        content = readFile(helpfile);
+        assertTrue(content.contains("<!--  Help file from artefact -->"));
+
+        optionsContent = readFile(options);
+        assertTrue(optionsContent.contains("-helpfile"));
+        Path help = apidocs.resolve("help-doc.html");
+        assertTrue(optionsContent.contains("'" + help.toFile().getAbsolutePath().replaceAll("\\\\", "/") + "'"));
+
+        // helpfile defined as a project resource
+        setVariableValueToObject(mojo, "helpfile", "com/mycompany/app/javadoc/helpfile2/help-doc.html");
+        mojo.execute();
+
+        content = readFile(helpfile);
+        assertTrue(content.contains("<!--  Help file from file -->"));
+
+        optionsContent = readFile(options);
+        assertTrue(optionsContent.contains("-helpfile"));
+        help = getTestFile("/src/main/resources/com/mycompany/app/javadoc/helpfile2/help-doc.html")
+                .toPath();
+        assertTrue(optionsContent.contains("'" + help.toFile().getAbsolutePath().replaceAll("\\\\", "/") + "'"));
+
+        // helpfile defined as file
+        help = getTestFile("/src/main/resources/com/mycompany/app/javadoc/helpfile2/help-doc.html")
+                .toPath();
+        setVariableValueToObject(mojo, "helpfile", help.toFile().getAbsolutePath());
+        mojo.execute();
+
+        content = readFile(helpfile);
+        assertTrue(content.contains("<!--  Help file from file -->"));
+
+        optionsContent = readFile(options);
+        assertTrue(optionsContent.contains("-helpfile"));
+        assertTrue(optionsContent.contains("'" + help.toFile().getAbsolutePath().replaceAll("\\\\", "/") + "'"));
+    }
 }

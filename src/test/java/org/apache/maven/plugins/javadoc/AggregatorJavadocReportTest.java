@@ -24,7 +24,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
 import java.util.Locale;
 
 import org.apache.maven.api.plugin.testing.Basedir;
@@ -32,7 +31,6 @@ import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.execution.MavenSession;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
-import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -47,90 +45,13 @@ public class AggregatorJavadocReportTest {
 
     private static final char LINE_SEPARATOR = ' ';
 
-    /** flag to copy repo only one time */
-    private static boolean testRepoCreated = false;
-
-    private File unit;
-
     private File localRepo;
 
     /** {@inheritDoc} */
     @BeforeEach
-    public void setUp() throws Exception {
-        unit = new File(getBasedir());
+    public void setUp() {
         localRepo = new File(getBasedir(), "target/local-repo/");
-        createTestRepo();
-
         mavenSession.getRequest().setLocalRepositoryPath(localRepo);
-    }
-
-    /**
-     * Create test repository in target directory.
-     *
-     * @throws IOException if any
-     */
-    private void createTestRepo() throws IOException {
-        if (testRepoCreated) {
-            return;
-        }
-
-        localRepo.mkdirs();
-
-        // ----------------------------------------------------------------------
-        // UMLGraph
-        // ----------------------------------------------------------------------
-
-        File sourceDir = new File(unit, "doclet-test/artifact-doclet");
-        assertTrue(sourceDir.exists());
-        FileUtils.copyDirectoryStructure(sourceDir, localRepo);
-
-        // ----------------------------------------------------------------------
-        // UMLGraph-bis
-        // ----------------------------------------------------------------------
-
-        sourceDir = new File(unit, "doclet-path-test/artifact-doclet");
-        assertTrue(sourceDir.exists());
-        FileUtils.copyDirectoryStructure(sourceDir, localRepo);
-
-        // ----------------------------------------------------------------------
-        // commons-attributes-compiler
-        // http://www.tullmann.org/pat/taglets/
-        // ----------------------------------------------------------------------
-
-        sourceDir = new File(unit, "taglet-test/artifact-taglet");
-        assertTrue(sourceDir.exists());
-        FileUtils.copyDirectoryStructure(sourceDir, localRepo);
-
-        // ----------------------------------------------------------------------
-        // stylesheetfile-test
-        // ----------------------------------------------------------------------
-
-        sourceDir = new File(unit, "stylesheetfile-test/artifact-stylesheetfile");
-        assertTrue(sourceDir.exists());
-        FileUtils.copyDirectoryStructure(sourceDir, localRepo);
-
-        // ----------------------------------------------------------------------
-        // helpfile-test
-        // ----------------------------------------------------------------------
-
-        sourceDir = new File(unit, "helpfile-test/artifact-helpfile");
-        assertTrue(sourceDir.exists());
-        FileUtils.copyDirectoryStructure(sourceDir, localRepo);
-
-        // Remove SCM files
-        List<String> files = FileUtils.getFileAndDirectoryNames(
-                localRepo, FileUtils.getDefaultExcludesAsString(), null, true, true, true, true);
-        for (String filename : files) {
-            File file = new File(filename);
-
-            if (file.isDirectory()) {
-                FileUtils.deleteDirectory(file);
-            } else {
-                file.delete();
-            }
-        }
-
-        testRepoCreated = true;
     }
 
     /**
@@ -164,7 +85,7 @@ public class AggregatorJavadocReportTest {
     @InjectMojo(goal = "aggregate", pom = "aggregate-test/aggregate-test-plugin-config.xml")
     @Basedir("/unit")
     @Test
-    public void testAggregate(JavadocReport mojo) throws Exception {
+    void testAggregate(JavadocReport mojo) throws Exception {
         mojo.execute();
 
         File apidocs = new File(getBasedir(), "aggregate-test/target/site/apidocs/");
@@ -190,7 +111,7 @@ public class AggregatorJavadocReportTest {
     @InjectMojo(goal = "aggregate", pom = "aggregate-resources-test/aggregate-resources-test-plugin-config.xml")
     @Basedir("/unit")
     @Test
-    public void testAggregateJavadocResources(JavadocReport mojo) throws Exception {
+    void testAggregateJavadocResources(JavadocReport mojo) throws Exception {
         mojo.execute();
 
         File apidocs = new File(getBasedir(), "aggregate-resources-test/target/site/apidocs");
@@ -217,7 +138,7 @@ public class AggregatorJavadocReportTest {
     @InjectMojo(goal = "aggregate", pom = "aggregate-modules-not-in-subdirectories-test/all/pom.xml")
     @Basedir("/unit")
     @Test
-    public void testAggregateWithModulsNotInSubDirectories(JavadocReport mojo) throws Exception {
+    void testAggregateWithModulsNotInSubDirectories(JavadocReport mojo) throws Exception {
         mojo.execute();
 
         File apidocs = new File(getBasedir(), "aggregate-modules-not-in-subdirectories-test/target/site/apidocs");

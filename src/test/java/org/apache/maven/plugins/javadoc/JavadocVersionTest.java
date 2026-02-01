@@ -25,13 +25,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JavadocVersionTest {
+class JavadocVersionTest {
     /**
      * Parsing is lazy, only triggered when comparing
      */
     @Test
     @SuppressWarnings("deprecation")
-    public void testParse() {
+    void testParse() {
         assertThat(JavadocVersion.parse("1.4"))
                 .isLessThan(JavadocVersion.parse("1.4.2"))
                 .isLessThan(JavadocVersion.parse("1.5"));
@@ -48,7 +48,7 @@ public class JavadocVersionTest {
     }
 
     @Test
-    public void testApiVersion() {
+    void testApiVersion() {
         Pattern p = Pattern.compile("(1\\.\\d|\\d\\d*)");
         Matcher m = p.matcher("9");
         assertThat(m.find()).isTrue();

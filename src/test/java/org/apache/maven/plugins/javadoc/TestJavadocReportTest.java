@@ -19,52 +19,49 @@
 package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
+import java.util.Collections;
 
-import org.apache.maven.model.Plugin;
-import org.apache.maven.plugin.MojoExecution;
-import org.apache.maven.plugin.testing.AbstractMojoTestCase;
-import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
-import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.maven.api.plugin.testing.Basedir;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DefaultArtifact;
+import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.junit.jupiter.api.Test;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-public class TestJavadocReportTest extends AbstractMojoTestCase {
+@MojoTest
+public class TestJavadocReportTest {
     /**
      * Test the test-javadoc configuration for the plugin
      *
      * @throws Exception if any
      */
     @Test
-    public void testTestJavadoc() throws Exception {
-        File testPom =
-                new File(getBasedir(), "src/test/resources/unit/test-javadoc-test/test-javadoc-test-plugin-config.xml");
-        TestJavadocReport mojo = (TestJavadocReport) lookupMojo("test-javadoc", testPom);
+    @InjectMojo(goal = "test-javadoc", pom = "test-javadoc-test-plugin-config.xml")
+    @Basedir("/unit/test-javadoc-test")
+    public void testTestJavadoc(TestJavadocReport mojo) throws Exception {
 
-        Plugin p = new Plugin();
-        p.setGroupId("org.apache.maven.plugins");
-        p.setArtifactId("maven-javadoc-plugin");
-        MojoExecution mojoExecution = new MojoExecution(p, "test-javadoc", null);
+        Artifact testArtifact = new DefaultArtifact(
+                "groupId", "artifactId", "1.2.3", "test", "jar", null, new DefaultArtifactHandler("jar"));
+        testArtifact.setFile(new File("test/test-dependency-1.2.3.jar"));
 
-        setVariableValueToObject(mojo, "mojoExecution", mojoExecution);
-
-        MavenProject currentProject = new MavenProjectStub();
-        currentProject.setGroupId("GROUPID");
-        currentProject.setArtifactId("ARTIFACTID");
-
-        setVariableValueToObject(mojo, "session", newMavenSession(currentProject));
+        mojo.getProject().setArtifacts(Collections.singleton(testArtifact));
 
         mojo.execute();
 
-        File generatedFile =
-                new File(getBasedir(), "target/test/unit/test-javadoc-test/target/site/testapidocs/maven/AppTest.html");
+        File generatedFile = new File(getBasedir(), "/target/site/testapidocs/maven/AppTest.html");
         assertThat(generatedFile).exists();
 
-        File options = new File(getBasedir(), "target/test/unit/test-javadoc-test/target/site/testapidocs/options");
-        assertThat(FileUtils.fileRead(options)).contains("junit-3.8.1.jar");
+        // -classpath
+        // '/Users/slawomir.jaranowski/repos/apache/maven-javadoc-plugin/target/test/unit/test-javadoc-test/target/classes:/Users/slawomir.jaranowski/repos/apache/maven-javadoc-plugin/target/test/unit/test-javadoc-test/target/test-classes:/Users/slawomir.jaranowski/repos/apache/maven-javadoc-plugin/src/test/resources/unit/test-javadoc-test/junit/junit/3.8.1/junit-3.8.1.jar'
+
+        File options = new File(getBasedir(), "/target/site/testapidocs/options");
+        assertThat(options).content().contains("test-dependency-1.2.3.jar");
     }
 }

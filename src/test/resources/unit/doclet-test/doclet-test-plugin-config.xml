@@ -33,15 +33,16 @@ under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <project implementation="org.apache.maven.plugins.javadoc.stubs.DocletTestMavenProjectStub"/>
-          <outputDirectory>${basedir}/doclet-test/target/site</outputDirectory>
-          <javadocOptionsDir>${basedir}/doclet-test/target/javadoc-bundle-options</javadocOptionsDir>
+          <sourcepath>${basedir}</sourcepath>
+          <outputDirectory>${basedir}/target/site</outputDirectory>
+          <javadocOptionsDir>${basedir}/target/javadoc-bundle-options</javadocOptionsDir>
           <doclet>UmlGraph</doclet>
           <docletArtifact>
               <groupId>umlgraph</groupId>
               <artifactId>UMLGraph</artifactId>
               <version>2.1</version>
           </docletArtifact>
+          <useStandardDocletOptions>false</useStandardDocletOptions>
           <breakiterator>false</breakiterator>
           <old>false</old>
           <show>protected</show>
@@ -69,9 +70,6 @@ under the License.
           <windowtitle>Maven Javadoc Plugin Doclet Test 1.0-SNAPSHOT API</windowtitle>
           <debug>true</debug>
           <failOnError>true</failOnError>
-          <reactorProjects>
-            <project implementation="org.apache.maven.plugins.javadoc.stubs.DocletTestMavenProjectStub"/>
-          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>

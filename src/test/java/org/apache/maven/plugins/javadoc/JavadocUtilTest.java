@@ -44,7 +44,6 @@ import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.plugins.javadoc.ProxyServer.AuthAsyncProxyServlet;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -54,6 +53,7 @@ import org.eclipse.jetty.server.handler.MovedContextHandler;
 import org.eclipse.jetty.util.ByteArrayISO8859Writer;
 import org.junit.jupiter.api.Test;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -65,10 +65,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-public class JavadocUtilTest extends PlexusTestCase {
+class JavadocUtilTest {
 
     @Test
-    public void testParseJavadocVersionNull() {
+    void testParseJavadocVersionNull() {
         try {
             JavadocUtil.extractJavadocVersion(null);
             fail("Not catch null");
@@ -78,7 +78,7 @@ public class JavadocUtilTest extends PlexusTestCase {
     }
 
     @Test
-    public void testParseJavadocVersionEmptyString() {
+    void testParseJavadocVersionEmptyString() {
         try {
             JavadocUtil.extractJavadocVersion("");
             fail("Not catch empty version");
@@ -91,7 +91,7 @@ public class JavadocUtilTest extends PlexusTestCase {
      * Test the javadoc version parsing.
      */
     @Test
-    public void testParseJavadocVersion() {
+    void testParseJavadocVersion() {
         // Sun JDK 1.4
         String version = "java full version \"1.4.2_12-b03\"";
         assertEquals("1.4.2", JavadocUtil.extractJavadocVersion(version));
@@ -172,7 +172,7 @@ public class JavadocUtilTest extends PlexusTestCase {
     }
 
     @Test
-    public void testParseJavadocMemoryNull() {
+    void testParseJavadocMemoryNull() {
         try {
             JavadocUtil.parseJavadocMemory(null);
             fail("Not catch null");
@@ -182,7 +182,7 @@ public class JavadocUtilTest extends PlexusTestCase {
     }
 
     @Test
-    public void testParseJavadocMemoryEmpty() {
+    void testParseJavadocMemoryEmpty() {
         try {
             JavadocUtil.parseJavadocMemory("");
             fail("Not catch null");
@@ -195,7 +195,7 @@ public class JavadocUtilTest extends PlexusTestCase {
      * Method to test the javadoc memory parsing.
      */
     @Test
-    public void testParseJavadocMemory() {
+    void testParseJavadocMemory() {
         String memory = "128";
         assertEquals("128m", JavadocUtil.parseJavadocMemory(memory));
 
@@ -249,7 +249,7 @@ public class JavadocUtilTest extends PlexusTestCase {
      * Method to test the validate encoding parsing.
      */
     @Test
-    public void testValidateEncoding() {
+    void testValidateEncoding() {
         assertFalse(JavadocUtil.validateEncoding(null), "Not catch null");
         assertTrue(JavadocUtil.validateEncoding("UTF-8"), "UTF-8 not supported on this platform");
         assertTrue(JavadocUtil.validateEncoding("ISO-8859-1"), "ISO-8859-1 not supported on this platform");
@@ -263,7 +263,7 @@ public class JavadocUtilTest extends PlexusTestCase {
      * @throws Exception if any
      */
     @Test
-    public void testIsValidPackageList() throws Exception {
+    void testIsValidPackageList() throws Exception {
         Settings settings = null;
         Proxy proxy;
 
@@ -404,7 +404,7 @@ public class JavadocUtilTest extends PlexusTestCase {
     }
 
     @Test
-    public void testGetRedirectUrlNotHttp() throws Exception {
+    void testGetRedirectUrlNotHttp() throws Exception {
         URL url = new URI("ftp://some.where").toURL();
         assertEquals(
                 url.toString(), JavadocUtil.getRedirectUrl(url, new Settings()).toString());
@@ -418,7 +418,7 @@ public class JavadocUtilTest extends PlexusTestCase {
      * Tests a redirect from localhost:port1 to localhost:port2
      */
     @Test
-    public void testGetRedirectUrl() throws Exception {
+    void testGetRedirectUrl() throws Exception {
         Server server = null, redirectServer = null;
         try {
             redirectServer = new Server(0);
@@ -463,7 +463,7 @@ public class JavadocUtilTest extends PlexusTestCase {
      * Tests that getRedirectUrl returns the same URL when there are no redirects.
      */
     @Test
-    public void testGetRedirectUrlWithNoRedirects() throws Exception {
+    void testGetRedirectUrlWithNoRedirects() throws Exception {
         Server server = null;
         try {
             server = new Server(0);
@@ -500,7 +500,7 @@ public class JavadocUtilTest extends PlexusTestCase {
      * reject requests without an Accept header.
      */
     @Test
-    public void testGetRedirectUrlVerifyHeaders() throws Exception {
+    void testGetRedirectUrlVerifyHeaders() throws Exception {
         Server server = null;
         try {
             server = new Server(0);
@@ -534,7 +534,7 @@ public class JavadocUtilTest extends PlexusTestCase {
      * @throws Exception if any
      */
     @Test
-    public void testCopyJavadocResources() throws Exception {
+    void testCopyJavadocResources() throws Exception {
         File input = new File(getBasedir(), "src/test/resources/unit/docfiles-test/docfiles/");
         assertThat(input).exists();
 
@@ -586,7 +586,7 @@ public class JavadocUtilTest extends PlexusTestCase {
      * Method to test pruneDirs()
      */
     @Test
-    public void testPruneDirs() {
+    void testPruneDirs() {
         List<String> list = new ArrayList<>();
         String classesDir = getBasedir() + "/target/classes";
         list.add(classesDir);
@@ -606,7 +606,7 @@ public class JavadocUtilTest extends PlexusTestCase {
      *
      */
     @Test
-    public void testPrunePaths() {
+    void testPrunePaths() {
         List<String> list = new ArrayList<>();
         String classesDir = getBasedir() + "/target/classes";
         String tagletJar = getBasedir()
@@ -632,7 +632,7 @@ public class JavadocUtilTest extends PlexusTestCase {
      * Method to test unifyPathSeparator()
      */
     @Test
-    public void testUnifyPathSeparator() {
+    void testUnifyPathSeparator() {
         assertNull(JavadocUtil.unifyPathSeparator(null));
 
         final String ps = File.pathSeparator;
@@ -667,7 +667,7 @@ public class JavadocUtilTest extends PlexusTestCase {
     }
 
     @Test
-    public void testGetIncludedFiles() {
+    void testGetIncludedFiles() {
         File sourceDirectory = new File("target/it").getAbsoluteFile();
         String[] fileList = new String[] {"Main.java"};
         Collection<String> excludePackages = Collections.singleton("*.it");
@@ -688,7 +688,7 @@ public class JavadocUtilTest extends PlexusTestCase {
     }
 
     @Test
-    public void testQuotedArgument() {
+    void testQuotedArgument() {
 
         String value = "      org.apache.uima.analysis_component:\n      org.apache.uima.analysis_engine\n";
 
@@ -702,7 +702,7 @@ public class JavadocUtilTest extends PlexusTestCase {
     }
 
     @Test
-    public void testToList() {
+    void testToList() {
         String value = "     *.internal:org.acme.exclude1.*:\n       org.acme.exclude2\n       ";
         List<String> values = JavadocUtil.toList(value);
         assertThat(values).containsExactly("*.internal", "org.acme.exclude1.*", "org.acme.exclude2");
