@@ -50,17 +50,18 @@ import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
-import org.junit.jupiter.api.io.TempDir;
 import org.opentest4j.TestAbortedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.apache.commons.io.FileUtils.copyDirectory;
+import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.apache.maven.api.plugin.testing.MojoExtension.getTestFile;
 import static org.apache.maven.api.plugin.testing.MojoExtension.setVariableValueToObject;
@@ -94,14 +95,39 @@ class JavadocReportTest {
 
     private static final String OPTIONS_UMLAUT_ENCODING = "Options Umlaut Encoding ö ä ü ß";
 
+    private Path tempDirectory;
+
     private File localRepo;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JavadocReportTest.class);
 
     @BeforeEach
-    void setUp(@TempDir Path tempDirectory) throws Exception {
+    void setUp() throws Exception {
+        tempDirectory = Files.createTempDirectory("JavadocReportTest");
+        localRepo = tempDirectory.resolve(Paths.get("target/local-repo/")).toFile();
+
         localRepo = tempDirectory.resolve(Paths.get("target/local-repo/")).toFile();
         mavenSession.getRequest().setLocalRepositoryPath(localRepo);
+    }
+
+    @AfterEach
+    void tearDown() throws Exception {
+        try {
+            deleteDirectory(tempDirectory.toFile());
+        } catch (IOException ex) {
+            // CI servers can have problems deleting files.
+            // It will get cleared out eventually, and since
+            // temporary directories have unique names,
+            // it shouldn't affect subsequent tests.
+
+            // on Windows this can happen due to file locking
+
+            // Suppressed: java.nio.file.FileSystemException:
+            // ...\junit-9294477811364490607\target\local-repo\...\stylesheetfile-test-1.0-SNAPSHOT.jar
+            // 	Suppressed: java.nio.file.FileSystemException:
+            // ...\junit-9412699201343745478\target\local-repo\....\helpfile-test-1.0-SNAPSHOT.jar:
+            // 	The process cannot access the file because it is being used by another process
+        }
     }
 
     /**
