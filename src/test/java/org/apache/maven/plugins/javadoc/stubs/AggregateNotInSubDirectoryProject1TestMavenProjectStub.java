@@ -24,8 +24,8 @@ package org.apache.maven.plugins.javadoc.stubs;
 public class AggregateNotInSubDirectoryProject1TestMavenProjectStub extends AbstractAggregateChildMavenProjectStub {
     public AggregateNotInSubDirectoryProject1TestMavenProjectStub() {
         super(
-                "/src/test/resources/unit/aggregate-modules-not-in-subdirectories-test/project1",
+                "/aggregate-modules-not-in-subdirectories-test/project1",
                 "pom.xml",
-                "/target/test/unit/aggregate-modules-not-in-subdirectories-test/project1/target");
+                "/aggregate-modules-not-in-subdirectories-test/project1/target");
     }
 }

@@ -33,11 +33,10 @@ under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <project implementation="org.apache.maven.plugins.javadoc.stubs.ResourcesWithExcludesTestMavenProjectStub"/>
-          <outputDirectory>${basedir}/target/test/unit/resources-with-excludes-test/target/site</outputDirectory>
-          <javadocOptionsDir>${basedir}/target/test/unit/resources-with-excludes-test/target/javadoc-bundle-options</javadocOptionsDir>
+          <outputDirectory>${basedir}/target/site</outputDirectory>
+          <javadocOptionsDir>${basedir}/target/javadoc-bundle-options</javadocOptionsDir>
           <windowtitle>Maven Javadoc Plugin resources 1.0-SNAPSHOT API</windowtitle>
-          <javadocDirectory>${basedir}/src/test/resources/unit/resources-with-excludes-test/src/main/javadoc</javadocDirectory>
+          <javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
           <show>protected</show>
           <encoding>ISO-8859-1</encoding>
           <groups/>
@@ -48,9 +47,6 @@ under the License.
           <excludedocfilessubdir>test</excludedocfilessubdir>
           <stylesheet>java</stylesheet>
           <failOnError>true</failOnError>
-          <reactorProjects>
-            <project implementation="org.apache.maven.plugins.javadoc.stubs.ResourcesWithExcludesTestMavenProjectStub"/>
-          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>

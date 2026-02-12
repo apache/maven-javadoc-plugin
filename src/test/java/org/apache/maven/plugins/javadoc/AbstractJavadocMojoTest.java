@@ -21,8 +21,8 @@ package org.apache.maven.plugins.javadoc;
 import java.io.File;
 
 import org.apache.maven.plugin.logging.Log;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -32,11 +32,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class AbstractJavadocMojoTest {
+class AbstractJavadocMojoTest {
     AbstractJavadocMojo mojo;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         mojo = new AbstractJavadocMojo(null, null, null, null, null, null, null) {
             @Override
             public void doExecute() {}
@@ -44,7 +44,7 @@ public class AbstractJavadocMojoTest {
     }
 
     @Test
-    public void testMJAVADOC432DetectLinksMessages() {
+    void testMJAVADOC432DetectLinksMessages() {
         Log log = mock(Log.class);
         when(log.isErrorEnabled()).thenReturn(true);
         mojo.setLog(log);
@@ -69,7 +69,7 @@ public class AbstractJavadocMojoTest {
     }
 
     @Test
-    public void testMJAVADOC527DetectLinksRecursion() {
+    void testMJAVADOC527DetectLinksRecursion() {
         Log log = mock(Log.class);
         when(log.isErrorEnabled()).thenReturn(true);
         mojo.setLog(log);

@@ -33,9 +33,9 @@ under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <project implementation="org.apache.maven.plugins.javadoc.stubs.TagletTestMavenProjectStub"/>
-          <outputDirectory>${basedir}/target/test/unit/taglet-test/target/site</outputDirectory>
-          <javadocOptionsDir>${basedir}/target/test/unit/taglet-test/target/javadoc-bundle-options</javadocOptionsDir>
+          <sourcepath>${basedir}</sourcepath>
+          <outputDirectory>${basedir}/target/site</outputDirectory>
+          <javadocOptionsDir>${basedir}/target/javadoc-bundle-options</javadocOptionsDir>
           <taglet>org.tullmann.taglets.ToDo</taglet>
           <tagletArtifact>
             <groupId>org.tullmann</groupId>
@@ -69,9 +69,6 @@ under the License.
           <windowtitle>Maven Javadoc Plugin Taglet Test 1.0-SNAPSHOT API</windowtitle>
           <debug>true</debug>
           <failOnError>true</failOnError>
-          <reactorProjects>
-            <project implementation="org.apache.maven.plugins.javadoc.stubs.TagletTestMavenProjectStub"/>
-          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>
