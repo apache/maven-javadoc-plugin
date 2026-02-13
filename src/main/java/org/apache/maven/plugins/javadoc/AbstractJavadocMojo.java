@@ -1311,6 +1311,22 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private String[] addStylesheets;
 
     /**
+     * Specifies the path of an additional script file relative to the {@code javadocDirectory}
+     * Example:
+     * <pre>
+     *     &lt;addScripts&gt;
+     *         &lt;addScript&gt;resources/script.js&lt;/addScript&gt;
+     *     &lt;/addScripts&gt;
+     * </pre>
+     * <p>
+     * These script files are passed to the Javadoc tool via the {@code --add-script} parameter.
+     * This option is available since JDK 18.
+     * @since 3.13.0
+     */
+    @Parameter
+    private String[] addScripts;
+
+    /**
      * Specifies the class file that starts the taglet used in generating the documentation for that tag.
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">Doclet option taglet</a>.
      */
@@ -2787,6 +2803,44 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         throw new MavenReportException(
                 "additional stylesheet file does not exist: " + addstylesheetfile.getAbsolutePath());
+    }
+
+    private void addAddScripts(List<String> arguments) throws MavenReportException {
+        if (addScripts == null) {
+            return;
+        }
+
+        JavaVersion requiredJavaVersionForScripts = JavaVersion.parse("18");
+        if (!isJavaDocVersionAtLeast(requiredJavaVersionForScripts)) {
+            throw new MavenReportException(
+                    "the javadoc tool option to add scripts (--add-scripts) is available only since JDK 18");
+        }
+
+        for (String addScript : addScripts) {
+            Optional<File> script = getAddScript(getJavadocDirectory(), addScript);
+
+            if (script.isPresent()) {
+                addArgIfNotEmpty(
+                        arguments,
+                        "--add-script",
+                        JavadocUtil.quotedPathArgument(script.get().getAbsolutePath()),
+                        requiredJavaVersionForScripts);
+            }
+        }
+    }
+
+    private Optional<File> getAddScript(final File javadocOutputDirectory, final String script)
+            throws MavenReportException {
+        if (script == null || script.isEmpty()) {
+            return Optional.empty();
+        }
+
+        File scriptFile = new File(getJavadocDirectory(), script);
+        if (scriptFile.exists()) {
+            return Optional.of(scriptFile);
+        }
+
+        throw new MavenReportException("script file does not exist: " + scriptFile.getAbsolutePath());
     }
 
     /**
@@ -4760,6 +4814,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                         arguments, "-stylesheetfile", JavadocUtil.quotedPathArgument(file.getAbsolutePath())));
 
         addAddStyleSheets(arguments);
+
+        addAddScripts(arguments);
 
         addArgIfNotEmpty(arguments, "-subpackages", subpackages);
 
