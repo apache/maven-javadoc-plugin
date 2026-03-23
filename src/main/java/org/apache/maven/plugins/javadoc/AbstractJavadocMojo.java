@@ -1991,7 +1991,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         // ----------------------------------------------------------------------
         List<String> javadocArguments = new ArrayList<>();
 
-        if (JavaVersion.JAVA_VERSION.isAtLeast("23") && !disableNoFonts) {
+        if (javadocRuntimeVersion.isAtLeast("23") && !disableNoFonts) {
             javadocArguments.add("--no-fonts");
         }
 
@@ -2741,7 +2741,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         if (new File(stylesheetfile).exists()) {
             return Optional.of(new File(stylesheetfile));
         }
-        if (JavaVersion.JAVA_VERSION.isAtLeast("23")) {
+        if (javadocRuntimeVersion.isAtLeast("23")) {
             return getResource(
                     new File(new File(javadocOutputDirectory, "resource-files"), DEFAULT_CSS_NAME), stylesheetfile);
         }
