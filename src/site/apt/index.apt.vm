@@ -139,8 +139,6 @@ javadoc.exe(or .sh) @options @packages | @argfile
 
    * {{{./examples/javadoc-resources.html}Using Javadoc Resources}}
 
-   * {{{./examples/output-configuration.html}Using Alternative Output Directory}}
-
    * {{{./examples/stylesheet-configuration.html}Configuring Stylesheets}}
 
    * {{{./examples/help-configuration.html}Configuring Helpfile}}
@@ -154,8 +152,6 @@ javadoc.exe(or .sh) @options @packages | @argfile
    * {{{./examples/test-javadocs.html}Generating test Javadocs}}
 
    * {{{./examples/selective-javadocs-report.html}Selective Javadocs Reports}}
-
-   * {{{./examples/fix-javadocs.html}Fixing Javadoc Comments}}
 
    * {{{./examples/javadoc-nofork.html}Generate Javadoc without duplicate execution of phase generate-sources}}
 
