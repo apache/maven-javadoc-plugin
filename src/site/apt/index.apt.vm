@@ -78,7 +78,7 @@ javadoc.exe(or .sh) @options @packages | @argfile
      phase again. Note that this goal does require generation of class files before site generation, e.g. by invoking
      <<<mvn compile>>> or <<<mvn install>>>.
 
-   * {{{./test-aggregate-no-fork-mojo.html}javadoc:test-aggregate}} generates the test Javadoc files for an aggregator
+   * {{{./test-aggregate-no-fork-mojo.html}javadoc:test-aggregate-no-fork}} generates the test Javadoc files for an aggregator
      project. It executes the standard Javadoc tool and supports the parameters used by the tool without forking the
      <<<compile>>> phase again. Note that this goal does require generation of test class files before site generation,
      e.g. by invoking <<<mvn test-compile>>> or <<<mvn install>>>.
@@ -139,8 +139,6 @@ javadoc.exe(or .sh) @options @packages | @argfile
 
    * {{{./examples/javadoc-resources.html}Using Javadoc Resources}}
 
-   * {{{./examples/output-configuration.html}Using Alternative Output Directory}}
-
    * {{{./examples/stylesheet-configuration.html}Configuring Stylesheets}}
 
    * {{{./examples/help-configuration.html}Configuring Helpfile}}
@@ -154,8 +152,6 @@ javadoc.exe(or .sh) @options @packages | @argfile
    * {{{./examples/test-javadocs.html}Generating test Javadocs}}
 
    * {{{./examples/selective-javadocs-report.html}Selective Javadocs Reports}}
-
-   * {{{./examples/fix-javadocs.html}Fixing Javadoc Comments}}
 
    * {{{./examples/javadoc-nofork.html}Generate Javadoc without duplicate execution of phase generate-sources}}
 
