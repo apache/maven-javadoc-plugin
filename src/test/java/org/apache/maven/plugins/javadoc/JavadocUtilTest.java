@@ -628,6 +628,22 @@ class JavadocUtilTest {
         assertEquals(expectedWithJar, JavadocUtil.prunePaths(project, list, true));
     }
 
+    @Test
+    void testPrunePathsResolvesRelativePaths() {
+        // Regression test for MJAVADOC-812:
+        // docletPath with a relative path (e.g. "target/classes") was written verbatim to the
+        // javadoc options file. The javadoc tool runs from target/reports/testapidocs, so the
+        // relative path resolved to the wrong location, causing the wrong class to be loaded
+        // and triggering: AssertionError: ignored flag: -Xlint:-options on Java 25.
+        MavenProjectStub project = new MavenProjectStub();
+        project.setFile(new File(getBasedir(), "pom.xml"));
+
+        Collection<Path> result = JavadocUtil.prunePaths(project, Collections.singletonList("target/classes"), false);
+
+        assertFalse(result.isEmpty(), "relative docletPath should resolve to an existing directory");
+        result.forEach(p -> assertTrue(p.isAbsolute(), "resolved path must be absolute, was: " + p));
+    }
+
     /**
      * Method to test unifyPathSeparator()
      */

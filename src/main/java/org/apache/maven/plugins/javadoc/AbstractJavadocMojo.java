@@ -2892,7 +2892,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         if (!(docletPath == null || docletPath.isEmpty())) {
-            pathParts.add(JavadocUtil.unifyPathSeparator(docletPath));
+            for (Path path : JavadocUtil.prunePaths(project, Arrays.asList(JavadocUtil.splitPath(docletPath)), true)) {
+                pathParts.add(path.toString());
+            }
         }
 
         String path = StringUtils.join(pathParts.iterator(), File.pathSeparator);
