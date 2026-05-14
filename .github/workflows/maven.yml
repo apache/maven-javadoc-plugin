@@ -35,6 +35,6 @@ jobs:
         { "jdk": "8", "distribution": "temurin", "os": "macos-latest" },
         { "jdk": "8", "distribution": "adopt-openj9", "os": "macos-latest" },
         { "jdk": "25", "distribution": "adopt-openj9" },
-        { "jdk": "25", "distribution": "microsoft"},
+        { "jdk": "25", "distribution": "microsoft"}
       ]'
 
