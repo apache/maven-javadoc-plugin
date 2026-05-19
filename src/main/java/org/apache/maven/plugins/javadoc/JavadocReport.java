@@ -160,7 +160,7 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     /** {@inheritDoc} */
     @Override
     public String getOutputPath() {
-        return (isTest() ? "test" : "") + "apidocs" + "/index";
+        return (isTest() ? "test" : "") + destDir + "/index";
     }
 
     /** {@inheritDoc} */
@@ -275,7 +275,7 @@ public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPage
     /** {@inheritDoc} */
     @Override
     protected String getPluginReportOutputDirectory() {
-        return getReportOutputDirectory().getAbsolutePath() + "/" + (isTest() ? "test" : "") + "apidocs";
+        return getReportOutputDirectory().getAbsolutePath() + "/" + (isTest() ? "test" : "") + destDir;
     }
 
     /** {@inheritDoc} */
