@@ -29,6 +29,5 @@
 
   <artifactId>module-b</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
   <name>Module.B</name>
 </project>

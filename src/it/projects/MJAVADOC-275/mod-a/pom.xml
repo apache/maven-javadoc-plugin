@@ -29,7 +29,6 @@ under the License.
   </parent>
 
     <artifactId>MJAVADOC-275-mod-a</artifactId>
-  <version>0.1</version>
   <packaging>jar</packaging>
 
   <name>MJAVADOC - Module A</name>
