@@ -55,7 +55,7 @@ public class StaleHelper {
             for (String arg : args) {
                 if (arg.startsWith("@")) {
                     String name = arg.substring(1);
-                    options.addAll(Files.readAllLines(dir.resolve(name), SystemUtils.getExpectedEncoding()));
+                    options.addAll(Files.readAllLines(dir.resolve(name), EncodingUtils.getExpectedEncoding()));
                     ignored.add(name);
                 }
             }
@@ -106,7 +106,7 @@ public class StaleHelper {
         try {
             List<String> curdata = getStaleData(cmd);
             Files.createDirectories(path.getParent());
-            Files.write(path, curdata, SystemUtils.getExpectedEncoding());
+            Files.write(path, curdata, EncodingUtils.getExpectedEncoding());
         } catch (IOException e) {
             throw new MavenReportException("Error checking stale data", e);
         }
