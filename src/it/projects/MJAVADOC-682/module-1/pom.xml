@@ -29,7 +29,6 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>multiple-projects-same-module-name</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Module Version 1.x</name>
