@@ -29,7 +29,6 @@
 
   <artifactId>linkoffline-test-module2</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
   <url>http://myhost/module2</url>
 
   <dependencies>

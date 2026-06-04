@@ -29,7 +29,6 @@
 
   <artifactId>library</artifactId>
   <packaging>pom</packaging>
-  <version>1.0-SNAPSHOT</version>
   <name>Library</name>
 
   <modules>
