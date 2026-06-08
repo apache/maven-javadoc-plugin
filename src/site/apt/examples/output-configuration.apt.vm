@@ -28,8 +28,7 @@
 
 Using Alternative Output Directory
 
- To run the Javadocs reports in an other output directory, you need to configure Javadoc Plugin as follow:
-
+ To run the Javadocs reports in another output directory, you need to configure Javadoc Plugin as follows:
 +-----+
 <project>
   ...
