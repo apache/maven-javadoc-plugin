@@ -56,6 +56,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.Artifact;
@@ -4149,10 +4150,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         File optionsFile = new File(javadocOutputDirectory, OPTIONS_FILE_NAME);
 
         StringBuilder options = new StringBuilder();
-        options.append(StringUtils.join(arguments.iterator(), SystemUtils.LINE_SEPARATOR));
+        options.append(StringUtils.join(arguments.iterator(), System.lineSeparator()));
 
         try {
-            Files.write(optionsFile.toPath(), Collections.singleton(options), SystemUtils.getExpectedEncoding());
+            Files.write(optionsFile.toPath(), Collections.singleton(options), EncodingUtils.getExpectedEncoding());
         } catch (IOException e) {
             throw new MavenReportException(
                     "Unable to write '" + optionsFile.getName() + "' temporary file for command execution", e);
@@ -4191,7 +4192,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         try {
-            Files.write(argfileFile.toPath(), quotedFiles, SystemUtils.getExpectedEncoding());
+            Files.write(argfileFile.toPath(), quotedFiles, EncodingUtils.getExpectedEncoding());
         } catch (IOException e) {
             throw new MavenReportException(
                     "Unable to write '" + argfileFile.getName() + "' temporary file for command execution", e);
@@ -4218,7 +4219,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             FileUtils.fileWrite(
                     packagesFile.getAbsolutePath(),
                     null /* platform encoding */,
-                    StringUtils.join(packageNames.iterator(), SystemUtils.LINE_SEPARATOR));
+                    StringUtils.join(packageNames.iterator(), System.lineSeparator()));
         } catch (IOException e) {
             throw new MavenReportException(
                     "Unable to write '" + packagesFile.getName() + "' temporary file for command execution", e);
@@ -4820,7 +4821,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         if (javadocRuntimeVersion.isBefore("9")) {
             lineSeparator = " ";
         } else {
-            lineSeparator = " \\\\" + SystemUtils.LINE_SEPARATOR;
+            lineSeparator = " \\\\" + System.lineSeparator();
         }
 
         for (Tag tag : collectTags()) {
@@ -4993,7 +4994,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             Path cacheData = staleDataPath.toPath();
             List<String> prvdata;
             if (Files.isRegularFile(cacheData)) {
-                prvdata = Files.lines(cacheData, SystemUtils.getExpectedEncoding())
+                prvdata = Files.lines(cacheData, EncodingUtils.getExpectedEncoding())
                         .collect(Collectors.toList());
             } else {
                 prvdata = null;
