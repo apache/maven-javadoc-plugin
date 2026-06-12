@@ -62,8 +62,6 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
-import org.apache.maven.artifact.versioning.ArtifactVersion;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.doxia.tools.SiteTool;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
@@ -2502,13 +2500,13 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      */
     private Collection<File> getPathElements() throws MavenReportException {
         Set<File> classpathElements = new LinkedHashSet<>();
-        Map<String, Artifact> compileArtifactMap = new LinkedHashMap<>();
+        Set<Artifact> compileArtifacts = new LinkedHashSet<>();
 
         if (isTest()) {
             classpathElements.addAll(getProjectBuildOutputDirs(project));
         }
 
-        populateCompileArtifactMap(compileArtifactMap, project.getArtifacts());
+        populateCompileArtifacts(compileArtifacts, project.getArtifacts());
 
         if (isAggregator()) {
             Collection<MavenProject> aggregatorProjects = getAggregatedProjects();
@@ -2554,7 +2552,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                                 .getArtifactResults()) {
                             List<Artifact> artifacts =
                                     Collections.singletonList(RepositoryUtils.toArtifact(artifactResult.getArtifact()));
-                            populateCompileArtifactMap(compileArtifactMap, artifacts);
+                            populateCompileArtifacts(compileArtifacts, artifacts);
 
                             sb.append(artifactResult.getArtifact().getFile()).append('\n');
                         }
@@ -2570,7 +2568,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             }
         }
 
-        for (Artifact a : compileArtifactMap.values()) {
+        for (Artifact a : compileArtifacts) {
             classpathElements.add(a.getFile());
         }
 
@@ -2627,13 +2625,13 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * Method to put the artifacts in the hashmap.
+     * Method to put the artifacts in the set.
      *
-     * @param compileArtifactMap the hashmap that will contain the artifacts
-     * @param artifactList       the list of artifacts that will be put in the map
+     * @param compileArtifacts the set that will contain the artifacts
+     * @param artifactList     the list of artifacts that will be put in the set
      * @throws MavenReportException if any
      */
-    private void populateCompileArtifactMap(Map<String, Artifact> compileArtifactMap, Collection<Artifact> artifactList)
+    private void populateCompileArtifacts(Set<Artifact> compileArtifacts, Collection<Artifact> artifactList)
             throws MavenReportException {
         if (artifactList == null) {
             return;
@@ -2648,19 +2646,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                                 + newArtifact.getGroupId() + ":" + newArtifact.getArtifactId() + ":"
                                 + newArtifact.getVersion());
             }
-
-            if (compileArtifactMap.get(newArtifact.getDependencyConflictId()) != null) {
-                Artifact oldArtifact = compileArtifactMap.get(newArtifact.getDependencyConflictId());
-
-                ArtifactVersion oldVersion = new DefaultArtifactVersion(oldArtifact.getVersion());
-                ArtifactVersion newVersion = new DefaultArtifactVersion(newArtifact.getVersion());
-                if (newVersion.compareTo(oldVersion) > 0) {
-                    compileArtifactMap.put(newArtifact.getDependencyConflictId(), newArtifact);
-                }
-            } else {
-                compileArtifactMap.put(newArtifact.getDependencyConflictId(), newArtifact);
-            }
         }
+
+        compileArtifacts.addAll(artifactList);
     }
 
     /**
