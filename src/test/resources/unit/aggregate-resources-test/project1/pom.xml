@@ -26,7 +26,6 @@ under the License.
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>project1</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>project1</name>
 </project>

@@ -32,7 +32,6 @@
   <groupId>com.mycompany.mymojo</groupId>
   <artifactId>mymojo</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>1.0-SNAPSHOT</version>
 
   <name>mymojo Maven Mojo</name>
   <url>http://maven.apache.org</url>

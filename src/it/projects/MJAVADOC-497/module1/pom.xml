@@ -28,9 +28,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.apache.maven.plugins.maven-javadoc-plugin.it</groupId>
   <artifactId>mjavadoc497-module1</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <name>Test MJAVADOC-497 Module 1</name>
 
 </project>
