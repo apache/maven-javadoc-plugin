@@ -210,7 +210,11 @@ public class TestJavadocJarMojo extends JavadocJarMojo {
     protected ScopeDependencyFilter getDependencyScopeFilter() {
         return new ScopeDependencyFilter(
                 Arrays.asList(
-                        Artifact.SCOPE_COMPILE, Artifact.SCOPE_PROVIDED, Artifact.SCOPE_SYSTEM, Artifact.SCOPE_TEST),
+                        Artifact.SCOPE_COMPILE,
+                        Artifact.SCOPE_PROVIDED,
+                        Artifact.SCOPE_SYSTEM,
+                        Artifact.SCOPE_TEST,
+                        Artifact.SCOPE_RUNTIME),
                 null);
     }
 
