@@ -1303,4 +1303,23 @@ class JavadocReportTest {
         assertTrue(optionsContent.contains("-helpfile"));
         assertTrue(optionsContent.contains("'" + help.toFile().getAbsolutePath().replaceAll("\\\\", "/") + "'"));
     }
+
+    /** It should include only single class in javadoc. */
+    public void testSubpackagesExcludePackages() throws Exception {
+        Path testPom = unit.resolve("subpackages-exclude-packages-test/pom.xml");
+
+        JavadocReport mojo = lookupMojo(testPom);
+
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "target/test/unit/subpackages-exclude-packages-test/target/site/apidocs")
+                .toPath();
+
+        // check if the classes in the specified subpackages were included
+        assertThat(apidocs.resolve("org/apache/project/IncludeClass.html")).exists();
+
+        // check the excluded packages
+        assertThat(apidocs.resolve("org/apache/internal")).doesNotExist();
+        assertThat(apidocs.resolve("io")).doesNotExist();
+    }
 }
