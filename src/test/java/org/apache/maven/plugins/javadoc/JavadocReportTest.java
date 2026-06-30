@@ -998,9 +998,7 @@ class JavadocReportTest {
             //         'http://commons.apache.org/logging/apidocs'"
             //             ) );
         } finally {
-            if (proxyServer != null) {
-                proxyServer.stop();
-            }
+            proxyServer.stop();
         }
     }
 
