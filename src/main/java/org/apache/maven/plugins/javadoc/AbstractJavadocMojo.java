@@ -1618,8 +1618,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * This is used to skip the generation if nothing has changed.
      * </p>
      *
+     * @deprecated this mechanism was broken and has been removed
      * @since 3.2.0
      */
+    @Deprecated
     @Parameter(
             property = "staleDataPath",
             defaultValue = "${project.build.directory}/maven-javadoc-plugin-stale-data.txt")
@@ -4971,70 +4973,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @throws MavenReportException if any errors occur
      */
     private void executeJavadocCommandLine(Commandline cmd, File javadocOutputDirectory) throws MavenReportException {
-        if (staleDataPath != null) {
-            if (!isUpToDate(cmd)) {
-                doExecuteJavadocCommandLine(cmd, javadocOutputDirectory);
-                StaleHelper.writeStaleData(cmd, staleDataPath.toPath());
-            }
-        } else {
-            doExecuteJavadocCommandLine(cmd, javadocOutputDirectory);
-        }
-    }
-
-    /**
-     * Check if the javadoc is uptodate or not
-     *
-     * @param cmd                    not null
-     * @return <code>true</code> is the javadoc is uptodate, <code>false</code> otherwise
-     * @throws MavenReportException  if any error occur
-     */
-    private boolean isUpToDate(Commandline cmd) throws MavenReportException {
-        try {
-            List<String> curdata = StaleHelper.getStaleData(cmd);
-            Path cacheData = staleDataPath.toPath();
-            List<String> prvdata;
-            if (Files.isRegularFile(cacheData)) {
-                prvdata = Files.lines(cacheData, EncodingUtils.getExpectedEncoding())
-                        .collect(Collectors.toList());
-            } else {
-                prvdata = null;
-            }
-            if (curdata.equals(prvdata)) {
-                getLog().debug("Skipping javadoc generation, everything is up to date.");
-                return true;
-            } else {
-                if (prvdata == null) {
-                    getLog().debug("No previous run data found, generating javadoc.");
-                } else {
-                    getLog().debug("Configuration changed, re-generating javadoc.");
-                    if (getLog().isDebugEnabled()) {
-                        List<String> newStrings = new ArrayList<>(curdata);
-                        List<String> remStrings = new ArrayList<>(prvdata);
-                        newStrings.removeAll(prvdata);
-                        remStrings.removeAll(curdata);
-                        if (!remStrings.isEmpty()) {
-                            getLog().debug("     Removed: " + String.join(", ", remStrings));
-                        }
-                        if (!newStrings.isEmpty()) {
-                            getLog().debug("     Added: " + String.join(", ", newStrings));
-                        }
-                    }
-                }
-            }
-        } catch (IOException e) {
-            throw new MavenReportException("Error checking uptodate status", e);
-        }
-        return false;
-    }
-
-    /**
-     * Execute the Javadoc command line
-     *
-     * @param cmd                    not null
-     * @param javadocOutputDirectory not null
-     * @throws MavenReportException if any errors occur
-     */
-    private void doExecuteJavadocCommandLine(Commandline cmd, File javadocOutputDirectory) throws MavenReportException {
         if (getLog().isDebugEnabled()) {
             // no quoted arguments
             getLog().debug(CommandLineUtils.toString(cmd.getCommandline()).replaceAll("'", ""));
