@@ -526,6 +526,8 @@ under the License.
               <environmentVariables>
                 <!-- required for MJAVADOC-538 -->
                 <_JAVA_OPTIONS>-Dabc=def</_JAVA_OPTIONS>
+                <!-- clen up the MAVEN_ARGS for the ITs -->
+                <MAVEN_ARGS />
               </environmentVariables>
             </configuration>
           </plugin>
