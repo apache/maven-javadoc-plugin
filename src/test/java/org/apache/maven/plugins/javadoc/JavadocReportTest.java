@@ -358,7 +358,7 @@ class JavadocReportTest {
     void testCustomConfiguration(JavadocReport mojo) throws Exception {
         mojo.execute();
 
-        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
+        Path apidocs = new File(getBasedir(), "/target/site/myapidocs").toPath();
 
         // check if there is a tree page generated (notree == true)
         assertThat(apidocs.resolve("overview-tree.html")).doesNotExist();
