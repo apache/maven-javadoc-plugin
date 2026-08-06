@@ -1,36 +1,27 @@
- ------
- Generating Test Javadocs
- ------
- Vincent Siveton
- ------
- 2009-08-19
- ------
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
 
-~~ Licensed to the Apache Software Foundation (ASF) under one
-~~ or more contributor license agreements.  See the NOTICE file
-~~ distributed with this work for additional information
-~~ regarding copyright ownership.  The ASF licenses this file
-~~ to you under the Apache License, Version 2.0 (the
-~~ "License"); you may not use this file except in compliance
-~~ with the License.  You may obtain a copy of the License at
-~~
-~~   http://www.apache.org/licenses/LICENSE-2.0
-~~
-~~ Unless required by applicable law or agreed to in writing,
-~~ software distributed under the License is distributed on an
-~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-~~ KIND, either express or implied.  See the License for the
-~~ specific language governing permissions and limitations
-~~ under the License.
+http://www.apache.org/licenses/LICENSE-2.0
 
-~~ NOTE: For help with the syntax of this file, see:
-~~ http://maven.apache.org/doxia/references/apt-format.html
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
 
-Generating Test Javadocs
+# Generating Test Javadocs
 
- Here is a typical project used by the Maven Javadoc plugin:
+Here is a typical project used by the Maven Javadoc plugin:
 
-+-----+
+```unknown
 
 yourproject
   |-- src
@@ -62,13 +53,14 @@ yourproject
                   `-- package.html
                     |-- doc-files
                      `-- app.png
-+-----+
+```
 
-* Using the <javadoc:test-javadoc> goal
+Using the _javadoc:test-javadoc_ goal
+-------------------------------------
 
- You need to configure the Maven Javadoc plugin in your pom.xml, for instance:
+You need to configure the Maven Javadoc plugin in your pom.xml, for instance:
 
-+-----+
+```xml
 
 <project>
   ...
@@ -79,11 +71,11 @@ yourproject
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>${project.version}</version>
         <configuration>
-          <doctitle>My API for \${project.name} \${project.version}</doctitle> <!-- Used by javadoc:javadoc goal -->
-          <windowtitle>My API for \${project.name} \${project.version}</windowtitle> <!-- Used by javadoc:javadoc goal -->
+          <doctitle>My API for ${esc.d}{project.name} ${esc.d}{project.version}</doctitle> <!-- Used by javadoc:javadoc goal -->
+          <windowtitle>My API for ${esc.d}{project.name} ${esc.d}{project.version}</windowtitle> <!-- Used by javadoc:javadoc goal -->
 
-          <testDoctitle>My Test API for \${project.name} \${project.version}</testDoctitle> <!-- Used by javadoc:test-javadoc goal -->
-          <testWindowtitle>My Test API for \${project.name} \${project.version}</testWindowtitle> <!-- Used by javadoc:test-javadoc goal -->
+          <testDoctitle>My Test API for ${esc.d}{project.name} ${esc.d}{project.version}</testDoctitle> <!-- Used by javadoc:test-javadoc goal -->
+          <testWindowtitle>My Test API for ${esc.d}{project.name} ${esc.d}{project.version}</testWindowtitle> <!-- Used by javadoc:test-javadoc goal -->
           ...
         </configuration>
       </plugin>
@@ -91,31 +83,22 @@ yourproject
   </build>
   ...
 </project>
-+-----+
+```
 
- You could call <mvn javadoc:test-javadoc> or <mvn site>. See
- {{{../test-javadoc-mojo.html}javadoc:test-javadoc parameters}} for more informations.
+You could call _mvn javadoc:test-javadoc_ or _mvn site_. See [javadoc:test-javadoc parameters](../test-javadoc-mojo.html) for more informations.
 
-  <<Notes>>:
+**Notes**:
 
-  [[1]] If you don't set \<testDoctitle/\> or \<testWindowtitle/\> parameters, the Test Javadoc report uses the same
- configuration (i.e. \<doctitle/\> or \<windowtitle/\> parameters) that Javadoc report uses (backward compatible reasons).
+1. If you don't set &lt;testDoctitle/&gt; or &lt;testWindowtitle/&gt; parameters, the Test Javadoc report uses the same configuration (i.e. &lt;doctitle/&gt; or &lt;windowtitle/&gt; parameters) that Javadoc report uses (backward compatible reasons).
+1. To run the reports selectively, you need to include only the reports that you prefer. Read the [Selective Javadocs Reports](./selective-javadocs-report.html) part for more information.
+1. To allow the copy of resources, you need to add the &lt;docfilessubdirs/&gt; parameter. Read the [Using Javadoc Resources](./javadoc-resources.html) page for more information.
 
-  [[2]] To run the reports selectively, you need to include only the reports that you prefer.
-  Read the {{{./selective-javadocs-report.html}Selective Javadocs Reports}} part for more information.
+Using the &lt;reportSets/&gt; configuration parameter
+-----------------------------------------------------
 
-  [[3]] To allow the copy of resources, you need to add the \<docfilessubdirs/\> parameter. Read the
-  {{{./javadoc-resources.html}Using Javadoc Resources}} page for more information.
+You could also want a different kind of configuration for the Javadoc report and the test Javadoc report. For this, you need to configure the Maven Javadoc plugin in your pom.xml to handle the &lt;reportSets/&gt; configuration parameter, for instance:
 
-  []
-
-* Using the \<reportSets/\> configuration parameter
-
- You could also want a different kind of configuration for the Javadoc report and the test Javadoc report.
- For this, you need to configure the Maven Javadoc plugin in your pom.xml to handle the \<reportSets/\> configuration
- parameter, for instance:
-
-+-----+
+```xml
 
 <project>
   ...
@@ -129,8 +112,8 @@ yourproject
           <reportSet>
             <id>html</id>
             <configuration>
-              <doctitle>My API for \${project.name} \${project.version}</doctitle>
-              <windowtitle>My API for \${project.name} \${project.version}</windowtitle>
+              <doctitle>My API for ${esc.d}{project.name} ${esc.d}{project.version}</doctitle>
+              <windowtitle>My API for ${esc.d}{project.name} ${esc.d}{project.version}</windowtitle>
               ...
             </configuration>
             <reports>
@@ -140,8 +123,8 @@ yourproject
           <reportSet>
             <id>test-html</id>
             <configuration>
-              <testDoctitle>My Test API for \${project.name} \${project.version}</testDoctitle>
-              <testWindowtitle>My Test API for \${project.name} \${project.version}</testWindowtitle>
+              <testDoctitle>My Test API for ${esc.d}{project.name} ${esc.d}{project.version}</testDoctitle>
+              <testWindowtitle>My Test API for ${esc.d}{project.name} ${esc.d}{project.version}</testWindowtitle>
               ...
             </configuration>
             <reports>
@@ -154,6 +137,6 @@ yourproject
   </reporting>
   ...
 </project>
-+-----+
+```
 
- You need to call <mvn site>.
+You need to call _mvn site_.

@@ -1,43 +1,32 @@
- ------
- Usage
- ------
- Vincent Siveton
- Maria Odea Ching
- ------
- 2009-09-11
- ------
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
 
-~~ Licensed to the Apache Software Foundation (ASF) under one
-~~ or more contributor license agreements.  See the NOTICE file
-~~ distributed with this work for additional information
-~~ regarding copyright ownership.  The ASF licenses this file
-~~ to you under the Apache License, Version 2.0 (the
-~~ "License"); you may not use this file except in compliance
-~~ with the License.  You may obtain a copy of the License at
-~~
-~~   http://www.apache.org/licenses/LICENSE-2.0
-~~
-~~ Unless required by applicable law or agreed to in writing,
-~~ software distributed under the License is distributed on an
-~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-~~ KIND, either express or implied.  See the License for the
-~~ specific language governing permissions and limitations
-~~ under the License.
+http://www.apache.org/licenses/LICENSE-2.0
 
-~~ NOTE: For help with the syntax of this file, see:
-~~ http://maven.apache.org/doxia/references/apt-format.html
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
 
+# Usage
 
-Usage
+The Javadoc Plugin generates javadocs using the Javadoc tool. The following examples describe the basic usage of the Plugin.
 
- The Javadoc Plugin generates javadocs using the Javadoc tool. The following examples describe the basic usage of the
- Plugin.
+Generate Javadocs As Part Of Project Reports
+--------------------------------------------
 
-* Generate Javadocs As Part Of Project Reports
+To generate javadocs as part of the site generation, you should add the Javadoc Plugin in the &lt;reporting&gt; section of your pom:
 
- To generate javadocs as part of the site generation, you should add the Javadoc Plugin in the \<reporting\> section of your pom:
-
-+-----+
+```xml
 <project>
   ...
   <reporting>
@@ -55,17 +44,16 @@ Usage
   </reporting>
   ...
 </project>
-+-----+
+```
 
- When you execute <<<mvn site>>>, the javadocs will be generated and included in the generated site. A link to the javadocs
- will be added in the Project Reports menu.
+When you execute `mvn site`, the javadocs will be generated and included in the generated site. A link to the javadocs will be added in the Project Reports menu.
 
-* Generate Standalone Javadocs
+Generate Standalone Javadocs
+----------------------------
 
- To generate standalone javadocs for the project, you could add the Javadoc Plugin in the \<build\> section of your pom
- (if no configuration defined, the plugin uses default values):
+To generate standalone javadocs for the project, you could add the Javadoc Plugin in the &lt;build&gt; section of your pom (if no configuration defined, the plugin uses default values):
 
-+-----+
+```xml
 <project>
   ...
   <build>
@@ -83,11 +71,11 @@ Usage
   </build>
   ...
 </project>
-+-----+
+```
 
- And execute any of the following commands:
+And execute any of the following commands:
 
-+-----+
+```shell
 mvn javadoc:javadoc
 mvn javadoc:jar
 mvn javadoc:aggregate
@@ -96,25 +84,22 @@ mvn javadoc:test-javadoc
 mvn javadoc:test-jar
 mvn javadoc:test-aggregate
 mvn javadoc:test-aggregate-jar
-+-----+
+```
 
- For all <<<jar>>> goals, the javadocs are first generated and then packaged into a jar file.
+For all `jar` goals, the javadocs are first generated and then packaged into a jar file.
 
-* Javadoc Configuration
+Javadoc Configuration
+---------------------
 
- The Javadoc Plugin supports a large number of configuration parameters. Each configuration parameter turns into
- a tag name.
+The Javadoc Plugin supports a large number of configuration parameters. Each configuration parameter turns into a tag name.
 
- Please refer to the {{{./javadoc-mojo.html}Javadoc Plugin Documentation}} for a listing of these parameters. Most
- of these parameters are passed directly to the Javadoc tool itself.
+Please refer to the [Javadoc Plugin Documentation](./javadoc-mojo.html) for a listing of these parameters. Most of these parameters are passed directly to the Javadoc tool itself.
 
- <<IMPORTANT NOTE>>: configuring the Javadoc plugin in the \<reporting/\> or \<build/\> elements in the pom have
- <<NOT>> the same behavior as described in the
- {{{http://maven.apache.org/guides/mini/guide-configuring-plugins.html#Using_the_reporting_Tag_VS_build_Tag}Guide to Configuring Plug-ins}}.
+**IMPORTANT NOTE**: configuring the Javadoc plugin in the &lt;reporting/&gt; or &lt;build/&gt; elements in the pom have **NOT** the same behavior as described in the [Guide to Configuring Plug-ins](http://maven.apache.org/guides/mini/guide-configuring-plugins.html#Using_the_reporting_Tag_VS_build_Tag).
 
- For instance, if you have the following snippet:
+For instance, if you have the following snippet:
 
-+-----+
+```xml
 <project>
   <build>
     <plugins>
@@ -144,13 +129,11 @@ mvn javadoc:test-aggregate-jar
     </plugins>
   </reporting>
 </project>
-+-----+
+```
 
- [<<<mvn site>>>] It will generate the Javadoc for public members (defined in \<reporting/\>) using the given
- stylesheet (defined in \<reporting/\>), and with a help page (default value for
- {{{./javadoc-mojo.html#nohelp}nohelp}} is false).
-
- [<<<mvn javadoc:javadoc>>>] It will generate the Javadoc for private members (defined in \<build/\>) using the
- stylesheet (defined in \<reporting/\>), and with no help page (defined in \<build/\>).
-
- []
+<dl>
+<dt><code>mvn site</code></dt>
+<dd>It will generate the Javadoc for public members (defined in &lt;reporting/&gt;) using the given stylesheet (defined in &lt;reporting/&gt;), and with a help page (default value for <a href="./javadoc-mojo.html#nohelp">nohelp</a> is false).</dd>
+<dt><code>mvn javadoc:javadoc</code></dt>
+<dd>It will generate the Javadoc for private members (defined in &lt;build/&gt;) using the stylesheet (defined in &lt;reporting/&gt;), and with no help page (defined in &lt;build/&gt;).</dd>
+</dl>

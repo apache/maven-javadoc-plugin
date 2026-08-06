@@ -1,37 +1,27 @@
- ------
- Aggregating Javadocs for Multi-Projects
- ------
- Maria Odea Ching
- Vincent Siveton
- ------
- 2009-08-04
- ------
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
 
-~~ Licensed to the Apache Software Foundation (ASF) under one
-~~ or more contributor license agreements.  See the NOTICE file
-~~ distributed with this work for additional information
-~~ regarding copyright ownership.  The ASF licenses this file
-~~ to you under the Apache License, Version 2.0 (the
-~~ "License"); you may not use this file except in compliance
-~~ with the License.  You may obtain a copy of the License at
-~~
-~~   http://www.apache.org/licenses/LICENSE-2.0
-~~
-~~ Unless required by applicable law or agreed to in writing,
-~~ software distributed under the License is distributed on an
-~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-~~ KIND, either express or implied.  See the License for the
-~~ specific language governing permissions and limitations
-~~ under the License.
+http://www.apache.org/licenses/LICENSE-2.0
 
-~~ NOTE: For help with the syntax of this file, see:
-~~ http://maven.apache.org/doxia/references/apt-format.html
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
 
-Aggregating Javadocs For Multi-Projects
+# Aggregating Javadocs For Multi-Projects
 
- For example, consider the following directory structure:
+For example, consider the following directory structure:
 
-+-----+
+```unknown
 
 Project
   |-- pom.xml
@@ -45,14 +35,11 @@ Project
   |   `-- pom.xml
   `-- Module5
     `-- pom.xml
+```
 
-+-----+
+Since 3.1.0 the `aggregate` has changed a little bit. It'll generate aggregated reports at every level. To get only an aggregated project at root level, you need to configure the pom like:
 
- Since 3.1.0 the <<<aggregate>>> has changed a little bit. It'll generate aggregated
- reports at every level.
- To get only an aggregated project at root level, you need to configure the pom like:
-
-+-----+
+```xml
 <project>
   ...
   <reporting>
@@ -82,17 +69,14 @@ Project
   </reporting>
   ...
 </project>
-+-----+
+```
 
-* Using The <<<aggregate>>> Goals
+Using The `aggregate` Goals
+---------------------------
 
- The {{{../javadoc-mojo.html#aggregate}\<aggregate/\>}} parameter doesn't include generate source directories defined
- using the {{{http://mojo.codehaus.org/build-helper-maven-plugin/add-source-mojo.html}build-helper:add-source}}. In
- this case, you need to use the <<<aggregate>>> goal and <<<test-aggregate>>> goals. You could define these goals in the
- \<build/\> element (using the \<execution/\> tag) or \<reporting/\> element (using the \<reportSet/\> tag) as shown
- below. For more information, refer to the {{{./selective-javadocs-report.html}Selective Javadocs Reports page}}.
+The [&lt;aggregate/&gt;](../javadoc-mojo.html#aggregate) parameter doesn't include generate source directories defined using the [build-helper:add-source](http://mojo.codehaus.org/build-helper-maven-plugin/add-source-mojo.html). In this case, you need to use the `aggregate` goal and `test-aggregate` goals. You could define these goals in the &lt;build/&gt; element (using the &lt;execution/&gt; tag) or &lt;reporting/&gt; element (using the &lt;reportSet/&gt; tag) as shown below. For more information, refer to the [Selective Javadocs Reports page](./selective-javadocs-report.html).
 
-+-----+
+```xml
 <project>
   ...
   <build>
@@ -125,9 +109,9 @@ Project
   </build>
   ...
 </project>
-+-----+
+```
 
-+-----+
+```xml
 
 <project>
   ...
@@ -170,17 +154,14 @@ Project
   </reporting>
   ...
 </project>
-+-----+
+```
 
-* Aggregating Javadocs For Modularized projects
+Aggregating Javadocs For Modularized projects
+---------------------------------------------
 
-  Since Java 9 it is possible to add module descriptors to your projects, which can have an impact on the generated reports.
-  Be aware that is not possible to have a mixture of named and unnamed modules. Ideally every Maven module has a Java module descriptor,
-  but this is not always possible, e.g. due to split packages of dependencies.
-  In such case you must have a jar containing a <<<META-INF/MANIFEST.MF>>> with an entry for the <<<Automatic-Module-Name>>>.
-  In other words: ensure to call <<<package javadoc:aggregate>>>, because the manifest file is only being read from jar, not from directory.
+Since Java 9 it is possible to add module descriptors to your projects, which can have an impact on the generated reports. Be aware that is not possible to have a mixture of named and unnamed modules. Ideally every Maven module has a Java module descriptor, but this is not always possible, e.g. due to split packages of dependencies. In such case you must have a jar containing a `META-INF/MANIFEST.MF` with an entry for the `Automatic-Module-Name`. In other words: ensure to call `package javadoc:aggregate`, because the manifest file is only being read from jar, not from directory.
 
-+-----+
+```xml
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
@@ -192,33 +173,27 @@ Project
             </archive>
           </configuration>
         </plugin>
-+-----+
+```
 
-  Occasionally, automatic modules need to import named modules. For example,
+Occasionally, automatic modules need to import named modules. For example,
 
-+-----+
+```unknown
         error: package org.w3c.dom is not visible
         (package org.w3c.dom is declared in module java.xml, but module foobar does not read it)
-+-----+
+```
 
-  can be solved by adding the relevant --add-modules options to the plugin configuration:
+can be solved by adding the relevant \-\-add-modules options to the plugin configuration:
 
-+-----+
+```xml
         <additionalOptions>
           <option>--add-modules</option>
           <option>java.xml</option>
         </additionalOptions>
-+-----+
+```
 
- The Javadoc plugin contains several <<<aggregate>>> goals to be use with an aggregator project. Here is the full list
- of all <<<aggregate>>> goals:
+The Javadoc plugin contains several `aggregate` goals to be use with an aggregator project. Here is the full list of all `aggregate` goals:
 
-   * {{{../aggregate-mojo.html}javadoc:aggregate}} to generate the Javadoc files.
-
-   * {{{../test-aggregate-mojo.html}javadoc:test-aggregate}} to generate the test Javadoc files.
-
-   * {{{../aggregate-jar-mojo.html}javadoc:aggregate-jar}} to create an archive file of the Javadoc files.
-
-   * {{{../test-aggregate-jar-mojo.html}javadoc:test-aggregate-jar}} to create an archive file of the test Javadoc files.
-
-   []
+- [javadoc:aggregate](../aggregate-mojo.html) to generate the Javadoc files.
+- [javadoc:test-aggregate](../test-aggregate-mojo.html) to generate the test Javadoc files.
+- [javadoc:aggregate-jar](../aggregate-jar-mojo.html) to create an archive file of the Javadoc files.
+- [javadoc:test-aggregate-jar](../test-aggregate-jar-mojo.html) to create an archive file of the test Javadoc files.

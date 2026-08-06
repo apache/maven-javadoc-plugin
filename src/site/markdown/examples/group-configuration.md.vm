@@ -1,43 +1,29 @@
- ------
- Grouping Packages
- ------
- Vincent Siveton
- Maria Odea Ching
- ------
- 2009-09-12
- ------
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
 
-~~ Licensed to the Apache Software Foundation (ASF) under one
-~~ or more contributor license agreements.  See the NOTICE file
-~~ distributed with this work for additional information
-~~ regarding copyright ownership.  The ASF licenses this file
-~~ to you under the Apache License, Version 2.0 (the
-~~ "License"); you may not use this file except in compliance
-~~ with the License.  You may obtain a copy of the License at
-~~
-~~   http://www.apache.org/licenses/LICENSE-2.0
-~~
-~~ Unless required by applicable law or agreed to in writing,
-~~ software distributed under the License is distributed on an
-~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-~~ KIND, either express or implied.  See the License for the
-~~ specific language governing permissions and limitations
-~~ under the License.
+http://www.apache.org/licenses/LICENSE-2.0
 
-~~ NOTE: For help with the syntax of this file, see:
-~~ http://maven.apache.org/doxia/references/apt-format.html
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
 
-Grouping Packages
+# Grouping Packages
 
- To set a grouping for different packages, use the {{{../javadoc-mojo.html#groups}\<groups/\>}} parameter as shown
- below. Each group will be consist of a \<title/\> and a \<packages/\> (as String). The \<packages/\> element supports
- wildcard (*) to allow subpackages. If more than one package is to be included, each package name must be separated
- colon (:) separated (similar to the
- {{{http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#group}Javadoc Tool}}).
+To set a grouping for different packages, use the [&lt;groups/&gt;](../javadoc-mojo.html#groups) parameter as shown below. Each group will be consist of a &lt;title/&gt; and a &lt;packages/&gt; (as String). The &lt;packages/&gt; element supports wildcard (*) to allow subpackages. If more than one package is to be included, each package name must be separated colon (:) separated (similar to the [Javadoc Tool](http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#group)).
 
- For instance, with the following packages:
+For instance, with the following packages:
 
-+-----+
+```unknown
 com.mycompany.myapp
 com.mycompany.myapp.package1
 com.mycompany.myapp.package1.subpackage1
@@ -48,11 +34,11 @@ com.mycompany.myapp.package2
 com.mycompany.myapp.package2.subpackage4
 com.mycompany.myapp.package2.subpackage5
 com.mycompany.myapp.package2.util
-+-----+
+```
 
-  You could have the following configuration:
+You could have the following configuration:
 
-+-----+
+```xml
 <project>
   ...
   <reporting> (or <build>)
@@ -150,4 +136,4 @@ com.mycompany.myapp.package2.util
   </reporting> (or </build>)
   ...
 </project>
-+-----+
+```

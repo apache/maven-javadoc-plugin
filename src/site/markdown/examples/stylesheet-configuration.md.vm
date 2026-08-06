@@ -1,114 +1,99 @@
- ------
- Configuring Stylesheets
- ------
- Maria Odea Ching
- Vincent Siveton
- ------
- 2009-08-04
- ------
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
 
-~~ Licensed to the Apache Software Foundation (ASF) under one
-~~ or more contributor license agreements.  See the NOTICE file
-~~ distributed with this work for additional information
-~~ regarding copyright ownership.  The ASF licenses this file
-~~ to you under the Apache License, Version 2.0 (the
-~~ "License"); you may not use this file except in compliance
-~~ with the License.  You may obtain a copy of the License at
-~~
-~~   http://www.apache.org/licenses/LICENSE-2.0
-~~
-~~ Unless required by applicable law or agreed to in writing,
-~~ software distributed under the License is distributed on an
-~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-~~ KIND, either express or implied.  See the License for the
-~~ specific language governing permissions and limitations
-~~ under the License.
+http://www.apache.org/licenses/LICENSE-2.0
 
-~~ NOTE: For help with the syntax of this file, see:
-~~ http://maven.apache.org/doxia/references/apt-format.html
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
 
-Configuring Stylesheets
+# Configuring Stylesheets
 
- To apply minor styling adjustments it is recommended to just configure additional stylesheets (in addition to the javadoc generated CSS) via 
- {{{../javadoc-mojo.html#addstylesheets}\<addStylesheets/\>}} (supported since 3.3.0).
+To apply minor styling adjustments it is recommended to just configure additional stylesheets (in addition to the javadoc generated CSS) via [&lt;addStylesheets/&gt;](../javadoc-mojo.html#addstylesheets) (supported since 3.3.0).
 
- If a custom {{{../javadoc-mojo.html#stylesheetfile}\<stylesheetfile/\>}} parameter is specified the javadoc generated CSS is completely replaced with
- just the given CSS:
+If a custom [&lt;stylesheetfile/&gt;](../javadoc-mojo.html#stylesheetfile) parameter is specified the javadoc generated CSS is completely replaced with just the given CSS:
 
- * if {{{../javadoc-mojo.html#stylesheetfile}\<stylesheetfile/\>}} is a given file, you could use an absolute or a
- relative path, for instance:
+- if [&lt;stylesheetfile/&gt;](../javadoc-mojo.html#stylesheetfile) is a given file, you could use an absolute or a relative path, for instance:
 
-+-----+
-<project>
-  ...
-  <reporting> (or <build>)
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${project.version}</version>
-        <configuration>
-          <stylesheetfile>${basedir}/path/to/your/stylesheetfile.css</stylesheetfile>
-          ...
-        </configuration>
-      </plugin>
-    </plugins>
-    ...
-  </reporting> (or </build>)
-  ...
-</project>
-+-----+
+    ```xml
+    <project>
+      ...
+      <reporting> (or <build>)
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>${project.version}</version>
+            <configuration>
+              <stylesheetfile>${basedir}/path/to/your/stylesheetfile.css</stylesheetfile>
+              ...
+            </configuration>
+          </plugin>
+        </plugins>
+        ...
+      </reporting> (or </build>)
+      ...
+    </project>
+    ```
 
- * since 2.6, {{{../javadoc-mojo.html#stylesheetfile}\<stylesheetfile/\>}} could be a resource in your project
- directory, i.e. <<<src/main/java>>>, <<<src/main/resources>>> or <<<src/main/javadoc>>>, for instance:
+- since 2.6, [&lt;stylesheetfile/&gt;](../javadoc-mojo.html#stylesheetfile) could be a resource in your project directory, i.e. `src/main/java`, `src/main/resources` or `src/main/javadoc`, for instance:
 
-+-----+
-<project>
-  ...
-  <reporting> (or <build>)
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${project.version}</version>
-        <configuration>
-          <stylesheetfile>path/to/your/stylesheet.css</stylesheetfile>
-          ...
-        </configuration>
-      </plugin>
-    </plugins>
-    ...
-  </reporting> (or </build>)
-  ...
-</project>
-+-----+
+    ```xml
+    <project>
+      ...
+      <reporting> (or <build>)
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>${project.version}</version>
+            <configuration>
+              <stylesheetfile>path/to/your/stylesheet.css</stylesheetfile>
+              ...
+            </configuration>
+          </plugin>
+        </plugins>
+        ...
+      </reporting> (or </build>)
+      ...
+    </project>
+    ```
 
- * since 2.6, {{{../javadoc-mojo.html#stylesheetfile}\<stylesheetfile/\>}} could be a resource in the Javadoc plugin
- dependencies, for instance:
+- since 2.6, [&lt;stylesheetfile/&gt;](../javadoc-mojo.html#stylesheetfile) could be a resource in the Javadoc plugin dependencies, for instance:
 
-+-----+
-<project>
-  ...
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${project.version}</version>
-        <configuration>
-          <stylesheetfile>path/to/your/stylesheet.css</stylesheetfile>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>groupId</groupId>
-            <artifactId>artifactId</artifactId>
-            <version>version</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-    </plugins>
-    ...
-  </build>
-  ...
-</project>
-+-----+
+    ```xml
+    <project>
+      ...
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>${project.version}</version>
+            <configuration>
+              <stylesheetfile>path/to/your/stylesheet.css</stylesheetfile>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>groupId</groupId>
+                <artifactId>artifactId</artifactId>
+                <version>version</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+        ...
+      </build>
+      ...
+    </project>
+    ```

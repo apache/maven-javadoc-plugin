@@ -1,45 +1,34 @@
- ------
- Configuring Custom Taglets
- ------
- Vincent Siveton
- ------
- 2009-08-04
- ------
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
 
-~~ Licensed to the Apache Software Foundation (ASF) under one
-~~ or more contributor license agreements.  See the NOTICE file
-~~ distributed with this work for additional information
-~~ regarding copyright ownership.  The ASF licenses this file
-~~ to you under the Apache License, Version 2.0 (the
-~~ "License"); you may not use this file except in compliance
-~~ with the License.  You may obtain a copy of the License at
-~~
-~~   http://www.apache.org/licenses/LICENSE-2.0
-~~
-~~ Unless required by applicable law or agreed to in writing,
-~~ software distributed under the License is distributed on an
-~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-~~ KIND, either express or implied.  See the License for the
-~~ specific language governing permissions and limitations
-~~ under the License.
+http://www.apache.org/licenses/LICENSE-2.0
 
-~~ NOTE: For help with the syntax of this file, see:
-~~ http://maven.apache.org/doxia/references/apt-format.html
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
 
-Configuring Custom Taglets
+# Configuring Custom Taglets
 
- You could configure any custom taglets in your Javadoc Plugin configuration via the
- {{{../javadoc-mojo.html#taglet}\<taglet/\>}}, {{{../javadoc-mojo.html#taglets}\<taglets/\>}}, or
- {{{../javadoc-mojo.html#tagletArtifacts}\<tagletArtifacts/\>}} parameters, depending the number of taglets used.
+You could configure any custom taglets in your Javadoc Plugin configuration via the [&lt;taglet/&gt;](../javadoc-mojo.html#taglet), [&lt;taglets/&gt;](../javadoc-mojo.html#taglets), or [&lt;tagletArtifacts/&gt;](../javadoc-mojo.html#tagletArtifacts) parameters, depending the number of taglets used.
 
- For more information about the taglet technology, please refer to
- {{http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/taglet/overview.html}}.
+For more information about the taglet technology, please refer to [http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/taglet/overview.html](http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/taglet/overview.html).
 
-* One Taglet
+One Taglet
+----------
 
- For one known Taglet, just use the {{{../javadoc-mojo.html#taglet}\<taglet/\>}} parameter:
+For one known Taglet, just use the [&lt;taglet/&gt;](../javadoc-mojo.html#taglet) parameter:
 
-+-----+
+```xml
 <project>
   ...
   <reporting> (or <build>)
@@ -65,13 +54,14 @@ Configuring Custom Taglets
   </reporting> (or </build>)
   ...
 </project>
-+-----+
+```
 
-* Several Taglets
+Several Taglets
+---------------
 
- For several known Taglets, just use the {{{../javadoc-mojo.html#taglets}\<taglets/\>}} parameter:
+For several known Taglets, just use the [&lt;taglets/&gt;](../javadoc-mojo.html#taglets) parameter:
 
-+-----+
+```xml
 <project>
   ...
   <reporting> (or <build>)
@@ -112,12 +102,11 @@ Configuring Custom Taglets
   </reporting> (or </build>)
   ...
 </project>
-+-----+
+```
 
- If it is several Taglets in the same Taglet artifact, you could use the {{{../javadoc-mojo.html#taglets}\<taglets/\>}}
- and the {{{../javadoc-mojo.html#tagletArtifact}\<tagletArtifact/\>}} parameters:
+If it is several Taglets in the same Taglet artifact, you could use the [&lt;taglets/&gt;](../javadoc-mojo.html#taglets) and the [&lt;tagletArtifact/&gt;](../javadoc-mojo.html#tagletArtifact) parameters:
 
-+-----+
+```xml
 <project>
   ...
   <reporting> (or <build>)
@@ -152,12 +141,11 @@ Configuring Custom Taglets
   </reporting> (or </build>)
   ...
 </project>
-+-----+
+```
 
- If you don't know the Taglets or if you want to auto-detect Taglet class names, you could use the
- {{{../javadoc-mojo.html#tagletArtifacts}\<tagletArtifacts/\>}} parameter:
+If you don't know the Taglets or if you want to auto-detect Taglet class names, you could use the [&lt;tagletArtifacts/&gt;](../javadoc-mojo.html#tagletArtifacts) parameter:
 
-+-----+
+```xml
 <project>
   ...
   <reporting> (or <build>)
@@ -190,4 +178,4 @@ Configuring Custom Taglets
   </reporting> (or </build>)
   ...
 </project>
-+-----+
+```
