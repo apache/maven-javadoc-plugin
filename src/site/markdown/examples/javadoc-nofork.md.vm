@@ -1,3 +1,10 @@
+---
+title: Generate Javadoc without duplicate execution of phase generate-sources.
+author: 
+  - Mirko Friedenhagen
+date: 2014-03-19
+---
+
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
 or more contributor license agreements.  See the NOTICE file

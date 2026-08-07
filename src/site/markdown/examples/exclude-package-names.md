@@ -1,3 +1,10 @@
+---
+title: Excluding Packages
+author: 
+  - Maria Odea Ching
+date: 2009-09-12
+---
+
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
 or more contributor license agreements.  See the NOTICE file
