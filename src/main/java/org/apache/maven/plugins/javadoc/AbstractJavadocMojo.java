@@ -104,7 +104,6 @@ import org.apache.maven.shared.artifact.filter.resolve.TransformableFilter;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.ToolchainManager;
-import org.apache.maven.wagon.PathUtils;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
@@ -3881,7 +3880,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         if (isAggregator()) {
             for (MavenProject subProject : getAggregatedProjects()) {
                 if (subProject != project && getJavadocDirectory() != null) {
-                    String javadocDirRelative = PathUtils.toRelative(
+                    String javadocDirRelative = toRelative(
                             project.getBasedir(), getJavadocDirectory().getAbsolutePath());
                     File javadocDir = new File(subProject.getBasedir(), javadocDirRelative);
                     JavadocUtil.copyJavadocResources(anOutputDirectory, javadocDir, excludedocfilessubdir);
@@ -5351,7 +5350,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         List<OfflineLink> modulesLinks = new ArrayList<>();
-        String javadocDirRelative = PathUtils.toRelative(project.getBasedir(), getPluginReportOutputDirectory());
+        String javadocDirRelative = toRelative(project.getBasedir(), getPluginReportOutputDirectory());
         for (MavenProject p : aggregatedProjects) {
             if (!dependencyArtifactIds.contains(p.getArtifact().getId()) || (p.getUrl() == null)) {
                 continue;
@@ -6000,5 +5999,29 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
         getLog().debug("isSkippedJavadoc " + mavenProject + " " + false);
         return false;
+    }
+
+    /**
+     * Expresses a path relative to a base directory, so that it can be reapplied to a sibling directory.
+     * A path that does not lie under the base directory is returned unchanged, and a path that is the base
+     * directory itself becomes <code>"."</code>.
+     * <p>
+     * This deliberately keeps the behaviour of the Wagon utility it replaces, rather than that of
+     * {@link java.nio.file.Path#relativize}, which would answer an unrelated path with a chain of
+     * <code>..</code> segments instead of leaving it alone.
+     */
+    static String toRelative(File basedir, String absolutePath) {
+        String path = absolutePath.replace('\\', '/');
+        String base = basedir.getAbsolutePath().replace('\\', '/');
+
+        if (!path.startsWith(base)) {
+            return path;
+        }
+
+        String relative = path.substring(base.length());
+        if (relative.startsWith("/")) {
+            relative = relative.substring(1);
+        }
+        return relative.isEmpty() ? "." : relative;
     }
 }

@@ -272,11 +272,6 @@ under the License.
     </dependency>
 
     <!-- wagon -->
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-provider-api</artifactId>
-      <version>${wagonVersion}</version>
-    </dependency>
 
     <!-- misc -->
     <dependency>

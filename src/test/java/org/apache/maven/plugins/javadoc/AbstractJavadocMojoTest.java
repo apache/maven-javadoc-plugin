@@ -80,4 +80,36 @@ class AbstractJavadocMojoTest {
         assertThat(mojo.isValidJavadocLink("http://commons.apache.org/proper/commons-lang/apidocs", false))
                 .isTrue();
     }
+
+    @Test
+    void toRelativeStripsTheBaseDirectory() {
+        File basedir = new File("/home/project").getAbsoluteFile();
+
+        assertThat(AbstractJavadocMojo.toRelative(basedir, basedir.getPath() + "/src/site"))
+                .isEqualTo("src/site");
+    }
+
+    @Test
+    void toRelativeAnswersDotForTheBaseDirectoryItself() {
+        File basedir = new File("/home/project").getAbsoluteFile();
+
+        assertThat(AbstractJavadocMojo.toRelative(basedir, basedir.getPath())).isEqualTo(".");
+    }
+
+    @Test
+    void toRelativeLeavesAPathOutsideTheBaseDirectoryAlone() {
+        File basedir = new File("/home/project").getAbsoluteFile();
+        String elsewhere = new File("/elsewhere/docs").getAbsolutePath().replace('\\', '/');
+
+        // deliberately not a chain of ".." segments, which is what Path.relativize would give
+        assertThat(AbstractJavadocMojo.toRelative(basedir, elsewhere)).isEqualTo(elsewhere);
+    }
+
+    @Test
+    void toRelativeNormalisesBackslashes() {
+        File basedir = new File("/home/project").getAbsoluteFile();
+
+        assertThat(AbstractJavadocMojo.toRelative(basedir, basedir.getPath() + "\\src\\site"))
+                .isEqualTo("src/site");
+    }
 }
