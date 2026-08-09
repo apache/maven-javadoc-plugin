@@ -121,7 +121,6 @@ under the License.
     <!-- https://cwiki.apache.org/confluence/x/VIHOCg#MavenEcosystemCleanup-ResolverandMaven -->
     <plexus-java.version>1.5.2</plexus-java.version>
     <jetty.version>9.4.55.v20240627</jetty.version>
-    <version.plexus-utils>4.0.2</version.plexus-utils>
     <!-- for ITs -->
     <compilerPluginVersion>${version.maven-compiler-plugin}</compilerPluginVersion>
     <sourcePluginVersion>${version.maven-source-plugin}</sourcePluginVersion>
