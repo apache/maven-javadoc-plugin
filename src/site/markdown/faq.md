@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+---
+title: Frequently Asked Questions
+---
 
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
@@ -19,113 +21,110 @@ specific language governing permissions and limitations
 under the License.
 -->
 
+<a id="top"></a>
 
-<faqs xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns="http://maven.apache.org/FML/1.0.1"
-  xsi:schemaLocation="http://maven.apache.org/FML/1.0.1 http://maven.apache.org/xsd/fml-1.0.1.xsd"
-  id="FAQ" title="Frequently Asked Questions">
-  <part id="General">
-    <faq id="What are the Javadoc options supported by the Maven Javadoc Plugin">
-      <question>What are the Javadoc options supported by the Maven Javadoc Plugin?</question>
-      <answer>
-        <p>
-          All options provided by Oracle on the Javadoc homepages are wrapped in the Maven Javadoc Plugin. This
-          plugin supports Javadoc 1.4, 1.5 and 6.0 options. Refer to the
-          <a href="./apidocs/org/apache/maven/plugins/javadoc/package-summary.html">Javadoc Package Summary</a>
-          for more information and to the <a href="./javadoc-mojo.html">Javadoc Plugin Documentation</a>.
-        </p>
-      </answer>
-    </faq>
-    <faq id="Where in the pom.xml do I configure the Javadoc Plugin">
-      <question>Where in the pom.xml do I configure the Javadoc Plugin?</question>
-      <answer>
-        <p>
-          Like all other reporting plugins, the Javadoc Plugin goes in the <i>&lt;reporting/&gt;</i> section
-          of your pom.xml. In this case, you will need to call <code>mvn site</code> to run reports.
-        </p>
-        <p>
-          You could also configure it in the <i>&lt;plugins/&gt;</i> or <i>&lt;pluginsManagement/&gt;</i> in
-          <i>&lt;build/&gt;</i> tag of your pom.xml. In this case, you will need to call
-          <code>mvn javadoc:javadoc</code> to run the main report.
-        </p>
-        <p>
-          <b>IMPORTANT NOTE</b>: using <i>&lt;reporting/&gt;</i> or <i>&lt;build/&gt;</i> elements have not the same
-          behavior, refer to
-          <a href="http://maven.apache.org/guides/mini/guide-configuring-plugins.html#Using_the_reporting_Tag_VS_build_Tag">Using the &lt;reporting/&gt; Tag VS &lt;build/&gt; Tag</a>
-          part for more information.
-        </p>
-      </answer>
-    </faq>
-    <faq id="Where do I put javadoc resources like HTML files or images">
-      <question>Where do I put Javadoc resources like HTML files or images?</question>
-      <answer>
-        <p>
-          All javadoc resources like HTML files, images could be put in the
-          <i>${basedir}/src/main/javadoc</i> directory.
-        </p>
-        <p>
-          See <a href="examples/javadoc-resources.html">Using Javadoc Resources</a> for more information.
-        </p>
-      </answer>
-    </faq>
-    <faq id="How to know exactly the Javadoc command line">
-      <question>How to know exactly the Javadoc command line?</question>
-      <answer>
-        <p>
-          The Javadoc Plugin calls the Javadoc tool with
-          <a href="https://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#argumentfiles">argument files</a>,
-          i.e. files called 'options', 'packages' and 'argfile' (or 'files' with Jdk &lt; 1.4):
-          <source><![CDATA[
-javadoc.exe(or .sh) @options @packages | @argfile]]></source>
-        </p>
-        <p>
-          These argument files are generated at runtime depending the Javadoc Plugin configuration and are deleted
-          when the Javadoc Plugin ended.
-        </p>
-        <p>
-          To preserve them, just add &lt;debug&gt;true&lt;/debug&gt; in your Javadoc Plugin configuration or just call
-          <code>mvn javadoc:javadoc -Ddebug=true</code> or <code>mvn javadoc:javadoc -X</code>.
-          In this case, an additional script file (javadoc.bat (or .sh) will be created in the <code>apidocs</code>
-          directory.
-        </p>
-      </answer>
-    </faq>
-    <faq id="How to add additional Javadoc parameters">
-      <question>How to add additional Javadoc parameters?</question>
-      <answer>
-        <p>
-          You could need to add more Javadoc parameters to be process by the Javadoc Tool (i.e. for doclet).
-        </p>
-        <p>
-          For this, you should use the <i>&lt;additionalOptions/&gt;</i> parameter in your Javadoc Plugin configuration.
-        </p>
-      </answer>
-    </faq>
-    <faq id="How to add additional Javadoc options">
-      <question>How to add additional Javadoc options?</question>
-      <answer>
-        <p>
-          You could need to add more J options (i.e. runtime system java options that runs Javadoc tool like -J-Xss)
-          to be processed by the Javadoc Tool. For this, you should use the <i>&lt;additionalJOption/&gt;</i> parameter
-          in your Javadoc Plugin configuration.
-        </p>
-        <p>
-          The Javadoc Plugin calls the Javadoc tool with J options, e.g.:
-          <source><![CDATA[
+# Frequently Asked Questions
+
+1. [What are the Javadoc options supported by the Maven Javadoc Plugin?](#What_are_the_Javadoc_options_supported_by_the_Maven_Javadoc_Plugin)
+2. [Where in the pom.xml do I configure the Javadoc Plugin?](#Where_in_the_pom.xml_do_I_configure_the_Javadoc_Plugin)
+3. [Where do I put Javadoc resources like HTML files or images?](#Where_do_I_put_javadoc_resources_like_HTML_files_or_images)
+4. [How to know exactly the Javadoc command line?](#How_to_know_exactly_the_Javadoc_command_line)
+5. [How to add additional Javadoc parameters?](#How_to_add_additional_Javadoc_parameters)
+6. [How to add additional Javadoc options?](#How_to_add_additional_Javadoc_options)
+7. [How to increase Javadoc heap size?](#How_to_increase_Javadoc_heap_size)
+8. [How to add proxy support?](#How_to_add_proxy_support)
+9. [How to have less output?](#How_to_have_less_output)
+10. [How to remove test Javadocs report?](#How_to_remove_test_Javadocs_report)
+11. [How to deploy Javadoc jar file?](#How_to_deploy_Javadoc_jar_file)
+12. [How to include additional source code directories in aggregate mode?](#How_to_include_additional_source_code_directories_in_aggregate_mode)
+13. [How to use `<links/>` option in Standard Doclet?](#How_to_use_links_option_in_Standard_Doclet)
+14. [How to add cross reference link to internal-external projects?](#How_to_add_cross_reference_link_to_internal-external_projects)
+15. [What are the values of the `<encoding/>`, `<docencoding/>`, and `<charset/>` parameters?](#What_are_the_values_of_the_encoding.2C_docencoding.2C_and_charset_parameters)
+16. [Why do I get errors when using links under Java 8?](#Why_do_I_get_errors_when_using_links_under_Java_8)
+
+<a id="What_are_the_Javadoc_options_supported_by_the_Maven_Javadoc_Plugin"></a>
+
+### What are the Javadoc options supported by the Maven Javadoc Plugin?
+
+All options provided by Oracle on the Javadoc homepages are wrapped in the Maven Javadoc Plugin. This plugin
+supports Javadoc 1.4, 1.5 and 6.0 options. Refer to the
+[Javadoc Package Summary](./apidocs/org/apache/maven/plugins/javadoc/package-summary.html) for more
+information and to the [Javadoc Plugin Documentation](./javadoc-mojo.html).
+
+<a id="Where_in_the_pom.xml_do_I_configure_the_Javadoc_Plugin"></a>
+
+### Where in the pom.xml do I configure the Javadoc Plugin?
+
+Like all other reporting plugins, the Javadoc Plugin goes in the *&lt;reporting/&gt;* section of your pom.xml.
+In this case, you will need to call `mvn site` to run reports.
+
+You could also configure it in the *&lt;plugins/&gt;* or *&lt;pluginsManagement/&gt;* in *&lt;build/&gt;* tag
+of your pom.xml. In this case, you will need to call `mvn javadoc:javadoc` to run the main report.
+
+**IMPORTANT NOTE**: using *&lt;reporting/&gt;* or *&lt;build/&gt;* elements have not the same behavior, refer
+to [Using the &lt;reporting/&gt; Tag VS &lt;build/&gt; Tag](http://maven.apache.org/guides/mini/guide-configuring-plugins.html#Using_the_reporting_Tag_VS_build_Tag)
+part for more information.
+
+<a id="Where_do_I_put_javadoc_resources_like_HTML_files_or_images"></a>
+
+### Where do I put Javadoc resources like HTML files or images?
+
+All javadoc resources like HTML files, images could be put in the *${basedir}/src/main/javadoc* directory.
+
+See [Using Javadoc Resources](examples/javadoc-resources.html) for more information.
+
+<a id="How_to_know_exactly_the_Javadoc_command_line"></a>
+
+### How to know exactly the Javadoc command line?
+
+The Javadoc Plugin calls the Javadoc tool with
+[argument files](https://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#argumentfiles),
+i.e. files called 'options', 'packages' and 'argfile' (or 'files' with Jdk &lt; 1.4):
+
+```
+javadoc.exe(or .sh) @options @packages | @argfile
+```
+
+These argument files are generated at runtime depending the Javadoc Plugin configuration and are deleted when
+the Javadoc Plugin ended.
+
+To preserve them, just add &lt;debug&gt;true&lt;/debug&gt; in your Javadoc Plugin configuration or just call
+`mvn javadoc:javadoc -Ddebug=true` or `mvn javadoc:javadoc -X`. In this case, an additional script file
+(javadoc.bat (or .sh) will be created in the `apidocs` directory.
+
+<a id="How_to_add_additional_Javadoc_parameters"></a>
+
+### How to add additional Javadoc parameters?
+
+You could need to add more Javadoc parameters to be process by the Javadoc Tool (i.e. for doclet).
+
+For this, you should use the *&lt;additionalOptions/&gt;* parameter in your Javadoc Plugin configuration.
+
+<a id="How_to_add_additional_Javadoc_options"></a>
+
+### How to add additional Javadoc options?
+
+You could need to add more J options (i.e. runtime system java options that runs Javadoc tool like -J-Xss) to
+be processed by the Javadoc Tool. For this, you should use the *&lt;additionalJOption/&gt;* parameter in your
+Javadoc Plugin configuration.
+
+The Javadoc Plugin calls the Javadoc tool with J options, e.g.:
+
+```
 ${project.reporting.outputDirectory}/apidocs/javadoc.exe(or .sh) \
     -J-Xss128m \
     @options \
-    @packages | @argfile]]></source>
-        </p>
-      </answer>
-    </faq>
-    <faq id="How to increase Javadoc heap size">
-      <question>How to increase Javadoc heap size?</question>
-      <answer>
-        <p>
-          If you need to increase the Javadoc heap size, you should use the <i>&lt;minmemory/&gt;</i> and
-          <i>&lt;maxmemory/&gt;</i> parameters in your Javadoc Plugin configuration. For instance:
-          <source><![CDATA[
+    @packages | @argfile
+```
+
+<a id="How_to_increase_Javadoc_heap_size"></a>
+
+### How to increase Javadoc heap size?
+
+If you need to increase the Javadoc heap size, you should use the *&lt;minmemory/&gt;* and
+*&lt;maxmemory/&gt;* parameters in your Javadoc Plugin configuration. For instance:
+
+```xml
 <project>
   ...
   <reporting>
@@ -144,22 +143,20 @@ ${project.reporting.outputDirectory}/apidocs/javadoc.exe(or .sh) \
     ...
   </reporting>
   ...
-</project>]]></source>
-        </p>
-        <p>
-          <b>Note:</b> The memory unit depends on the JVM used. The units supported could be: <code>k</code>,
-          <code>kb</code>, <code>m</code>, <code>mb</code>, <code>g</code>, <code>gb</code>, <code>t</code>,
-          <code>tb</code>. If no unit specified, the default unit is <code>m</code>.
-        </p>
-      </answer>
-    </faq>
-    <faq id="How to add proxy support">
-      <question>How to add proxy support?</question>
-      <answer>
-        <p>
-          To specify a proxy in the Javadoc tool, you need to configure an active proxy in your
-          <i>${user.home}/.m2/settings.xml</i>, similar to:
-          <source><![CDATA[
+</project>
+```
+
+**Note:** The memory unit depends on the JVM used. The units supported could be: `k`, `kb`, `m`, `mb`, `g`,
+`gb`, `t`, `tb`. If no unit specified, the default unit is `m`.
+
+<a id="How_to_add_proxy_support"></a>
+
+### How to add proxy support?
+
+To specify a proxy in the Javadoc tool, you need to configure an active proxy in your
+*${user.home}/.m2/settings.xml*, similar to:
+
+```xml
 <settings>
   ...
   <proxies>
@@ -175,9 +172,11 @@ ${project.reporting.outputDirectory}/apidocs/javadoc.exe(or .sh) \
   </proxies>
   ...
 </settings>
-]]></source>
-          With this, the Javadoc tool will be called with networking J options, e.g.:
-          <source><![CDATA[
+```
+
+With this, the Javadoc tool will be called with networking J options, e.g.:
+
+```
 ${project.reporting.outputDirectory}/apidocs/javadoc.exe(or .sh) \
     -J-Dhttp.proxySet=true \
     -J-Dhttp.proxyHost=proxy.somewhere.com \
@@ -186,45 +185,42 @@ ${project.reporting.outputDirectory}/apidocs/javadoc.exe(or .sh) \
     -J-Dhttp.proxyUser="foo" \
     -J-Dhttp.proxyPassword="bar" \
     @options \
-    @packages | @argfile]]></source>
-        </p>
-        <p>
-          <b>Note</b>: If your proxy needs more JVM
-          <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/net/properties.html">networking properties</a>
-          (like NTLM), you could always add JVM options using the <i>&lt;additionalJOption/&gt;</i> parameter
-          in your Javadoc Plugin configuration, e.g.:
-          <source><![CDATA[
+    @packages | @argfile
+```
+
+**Note**: If your proxy needs more JVM
+[networking properties](https://docs.oracle.com/javase/7/docs/technotes/guides/net/properties.html) (like
+NTLM), you could always add JVM options using the *&lt;additionalJOption/&gt;* parameter in your Javadoc
+Plugin configuration, e.g.:
+
+```xml
 <configuration>
   <additionalJOption>-J-Dhttp.auth.ntlm.domain=MYDOMAIN</additionalJOption>
   ...
-</configuration>]]></source>
-        </p>
-      </answer>
-    </faq>
-    <faq id="How to have less output">
-      <question>How to have less output?</question>
-      <answer>
-        <p>
-          Just set the <i>&lt;quiet/&gt;</i> parameter to <i>true</i> in your Javadoc Plugin configuration.
-        </p>
-      </answer>
-    </faq>
-    <faq id="How to remove test Javadocs report">
-      <question>How to remove test Javadocs report?</question>
-      <answer>
-        <p>
-          You need to configure the <i>&lt;reportSets/&gt;</i> parameter. Read the
-          <a href="examples/selective-javadocs-report.html">Selective Javadocs Reports</a> part for more information.
-        </p>
-      </answer>
-    </faq>
-    <faq id="How to deploy Javadoc jar file">
-      <question>How to deploy Javadoc jar file?</question>
-      <answer>
-        <p>
-          Basically, you need to call <i>mvn clean javadoc:jar deploy</i>. If you want to include the javadoc jar
-          in a release process, you need to attach it in the release profile, for instance:
-          <source><![CDATA[
+</configuration>
+```
+
+<a id="How_to_have_less_output"></a>
+
+### How to have less output?
+
+Just set the *&lt;quiet/&gt;* parameter to *true* in your Javadoc Plugin configuration.
+
+<a id="How_to_remove_test_Javadocs_report"></a>
+
+### How to remove test Javadocs report?
+
+You need to configure the *&lt;reportSets/&gt;* parameter. Read the
+[Selective Javadocs Reports](examples/selective-javadocs-report.html) part for more information.
+
+<a id="How_to_deploy_Javadoc_jar_file"></a>
+
+### How to deploy Javadoc jar file?
+
+Basically, you need to call *mvn clean javadoc:jar deploy*. If you want to include the javadoc jar in a
+release process, you need to attach it in the release profile, for instance:
+
+```xml
 <project>
   ...
   <profiles>
@@ -250,11 +246,12 @@ ${project.reporting.outputDirectory}/apidocs/javadoc.exe(or .sh) \
     ...
   </profiles>
   ...
-</project>]]></source>
-        </p>
-        <p>
-          To deploy the Javadoc jar on a given Maven repository, you could call:
-          <source><![CDATA[
+</project>
+```
+
+To deploy the Javadoc jar on a given Maven repository, you could call:
+
+```
 mvn deploy:deploy-file \
     -DgroupId=<group-id> \
     -DartifactId=<artifact-id> \
@@ -263,71 +260,54 @@ mvn deploy:deploy-file \
     -Dpackaging=jar \
     -DrepositoryId=<repository-id> \
     -Durl=dav:http://www.myrepository.com/m2 \
-    -Dclassifier=javadoc]]></source>
-        </p>
-      </answer>
-    </faq>
-    <faq id="How to include additional source code directories in aggregate mode">
-      <question>How to include additional source code directories in aggregate mode?</question>
-      <answer>
-        <p>
-          If you use the Javadoc report in the aggregate mode, i.e. using the <code>aggregate</code> parameter, and if the
-          Javadoc report does not include additional source code directories defined using the
-          <a href="https://www.mojohaus.org/build-helper-maven-plugin/add-source-mojo.html">build-helper:add-source</a> goal,
-          you need to use the <code>javadoc:aggregate</code> goal instead of <code>javadoc:javadoc</code> goal. Read the
-          <a href="examples/aggregate.html">Aggregating Javadocs for Multi-Projects</a> part for more information.
-        </p>
-      </answer>
-    </faq>
-    <faq id="How to use links option in Standard Doclet">
-      <question>How to use <code>&lt;links/&gt;</code> option in Standard Doclet?</question>
-      <answer>
-        <p>
-          You need to configure the <i><a href="./javadoc-mojo.html#links">&lt;links/&gt;</a></i> parameter. Also, you
-          should correctly write references in your Javadoc. That is,
-        </p>
-        <ul>
-          <li><code>@see MyMojo</code> or <code>{@link MyMojo}</code> will <strong>NOT work</strong>.</li>
-          <li><code>@see com.mycompany.plugin.myplugin.MyMojo</code> or <code>{@link com.mycompany.myplugin.MyMojo}</code>
-            will <strong>work</strong>.</li>
-        </ul>
-      </answer>
-    </faq>
-    <faq id="How to add cross reference link to internal-external projects">
-      <question>How to add cross reference link to internal-external projects?</question>
-      <answer>
-        <p>
-          Please refer to <a href="./examples/links-configuration.html">Links configuration page</a>.
-        </p>
-      </answer>
-    </faq>
-    <faq id="What are the values of the encoding, docencoding, and charset parameters">
-      <question>What are the values of the <code>&lt;encoding/&gt;</code>, <code>&lt;docencoding/&gt;</code>, and <code>&lt;charset/&gt;</code> parameters?</question>
-      <answer>
-        <p>
-          By default, these parameters have the following values:
-        </p>
-        <dl>
-          <dt><code>&lt;encoding/&gt;</code></dt>
-          <dd>Value of <code>${project.build.sourceEncoding}</code> property or the value of the
-            <code>file.encoding</code> system property if not specified.</dd>
-          <dt><code>&lt;docencoding/&gt;</code></dt>
-          <dd>Value of <code>${project.reporting.outputEncoding}</code> property or <code>UTF-8</code> if not specified.</dd>
-          <dt><code>&lt;charset/&gt;</code></dt>
-          <dd>Value of <code>docencoding</code> parameter if not specified.</dd>
-        </dl>
-      </answer>
-    </faq>
-    <faq id="Why do I get errors when using links under Java 8">
-      <question>Why do I get errors when using links under Java 8?</question>
-      <answer>
-        <p>
-          Due to <a href="https://bugs.openjdk.java.net/browse/JDK-8040771">a bug in JDK 8</a>
-          you need at least Java 8u20 for this to work. See
-          <a href="https://issues.apache.org/jira/browse/MJAVADOC-393">MJAVADOC-393</a>
-          for more info.
-        </p>
-      </answer>
-    </faq>
-  </part>
-</faqs>
+    -Dclassifier=javadoc
+```
+
+<a id="How_to_include_additional_source_code_directories_in_aggregate_mode"></a>
+
+### How to include additional source code directories in aggregate mode?
+
+If you use the Javadoc report in the aggregate mode, i.e. using the `aggregate` parameter, and if the Javadoc
+report does not include additional source code directories defined using the
+[build-helper:add-source](https://www.mojohaus.org/build-helper-maven-plugin/add-source-mojo.html) goal, you
+need to use the `javadoc:aggregate` goal instead of `javadoc:javadoc` goal. Read the
+[Aggregating Javadocs for Multi-Projects](examples/aggregate.html) part for more information.
+
+<a id="How_to_use_links_option_in_Standard_Doclet"></a>
+
+### How to use `<links/>` option in Standard Doclet?
+
+You need to configure the [*&lt;links/&gt;*](./javadoc-mojo.html#links) parameter. Also, you should correctly
+write references in your Javadoc. That is,
+
+- `@see MyMojo` or `{@link MyMojo}` will **NOT work**.
+- `@see com.mycompany.plugin.myplugin.MyMojo` or `{@link com.mycompany.myplugin.MyMojo}` will **work**.
+
+<a id="How_to_add_cross_reference_link_to_internal-external_projects"></a>
+
+### How to add cross reference link to internal-external projects?
+
+Please refer to [Links configuration page](./examples/links-configuration.html).
+
+<a id="What_are_the_values_of_the_encoding.2C_docencoding.2C_and_charset_parameters"></a>
+
+### What are the values of the `<encoding/>`, `<docencoding/>`, and `<charset/>` parameters?
+
+By default, these parameters have the following values:
+
+`<encoding/>`
+: Value of `${project.build.sourceEncoding}` property or the value of the `file.encoding` system property if
+  not specified.
+
+`<docencoding/>`
+: Value of `${project.reporting.outputEncoding}` property or `UTF-8` if not specified.
+
+`<charset/>`
+: Value of `docencoding` parameter if not specified.
+
+<a id="Why_do_I_get_errors_when_using_links_under_Java_8"></a>
+
+### Why do I get errors when using links under Java 8?
+
+Due to [a bug in JDK 8](https://bugs.openjdk.java.net/browse/JDK-8040771) you need at least Java 8u20 for this
+to work. See [MJAVADOC-393](https://issues.apache.org/jira/browse/MJAVADOC-393) for more info.
