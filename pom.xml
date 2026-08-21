@@ -316,7 +316,7 @@ under the License.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
-      <version>4.10.0</version>
+      <version>4.12.0</version>
     </dependency>
     <!-- MNG-6607: needs to be overriden for commons-compress otherwise it will appear earlier in the tree -->
     <dependency>
