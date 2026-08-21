@@ -22,8 +22,14 @@ updates:
     schedule:
       interval: "daily"
     ignore:
-      # ignore Maven Core updates
-      - dependency-name: "org.apache.maven:*"
+      # Pin the Maven runtime to the minimum this plugin supports.
+      # Named one by one so org.apache.maven:maven-archiver stays updatable.
+      - dependency-name: "org.apache.maven:maven-artifact"
+      - dependency-name: "org.apache.maven:maven-compat"
+      - dependency-name: "org.apache.maven:maven-core"
+      - dependency-name: "org.apache.maven:maven-model"
+      - dependency-name: "org.apache.maven:maven-plugin-api"
+      - dependency-name: "org.apache.maven:maven-settings"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
