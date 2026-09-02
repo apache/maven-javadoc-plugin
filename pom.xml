@@ -118,7 +118,7 @@ under the License.
     <doxiaSitetoolsVersion>2.1.0</doxiaSitetoolsVersion>
     <resolverVersion>1.4.1</resolverVersion>
     <!-- https://cwiki.apache.org/confluence/x/VIHOCg#MavenEcosystemCleanup-ResolverandMaven -->
-    <plexus-java.version>1.5.2</plexus-java.version>
+    <plexus-java.version>1.6.0</plexus-java.version>
     <jetty.version>9.4.58.v20250814</jetty.version>
     <!-- for ITs -->
     <compilerPluginVersion>${version.maven-compiler-plugin}</compilerPluginVersion>
@@ -311,12 +311,12 @@ under the License.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-io</artifactId>
-      <version>3.6.0</version>
+      <version>3.7.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
-      <version>4.12.0</version>
+      <version>4.14.0</version>
     </dependency>
     <!-- MNG-6607: needs to be overriden for commons-compress otherwise it will appear earlier in the tree -->
     <dependency>
