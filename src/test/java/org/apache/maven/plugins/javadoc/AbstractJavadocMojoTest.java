@@ -19,11 +19,15 @@
 package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugins.javadoc.options.OfflineLink;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.setVariableValueToObject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -111,5 +115,32 @@ class AbstractJavadocMojoTest {
 
         assertThat(AbstractJavadocMojo.toRelative(basedir, basedir.getPath() + "\\src\\site"))
                 .isEqualTo("src/site");
+    }
+
+    @Test
+    void emptyReleaseFallsBackToSourceForTheApiLink(@TempDir Path optionsDir) throws Exception {
+        setVariableValueToObject(mojo, "detectJavaApiLink", true);
+        setVariableValueToObject(mojo, "javadocOptionsDir", optionsDir.toFile());
+        // what Maven injects for a declared but blank maven.compiler.release
+        setVariableValueToObject(mojo, "release", "");
+        setVariableValueToObject(mojo, "source", "11");
+
+        OfflineLink link = mojo.getDefaultJavadocApiLink();
+
+        assertThat(link).isNotNull();
+        assertThat(link.getUrl()).isEqualTo("https://docs.oracle.com/en/java/javase/11/docs/api/");
+    }
+
+    @Test
+    void releaseWinsOverSourceForTheApiLink(@TempDir Path optionsDir) throws Exception {
+        setVariableValueToObject(mojo, "detectJavaApiLink", true);
+        setVariableValueToObject(mojo, "javadocOptionsDir", optionsDir.toFile());
+        setVariableValueToObject(mojo, "release", "11");
+        setVariableValueToObject(mojo, "source", "17");
+
+        OfflineLink link = mojo.getDefaultJavadocApiLink();
+
+        assertThat(link).isNotNull();
+        assertThat(link.getUrl()).isEqualTo("https://docs.oracle.com/en/java/javase/11/docs/api/");
     }
 }
