@@ -18,6 +18,7 @@
  */
 package org.apache.maven.plugins.javadoc;
 
+import javax.net.ssl.SSLException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,6 +29,7 @@ import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -52,6 +54,9 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.MovedContextHandler;
 import org.eclipse.jetty.util.ByteArrayISO8859Writer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,10 +66,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.abort;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
+@ExtendWith(JavadocUtilTest.AbortWhenRemoteUnreachable.class)
 class JavadocUtilTest {
 
     @Test
@@ -722,5 +729,24 @@ class JavadocUtilTest {
         String value = "     *.internal:org.acme.exclude1.*:\n       org.acme.exclude2\n       ";
         List<String> values = JavadocUtil.toList(value);
         assertThat(values).containsExactly("*.internal", "org.acme.exclude1.*", "org.acme.exclude2");
+    }
+
+    /**
+     * Turns a failure to reach maven.apache.org into a skipped test, so that a slow or blocked network
+     * does not make the build red. Deliberately narrow: a refused connection is not handled, because
+     * the proxy cases in this class talk to a locally started server and must keep failing loudly.
+     */
+    static final class AbortWhenRemoteUnreachable implements TestExecutionExceptionHandler {
+        @Override
+        public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
+            for (Throwable cause = throwable; cause != null; cause = cause.getCause()) {
+                if (cause instanceof SocketTimeoutException
+                        || cause instanceof UnknownHostException
+                        || cause instanceof SSLException) {
+                    abort("Remote package-list is unreachable: " + cause);
+                }
+            }
+            throw throwable;
+        }
     }
 }
