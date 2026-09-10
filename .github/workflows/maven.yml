@@ -33,6 +33,5 @@ jobs:
         { "jdk": "8", "distribution": "microsoft"},
         { "jdk": "8", "distribution": "temurin", "os": "macos-latest" },
         { "jdk": "8", "distribution": "semeru", "os": "macos-latest" },
-        { "jdk": "25", "distribution": "semeru" },
         { "jdk": "25", "distribution": "microsoft"},
       ]'
