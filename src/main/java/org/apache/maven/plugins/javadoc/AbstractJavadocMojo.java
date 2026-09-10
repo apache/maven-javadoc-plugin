@@ -4581,7 +4581,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         if (javadocRuntimeVersion.isAtLeast("9") && isReleaseSet()) {
             arguments.add("--release");
-            arguments.add(release);
+            arguments.add(JavadocUtil.toReleaseArgument(release));
         } else {
             addArgIfNotEmpty(arguments, "-source", JavadocUtil.quotedArgument(source));
         }

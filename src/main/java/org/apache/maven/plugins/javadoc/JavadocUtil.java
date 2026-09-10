@@ -1602,4 +1602,19 @@ public class JavadocUtil {
         }
         return false;
     }
+
+    /**
+     * Maps the {@code 1.x} spelling that {@code -source} accepts onto the plain feature number, the only
+     * form {@code --release} takes: {@code 1.8} becomes {@code 8}. Any other value is passed through
+     * unchanged, so the javadoc tool still reports releases it does not support.
+     *
+     * @param release the configured release version, never empty
+     * @return the value to pass to {@code --release}
+     */
+    public static String toReleaseArgument(String release) {
+        if (release.length() == 3 && release.startsWith("1.") && release.charAt(2) >= '1' && release.charAt(2) <= '9') {
+            return release.substring(2);
+        }
+        return release;
+    }
 }
