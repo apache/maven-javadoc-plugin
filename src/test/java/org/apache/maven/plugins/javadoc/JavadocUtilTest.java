@@ -749,4 +749,13 @@ class JavadocUtilTest {
             throw throwable;
         }
     }
+
+    @Test
+    void toReleaseArgumentMapsTheLegacySpelling() {
+        assertEquals("8", JavadocUtil.toReleaseArgument("1.8"));
+        assertEquals("5", JavadocUtil.toReleaseArgument("1.5"));
+        assertEquals("8", JavadocUtil.toReleaseArgument("8"));
+        assertEquals("17", JavadocUtil.toReleaseArgument("17"));
+        assertEquals("1.10", JavadocUtil.toReleaseArgument("1.10"));
+    }
 }
