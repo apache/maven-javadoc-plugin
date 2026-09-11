@@ -119,7 +119,7 @@ under the License.
     <resolverVersion>1.4.1</resolverVersion>
     <!-- https://cwiki.apache.org/confluence/x/VIHOCg#MavenEcosystemCleanup-ResolverandMaven -->
     <plexus-java.version>1.6.0</plexus-java.version>
-    <jetty.version>9.4.55.v20240627</jetty.version>
+    <jetty.version>9.4.58.v20250814</jetty.version>
     <!-- for ITs -->
     <compilerPluginVersion>${version.maven-compiler-plugin}</compilerPluginVersion>
     <sourcePluginVersion>${version.maven-source-plugin}</sourcePluginVersion>
