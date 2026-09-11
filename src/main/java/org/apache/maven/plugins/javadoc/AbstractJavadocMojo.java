@@ -2099,7 +2099,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             // or source values specified
             boolean autoExclude = legacyMode;
             if (!autoExclude) {
-                if (release != null) {
+                if (isReleaseSet()) {
                     autoExclude = JavaVersion.parse(release).isBefore("9");
                 } else if (source != null) {
                     autoExclude = JavaVersion.parse(source).isBefore("9");
@@ -4334,7 +4334,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         if (supportModulePath) {
             supportModulePath &= javadocRuntimeVersion.isAtLeast("9");
-            if (release != null) {
+            if (isReleaseSet()) {
                 supportModulePath &= JavaVersion.parse(release).isAtLeast("9");
             } else if (source != null) {
                 supportModulePath &= JavaVersion.parse(source).isAtLeast("9");
@@ -4579,7 +4579,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         addArgIf(arguments, quiet, "-quiet");
 
-        if (javadocRuntimeVersion.isAtLeast("9") && release != null) {
+        if (javadocRuntimeVersion.isAtLeast("9") && isReleaseSet()) {
             arguments.add("--release");
             arguments.add(release);
         } else {
@@ -5509,7 +5509,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         final JavaVersion javaApiversion;
-        if (release != null) {
+        if (isReleaseSet()) {
             javaApiversion = JavaVersion.parse(release);
         } else if (source != null && !source.isEmpty()) {
             javaApiversion = JavaVersion.parse(source);
@@ -5831,6 +5831,15 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         return null;
+    }
+
+    /**
+     * Whether an explicit {@code release} is configured. A blank value, which Maven injects when
+     * {@code maven.compiler.release} is declared but empty, counts as unset so that {@code source}
+     * applies instead, matching maven-compiler-plugin.
+     */
+    private boolean isReleaseSet() {
+        return release != null && !release.isEmpty();
     }
 
     /**
