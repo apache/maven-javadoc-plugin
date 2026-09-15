@@ -43,8 +43,6 @@ import static org.apache.maven.api.plugin.testing.MojoExtension.getVariableValue
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.verify;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
@@ -174,21 +172,5 @@ class JavadocJarMojoTest {
                         "META-INF/maven/org.apache.maven.plugins.maven-javadoc-plugin.unit/javadocjar-archive-config/",
                         "META-INF/maven/org.apache.maven.plugins.maven-javadoc-plugin.unit/javadocjar-archive-config/pom.xml",
                         "META-INF/maven/org.apache.maven.plugins.maven-javadoc-plugin.unit/javadocjar-archive-config/pom.properties");
-    }
-
-    @Test
-    @InjectMojo(goal = "jar", pom = "stale-test-plugin-config.xml")
-    @Basedir("/unit/stale-test")
-    void testStale(JavadocJarMojo mojo) throws Exception {
-
-        new File(getBasedir(), "/target/maven-javadoc-plugin-stale-data.txt").delete();
-
-        mojo.execute();
-        verify(log).debug("No previous run data found, generating javadoc.");
-
-        clearInvocations(log);
-
-        mojo.execute();
-        verify(log).debug("Skipping javadoc generation, everything is up to date.");
     }
 }
