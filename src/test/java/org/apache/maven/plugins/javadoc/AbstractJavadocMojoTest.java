@@ -78,6 +78,7 @@ class AbstractJavadocMojoTest {
         when(log.isErrorEnabled()).thenReturn(true);
         mojo.setLog(log);
         mojo.outputDirectory = new File("target/test-classes");
+        mojo.destDir = "apidocs";
 
         assertThat(mojo.isValidJavadocLink("http://javamail.java.net/mailapi/apidocs", false))
                 .isFalse();
