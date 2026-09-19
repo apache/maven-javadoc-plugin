@@ -114,9 +114,9 @@ under the License.
 
   <properties>
     <javaVersion>8</javaVersion>
-    <mavenVersion>3.6.3</mavenVersion>
+    <mavenVersion>3.9.16</mavenVersion>
     <doxiaSitetoolsVersion>2.1.0</doxiaSitetoolsVersion>
-    <resolverVersion>1.4.1</resolverVersion>
+    <resolverVersion>1.9.27</resolverVersion>
     <!-- https://cwiki.apache.org/confluence/x/VIHOCg#MavenEcosystemCleanup-ResolverandMaven -->
     <plexus-java.version>1.6.0</plexus-java.version>
     <jetty.version>9.4.58.v20250814</jetty.version>
@@ -135,13 +135,6 @@ under the License.
   </properties>
 
   <dependencies>
-    <dependency>
-      <!-- @TODO remove!! -->
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-compat</artifactId>
-      <version>${mavenVersion}</version>
-      <scope>test</scope>
-    </dependency>
     <!-- Maven -->
     <dependency>
       <groupId>org.apache.maven</groupId>
