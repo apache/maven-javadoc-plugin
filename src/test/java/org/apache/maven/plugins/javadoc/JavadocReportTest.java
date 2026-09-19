@@ -50,7 +50,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,8 +68,6 @@ import static org.apache.maven.api.plugin.testing.MojoExtension.setVariableValue
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.assertj.core.api.Fail.fail;
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -197,12 +194,10 @@ class JavadocReportTest {
                         assumeThat(connection.getURL().toString()).isEqualTo(url);
 
                         // https://bugs.openjdk.java.net/browse/JDK-8216497
-                        MatcherAssert.assertThat(
-                                url + " available, but " + appHtml + " is missing link to java.lang.Object",
-                                new String(Files.readAllBytes(generatedFile), StandardCharsets.UTF_8),
-                                anyOf(
-                                        containsString("/docs/api/java/lang/Object.html"),
-                                        containsString("/docs/api/java.base/java/lang/Object.html")));
+                        assertThat(new String(Files.readAllBytes(generatedFile), StandardCharsets.UTF_8))
+                                .as(url + " available, but " + appHtml + " is missing link to java.lang.Object")
+                                .containsAnyOf(
+                                        "/docs/api/java/lang/Object.html", "/docs/api/java.base/java/lang/Object.html");
                     } catch (TestAbortedException e) {
                         LOGGER.warn("ignoring defaultAPI check: {}", e.getMessage());
                     }
@@ -212,9 +207,9 @@ class JavadocReportTest {
                 throw e;
             }
         } else {
-            MatcherAssert.assertThat(
-                    new String(Files.readAllBytes(generatedFile), StandardCharsets.UTF_8),
-                    containsString("/docs/api/java.base/java/lang/Object.html"));
+            assertThat(new String(Files.readAllBytes(generatedFile), StandardCharsets.UTF_8))
+                    .as(appHtml + " is missing link to java.lang.Object")
+                    .contains("/docs/api/java.base/java/lang/Object.html");
         }
 
         assertThat(apidocs.resolve("def/configuration/AppSample.html")).exists();
