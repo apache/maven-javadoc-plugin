@@ -26,6 +26,8 @@ jobs:
     name: Verify
     uses: apache/maven-gh-actions-shared/.github/workflows/maven-verify.yml@v5
     with:
+      # one full run on the oldest Maven the ASF parent lets us build with, next to the regular matrix
+      matrix-include: '[{"os": "ubuntu-latest", "jdk": "8", "distribution": "zulu", "maven": "3.9.0"}]'
       jdk-distribution-matrix: '[ "temurin", "zulu", "microsoft", "liberica", "semeru" ]'
       jdk-matrix: '[ "17", "21", "8", "25" ]'
       verify-fail-fast: false
