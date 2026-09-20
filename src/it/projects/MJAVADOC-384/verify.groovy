@@ -21,11 +21,11 @@
 import java.io.*;
 import org.codehaus.plexus.util.*;
 
-File[] nonExistingJavadocFiles = new File[] {
+File[] nonExistingJavadocFiles = [
     new File( basedir, "target/reports/apidocs/com/foo/bar/impl/NotApi.html" ),
     new File( basedir, "target/reports/apidocs/com/foo/bar/internal/NotApi.html" ),
-    new File( basedir, "target/reports/apidocs/com/foo/bar/internal/other/NotApi.html" ),
-};
+    new File( basedir, "target/reports/apidocs/com/foo/bar/internal/other/NotApi.html" )
+] as File[];
 
 for ( File javadocFile : nonExistingJavadocFiles )
 {
@@ -36,10 +36,10 @@ for ( File javadocFile : nonExistingJavadocFiles )
     }
 }
 
-File[] existingJavadocFiles = new File[] {
+File[] existingJavadocFiles = [
     new File( basedir, "target/reports/apidocs/com/foo/bar/Api.html" ),
-    new File( basedir, "target/reports/apidocs/com/foo/bar/internal/Api.html" ),
-};
+    new File( basedir, "target/reports/apidocs/com/foo/bar/internal/Api.html" )
+] as File[];
 
 for ( File javadocFile : existingJavadocFiles )
 {
