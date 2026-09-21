@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -84,18 +85,15 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
+import org.apache.maven.executor.ExecutorException;
+import org.apache.maven.executor.ExecutorRequest;
+import org.apache.maven.executor.ExecutorResult;
+import org.apache.maven.executor.forked.ForkedMavenExecutor;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
-import org.apache.maven.shared.invoker.DefaultInvocationRequest;
-import org.apache.maven.shared.invoker.DefaultInvoker;
-import org.apache.maven.shared.invoker.InvocationOutputHandler;
-import org.apache.maven.shared.invoker.InvocationRequest;
-import org.apache.maven.shared.invoker.InvocationResult;
-import org.apache.maven.shared.invoker.Invoker;
-import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.apache.maven.shared.invoker.PrintStreamHandler;
 import org.apache.maven.shared.utils.io.DirectoryScanner;
 import org.apache.maven.shared.utils.io.FileUtils;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
@@ -745,7 +743,7 @@ public class JavadocUtil {
      * @param userSettingsFile reference to user settings file, could be null.
      * @param globalToolchainsFile reference to toolchains file, could be null.
      * @param userToolchainsFile reference to user toolchains file, could be null.
-     * @throws MavenInvocationException if any
+     * @throws MojoExecutionException when the build fails or Maven cannot be started
      * @since 2.6
      */
     protected static void invokeMaven(
@@ -759,7 +757,7 @@ public class JavadocUtil {
             File userSettingsFile,
             File globalToolchainsFile,
             File userToolchainsFile)
-            throws MavenInvocationException {
+            throws MojoExecutionException {
         if (projectFile == null) {
             throw new IllegalArgumentException("projectFile should be not null.");
         }
@@ -786,47 +784,52 @@ public class JavadocUtil {
             return;
         }
 
-        Invoker invoker = new DefaultInvoker();
-        invoker.setMavenHome(new File(mavenHome));
-        invoker.setLocalRepositoryDirectory(localRepositoryDir);
-
-        InvocationRequest request = new DefaultInvocationRequest();
-        request.setBaseDirectory(projectFile.getParentFile());
-        request.setPomFile(projectFile);
+        List<String> arguments = new ArrayList<>();
+        arguments.add("-B");
+        if (log == null || log.isDebugEnabled()) {
+            arguments.add("-X");
+        }
+        arguments.add("-f");
+        arguments.add(projectFile.getAbsolutePath());
+        arguments.add("-Dmaven.repo.local=" + localRepositoryDir.getAbsolutePath());
         if (globalSettingsFile != null && globalSettingsFile.isFile()) {
-            request.setGlobalSettingsFile(globalSettingsFile);
+            arguments.add("-gs");
+            arguments.add(globalSettingsFile.getAbsolutePath());
         }
         if (userSettingsFile != null && userSettingsFile.isFile()) {
-            request.setUserSettingsFile(userSettingsFile);
+            arguments.add("-s");
+            arguments.add(userSettingsFile.getAbsolutePath());
         }
         if (globalToolchainsFile != null && globalToolchainsFile.isFile()) {
-            request.setGlobalToolchainsFile(globalToolchainsFile);
+            arguments.add("-gt");
+            arguments.add(globalToolchainsFile.getAbsolutePath());
         }
         if (userToolchainsFile != null && userToolchainsFile.isFile()) {
-            request.setToolchainsFile(userToolchainsFile);
+            arguments.add("-t");
+            arguments.add(userToolchainsFile.getAbsolutePath());
         }
-        request.setBatchMode(true);
-        if (log != null) {
-            request.setDebug(log.isDebugEnabled());
-        } else {
-            request.setDebug(true);
-        }
-        request.addArgs(goals);
         if (properties != null) {
-            request.setProperties(properties);
+            for (String name : properties.stringPropertyNames()) {
+                arguments.add("-D" + name + "=" + properties.getProperty(name));
+            }
         }
+        arguments.addAll(goals);
+
+        ExecutorRequest.Builder request = ExecutorRequest.mavenBuilder()
+                .cwd(projectFile.getAbsoluteFile().getParentFile().toPath())
+                .arguments(arguments);
         File javaHome = getJavaHome(log);
         if (javaHome != null) {
-            request.setJavaHome(javaHome);
+            request.environmentVariable("JAVA_HOME", javaHome.getAbsolutePath());
         }
 
         if (log != null && log.isDebugEnabled()) {
             log.debug("Invoking Maven for the goals: " + goals + " with "
                     + (properties == null ? "no properties" : "properties=" + properties));
         }
-        InvocationResult result = invoke(log, invoker, request, invokerLog, goals, properties, null);
+        ExecutorResult result = invoke(log, new File(mavenHome), request, invokerLog, goals, properties, null);
 
-        if (result.getExitCode() != 0) {
+        if (!result.success()) {
             try {
                 String invokerLogContent = new String(Files.readAllBytes(invokerLog.toPath()), StandardCharsets.UTF_8);
 
@@ -844,25 +847,25 @@ public class JavadocUtil {
             } catch (IOException e) {
                 // ignore
             }
-            result = invoke(log, invoker, request, invokerLog, goals, properties, "");
+            result = invoke(log, new File(mavenHome), request, invokerLog, goals, properties, "");
         }
 
-        if (result.getExitCode() != 0) {
+        if (!result.success()) {
             try {
                 String invokerLogContent = new String(Files.readAllBytes(invokerLog.toPath()), StandardCharsets.UTF_8);
 
                 // see DefaultMaven
                 if (!invokerLogContent.contains("Scanning for projects...")
                         || invokerLogContent.contains(OutOfMemoryError.class.getName())) {
-                    throw new MavenInvocationException(ERROR_INIT_VM);
+                    throw new MojoExecutionException(ERROR_INIT_VM);
                 }
 
-                throw new MavenInvocationException(
+                throw new MojoExecutionException(
                         "Error when invoking Maven, consult the invoker log file: " + invokerLog.getAbsolutePath());
             } catch (IOException ex) {
                 // ignore
             }
-            throw new MavenInvocationException(ERROR_INIT_VM);
+            throw new MojoExecutionException(ERROR_INIT_VM);
         }
     }
 
@@ -978,25 +981,25 @@ public class JavadocUtil {
 
     /**
      * @param log could be null
-     * @param invoker not null
+     * @param mavenHome not null
      * @param request not null
      * @param invokerLog not null
      * @param goals not null
      * @param properties could be null
      * @param mavenOpts could be null
-     * @return the invocation result
-     * @throws MavenInvocationException if any
+     * @return the execution result
+     * @throws MojoExecutionException if any
      * @since 2.6
      */
-    private static InvocationResult invoke(
+    private static ExecutorResult invoke(
             Log log,
-            Invoker invoker,
-            InvocationRequest request,
+            File mavenHome,
+            ExecutorRequest.Builder request,
             File invokerLog,
             List<String> goals,
             Properties properties,
             String mavenOpts)
-            throws MavenInvocationException {
+            throws MojoExecutionException {
         PrintStream ps;
         OutputStream os = null;
         if (invokerLog != null) {
@@ -1032,24 +1035,38 @@ public class JavadocUtil {
         }
 
         if (mavenOpts != null) {
-            request.setMavenOpts(mavenOpts);
+            request.environmentVariable("MAVEN_OPTS", mavenOpts);
         }
 
-        InvocationOutputHandler outputHandler = new PrintStreamHandler(ps, false);
-        request.setOutputHandler(outputHandler);
-
         try (OutputStream closeMe = os) {
-            outputHandler.consumeLine("Invoking Maven for the goals: " + goals + " with "
+            ps.println("Invoking Maven for the goals: " + goals + " with "
                     + (properties == null ? "no properties" : "properties=" + properties));
-            outputHandler.consumeLine("");
-            outputHandler.consumeLine("M2_HOME=" + getMavenHome(log));
-            outputHandler.consumeLine("MAVEN_OPTS=" + getMavenOpts(log));
-            outputHandler.consumeLine("JAVA_HOME=" + getJavaHome(log));
-            outputHandler.consumeLine("JAVA_OPTS=" + getJavaOpts(log));
-            outputHandler.consumeLine("");
-            return invoker.execute(request);
+            ps.println();
+            ps.println("M2_HOME=" + getMavenHome(log));
+            ps.println("MAVEN_OPTS=" + getMavenOpts(log));
+            ps.println("JAVA_HOME=" + getJavaHome(log));
+            ps.println("JAVA_OPTS=" + getJavaOpts(log));
+            ps.println();
+            ps.flush();
+            // the executor closes the streams it is given; this one is closed here, or is System.out
+            OutputStream output = new FilterOutputStream(ps) {
+                @Override
+                public void write(byte[] b, int off, int len) throws IOException {
+                    out.write(b, off, len);
+                }
+
+                @Override
+                public void close() throws IOException {
+                    out.flush();
+                }
+            };
+            try (ForkedMavenExecutor executor = new ForkedMavenExecutor(mavenHome.toPath())) {
+                return executor.execute(request.stdOut(output).stdErr(output).build());
+            }
         } catch (IOException ioe) {
-            throw new MavenInvocationException("IOException while consuming invocation output", ioe);
+            throw new MojoExecutionException("IOException while consuming invocation output", ioe);
+        } catch (ExecutorException e) {
+            throw new MojoExecutionException("Error when invoking Maven: " + e.getMessage(), e);
         }
     }
 
