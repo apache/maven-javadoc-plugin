@@ -101,7 +101,6 @@ import org.apache.maven.shared.artifact.filter.resolve.AndFilter;
 import org.apache.maven.shared.artifact.filter.resolve.PatternExclusionsFilter;
 import org.apache.maven.shared.artifact.filter.resolve.PatternInclusionsFilter;
 import org.apache.maven.shared.artifact.filter.resolve.TransformableFilter;
-import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.ToolchainManager;
 import org.codehaus.plexus.archiver.ArchiverException;
@@ -5381,8 +5380,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                             session.getRequest().getUserSettingsFile(),
                             session.getRequest().getGlobalToolchainsFile(),
                             session.getRequest().getUserToolchainsFile());
-                } catch (MavenInvocationException e) {
-                    logError("MavenInvocationException: " + e.getMessage(), e);
+                } catch (MojoExecutionException e) {
+                    logError("MojoExecutionException: " + e.getMessage(), e);
 
                     try {
                         String invokerLogContent =
