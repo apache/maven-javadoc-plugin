@@ -41,7 +41,7 @@ import org.eclipse.aether.RepositorySystem;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @since 2.5
  */
-@Mojo(name = "aggregate", aggregator = true, requiresDependencyResolution = ResolutionScope.COMPILE)
+@Mojo(name = "aggregate", aggregator = true, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
 @Execute(phase = LifecyclePhase.COMPILE)
 public class AggregatorJavadocReport extends JavadocReport {
 
