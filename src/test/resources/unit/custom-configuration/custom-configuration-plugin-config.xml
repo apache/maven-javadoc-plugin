@@ -35,6 +35,7 @@ under the License.
         <configuration>
           <sourcepath>${basedir}</sourcepath>
           <outputDirectory>${basedir}/target/site</outputDirectory>
+          <destDir>myapidocs</destDir>
           <javadocOptionsDir>${basedir}/target/javadoc-bundle-options</javadocOptionsDir>
           <breakiterator>false</breakiterator>
           <old>true</old>
