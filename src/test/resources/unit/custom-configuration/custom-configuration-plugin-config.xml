@@ -95,10 +95,13 @@ under the License.
               <location>${basedir}</location>
             </OfflineLink>
           </offlineLinks>
+          <links>
+            <link>http://java.sun.com/j2se/1.4.2/docs/api</link>
+          </links>
           <header>MAVEN JAVADOC PLUGIN TEST</header>
           <footer>MAVEN JAVADOC PLUGIN TEST FOOTER</footer>
           <locale>en_US</locale>
-          <offline>true</offline>
+          <offline>false</offline>
           <excludePackageNames>*.exclude2:custom.configuration.exclude1.*</excludePackageNames>
           <debug>true</debug>
           <failOnError>true</failOnError>
