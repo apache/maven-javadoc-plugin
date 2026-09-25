@@ -3791,7 +3791,17 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @see #getDependenciesLinks()
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">link option</a>
      */
-    private void addLinkArguments(List<String> arguments) throws MavenReportException {
+    private void addLinkArguments(List<String> arguments, Set<OfflineLink> offlineLinksList) throws MavenReportException {
+        Set<String> offlineLinkUrls = new HashSet<>();
+        for (OfflineLink offlineLink : offlineLinksList) {
+            String url = offlineLink.getUrl();
+            String location = offlineLink.getLocation();
+            if (url != null && !url.isEmpty() && location != null && !location.isEmpty()
+                    && isValidJavadocLink(location, false)) {
+                offlineLinkUrls.add(cleanUrl(url));
+            }
+        }
+
         Set<String> links = collectLinks();
 
         for (String link : links) {
@@ -3805,6 +3815,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
             while (link.endsWith("/")) {
                 link = link.substring(0, link.lastIndexOf("/"));
+            }
+
+            if (offlineLinkUrls.contains(link)) {
+                continue;
             }
 
             addArgIfNotEmpty(arguments, "-link", JavadocUtil.quotedPathArgument(link), true, false);
@@ -4711,7 +4725,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         addArgIf(arguments, keywords, "-keywords");
 
-        addLinkArguments(arguments);
+        addLinkArguments(arguments, offlineLinks);
 
         addLinkofflineArguments(arguments, offlineLinks);
 
