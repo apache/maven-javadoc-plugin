@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-plugins</artifactId>
-    <version>49</version>
+    <version>50</version>
     <relativePath />
   </parent>
 
@@ -127,7 +127,7 @@ under the License.
     <pluginPluginVersion>${version.maven-plugin-tools}</pluginPluginVersion>
     <jarPluginVersion>${version.maven-jar-plugin}</jarPluginVersion>
     <sitePluginVersion>${version.maven-site-plugin}</sitePluginVersion>
-    <surefirePluginVersion>${version.maven-surefire}</surefirePluginVersion>
+    <surefirePluginVersion>${version.maven-surefire-plugin}</surefirePluginVersion>
     <toolchainPluginVersion>3.2.0</toolchainPluginVersion>
     <projectInfoReportsPluginVersion>${version.maven-project-info-reports-plugin}</projectInfoReportsPluginVersion>
     <project.build.outputTimestamp>2025-09-16T08:27:46Z</project.build.outputTimestamp>
@@ -404,7 +404,7 @@ under the License.
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
           <configuration>
-            <excludes combine.children="append">
+            <inputExcludes>
               <!-- Photoshop files are binary -->
               <exclude>**/*.psd</exclude>
               <!-- Checksum files cannot contain a license header -->
@@ -417,7 +417,7 @@ under the License.
               <!-- temporary file that sometimes stays after a failure then completely blocks build -->
               <exclude>javadoc-options-javadoc-resources.xml</exclude>
               <exclude>.github/dependabot.yml</exclude>
-            </excludes>
+            </inputExcludes>
           </configuration>
         </plugin>
         <plugin>
