@@ -450,6 +450,14 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     protected boolean failOnWarnings;
 
     /**
+     * Number of times to retry fetching a remote Javadoc package list after a socket timeout.
+     *
+     * @since 3.13.0
+     */
+    @Parameter(property = "maven.javadoc.linkRetryCount", defaultValue = "1")
+    protected int linkRetryCount;
+
+    /**
      * Specifies to use the
      * <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#standard-doclet-options">
      * options provided by the Standard Doclet</a> for a custom doclet.
@@ -5668,14 +5676,14 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             }
 
             try {
-                if (JavadocUtil.isValidElementList(elementListUri.toURL(), settings, validateLinks)) {
+                if (JavadocUtil.isValidElementList(elementListUri.toURL(), settings, validateLinks, linkRetryCount)) {
                     return true;
                 }
             } catch (IOException e) {
                 // ignore this because it is optional
             }
 
-            if (JavadocUtil.isValidPackageList(packageListUri.toURL(), settings, validateLinks)) {
+            if (JavadocUtil.isValidPackageList(packageListUri.toURL(), settings, validateLinks, linkRetryCount)) {
                 return true;
             }
 

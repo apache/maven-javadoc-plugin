@@ -297,6 +297,14 @@ class JavadocUtilTest {
                 .toURI()
                 .toURL();
         assertTrue(JavadocUtil.isValidPackageList(url, settings, true));
+        assertTrue(JavadocUtil.isValidPackageList(url, settings, true, 0));
+
+        try {
+            JavadocUtil.isValidPackageList(url, settings, true, -1);
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertNotNull(e.getMessage());
+        }
 
         url = new URL("http://maven.apache.org/plugins-archives/maven-javadoc-plugin-3.5.0/apidocs/package-list");
         assertTrue(JavadocUtil.isValidPackageList(url, settings, true));
