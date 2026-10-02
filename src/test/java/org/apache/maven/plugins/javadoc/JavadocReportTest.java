@@ -389,6 +389,13 @@ class JavadocReportTest {
                     .contains("href=\"http://java.sun.com/j2se/1.4.2/docs/api/java.base/java/lang/string.html"));
         }
 
+        Path options = apidocs.resolve("options");
+        assertThat(options).exists();
+        String optionsContent = readFile(options);
+        assertThat(optionsContent).contains("-linkoffline");
+        assertThat(optionsContent)
+                .doesNotContain("-link" + LINE_SEPARATOR + "'http://java.sun.com/j2se/1.4.2/docs/api'");
+
         // header
         assertTrue(str.toUpperCase(Locale.ENGLISH).contains("MAVEN JAVADOC PLUGIN TEST"));
 
