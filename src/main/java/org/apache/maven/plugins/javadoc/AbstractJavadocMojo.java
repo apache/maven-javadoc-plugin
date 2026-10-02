@@ -2604,8 +2604,11 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         try {
             ArtifactResult resolutionResult = repoSystem.resolveArtifact(repoSession, req);
             return RepositoryUtils.toArtifact(resolutionResult.getArtifact());
-        } catch (ArtifactResolutionException e) {
-            throw new MavenReportException("artifact resolver problem - " + e.getMessage(), e);
+        } catch (ArtifactResolutionException | IllegalArgumentException e) {
+            throw new MavenReportException(
+                    "Could not resolve additional dependency " + dependency.getGroupId() + ":"
+                            + dependency.getArtifactId() + ":" + dependency.getVersion() + " - " + e.getMessage(),
+                    e);
         }
     }
 
