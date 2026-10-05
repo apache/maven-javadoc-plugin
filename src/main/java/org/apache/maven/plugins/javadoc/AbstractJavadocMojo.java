@@ -1936,12 +1936,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         javadocOutputDirectory.mkdirs();
 
         // ----------------------------------------------------------------------
-        // Copy all resources
-        // ----------------------------------------------------------------------
-
-        copyAllResources(javadocOutputDirectory);
-
-        // ----------------------------------------------------------------------
         // Create command line for Javadoc
         // ----------------------------------------------------------------------
 
@@ -4970,12 +4964,17 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @throws MavenReportException if any errors occur
      */
     private void executeJavadocCommandLine(Commandline cmd, File javadocOutputDirectory) throws MavenReportException {
+        // Resources must be copied only when Javadoc is actually (re)generated. copyAllResources removes
+        // excluded doc-file subdirectories from the output directory; if it ran while generation was skipped
+        // as up to date, those files would be deleted without being regenerated, leaving the output incomplete.
         if (staleDataPath != null) {
             if (!isUpToDate(cmd)) {
+                copyAllResources(javadocOutputDirectory);
                 doExecuteJavadocCommandLine(cmd, javadocOutputDirectory);
                 StaleHelper.writeStaleData(cmd, staleDataPath.toPath());
             }
         } else {
+            copyAllResources(javadocOutputDirectory);
             doExecuteJavadocCommandLine(cmd, javadocOutputDirectory);
         }
     }
