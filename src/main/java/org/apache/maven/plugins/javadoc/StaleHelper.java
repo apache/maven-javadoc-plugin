@@ -20,13 +20,14 @@ package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.maven.reporting.MavenReportException;
 import org.codehaus.plexus.util.cli.Commandline;
@@ -50,8 +51,10 @@ public class StaleHelper {
             List<String> options = new ArrayList<>();
             Path dir = cmd.getWorkingDirectory().toPath().toAbsolutePath().normalize();
             String[] args = cmd.getArguments();
+            // Add all the command arguments
             Collections.addAll(options, args);
 
+            // Add the contents of @-files
             for (String arg : args) {
                 if (arg.startsWith("@")) {
                     String name = arg.substring(1);
@@ -59,6 +62,7 @@ public class StaleHelper {
                     ignored.add(name);
                 }
             }
+            // Expand files and directories from the classpath and source path
             List<String> state = new ArrayList<>(options);
             boolean cp = false;
             boolean sp = false;
@@ -74,9 +78,7 @@ public class StaleHelper {
                     for (String ps : s.split(File.pathSeparator)) {
                         Path p = dir.resolve(ps);
                         for (Path c : walk(p)) {
-                            if (Files.isRegularFile(c)) {
-                                state.add(c + " = " + lastmod(c));
-                            }
+                            state.add(c + " = " + lastmod(c));
                         }
                         state.add(p + " = " + lastmod(p));
                     }
@@ -84,14 +86,16 @@ public class StaleHelper {
                 cp = "-classpath".equals(arg);
                 sp = "-sourcepath".equals(arg);
             }
+            // Add files from the working directory (i.e. where the javadocs
+            // are being written)
             for (Path p : walk(dir)) {
-                if (Files.isRegularFile(p) && !ignored.contains(p.getFileName().toString())) {
+                if (!ignored.contains(p.getFileName().toString())) {
                     state.add(p + " = " + lastmod(p));
                 }
             }
             return state;
         } catch (Exception e) {
-            throw new MavenReportException("Unable to compute stale date", e);
+            throw new MavenReportException("Unable to compute stale data", e);
         }
     }
 
@@ -111,14 +115,14 @@ public class StaleHelper {
             throw new MavenReportException("Error checking stale data", e);
         }
     }
-
+    /**
+     * Recursively find all regular files under the given root.
+     * @param dir the root directory
+     * @return a collection of paths
+     */
     private static Collection<Path> walk(Path dir) {
-        Collection<Path> paths = new ArrayList<>();
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dir)) {
-            for (Path p : directoryStream) {
-                paths.add(p);
-            }
-            return paths;
+        try (Stream<Path> stream = Files.walk(dir)) {
+            return stream.filter(Files::isRegularFile).collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
