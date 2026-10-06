@@ -20,7 +20,10 @@ package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
 import java.nio.file.Path;
-
+import org.apache.maven.model.Build;
+import org.apache.maven.model.Plugin;
+import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.javadoc.options.OfflineLink;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,6 +48,30 @@ class AbstractJavadocMojoTest {
             @Override
             public void doExecute() {}
         };
+    }
+
+    @Test
+    void includesCompilerConfiguredSourceRoots() {
+        MavenProject project = new MavenProject();
+        project.setPackaging("jar");
+        project.getCompileSourceRoots().add("src/main/java");
+        Plugin compiler = new Plugin();
+        compiler.setGroupId("org.apache.maven.plugins");
+        compiler.setArtifactId("maven-compiler-plugin");
+        Xpp3Dom configuration = new Xpp3Dom("configuration");
+        Xpp3Dom roots = new Xpp3Dom("compileSourceRoots");
+        Xpp3Dom root = new Xpp3Dom("compileSourceRoot");
+        root.setValue("src/main/java2");
+        roots.addChild(root);
+        configuration.addChild(roots);
+        compiler.setConfiguration(configuration);
+        Build build = new Build();
+        build.addPlugin(compiler);
+        project.setBuild(build);
+
+        mojo.project = project;
+
+        assertThat(mojo.getProjectSourceRoots(project)).containsExactly("src/main/java", "src/main/java2");
     }
 
     @Test
