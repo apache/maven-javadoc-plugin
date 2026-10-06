@@ -47,7 +47,8 @@ import org.eclipse.aether.RepositorySystem;
         name = "test-aggregate-jar",
         defaultPhase = LifecyclePhase.PACKAGE,
         aggregator = true,
-        requiresDependencyResolution = ResolutionScope.TEST)
+        requiresDependencyResolution = ResolutionScope.TEST,
+        threadSafe = true)
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
 public class AggregatorTestJavadocJarMojo extends TestJavadocJarMojo {
 

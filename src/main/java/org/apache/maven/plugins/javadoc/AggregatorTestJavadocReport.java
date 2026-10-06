@@ -41,7 +41,11 @@ import org.eclipse.aether.RepositorySystem;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  * @since 2.5
  */
-@Mojo(name = "test-aggregate", aggregator = true, requiresDependencyResolution = ResolutionScope.TEST)
+@Mojo(
+        name = "test-aggregate",
+        aggregator = true,
+        requiresDependencyResolution = ResolutionScope.TEST,
+        threadSafe = true)
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
 public class AggregatorTestJavadocReport extends TestJavadocReport {
 

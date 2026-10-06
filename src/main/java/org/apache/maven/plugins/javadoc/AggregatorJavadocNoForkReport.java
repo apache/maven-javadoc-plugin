@@ -38,7 +38,7 @@ import org.eclipse.aether.RepositorySystem;
  *
  * @since 3.1.0
  */
-@Mojo(name = "aggregate-no-fork", requiresDependencyResolution = ResolutionScope.COMPILE)
+@Mojo(name = "aggregate-no-fork", requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
 @Execute(phase = LifecyclePhase.NONE)
 public class AggregatorJavadocNoForkReport extends AggregatorJavadocReport {
 
