@@ -471,8 +471,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     protected boolean useStandardDocletOptions;
 
     /**
-     * Detect the Javadoc links for all dependencies defined in the project. The detection is based on the default
-     * Maven conventions, i.e.: <code>${project.url}/apidocs</code>.
+     * Detect the Javadoc links for all dependencies defined in the project. The detection is based
+     * on the default Maven conventions, i.e.: <code>${project.url}/${destDir}</code> with
+     * {@code destDir} from the Javadoc plugin configuration (<code>apidocs</code> by default).
      * <br/>
      * For instance, if the project has a dependency to
      * <a href="http://commons.apache.org/lang/">Apache Commons Lang</a> i.e.:
@@ -495,8 +496,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * Detect the links for all modules defined in the project.
      * <br/>
      * If {@code reactorProjects} is defined in a non-aggregator way, it generates default offline links
-     * between modules based on the defined project's URLs. For instance, if a parent project has two projects
-     * <code>module1</code> and <code>module2</code>, the <code>-linkoffline</code> will be:
+     * between modules based on the defined project's URLs and {@code destDir}
+     * in the Javadoc plugin configuration (<code>apidocs</code> by default).
+     * For instance, if a parent project has two projects
+     * <code>module1</code> and <code>module2</code>, the <code>-linkoffline</code> will be by default:
      * <br/>
      * The added Javadoc <code>-linkoffline</code> parameter for <b>module1</b> will be
      * <code>/absolute/path/to/</code><b>module2</b><code>/target/site/apidocs</code>
@@ -1669,6 +1672,14 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     @Parameter(property = "maven.javadoc.disableNoFonts", defaultValue = "false")
     private boolean disableNoFonts;
 
+    /**
+     * The name of the destination directory.
+     *
+     * @since 2.1
+     */
+    @Parameter(property = "destDir", defaultValue = "apidocs")
+    protected String destDir;
+
     // ----------------------------------------------------------------------
     // protected methods
     // ----------------------------------------------------------------------
@@ -1704,7 +1715,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @return a String that contains the target directory
      */
     protected String getPluginReportOutputDirectory() {
-        return getOutputDirectory() + "/" + (isTest() ? "test" : "") + "apidocs";
+        return getOutputDirectory() + "/" + (isTest() ? "test" : "") + destDir;
     }
 
     protected MavenProject getProject() {
@@ -5325,7 +5336,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * Using Maven, a Javadoc link is given by <code>${project.url}/apidocs</code>.
+     * Using Maven, a Javadoc link is given by <code>${project.url}/${destDir}</code> with
+     * {@code destDir} from the Javadoc plugin configuration (<code>apidocs</code> by default).
      *
      * @return the detected Javadoc links using the Maven conventions for all modules defined in the current project
      *         or an empty list
@@ -5424,7 +5436,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
-     * Using Maven, a Javadoc link is given by <code>${project.url}/apidocs</code>.
+     * Using Maven, a Javadoc link is given by <code>${project.url}/${destDir}</code> with
+     * {@code destDir} from the Javadoc plugin configuration (<code>apidocs</code> by default).
      *
      * @return the detected Javadoc links using the Maven conventions for all dependencies defined in the current
      *         project or an empty list.
@@ -5677,7 +5690,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             if (JavadocUtil.isValidPackageList(packageListUri.toURL(), settings, validateLinks)) {
                 return true;
             }
-
             if (getLog().isErrorEnabled()) {
                 if (detecting) {
                     getLog().warn("Invalid links: " + link + " with /" + PACKAGE_LIST + " or / " + ELEMENT_LIST
@@ -5755,7 +5767,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
     /**
      * @param project not null
-     * @return the javadoc link based on the project URL i.e. <code>${project.url}/apidocs</code>.
+     * @return the javadoc link based on the project URL i.e. <code>${project.url}/${destDir}</code>
+     *         with {@code destDir} from the Javadoc plugin configuration (<code>apidocs</code> by
+     *         default).
      * @since 2.6
      */
     private static String getJavadocLink(MavenProject project) {
@@ -5764,8 +5778,14 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         String url = cleanUrl(project.getUrl());
+        String destDir = "apidocs"; // see AbstractJavadocMojo#destDir
+        final String pluginId = "org.apache.maven.plugins:maven-javadoc-plugin";
+        String destDirConfigured = getPluginParameter(project, pluginId, "destDir");
+        if (destDirConfigured != null) {
+            destDir = destDirConfigured;
+        }
 
-        return url + "/apidocs";
+        return url + "/" + destDir;
     }
 
     /**
