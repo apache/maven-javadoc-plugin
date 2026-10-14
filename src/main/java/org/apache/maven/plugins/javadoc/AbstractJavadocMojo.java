@@ -5345,7 +5345,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         Set<String> dependencyArtifactIds = new HashSet<>();
         final Set<Artifact> dependencyArtifacts = project.getDependencyArtifacts();
         for (Artifact artifact : dependencyArtifacts) {
-            dependencyArtifactIds.add(artifact.getId());
+            // test-scoped modules can only be referenced from test Javadoc
+            if (isTest() || !Artifact.SCOPE_TEST.equals(artifact.getScope())) {
+                dependencyArtifactIds.add(artifact.getId());
+            }
         }
 
         List<OfflineLink> modulesLinks = new ArrayList<>();
@@ -5405,7 +5408,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 }
             }
 
-            if (location.exists()) {
+            // a module without Java sources leaves an empty directory, which is no link target
+            if (new File(location, PACKAGE_LIST).exists() || new File(location, ELEMENT_LIST).exists()) {
                 String url = getJavadocLink(p);
 
                 OfflineLink ol = new OfflineLink();
