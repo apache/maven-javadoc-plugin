@@ -20,16 +20,28 @@ package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Collections;
 
+import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.plugins.javadoc.options.OfflineLink;
+import org.apache.maven.reporting.MavenReportException;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.resolution.ArtifactRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.setVariableValueToObject;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -142,5 +154,35 @@ class AbstractJavadocMojoTest {
 
         assertThat(link).isNotNull();
         assertThat(link.getUrl()).isEqualTo("https://docs.oracle.com/en/java/javase/11/docs/api/");
+    }
+
+    @Test
+    void resolveDependencyIncludesCoordinatesWhenResolutionFails() throws Exception {
+        RepositorySystem repositorySystem = mock(RepositorySystem.class);
+        RepositorySystemSession repositorySession = mock(RepositorySystemSession.class);
+        ArtifactHandlerManager artifactHandlerManager = mock(ArtifactHandlerManager.class);
+        when(artifactHandlerManager.getArtifactHandler(anyString())).thenReturn(mock(ArtifactHandler.class));
+        when(repositorySystem.resolveArtifact(eq(repositorySession), any(ArtifactRequest.class)))
+                .thenThrow(new IllegalArgumentException("version can neither be null, empty nor blank"));
+
+        AbstractJavadocMojo failingMojo = new AbstractJavadocMojo(
+                null, null, null, repositorySystem, artifactHandlerManager, null, null) {
+            @Override
+            public void doExecute() {}
+        };
+        setVariableValueToObject(failingMojo, "repoSession", repositorySession);
+        MavenProject project = mock(MavenProject.class);
+        when(project.getRemoteProjectRepositories()).thenReturn(Collections.emptyList());
+        failingMojo.project = project;
+
+        Dependency dependency = new Dependency();
+        dependency.setGroupId("org.example");
+        dependency.setArtifactId("missing");
+        dependency.setVersion("${missing.version}");
+
+        assertThatThrownBy(() -> failingMojo.resolveDependency(dependency))
+                .isInstanceOf(MavenReportException.class)
+                .hasMessageContaining("org.example:missing:${missing.version}")
+                .hasMessageContaining("version can neither be null, empty nor blank");
     }
 }
