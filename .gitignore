@@ -15,3 +15,6 @@ out/
 .java-version
 /javadoc-options-javadoc-resources.xml
 .checkstyle
+
+# Generated integration-test repositories and doclets.
+src/it/mrm/*/_*.jar
