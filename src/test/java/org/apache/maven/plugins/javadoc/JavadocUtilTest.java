@@ -41,6 +41,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.plugins.javadoc.ProxyServer.AuthAsyncProxyServlet;
@@ -297,6 +304,14 @@ class JavadocUtilTest {
                 .toURI()
                 .toURL();
         assertTrue(JavadocUtil.isValidPackageList(url, settings, true));
+        assertTrue(JavadocUtil.isValidPackageList(url, settings, true, 0));
+
+        try {
+            JavadocUtil.isValidPackageList(url, settings, true, -1);
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertNotNull(e.getMessage());
+        }
 
         url = new URL("http://maven.apache.org/plugins-archives/maven-javadoc-plugin-3.5.0/apidocs/package-list");
         assertTrue(JavadocUtil.isValidPackageList(url, settings, true));
@@ -407,6 +422,61 @@ class JavadocUtilTest {
             settings.addProxy(proxy);
 
             assertTrue(JavadocUtil.isValidPackageList(url, settings, true));
+        }
+    }
+
+    @Test
+    void testIsValidPackageListRetriesAfterSocketTimeout() throws Exception {
+        AtomicInteger requests = new AtomicInteger();
+        CountDownLatch firstTwoRequestsStarted = new CountDownLatch(2);
+        CountDownLatch releaseFirstTwoRequests = new CountDownLatch(1);
+        ExecutorService validationExecutor = Executors.newSingleThreadExecutor();
+        Server server = new Server(0);
+        server.setHandler(new AbstractHandler() {
+            @Override
+            public void handle(
+                    String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+                    throws IOException {
+                if (requests.incrementAndGet() <= 2) {
+                    firstTwoRequestsStarted.countDown();
+                    try {
+                        releaseFirstTwoRequests.await(10, TimeUnit.SECONDS);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    baseRequest.setHandled(true);
+                    return;
+                }
+
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.setContentType("text/plain");
+                response.getWriter().write("org.example\n");
+                baseRequest.setHandled(true);
+            }
+        });
+
+        server.start();
+        URL url = new URL(
+                "http://localhost:" + ((ServerConnector) server.getConnectors()[0]).getLocalPort() + "/package-list");
+        try {
+            Future<Boolean> validation =
+                    validationExecutor.submit(() -> JavadocUtil.isValidPackageList(url, null, true, 2));
+
+            assertTrue(
+                    firstTwoRequestsStarted.await(5, TimeUnit.SECONDS), "timed-out requests did not reach the server");
+            boolean valid;
+            try {
+                valid = validation.get(10, TimeUnit.SECONDS);
+            } catch (ExecutionException e) {
+                throw new AssertionError(
+                        "package-list validation did not recover after two socket timeouts: " + e.getCause());
+            }
+            assertTrue(valid);
+            assertEquals(3, requests.get(), "two retries should follow the first socket timeout");
+        } finally {
+            releaseFirstTwoRequests.countDown();
+            stopSilently(server);
+            validationExecutor.shutdownNow();
         }
     }
 
