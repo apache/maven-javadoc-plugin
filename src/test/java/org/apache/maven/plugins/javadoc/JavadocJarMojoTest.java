@@ -132,6 +132,24 @@ class JavadocJarMojoTest {
         assertThat(generatedFile).exists();
     }
 
+    /**
+     * Test when the specified destDir parameter has an invalid value
+     *
+     * @throws Exception if any
+     */
+    @Test
+    @InjectMojo(goal = "jar", pom = "javadocjar-invalid-destdir-plugin-config.xml")
+    @Basedir("/unit/javadocjar-invalid-destdir")
+    void testInvalidDestdir(JavadocJarMojo mojo) throws Exception {
+        mojo.execute();
+
+        // check if the javadoc jar file was generated
+        File generatedFile = new File(
+                getBasedir(),
+                "target/test/unit/javadocjar-invalid-destdir/target/javadocjar-invalid-destdir-javadoc.jar");
+        assertThat(generatedFile).doesNotExist();
+    }
+
     @Test
     @InjectMojo(goal = "jar", pom = "javadocjar-failonerror-plugin-config.xml")
     @Basedir("/unit/javadocjar-failonerror")
