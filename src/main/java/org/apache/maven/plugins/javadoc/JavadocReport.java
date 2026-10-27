@@ -43,7 +43,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.plugins.javadoc.resolver.ResourceResolver;
 import org.apache.maven.project.ProjectBuilder;
-import org.apache.maven.reporting.MavenMultiPageReport;
 import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.toolchain.ToolchainManager;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
@@ -60,7 +59,7 @@ import org.eclipse.aether.RepositorySystem;
  */
 @Mojo(name = "javadoc", requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
 @Execute(phase = LifecyclePhase.GENERATE_SOURCES)
-public class JavadocReport extends AbstractJavadocMojo implements MavenMultiPageReport {
+public class JavadocReport extends AbstractJavadocMojo implements MultiPageReportCompat {
     // ----------------------------------------------------------------------
     // Report Mojo Parameters
     // ----------------------------------------------------------------------
