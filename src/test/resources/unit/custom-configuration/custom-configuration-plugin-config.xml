@@ -94,9 +94,18 @@ under the License.
               <url>http://java.sun.com/j2se/1.4.2/docs/api</url>
               <location>${basedir}</location>
             </OfflineLink>
+            <OfflineLink>
+              <url>file://${basedir}/missing-api</url>
+              <location>${basedir}/ordinary-api</location>
+            </OfflineLink>
+            <OfflineLink>
+              <url>https://unavailable.invalid/api</url>
+              <location>${basedir}</location>
+            </OfflineLink>
           </offlineLinks>
           <links>
-            <link>http://java.sun.com/j2se/1.4.2/docs/api</link>
+            <link>file://${basedir}/missing-api/</link>
+            <link>file://${basedir}/ordinary-api</link>
           </links>
           <header>MAVEN JAVADOC PLUGIN TEST</header>
           <footer>MAVEN JAVADOC PLUGIN TEST FOOTER</footer>
