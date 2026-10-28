@@ -19,13 +19,17 @@
 package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Plugin;
-import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.javadoc.options.OfflineLink;
+import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -40,6 +44,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class AbstractJavadocMojoTest {
+    @TempDir
+    Path tempDir;
+
     AbstractJavadocMojo mojo;
 
     @BeforeEach
@@ -72,6 +79,59 @@ class AbstractJavadocMojoTest {
         mojo.project = project;
 
         assertThat(mojo.getProjectSourceRoots(project)).containsExactly("src/main/java", "src/main/java2");
+    }
+
+    @Test
+    void includesConfiguredAndGeneratedRootsForEachModule() throws IOException {
+        for (String module : new String[] {"first-module", "second-module"}) {
+            Path basedir = tempDir.resolve(module);
+            String mainRoot = "src/main/java";
+            String generatedRoot = "target/generated-sources/annotations";
+            String configuredRoot = "src/custom/java";
+            String configuredGeneratedRoot = "target/custom-generated/java";
+            String unrelatedRoot = "src/unrelated/java";
+
+            for (String root :
+                    new String[] {mainRoot, generatedRoot, configuredRoot, configuredGeneratedRoot, unrelatedRoot}) {
+                Files.createDirectories(basedir.resolve(root));
+            }
+
+            MavenProject project = new MavenProject();
+            project.setFile(basedir.resolve("pom.xml").toFile());
+            project.setPackaging("jar");
+            project.getCompileSourceRoots().add(basedir.resolve(mainRoot).toString());
+            project.getCompileSourceRoots().add(basedir.resolve(generatedRoot).toString());
+
+            Plugin compiler = new Plugin();
+            compiler.setGroupId("org.apache.maven.plugins");
+            compiler.setArtifactId("maven-compiler-plugin");
+            Xpp3Dom configuration = new Xpp3Dom("configuration");
+            Xpp3Dom roots = new Xpp3Dom("compileSourceRoots");
+            for (String root : new String[] {configuredRoot, configuredGeneratedRoot}) {
+                Xpp3Dom compileSourceRoot = new Xpp3Dom("compileSourceRoot");
+                compileSourceRoot.setValue(root);
+                roots.addChild(compileSourceRoot);
+            }
+            configuration.addChild(roots);
+            compiler.setConfiguration(configuration);
+            Build build = new Build();
+            build.addPlugin(compiler);
+            project.setBuild(build);
+
+            List<String> sourceRoots = mojo.getProjectSourceRoots(project);
+            assertThat(sourceRoots)
+                    .containsExactly(
+                            basedir.resolve(mainRoot).toString(),
+                            basedir.resolve(generatedRoot).toString(),
+                            configuredRoot,
+                            configuredGeneratedRoot);
+            assertThat(JavadocUtil.pruneDirs(project, sourceRoots))
+                    .containsExactly(
+                            basedir.resolve(mainRoot).toAbsolutePath(),
+                            basedir.resolve(generatedRoot).toAbsolutePath(),
+                            basedir.resolve(configuredRoot).toAbsolutePath(),
+                            basedir.resolve(configuredGeneratedRoot).toAbsolutePath());
+        }
     }
 
     @Test
