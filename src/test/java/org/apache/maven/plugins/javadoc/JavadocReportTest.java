@@ -351,6 +351,11 @@ class JavadocReportTest {
     @Basedir("/unit/custom-configuration")
     @Test
     void testCustomConfiguration(JavadocReport mojo) throws Exception {
+        Path ordinaryApi = new File(getBasedir(), "ordinary-api").toPath();
+        Files.createDirectories(ordinaryApi);
+        Files.write(
+                ordinaryApi.resolve("package-list"), Collections.singletonList("example.api"), StandardCharsets.UTF_8);
+
         mojo.execute();
 
         Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
@@ -388,6 +393,22 @@ class JavadocReportTest {
             assertTrue(str.toLowerCase(Locale.ENGLISH)
                     .contains("href=\"http://java.sun.com/j2se/1.4.2/docs/api/java.base/java/lang/string.html"));
         }
+
+        Path options = apidocs.resolve("options");
+        assertThat(options).exists();
+        String optionsContent = readFile(options);
+        assertThat(optionsContent).contains("-linkoffline");
+        String missingApiUrl = "file://" + getBasedir() + "/missing-api";
+        String ordinaryApiUrl = "file://" + getBasedir() + "/ordinary-api";
+        assertThat(optionsContent)
+                .doesNotContain("-link" + LINE_SEPARATOR + "'http://java.sun.com/j2se/1.4.2/docs/api'");
+        assertThat(optionsContent)
+                .contains("-linkoffline" + LINE_SEPARATOR + "'" + missingApiUrl + "' '" + ordinaryApi.toAbsolutePath()
+                        + "'")
+                .doesNotContain("-link" + LINE_SEPARATOR + "'" + missingApiUrl + "'");
+        assertThat(optionsContent)
+                .contains("-link" + LINE_SEPARATOR + "'" + ordinaryApiUrl + "'")
+                .contains("-linkoffline" + LINE_SEPARATOR + "'https://unavailable.invalid/api' '" + getBasedir() + "'");
 
         // header
         assertTrue(str.toUpperCase(Locale.ENGLISH).contains("MAVEN JAVADOC PLUGIN TEST"));
