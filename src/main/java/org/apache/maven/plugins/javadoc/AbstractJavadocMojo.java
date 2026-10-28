@@ -2395,21 +2395,18 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @throws MavenReportException
      */
     private String getExcludedPackages(Collection<Path> sourcePaths) throws MavenReportException {
-        List<String> excludedNames = null;
-
-        if ((sourcepath != null && !sourcepath.isEmpty()) && (subpackages != null && !subpackages.isEmpty())) {
-            Collection<String> excludedPackages = getExcludedPackages();
-
-            excludedNames = JavadocUtil.getExcludedPackages(sourcePaths, excludedPackages);
+        Collection<String> excludedPackages = getExcludedPackages();
+        if (excludedPackages.isEmpty()) {
+            return "";
         }
 
-        String excludeArg = "";
-        if ((subpackages != null && !subpackages.isEmpty()) && excludedNames != null) {
-            // add the excludedpackage names
-            excludeArg = StringUtils.join(excludedNames.iterator(), ":");
-        }
+        // resolve wildcards (e.g. "org.acme.*") against the actual source tree regardless of
+        // subpackages/sourcepath, since -exclude is also needed when javadoc is invoked with an
+        // explicit package list (the module-aware path addCommandLinePackages uses), where omitting
+        // a package from that list is not enough once the module itself still exports it
+        List<String> excludedNames = JavadocUtil.getExcludedPackages(sourcePaths, excludedPackages);
 
-        return excludeArg;
+        return StringUtils.join(excludedNames.iterator(), ":");
     }
 
     /**
