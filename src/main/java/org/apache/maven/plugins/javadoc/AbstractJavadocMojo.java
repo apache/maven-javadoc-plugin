@@ -4683,7 +4683,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         addArgIfNotEmpty(arguments, "-charset", JavadocUtil.quotedArgument(getCharset()));
 
-        addArgIfNotEmpty(arguments, "-d", JavadocUtil.quotedPathArgument(javadocOutputDirectory.toString()));
+        addArgIfNotEmpty(
+                arguments, "-d", JavadocUtil.quotedPathArgument(javadocOutputDirectory.toString()), false, false);
 
         addArgIfNotEmpty(arguments, "-docencoding", JavadocUtil.quotedArgument(getDocencoding()));
 
