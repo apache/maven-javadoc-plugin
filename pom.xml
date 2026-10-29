@@ -102,8 +102,8 @@ under the License.
     <url>https://github.com/apache/maven-javadoc-plugin/issues</url>
   </issueManagement>
   <ciManagement>
-    <system>Jenkins</system>
-    <url>https://ci-maven.apache.org/job/Maven/job/maven-box/job/maven-javadoc-plugin/</url>
+    <system>GitHub</system>
+    <url>https://github.com/apache/maven-javadoc-plugin/actions</url>
   </ciManagement>
   <distributionManagement>
     <site>
