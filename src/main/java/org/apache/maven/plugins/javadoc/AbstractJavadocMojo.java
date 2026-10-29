@@ -2747,13 +2747,14 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         return getResource(new File(javadocOutputDirectory, DEFAULT_CSS_NAME), stylesheetfile);
     }
 
-    private void addAddStyleSheets(List<String> arguments) throws MavenReportException {
+    private void addAddStyleSheets(List<String> arguments, final File javadocOutputDirectory)
+            throws MavenReportException {
         if (addStylesheets == null) {
             return;
         }
 
         for (String addStylesheet : addStylesheets) {
-            Optional<File> styleSheet = getAddStylesheet(getJavadocDirectory(), addStylesheet);
+            Optional<File> styleSheet = getAddStylesheet(javadocOutputDirectory, addStylesheet);
 
             if (styleSheet.isPresent()) {
                 addArgIfNotEmpty(
@@ -2765,27 +2766,39 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
     }
 
+    /**
+     * Resolves an {@code <addStylesheet>} entry the same way {@link #getStylesheetFile(File)} resolves
+     * {@code <stylesheetfile>}: first as a resource in the project (source, resources or javadoc directories),
+     * then as a resource bundled in one of the Javadoc plugin's own dependencies, copying it into
+     * {@code javadocOutputDirectory} rather than into the project's source tree. A missing resource is only
+     * a warning -- logged by {@link #getResource(File, String)} -- not a build failure, for consistency with
+     * {@code stylesheetfile}.
+     *
+     * @param javadocOutputDirectory the Javadoc tool output directory
+     * @param stylesheet the configured {@code <addStylesheet>} entry
+     * @return the resolved stylesheet file, or empty if it could not be found anywhere
+     * @throws MavenReportException if the resolved file has the same name as {@code <stylesheetfile>}
+     */
     private Optional<File> getAddStylesheet(final File javadocOutputDirectory, final String stylesheet)
             throws MavenReportException {
         if (stylesheet == null || stylesheet.isEmpty()) {
             return Optional.empty();
         }
 
-        File addstylesheetfile = new File(getJavadocDirectory(), stylesheet);
-        if (addstylesheetfile.exists()) {
-            Optional<File> stylesheetfile = getStylesheetFile(javadocOutputDirectory);
-            if (stylesheetfile.isPresent()) {
-                if (stylesheetfile.get().getName().equals(addstylesheetfile.getName())) {
-                    throw new MavenReportException("additional stylesheet must have a different name "
-                            + "than stylesheetfile: " + stylesheetfile.get().getName());
-                }
-            }
-
-            return Optional.of(addstylesheetfile);
+        File target = new File(javadocOutputDirectory, new File(stylesheet).getName());
+        Optional<File> addstylesheetfile = getResource(target, stylesheet);
+        if (!addstylesheetfile.isPresent()) {
+            return Optional.empty();
         }
 
-        throw new MavenReportException(
-                "additional stylesheet file does not exist: " + addstylesheetfile.getAbsolutePath());
+        Optional<File> stylesheetfile = getStylesheetFile(javadocOutputDirectory);
+        if (stylesheetfile.isPresent()
+                && stylesheetfile.get().getName().equals(addstylesheetfile.get().getName())) {
+            throw new MavenReportException("additional stylesheet must have a different name " + "than stylesheetfile: "
+                    + stylesheetfile.get().getName());
+        }
+
+        return addstylesheetfile;
     }
 
     /**
@@ -4760,7 +4773,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 .ifPresent(file -> addArgIfNotEmpty(
                         arguments, "-stylesheetfile", JavadocUtil.quotedPathArgument(file.getAbsolutePath())));
 
-        addAddStyleSheets(arguments);
+        addAddStyleSheets(arguments, javadocOutputDirectory);
 
         addArgIfNotEmpty(arguments, "-subpackages", subpackages);
 
