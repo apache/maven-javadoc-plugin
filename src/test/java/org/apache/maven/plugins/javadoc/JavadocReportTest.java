@@ -1218,6 +1218,87 @@ class JavadocReportTest {
     }
 
     /**
+     * Method to test that an <code>&lt;addStylesheet/&gt;</code> resource found only in a Javadoc plugin
+     * dependency is extracted into the report output directory, not into the project's <code>src/main/javadoc</code>.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "pom.xml")
+    @Basedir("/unit/stylesheetfile-test")
+    @Test
+    void testAddStylesheetFromDependency(JavadocReport mojo) throws Exception {
+
+        // bug in testing framework - wrong resource dir name
+        mojo.getProject()
+                .getBuild()
+                .getResources()
+                .get(0)
+                .setDirectory(getTestFile("src/main/resources").getAbsolutePath());
+
+        // add dependency to find the addStylesheet resource in a plugin dependency
+        Plugin plugin = new Plugin();
+        plugin.setGroupId("org.apache.maven.plugins");
+        plugin.setArtifactId("maven-javadoc-plugin");
+        Dependency dependency = new Dependency();
+        dependency.setGroupId("org.apache.maven.plugins.maven-javadoc-plugin.unit");
+        dependency.setArtifactId("stylesheetfile-test");
+        dependency.setVersion("1.0-SNAPSHOT");
+        plugin.addDependency(dependency);
+
+        mojo.getProject().getBuild().setPlugins(Collections.singletonList(plugin));
+
+        File testArtifactDir = getTestFile("/artifact-stylesheetfile");
+        assertThat(testArtifactDir).exists();
+        copyDirectory(testArtifactDir, localRepo);
+
+        setVariableValueToObject(mojo, "stylesheet", null);
+        setVariableValueToObject(mojo, "addStylesheets", new String[] {"additional-stylesheet.css"});
+
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
+        Path extracted = apidocs.resolve("additional-stylesheet.css");
+        assertThat(extracted).exists();
+        assertThat(readFile(extracted)).contains("Additional stylesheet in artefact");
+
+        // the extracted resource must not have polluted the project's source tree
+        Path javadocSourceDir =
+                getTestFile("/unit/stylesheetfile-test/src/main/javadoc").toPath();
+        assertThat(javadocSourceDir.resolve("additional-stylesheet.css")).doesNotExist();
+
+        Path options = apidocs.resolve("options");
+        assertThat(readFile(options)).contains("--add-stylesheet");
+    }
+
+    /**
+     * Method to test that a missing <code>&lt;addStylesheet/&gt;</code> resource is only a warning, consistent
+     * with how a missing <code>&lt;stylesheetfile/&gt;</code> is handled, rather than failing the build.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "pom.xml")
+    @Basedir("/unit/stylesheetfile-test")
+    @Test
+    void testAddStylesheetMissingDoesNotFailBuild(JavadocReport mojo) throws Exception {
+
+        // bug in testing framework - wrong resource dir name
+        mojo.getProject()
+                .getBuild()
+                .getResources()
+                .get(0)
+                .setDirectory(getTestFile("src/main/resources").getAbsolutePath());
+
+        setVariableValueToObject(mojo, "stylesheet", null);
+        setVariableValueToObject(mojo, "addStylesheets", new String[] {"does-not-exist-anywhere.css"});
+
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
+        Path options = apidocs.resolve("options");
+        assertThat(readFile(options)).doesNotContain("--add-stylesheet");
+    }
+
+    /**
      * Method to test the <code>&lt;helpfile/&gt;</code> parameter.
      *
      * @throws Exception if any
