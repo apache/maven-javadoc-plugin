@@ -113,7 +113,6 @@ under the License.
   </distributionManagement>
 
   <properties>
-    <javaVersion>8</javaVersion>
     <mavenVersion>3.9.16</mavenVersion>
     <doxiaSitetoolsVersion>2.1.0</doxiaSitetoolsVersion>
     <resolverVersion>1.9.27</resolverVersion>
