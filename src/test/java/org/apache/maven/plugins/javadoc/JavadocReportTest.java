@@ -515,6 +515,27 @@ class JavadocReportTest {
     }
 
     /**
+     * Method to test when the path to the project sources has a comma (,)
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "commapath-test-plugin-config.xml")
+    @Basedir("/unit/commapath,test")
+    @Test
+    void testCommaPath(JavadocReport mojo) throws Exception {
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
+
+        // package level generated javadoc files
+        assertThat(apidocs.resolve("commapath/test/App.html")).exists();
+
+        // project level generated javadoc files
+        assertThat(apidocs.resolve("index-all.html")).exists();
+        assertThat(apidocs.resolve("index.html")).exists();
+    }
+
+    /**
      * Method to test when the options file has umlauts.
      *
      * @throws Exception if any
