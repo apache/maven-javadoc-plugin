@@ -1763,9 +1763,25 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             return Collections.emptyList();
         }
 
-        return p.getCompileSourceRoots() == null
-                ? Collections.emptyList()
-                : new LinkedList<>(p.getCompileSourceRoots());
+        Set<String> sourceRoots = new LinkedHashSet<>();
+        if (p.getCompileSourceRoots() != null) {
+            sourceRoots.addAll(p.getCompileSourceRoots());
+        }
+
+        Plugin compilerPlugin = getPlugin(p, "org.apache.maven.plugins:maven-compiler-plugin");
+        if (compilerPlugin != null && compilerPlugin.getConfiguration() instanceof Xpp3Dom) {
+            Xpp3Dom configuration = (Xpp3Dom) compilerPlugin.getConfiguration();
+            Xpp3Dom compileSourceRoots = configuration.getChild("compileSourceRoots");
+            if (compileSourceRoots != null) {
+                for (Xpp3Dom compileSourceRoot : compileSourceRoots.getChildren("compileSourceRoot")) {
+                    if (StringUtils.isNotBlank(compileSourceRoot.getValue())) {
+                        sourceRoots.add(compileSourceRoot.getValue());
+                    }
+                }
+            }
+        }
+
+        return new LinkedList<>(sourceRoots);
     }
 
     /**
