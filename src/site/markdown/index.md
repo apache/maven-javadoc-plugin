@@ -27,9 +27,9 @@ under the License.
 -->
 
 # Apache Maven Javadoc Plugin
-The Javadoc Plugin uses the Javadoc tool to generate javadocs for the specified project. For more information about the standard Javadoc tool, please refer to [Reference Guide](http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html).
+The Javadoc Plugin uses the Javadoc tool to generate javadocs for the specified project. For more information about the standard Javadoc tool, please refer to [Reference Guide](https://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html).
 
-The Javadoc Plugin gets the parameter values that will be used from the plugin configuration specified in the pom. To hold all javadoc arguments, packages or files, the Javadoc Plugin generates [argument files](http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#argumentfiles) and calls the Javadoc tool as follow:
+The Javadoc Plugin gets the parameter values that will be used from the plugin configuration specified in the pom. To hold all javadoc arguments, packages or files, the Javadoc Plugin generates [argument files](https://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#argumentfiles) and calls the Javadoc tool as follows:
 
 ```text
 javadoc.exe(or .sh) @options @packages | @argfile
