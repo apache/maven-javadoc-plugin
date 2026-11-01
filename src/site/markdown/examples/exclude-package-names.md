@@ -26,7 +26,7 @@ under the License.
 
 # Excluding Packages
 
-To exclude specific packages, use [&lt;excludePackageNames/&gt;](../javadoc-mojo.html#excludePackageNames) parameter as shown below. The parameter accepts wildcard (*) characters in its value but the wildcards should either be at the start or the end of the package name. If more than one package is to be excluded, each package name must be separated either with a colon (':'), a comma (',') or a semicolon (';'). (similar to the [Javadoc Tool](http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#exclude))
+To exclude specific packages, use [&lt;excludePackageNames/&gt;](../javadoc-mojo.html#excludePackageNames) parameter as shown below. The parameter accepts wildcard (*) characters in its value but the wildcards should either be at the start or the end of the package name. If more than one package is to be excluded, each package name must be separated either with a colon (':'), a comma (',') or a semicolon (';'). (similar to the [Javadoc Tool](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javadoc.html#option-exclude))
 
 For instance, with the following packages:
 

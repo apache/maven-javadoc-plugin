@@ -28,7 +28,7 @@ under the License.
 
 You could configure any custom taglets in your Javadoc Plugin configuration via the [&lt;taglet/&gt;](../javadoc-mojo.html#taglet), [&lt;taglets/&gt;](../javadoc-mojo.html#taglets), or [&lt;tagletArtifacts/&gt;](../javadoc-mojo.html#tagletArtifacts) parameters, depending the number of taglets used.
 
-For more information about the taglet technology, please refer to [http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/taglet/overview.html](http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/taglet/overview.html).
+For more information about the taglet technology, please refer to [the `Taglet` interface](https://docs.oracle.com/en/java/javase/25/docs/api/jdk.javadoc/jdk/javadoc/doclet/Taglet.html).
 
 One Taglet
 ----------
