@@ -30,7 +30,7 @@ under the License.
 
 Consider the following project dependency graph:
 
-```unknown
+```text
 
 org.test:project-distro:0.1
   |
@@ -103,7 +103,7 @@ Fine-Tuning Included Dependencies
 
 Unifying the javadocs of your project and its dependencies is fine, but let's not go too far. Along with your own upstream projects, your distribution may include dependencies on external projects. It may not be appropriate to include javadocs for these projects in your distribution; linking to them is usually better. In any case, you may not have enough influence over these external projects to get them to produce source artifacts like the ones discussed above. In our original example, take a look at that last direct dependency:
 
-```unknown
+```text
   
   `--> commons-cli:commons-cli:1.0
 ```
@@ -148,7 +148,7 @@ This is a pretty common direct dependency for projects that provide command-line
 
 **NOTE:** The above configuration excludes **only** commons-cli. If you have multiple external dependencies, it may be easier to configure which dependencies are **included**, as follows:
 
-```unknown
+```xml
   [...]
             <configuration>
               <!-- switch on dependency-driven aggregation -->

@@ -31,7 +31,7 @@ To set a grouping for different packages, use the [&lt;groups/&gt;](../javadoc-m
 
 For instance, with the following packages:
 
-```unknown
+```text
 com.mycompany.myapp
 com.mycompany.myapp.package1
 com.mycompany.myapp.package1.subpackage1

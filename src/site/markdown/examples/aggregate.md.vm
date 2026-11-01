@@ -29,7 +29,7 @@ under the License.
 
 For example, consider the following directory structure:
 
-```unknown
+```text
 
 Project
   |-- pom.xml
@@ -185,7 +185,7 @@ Since Java 9 it is possible to add module descriptors to your projects, which ca
 
 Occasionally, automatic modules need to import named modules. For example,
 
-```unknown
+```text
         error: package org.w3c.dom is not visible
         (package org.w3c.dom is declared in module java.xml, but module foobar does not read it)
 ```
