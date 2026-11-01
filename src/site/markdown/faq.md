@@ -78,7 +78,7 @@ See [Using Javadoc Resources](examples/javadoc-resources.html) for more informat
 ### How to know exactly the Javadoc command line?
 
 The Javadoc Plugin calls the Javadoc tool with
-[argument files](https://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#argumentfiles),
+[argument files](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html#command-line-argument-files),
 i.e. files called 'options', 'packages' and 'argfile' (or 'files' with Jdk &lt; 1.4):
 
 ```
@@ -189,7 +189,7 @@ ${project.reporting.outputDirectory}/apidocs/javadoc.exe(or .sh) \
 ```
 
 **Note**: If your proxy needs more JVM
-[networking properties](https://docs.oracle.com/javase/7/docs/technotes/guides/net/properties.html) (like
+[networking properties](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/doc-files/net-properties.html) (like
 NTLM), you could always add JVM options using the *&lt;additionalJOption/&gt;* parameter in your Javadoc
 Plugin configuration, e.g.:
 

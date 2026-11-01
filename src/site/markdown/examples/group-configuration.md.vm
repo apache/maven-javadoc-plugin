@@ -27,7 +27,7 @@ under the License.
 
 # Grouping Packages
 
-To set a grouping for different packages, use the [&lt;groups/&gt;](../javadoc-mojo.html#groups) parameter as shown below. Each group will be consist of a &lt;title/&gt; and a &lt;packages/&gt; (as String). The &lt;packages/&gt; element supports wildcard (*) to allow subpackages. If more than one package is to be included, each package name must be separated colon (:) separated (similar to the [Javadoc Tool](http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#group)).
+To set a grouping for different packages, use the [&lt;groups/&gt;](../javadoc-mojo.html#groups) parameter as shown below. Each group will be consist of a &lt;title/&gt; and a &lt;packages/&gt; (as String). The &lt;packages/&gt; element supports wildcard (*) to allow subpackages. If more than one package is to be included, each package name must be separated colon (:) separated (similar to the [Javadoc Tool](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javadoc.html#option-group)).
 
 For instance, with the following packages:
 

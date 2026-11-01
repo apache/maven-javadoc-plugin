@@ -57,7 +57,7 @@ Overview Comment File: _overview.html_
 
 These contain comments about the set of packages. The _overview.html_ is a general documentation that applies to the entire application or set of packages.
 
-For more information, see [ javadoc - The Java API Documentation Generator, Overview Comment File](http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#overviewcomment).
+For more information, see [Documentation Comment Specification](https://docs.oracle.com/en/java/javase/25/docs/specs/javadoc/doc-comment-spec.html#documentation-comments).
 
 Here is an example of an _overview.html_ file, located in _${esc.d}{basedir}/src/main/javadoc/overview.html_:
 
@@ -102,7 +102,7 @@ Package Comment File: _package.html_
 
 These contain package comments. The _package.html_ is a brief summary of each packages in the list of all packages.
 
-For more information, see [ javadoc - The Java API Documentation Generator, Package Comment Files](http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#packagecomment) and [ How to Write Doc Comments for the Javadoc Tool, Package-Level Comments](http://www.oracle.com/technetwork/java/javase/documentation/index-137868.html#packagecomments).
+For more information, see [Documentation Comment Specification](https://docs.oracle.com/en/java/javase/25/docs/specs/javadoc/doc-comment-spec.html#documentation-comments) and [ How to Write Doc Comments for the Javadoc Tool, Package-Level Comments](http://www.oracle.com/technetwork/java/javase/documentation/index-137868.html#packagecomments).
 
 Here is an example of a _package.html_ file, located in _${esc.d}{basedir}/src/main/javadoc/org/apache/myapp/package.html_:
 
@@ -121,7 +121,7 @@ Here is an example of a _package.html_ file, located in _${esc.d}{basedir}/src/m
 
 **Note**: With Javadoc 5.0, this file becomes _package-info.java_ and is preferred over _package.html_.
 
-For more information, see [ javadoc - The Java API Documentation Generator, Package Comment Files](http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#packagecomment).
+For more information, see [Documentation Comment Specification](https://docs.oracle.com/en/java/javase/25/docs/specs/javadoc/doc-comment-spec.html#documentation-comments).
 
 Here is an example of a _package-info.java_ file, located in _${esc.d}{basedir}/src/main/java/org/apache/myapp/package-info.java_:
 
@@ -138,7 +138,7 @@ Miscellaneous Unprocessed Files: _doc-files_
 
 These include images, sample source code, class files, applets, HTML files...
 
-For more information, see [ javadoc - The Java API Documentation Generator, Miscellaneous Unprocessed Files](http://docs.oracle.com/javase/7/docs/technotes/tools/solaris/javadoc.html#unprocessed) and [How to Write Doc Comments for the Javadoc Tool, Including Images ](http://www.oracle.com/technetwork/java/javase/documentation/index-137868.html#images).
+For more information, see [Documentation Comment Specification](https://docs.oracle.com/en/java/javase/25/docs/specs/javadoc/doc-comment-spec.html#documentation-comments) and [How to Write Doc Comments for the Javadoc Tool, Including Images ](http://www.oracle.com/technetwork/java/javase/documentation/index-137868.html#images).
 
 In addition to _doc-files_ directories, since 2.6.1, the specific _src/main/javadoc/resources_ directory will be copied to the generated Javadoc resources directory (i.e. _apidocs/resources_). This is usefull when you want to overwite default Javadoc tool resources, like the default _inherit.gif_ to one with a transparent background (See [GIF](../images/inherit.gif) or [PSD](../images/inherit.psd)).
 
