@@ -30,7 +30,7 @@ The [&lt;javadocDirectory/&gt;](../javadoc-mojo.html#javadocDirectory) parameter
 
 Here is a typical set of resources files used by the Maven Javadoc plugin:
 
-```unknown
+```text
 
 yourproject
   |-- src

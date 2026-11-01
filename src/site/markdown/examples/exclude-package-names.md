@@ -30,7 +30,7 @@ To exclude specific packages, use [&lt;excludePackageNames/&gt;](../javadoc-mojo
 
 For instance, with the following packages:
 
-```unknown
+```text
 com.mycompany.myapp
 com.mycompany.myapp.package1
 com.mycompany.myapp.package1.subpackage1
