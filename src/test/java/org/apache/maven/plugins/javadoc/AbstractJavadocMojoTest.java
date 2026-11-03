@@ -26,8 +26,8 @@ import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.project.MavenProject;
 import org.apache.maven.plugins.javadoc.options.OfflineLink;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.reporting.MavenReportException;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -165,11 +165,11 @@ class AbstractJavadocMojoTest {
         when(repositorySystem.resolveArtifact(eq(repositorySession), any(ArtifactRequest.class)))
                 .thenThrow(new IllegalArgumentException("version can neither be null, empty nor blank"));
 
-        AbstractJavadocMojo failingMojo = new AbstractJavadocMojo(
-                null, null, null, repositorySystem, artifactHandlerManager, null, null) {
-            @Override
-            public void doExecute() {}
-        };
+        AbstractJavadocMojo failingMojo =
+                new AbstractJavadocMojo(null, null, null, repositorySystem, artifactHandlerManager, null, null) {
+                    @Override
+                    public void doExecute() {}
+                };
         setVariableValueToObject(failingMojo, "repoSession", repositorySession);
         MavenProject project = mock(MavenProject.class);
         when(project.getRemoteProjectRepositories()).thenReturn(Collections.emptyList());
