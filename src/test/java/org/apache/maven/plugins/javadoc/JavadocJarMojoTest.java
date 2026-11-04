@@ -38,6 +38,7 @@ import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.apache.maven.api.plugin.testing.MojoExtension.getVariableValueFromObject;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -190,5 +191,22 @@ class JavadocJarMojoTest {
 
         mojo.execute();
         verify(log).debug("Skipping javadoc generation, everything is up to date.");
+    }
+
+    /**
+     * A project without sources yields no javadoc and therefore no (empty) jar (MJAVADOC-812).
+     *
+     * @throws Exception if any
+     */
+    @Test
+    @InjectMojo(goal = "jar", pom = "javadocjar-no-sources-plugin-config.xml")
+    @Basedir("/unit/javadocjar-no-sources")
+    void testNoJarWithoutSources(JavadocJarMojo mojo) throws Exception {
+        deleteDirectory(new File(getBasedir(), "target"));
+        mojo.execute();
+
+        verify(log).info("No Javadoc in project. Archive not created.");
+        assertThat(new File(getBasedir(), "/target/javadocjar-no-sources-javadoc.jar"))
+                .doesNotExist();
     }
 }
