@@ -82,7 +82,7 @@ public class App {}
 
 the Javadoc tool will generate the following Javadoc:
 
-```unknown
+```text
 public class App
 extends Object
 

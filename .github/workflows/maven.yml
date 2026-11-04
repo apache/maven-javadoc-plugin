@@ -27,12 +27,12 @@ jobs:
     uses: apache/maven-gh-actions-shared/.github/workflows/maven-verify.yml@v5
     with:
       maven4-enabled: true
-      jdk-distribution-matrix: '[ "temurin", "zulu", "microsoft", "liberica", "semeru" ]'
+      # one HotSpot build on every OS, plus OpenJ9 on Linux: its javadoc tool differs (no footer option),
+      # while Temurin, Zulu, Microsoft and Liberica all ship the same OpenJDK javadoc
+      jdk-distribution-matrix: '[ "zulu", "semeru" ]'
       jdk-matrix: '[ "17", "21", "8", "25" ]'
       verify-fail-fast: false
       matrix-exclude: '[
-        { "jdk": "8", "distribution": "microsoft"},
-        { "jdk": "8", "distribution": "temurin", "os": "macos-latest" },
-        { "jdk": "8", "distribution": "semeru", "os": "macos-latest" },
-        { "jdk": "25", "distribution": "microsoft"}
+        { "distribution": "semeru", "os": "windows-latest" },
+        { "distribution": "semeru", "os": "macos-latest" }
       ]'

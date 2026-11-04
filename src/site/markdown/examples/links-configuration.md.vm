@@ -53,7 +53,7 @@ You can add cross reference links to external projects using the [&lt;links/&gt;
 </project>
 ```
 
-**Important Note**: according the [Javadoc specifications](http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#package-list), all given links **should** have a fetchable `/package-list` file.
+**Important Note**: according the [Javadoc specifications](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javadoc.html#option-link), all given links **should** have a fetchable `/package-list` or `/element-list` file.
 
 You can try to detect all Javadoc links for the project's dependencies. You need to use the [&lt;detectLinks/&gt;](../javadoc-mojo.html#detectLinks) parameter. Detected links are based on the default Maven conventions. For instance, if your project has a dependency on [Apache Commons Lang](https://commons.apache.org/lang/) such as:
 
