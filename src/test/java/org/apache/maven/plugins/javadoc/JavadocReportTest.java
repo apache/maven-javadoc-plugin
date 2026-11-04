@@ -1443,6 +1443,23 @@ class JavadocReportTest {
     }
 
     /**
+     * <code>--add-stylesheet</code> follows the javadoc tool version, not the JVM running Maven.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "addstylesheets-test-plugin-config.xml")
+    @Basedir("/unit/addstylesheets-test")
+    @Test
+    void testAddStylesheetsOnJavadoc9(JavadocReport mojo) throws Exception {
+        deleteDirectory(new File(getBasedir(), "target"));
+        setVariableValueToObject(mojo, "javadocVersion", "9");
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
+        assertThat(readFile(apidocs.resolve("options"))).doesNotContain("--add-stylesheet");
+    }
+
+    /**
      * <code>sourcepath</code> accepts the path separator of the other platform (MJAVADOC-262).
      *
      * @throws Exception if any
