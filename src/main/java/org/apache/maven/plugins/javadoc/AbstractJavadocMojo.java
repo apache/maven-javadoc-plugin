@@ -2756,11 +2756,14 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             Optional<File> styleSheet = getAddStylesheet(getJavadocDirectory(), addStylesheet);
 
             if (styleSheet.isPresent()) {
-                addArgIfNotEmpty(
-                        arguments,
-                        "--add-stylesheet",
-                        JavadocUtil.quotedPathArgument(styleSheet.get().getAbsolutePath()),
-                        JavaVersion.parse("10"));
+                if (javadocRuntimeVersion.isAtLeast("10")) {
+                    addArgIfNotEmpty(
+                            arguments,
+                            "--add-stylesheet",
+                            JavadocUtil.quotedPathArgument(styleSheet.get().getAbsolutePath()));
+                } else if (getLog().isWarnEnabled()) {
+                    getLog().warn("--add-stylesheet option is not supported on javadoc version < 10");
+                }
             }
         }
     }
