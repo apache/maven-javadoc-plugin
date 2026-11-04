@@ -499,9 +499,7 @@ under the License.
               <!-- each IT is a short-lived JVM: C2 compilation and parallel GC only add startup time -->
               <mavenOpts>-XX:TieredStopAtLevel=1 -XX:+UseSerialGC</mavenOpts>
               <environmentVariables>
-                <!-- required for MJAVADOC-538 -->
-                <_JAVA_OPTIONS>-Dabc=def</_JAVA_OPTIONS>
-                <!-- clen up the MAVEN_ARGS for the ITs -->
+                <!-- clean up the MAVEN_ARGS for the ITs -->
                 <MAVEN_ARGS />
               </environmentVariables>
             </configuration>
