@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,25 +17,25 @@
  * under the License.
  */
 
-package mjavadoc642;
-
 /**
- * This is the main class.
+ * Sample class that tries to use classes from non-module JARs whose version has no dot
+ * or whose classes are in the top-level package.
  */
-public final class Main {
+public class TestUsage
+{
+    /**
+     * Sample method that uses the top-level Test class from the other project.
+     */
+    public Test getTest()
+    {
+        return new Test();
+    }
 
     /**
-     * Mising description on auto generated constructor cause javadoc warrning.
+     * Sample method that uses the packaged Test class from the project whose version has no dot.
      */
-    Main() {}
-
-    /**
-     * This is the main method.
-     *
-     * @param args The arguments
-     * @throws Exception if something goes wrong
-     */
-    public static final void main(String ... args) throws Exception {
-        System.out.println("Hello, World!");
+    public somepackage.Test getPackagedTest()
+    {
+        return new somepackage.Test();
     }
 }

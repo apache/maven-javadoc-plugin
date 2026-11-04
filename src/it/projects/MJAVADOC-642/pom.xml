@@ -41,8 +41,6 @@
                         </goals>
                         <phase>package</phase>
                         <configuration>
-                            <offline>true</offline>
-                            <skip>false</skip>
                             <detectJavaApiLink>false</detectJavaApiLink>
                             <detectOfflineLinks>false</detectOfflineLinks>
                             <failOnWarnings>true</failOnWarnings>
@@ -52,4 +50,25 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <!-- first invocation: offline set in the POM; second invocation sets it with -Dmaven.javadoc.offline=true -->
+            <id>offline-in-pom</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>javadoc</id>
+                                <configuration>
+                                    <offline>true</offline>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
