@@ -28,7 +28,7 @@ under the License.
 
 Here is a typical project used by the Maven Javadoc plugin:
 
-```unknown
+```text
 
 yourproject
   |-- src
