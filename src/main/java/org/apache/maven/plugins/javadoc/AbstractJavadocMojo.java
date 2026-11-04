@@ -207,15 +207,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     private static final String PACKAGE_LIST = "package-list";
     private static final String ELEMENT_LIST = "element-list";
 
-    /**
-     * For Javadoc options appears since Java 8.0.
-     * See <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/javadoc/index.html">
-     * Javadoc Technology</a>
-     *
-     * @since 3.0.0
-     */
-    private static final JavaVersion SINCE_JAVADOC_1_8 = JavaVersion.parse("1.8");
-
     private static final JavaVersion JAVA_VERSION = JavaVersion.JAVA_SPECIFICATION_VERSION;
 
     // ----------------------------------------------------------------------
@@ -3464,13 +3455,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         if (SystemUtils.IS_OS_AIX) {
             javadocExe =
                     new File(SystemUtils.getJavaHome() + File.separator + ".." + File.separator + "sh", javadocCommand);
-        }
-        // For Apple's JDK 1.6.x (and older?) on Mac OSX
-        // CHECKSTYLE_OFF: MagicNumber
-        else if (SystemUtils.IS_OS_MAC_OSX && !JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("1.7"))
-        // CHECKSTYLE_ON: MagicNumber
-        {
-            javadocExe = new File(SystemUtils.getJavaHome() + File.separator + "bin", javadocCommand);
         } else if (isJavaVersionAtLeast(org.apache.commons.lang3.JavaVersion.JAVA_9)) {
             javadocExe = new File(SystemUtils.getJavaHome() + File.separator + "bin", javadocCommand);
         } else {
@@ -3567,30 +3551,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
     /**
      * Convenience method to add an argument to the <code>command line</code>
-     * regarding the requested Java version.
-     *
-     * @param arguments           a list of arguments, not null
-     * @param b                   the flag which controls if the argument is added or not.
-     * @param value               the argument value to be added.
-     * @param requiredJavaVersion the required Java version, for example 1.31f or 1.4f
-     * @see #addArgIf(List, boolean, String)
-     * @see #isJavaDocVersionAtLeast(JavaVersion)
-     */
-    private void addArgIf(List<String> arguments, boolean b, String value, JavaVersion requiredJavaVersion) {
-        if (b) {
-            if (isJavaDocVersionAtLeast(requiredJavaVersion)) {
-                addArgIf(arguments, true, value);
-            } else {
-                if (getLog().isWarnEnabled()) {
-                    getLog().warn(value + " option is not supported on Java version < " + requiredJavaVersion
-                            + ". Ignore this option.");
-                }
-            }
-        }
-    }
-
-    /**
-     * Convenience method to add an argument to the <code>command line</code>
      * if the value is not null or empty.
      * <p/>
      * Moreover, the value could be comma separated.
@@ -3602,40 +3562,6 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      */
     private void addArgIfNotEmpty(List<String> arguments, String key, String value) {
         addArgIfNotEmpty(arguments, key, value, false);
-    }
-
-    /**
-     * Convenience method to add an argument to the <code>command line</code>
-     * if the value is not null or empty.
-     * <p/>
-     * Moreover, the value could be comma separated.
-     *
-     * @param arguments           a list of arguments, not null
-     * @param key                 the argument name.
-     * @param value               the argument value to be added.
-     * @param repeatKey           repeat or not the key in the command line
-     * @param splitValue          if <code>true</code> given value will be tokenized by comma
-     * @param requiredJavaVersion the required Java version, for example 1.31f or 1.4f
-     * @see #addArgIfNotEmpty(List, String, String, boolean, boolean)
-     * @see #isJavaDocVersionAtLeast(JavaVersion)
-     */
-    private void addArgIfNotEmpty(
-            List<String> arguments,
-            String key,
-            String value,
-            boolean repeatKey,
-            boolean splitValue,
-            JavaVersion requiredJavaVersion) {
-        if (value != null && !value.isEmpty()) {
-            if (isJavaDocVersionAtLeast(requiredJavaVersion)) {
-                addArgIfNotEmpty(arguments, key, value, repeatKey, splitValue);
-            } else {
-                if (getLog().isWarnEnabled()) {
-                    getLog().warn(key + " option is not supported on Java version < " + requiredJavaVersion
-                            + ". Ignore this option.");
-                }
-            }
-        }
     }
 
     /**
@@ -4693,7 +4619,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         addArgIf(arguments, docfilessubdirs, "-docfilessubdirs");
 
-        addArgIf(arguments, (doclint != null && !doclint.isEmpty()), "-Xdoclint:" + getDoclint(), SINCE_JAVADOC_1_8);
+        addArgIf(arguments, (doclint != null && !doclint.isEmpty()), "-Xdoclint:" + getDoclint());
 
         addArgIfNotEmpty(arguments, "-doctitle", JavadocUtil.quotedArgument(getDoctitle()), false, false);
 

@@ -40,7 +40,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
-import static org.apache.maven.api.plugin.testing.MojoExtension.getVariableValueFromObject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -97,15 +96,7 @@ class JavadocJarMojoTest {
         } else {
             assertTrue(set.contains("stylesheet.css"));
         }
-        JavaVersion javadocVersion = getVariableValueFromObject(mojo, "javadocRuntimeVersion");
-        if (javadocVersion.isBefore("1.7")) {
-            assertTrue(set.contains("resources/inherit.gif"));
-        } else if (javadocVersion.isBefore("1.8")) {
-            assertTrue(set.contains("resources/background.gif") /* JDK7 */);
-        } else {
-            // JDK8 has no resources anymore
-            assertFalse(set.contains("resources"));
-        }
+        assertFalse(set.contains("resources"));
 
         assertTrue(set.contains("javadocjar/def/package-use.html"));
         assertTrue(set.contains("javadocjar/def/package-tree.html"));
