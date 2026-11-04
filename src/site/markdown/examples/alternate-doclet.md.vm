@@ -38,7 +38,7 @@ In this example, the doclet is UmlGraph ([https://www.spinellis.gr/umlgraph/](ht
 **Note**:
 
 - [&lt;additionalOptions/&gt;](../javadoc-mojo.html#additionalOptions) parameter could be used to set additional parameters on the command line, specifically for doclet options.
-- [&lt;useStandardDocletOptions/&gt;](../javadoc-mojo.html#useStandardDocletOptions) parameter could be used to specify that the given doclet should use the [options provided by the Standard Doclet](http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#standard).
+- [&lt;useStandardDocletOptions/&gt;](../javadoc-mojo.html#useStandardDocletOptions) parameter could be used to specify that the given doclet should use the [options provided by the Standard Doclet](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javadoc.html#standard-options-for-the-standard-doclet).
 - If you need more artifacts in the docletpath, you could use the [&lt;docletArtifacts/&gt;](../javadoc-mojo.html#docletArtifacts) parameter.
 
 After executing `mvn site`, you will see that a UML graph (.dot file) will be generated in the destination directory.

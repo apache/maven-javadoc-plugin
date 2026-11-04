@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -34,6 +35,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.StandardCharsets;
@@ -724,7 +726,12 @@ public class JavadocUtil {
             throw new NullPointerException("The url could not be null.");
         }
 
-        Files.copy(url.openStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        URLConnection connection = url.openConnection();
+        // Uncached, so that closing the stream closes the jar (JDK-8239054)
+        connection.setUseCaches(false);
+        try (InputStream in = connection.getInputStream()) {
+            Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 
     /**

@@ -88,7 +88,7 @@ under the License.
   </contributors>
 
   <prerequisites>
-    <maven>3.6.3</maven>
+    <maven>3.9.0</maven>
   </prerequisites>
 
   <scm>
@@ -102,8 +102,8 @@ under the License.
     <url>https://github.com/apache/maven-javadoc-plugin/issues</url>
   </issueManagement>
   <ciManagement>
-    <system>Jenkins</system>
-    <url>https://ci-maven.apache.org/job/Maven/job/maven-box/job/maven-javadoc-plugin/</url>
+    <system>GitHub</system>
+    <url>https://github.com/apache/maven-javadoc-plugin/actions</url>
   </ciManagement>
   <distributionManagement>
     <site>
@@ -113,7 +113,6 @@ under the License.
   </distributionManagement>
 
   <properties>
-    <javaVersion>8</javaVersion>
     <mavenVersion>3.9.16</mavenVersion>
     <doxiaSitetoolsVersion>2.1.0</doxiaSitetoolsVersion>
     <resolverVersion>1.9.27</resolverVersion>
@@ -229,12 +228,6 @@ under the License.
       <version>3.4.0</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.eclipse.sisu</groupId>
-      <artifactId>org.eclipse.sisu.inject</artifactId>
-      <version>1.1.1</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.eclipse.sisu</groupId>
       <artifactId>org.eclipse.sisu.plexus</artifactId>

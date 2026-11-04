@@ -635,12 +635,16 @@ class JavadocReportTest {
     @Basedir("/unit/javaHome-test")
     @Test
     void testToFindJavadoc(JavadocReport mojo) throws Exception {
+        String javaHome = System.getenv("JAVA_HOME");
+        assumeThat(javaHome).as("JAVA_HOME environment variable").isNotBlank();
+
         String oldJreHome = System.getProperty("java.home");
         System.setProperty("java.home", "foo/bar");
-
-        mojo.execute();
-
-        System.setProperty("java.home", oldJreHome);
+        try {
+            mojo.execute();
+        } finally {
+            System.setProperty("java.home", oldJreHome);
+        }
     }
 
     /**
