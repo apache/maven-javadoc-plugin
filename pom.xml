@@ -129,6 +129,8 @@ under the License.
     <surefirePluginVersion>${version.maven-surefire-plugin}</surefirePluginVersion>
     <toolchainPluginVersion>3.2.0</toolchainPluginVersion>
     <projectInfoReportsPluginVersion>${version.maven-project-info-reports-plugin}</projectInfoReportsPluginVersion>
+    <!-- each IT forks its own Maven; override on the command line with -Dinvoker.parallelThreads=N -->
+    <invoker.parallelThreads>0.75C</invoker.parallelThreads>
     <project.build.outputTimestamp>2025-09-16T08:27:46Z</project.build.outputTimestamp>
     <slf4jVersion>1.7.36</slf4jVersion>
   </properties>
@@ -494,6 +496,8 @@ under the License.
               <filterProperties>
                 <mrm.3rdparty.url>${mrm.3rdparty.url}</mrm.3rdparty.url>
               </filterProperties>
+              <!-- each IT is a short-lived JVM: C2 compilation and parallel GC only add startup time -->
+              <mavenOpts>-XX:TieredStopAtLevel=1 -XX:+UseSerialGC</mavenOpts>
               <environmentVariables>
                 <!-- required for MJAVADOC-538 -->
                 <_JAVA_OPTIONS>-Dabc=def</_JAVA_OPTIONS>
