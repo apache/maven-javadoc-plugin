@@ -30,6 +30,8 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -41,6 +43,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.JarOutputStream;
+import java.util.zip.ZipEntry;
 
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.plugins.javadoc.ProxyServer.AuthAsyncProxyServlet;
@@ -57,6 +61,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,6 +78,36 @@ import static org.junit.jupiter.api.Assumptions.abort;
  */
 @ExtendWith(JavadocUtilTest.AbortWhenRemoteUnreachable.class)
 class JavadocUtilTest {
+
+    @Test
+    void copyResourceReadsRewrittenJar(@TempDir Path tempDir) throws Exception {
+        Path jar = tempDir.resolve("resources.jar");
+        File target = tempDir.resolve("stylesheet.css").toFile();
+        URL url = new URL("jar:" + jar.toUri() + "!/stylesheet.css");
+
+        writeJar(jar, "first");
+        JavadocUtil.copyResource(url, target);
+        assertEquals("first", new String(Files.readAllBytes(target.toPath()), StandardCharsets.UTF_8));
+
+        // Rewritten in place, as a resources module rebuilt in the reactor is.
+        writeJar(jar, "second, and longer than the first");
+        JavadocUtil.copyResource(url, target);
+        assertEquals(
+                "second, and longer than the first",
+                new String(Files.readAllBytes(target.toPath()), StandardCharsets.UTF_8));
+
+        // Nothing keeps the jar open, so it can be deleted (fails on Windows while it is open).
+        Files.delete(jar);
+    }
+
+    private static void writeJar(Path jar, String content) throws IOException {
+        try (OutputStream out = Files.newOutputStream(jar);
+                JarOutputStream jarOut = new JarOutputStream(out)) {
+            jarOut.putNextEntry(new ZipEntry("stylesheet.css"));
+            jarOut.write(content.getBytes(StandardCharsets.UTF_8));
+            jarOut.closeEntry();
+        }
+    }
 
     @Test
     void testParseJavadocVersionNull() {
