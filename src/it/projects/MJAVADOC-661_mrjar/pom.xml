@@ -158,7 +158,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.1</version>
+          <version>@compilerPluginVersion@</version>
           <executions>
             <execution>
               <id>default-compile</id>
@@ -171,7 +171,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.2.0</version>
+          <version>@jarPluginVersion@</version>
         </plugin>
       </plugins>
     </pluginManagement>

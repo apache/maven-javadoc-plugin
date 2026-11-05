@@ -17,7 +17,7 @@
  * under the License.
  */
 
-assert new File( basedir, 'target/apidocs/argfile').readLines().size() == 2
-assert new File( basedir, 'target/apidocs/com.mycompany.lib/com/mycompany/lib/Library.html').exists()
+assert new File( basedir, 'target/reports/apidocs/argfile').readLines().size() == 2
+assert new File( basedir, 'target/reports/apidocs/com.mycompany.lib/com/mycompany/lib/Library.html').exists()
 // module descriptor of com.mycompany.app  has no exports, so nothing is documented
-assert !new File( basedir, 'target/apidocs/com.mycompany.app/com/mycompany/app/Application.html').exists()
+assert !new File( basedir, 'target/reports/apidocs/com.mycompany.app/com/mycompany/app/Application.html').exists()

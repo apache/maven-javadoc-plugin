@@ -20,8 +20,6 @@ package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,8 +30,6 @@ import java.util.List;
 
 import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.shared.utils.cli.Commandline;
-import org.codehaus.plexus.languages.java.version.JavaVersion;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Helper class to compute and write data used to detect a
@@ -48,7 +44,7 @@ public class StaleHelper {
      * @return the stale data
      * @throws MavenReportException if an error occurs
      */
-    public static String getStaleData(Commandline cmd) throws MavenReportException {
+    public static List<String> getStaleData(Commandline cmd) throws MavenReportException {
         try {
             List<String> ignored = new ArrayList<>();
             List<String> options = new ArrayList<>();
@@ -56,18 +52,10 @@ public class StaleHelper {
             String[] args = cmd.getArguments();
             Collections.addAll(options, args);
 
-            final Charset cs;
-            if (JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("9")
-                    && JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("12")) {
-                cs = StandardCharsets.UTF_8;
-            } else {
-                cs = Charset.defaultCharset();
-            }
-
             for (String arg : args) {
                 if (arg.startsWith("@")) {
                     String name = arg.substring(1);
-                    options.addAll(Files.readAllLines(dir.resolve(name), cs));
+                    options.addAll(Files.readAllLines(dir.resolve(name), EncodingUtils.getExpectedEncoding()));
                     ignored.add(name);
                 }
             }
@@ -101,7 +89,7 @@ public class StaleHelper {
                     state.add(p + " = " + lastmod(p));
                 }
             }
-            return StringUtils.join(state.iterator(), SystemUtils.LINE_SEPARATOR);
+            return state;
         } catch (Exception e) {
             throw new MavenReportException("Unable to compute stale date", e);
         }
@@ -116,9 +104,9 @@ public class StaleHelper {
      */
     public static void writeStaleData(Commandline cmd, Path path) throws MavenReportException {
         try {
-            String curdata = getStaleData(cmd);
+            List<String> curdata = getStaleData(cmd);
             Files.createDirectories(path.getParent());
-            Files.write(path, Collections.singleton(curdata), Charset.defaultCharset());
+            Files.write(path, curdata, EncodingUtils.getExpectedEncoding());
         } catch (IOException e) {
             throw new MavenReportException("Error checking stale data", e);
         }

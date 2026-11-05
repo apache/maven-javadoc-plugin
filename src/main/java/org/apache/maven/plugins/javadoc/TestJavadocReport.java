@@ -18,6 +18,8 @@
  */
 package org.apache.maven.plugins.javadoc;
 
+import javax.inject.Inject;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,19 +30,26 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
+import org.apache.maven.doxia.tools.SiteTool;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.plugins.javadoc.resolver.ResourceResolver;
 import org.apache.maven.plugins.javadoc.resolver.SourceResolverConfig;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.reporting.MavenReportException;
+import org.apache.maven.toolchain.ToolchainManager;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.util.StringUtils;
+import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.util.filter.ScopeDependencyFilter;
 
 /**
- * Generates documentation for the <code>Java Test code</code> in an <b>NON aggregator</b> project using the standard
+ * Generates documentation for the <code>Java Test code</code> in a <b>NON aggregator</b> project using the standard
  * <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html">Javadoc Tool</a>.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
@@ -93,22 +102,6 @@ public class TestJavadocReport extends JavadocReport {
     // ----------------------------------------------------------------------
 
     /**
-     * Specifies the destination directory where test Javadoc saves the generated HTML files.
-     */
-    @Parameter(
-            property = "reportTestOutputDirectory",
-            defaultValue = "${project.reporting.outputDirectory}/testapidocs",
-            required = true)
-    private File reportOutputDirectory;
-
-    /**
-     * The name of the destination directory.
-     * <br/>
-     */
-    @Parameter(property = "destDir", defaultValue = "testapidocs")
-    private String destDir;
-
-    /**
      * Specifies the Test Javadoc resources directory to be included in the Javadoc (i.e. package.html, images...).
      * <br/>
      * Could be used in addition of <code>docfilessubdirs</code> parameter.
@@ -146,6 +139,25 @@ public class TestJavadocReport extends JavadocReport {
     // Report public methods
     // ----------------------------------------------------------------------
 
+    @Inject
+    public TestJavadocReport(
+            SiteTool siteTool,
+            ArchiverManager archiverManager,
+            ResourceResolver resourceResolver,
+            RepositorySystem repoSystem,
+            ArtifactHandlerManager artifactHandlerManager,
+            ProjectBuilder mavenProjectBuilder,
+            ToolchainManager toolchainManager) {
+        super(
+                siteTool,
+                archiverManager,
+                resourceResolver,
+                repoSystem,
+                artifactHandlerManager,
+                mavenProjectBuilder,
+                toolchainManager);
+    }
+
     @Override
     protected void executeReport(Locale unusedLocale) throws MavenReportException {
         addMainJavadocLink();
@@ -171,46 +183,6 @@ public class TestJavadocReport extends JavadocReport {
         return testDescription;
     }
 
-    @Override
-    public String getOutputName() {
-        return destDir + "/index";
-    }
-
-    @Override
-    public File getReportOutputDirectory() {
-        if (reportOutputDirectory == null) {
-            return outputDirectory;
-        }
-
-        return reportOutputDirectory;
-    }
-
-    /**
-     * Method to set the directory where the generated reports will be put
-     *
-     * @param reportOutputDirectory the directory file to be set
-     */
-    @Override
-    public void setReportOutputDirectory(File reportOutputDirectory) {
-        updateReportOutputDirectory(reportOutputDirectory, destDir);
-    }
-
-    @Override
-    public void setDestDir(String destDir) {
-        this.destDir = destDir;
-        updateReportOutputDirectory(reportOutputDirectory, destDir);
-    }
-
-    private void updateReportOutputDirectory(File reportOutputDirectory, String destDir) {
-        if (reportOutputDirectory != null
-                && destDir != null
-                && !reportOutputDirectory.getAbsolutePath().endsWith(destDir)) {
-            this.reportOutputDirectory = new File(reportOutputDirectory, destDir);
-        } else {
-            this.reportOutputDirectory = reportOutputDirectory;
-        }
-    }
-
     // ----------------------------------------------------------------------
     // Protected methods
     // Important Note: should be inline with methods defined in TestJavadocJar
@@ -231,23 +203,23 @@ public class TestJavadocReport extends JavadocReport {
 
     @Override
     protected List<String> getProjectSourceRoots(MavenProject p) {
-        if ("pom".equals(p.getPackaging().toLowerCase())) {
+        if ("pom".equalsIgnoreCase(p.getPackaging())) {
             return Collections.emptyList();
         }
 
         return p.getTestCompileSourceRoots() == null
-                ? Collections.<String>emptyList()
+                ? Collections.emptyList()
                 : new LinkedList<>(p.getTestCompileSourceRoots());
     }
 
     @Override
     protected List<String> getExecutionProjectSourceRoots(MavenProject p) {
-        if ("pom".equals(p.getExecutionProject().getPackaging().toLowerCase())) {
+        if ("pom".equals(p.getExecutionProject().getPackaging().toLowerCase(Locale.ENGLISH))) {
             return Collections.emptyList();
         }
 
         return p.getExecutionProject().getTestCompileSourceRoots() == null
-                ? Collections.<String>emptyList()
+                ? Collections.emptyList()
                 : new LinkedList<>(p.getExecutionProject().getTestCompileSourceRoots());
     }
 
@@ -298,8 +270,7 @@ public class TestJavadocReport extends JavadocReport {
             links = new ArrayList<>();
         }
 
-        // TODO the prerequisite is that the main report is in apidocs
-        File apidocs = new File(getReportOutputDirectory().getParentFile(), "apidocs");
+        File apidocs = new File(getReportOutputDirectory(), "apidocs");
         if (apidocs.isDirectory() && !links.contains("../apidocs")) {
             links.add("../apidocs");
         }

@@ -16,4 +16,4 @@
 # under the License.
 
 _extends: maven-gh-actions-shared
-tag-template: maven-javadoc-plugin-$NEXT_MINOR_VERSION
+tag-template: maven-javadoc-plugin-$RESOLVED_VERSION

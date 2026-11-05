@@ -17,7 +17,7 @@
  * under the License.
  */
 
-File packages = new File( basedir, 'target/site/apidocs/packages' )
+File packages = new File( basedir, 'target/reports/apidocs/packages' )
 
 def expectedPackages = ['com.mycompany.myapp',
 						'com.mycompany.myapp.package1',

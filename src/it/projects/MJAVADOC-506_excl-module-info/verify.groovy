@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- 
+
 def javaVersion = System.getProperty( "java.specification.version" )
 if ( javaVersion =~ /(1\..+)|9|10/ ) {
-  assert new File( basedir, 'target/apidocs/com/foo/MyClass.html').exists()
+  assert new File( basedir, 'target/reports/apidocs/com/foo/MyClass.html').exists()
 } else {
-  assert new File( basedir, 'target/apidocs/M.N/com/foo/MyClass.html').exists()
-} 
+  assert new File( basedir, 'target/reports/apidocs/M.N/com/foo/MyClass.html').exists()
+}
 
 

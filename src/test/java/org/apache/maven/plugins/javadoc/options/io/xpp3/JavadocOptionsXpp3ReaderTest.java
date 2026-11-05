@@ -22,14 +22,14 @@ import java.io.StringReader;
 
 import org.apache.maven.plugins.javadoc.options.JavadocOptions;
 import org.apache.maven.plugins.javadoc.options.Tag;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JavadocOptionsXpp3ReaderTest {
+class JavadocOptionsXpp3ReaderTest {
 
     @Test
-    public void testNameAndHead() throws Exception {
+    void testNameAndHead() throws Exception {
         JavadocOptionsXpp3Reader parser = new JavadocOptionsXpp3Reader();
         String testString = "<javadocOptions><tags><tag><name>foo</name><head>bar</head></tag></tags></javadocOptions>";
         StringReader reader = new StringReader(testString);
@@ -42,7 +42,7 @@ public class JavadocOptionsXpp3ReaderTest {
     }
 
     @Test
-    public void testPlacement() throws Exception {
+    void testPlacement() throws Exception {
         JavadocOptionsXpp3Reader parser = new JavadocOptionsXpp3Reader();
         String testString =
                 "<javadocOptions><tags><tag><name>foo</name><placement>Xaoptcmf</placement><head>bar</head></tag></tags></javadocOptions>";

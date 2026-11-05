@@ -40,7 +40,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>@compilerPluginVersion@</version>
         <configuration>
           <source>1.5</source>
           <target>1.5</target>
@@ -53,17 +53,6 @@
       </plugin>
     </plugins>
   </build>
-
-  <!--
-  <dependencies>
-    <dependency>
-      <groupId>geronimo-spec</groupId>
-      <artifactId>geronimo-spec-jta</artifactId>
-      <version>1.0.1B-rc4</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
-  -->
 
   <reporting>
     <plugins>
@@ -82,7 +71,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>@pom.version@</version>
+        <version>@project.version@</version>
         <reportSets>
           <reportSet>
             <reports>

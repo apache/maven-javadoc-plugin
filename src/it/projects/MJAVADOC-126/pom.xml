@@ -35,8 +35,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>@maven.compiler.source@</maven.compiler.source>
-    <maven.compiler.target>@maven.compiler.target@</maven.compiler.target>
   </properties>
 
   <build>
@@ -44,7 +42,7 @@
       <plugins>
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>@pom.version@</version>
+          <version>@project.version@</version>
         </plugin>
       </plugins>
     </pluginManagement>

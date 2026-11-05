@@ -22,70 +22,70 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>testcase</groupId>
-		<artifactId>root</artifactId>
-		<version>1.0-SNAPSHOT</version>
-	</parent>
-	<artifactId>mjavadoc569.module2</artifactId>
-<!-- 	<packaging>maven-plugin</packaging> -->
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>testcase</groupId>
+    <artifactId>root</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>mjavadoc569.module2</artifactId>
+<!--   <packaging>maven-plugin</packaging> -->
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifestEntries>
-							<Automatic-Module-Name>mjavadoc569.module2</Automatic-Module-Name>
-						</manifestEntries>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-plugin-plugin</artifactId>
-				<version>3.6.0</version>
-				<executions>
-					<execution>
-						<id>default-descriptor</id>
-						<phase>process-classes</phase>
-					</execution>
-<!-- 					<execution> -->
-<!-- 						<id>help-descriptor</id> -->
-<!-- 						<goals> -->
-<!-- 							<goal>helpmojo</goal> -->
-<!-- 						</goals> -->
-<!-- 					</execution> -->
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>default-jar</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<show>public</show>
-							<doctitle>My custom title</doctitle>
-							<windowtitle>My custom title</windowtitle>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Automatic-Module-Name>mjavadoc569.module2</Automatic-Module-Name>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <version>@pluginPluginVersion@</version>
+        <executions>
+          <execution>
+            <id>default-descriptor</id>
+            <phase>process-classes</phase>
+          </execution>
+<!--           <execution> -->
+<!--             <id>help-descriptor</id> -->
+<!--             <goals> -->
+<!--               <goal>helpmojo</goal> -->
+<!--             </goals> -->
+<!--           </execution> -->
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-jar</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <show>public</show>
+              <doctitle>My custom title</doctitle>
+              <windowtitle>My custom title</windowtitle>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
-	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>mjavadoc569.module1</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>mjavadoc569.module1</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 </project>

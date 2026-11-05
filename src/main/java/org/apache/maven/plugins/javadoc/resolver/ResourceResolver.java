@@ -38,6 +38,7 @@ import java.util.Set;
 
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.plugins.javadoc.AbstractJavadocMojo;
@@ -53,7 +54,6 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -61,13 +61,17 @@ import org.eclipse.aether.graph.DefaultDependencyNode;
 import org.eclipse.aether.graph.DependencyFilter;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  */
 @Named
 @Singleton
-public final class ResourceResolver extends AbstractLogEnabled {
+public final class ResourceResolver {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceResolver.class);
+
     @Inject
     private RepositorySystem repoSystem;
 
@@ -102,7 +106,7 @@ public final class ResourceResolver extends AbstractLogEnabled {
         final Map<String, MavenProject> projectMap = new HashMap<>();
         if (config.reactorProjects() != null) {
             for (final MavenProject p : config.reactorProjects()) {
-                projectMap.put(key(p.getGroupId(), p.getArtifactId()), p);
+                projectMap.put(ArtifactUtils.key(p.getGroupId(), p.getArtifactId(), p.getVersion()), p);
             }
         }
 
@@ -110,8 +114,7 @@ public final class ResourceResolver extends AbstractLogEnabled {
 
         final List<Artifact> forResourceResolution = new ArrayList<>(artifacts.size());
         for (final Artifact artifact : artifacts) {
-            final String key = key(artifact.getGroupId(), artifact.getArtifactId());
-            final MavenProject p = projectMap.get(key);
+            final MavenProject p = projectMap.get(ArtifactUtils.key(artifact));
             if (p != null) {
                 bundles.addAll(resolveBundleFromProject(config, p, artifact));
             } else {
@@ -137,14 +140,14 @@ public final class ResourceResolver extends AbstractLogEnabled {
         final Map<String, MavenProject> projectMap = new HashMap<>();
         if (config.reactorProjects() != null) {
             for (final MavenProject p : config.reactorProjects()) {
-                projectMap.put(key(p.getGroupId(), p.getArtifactId()), p);
+                projectMap.put(ArtifactUtils.key(p.getGroupId(), p.getArtifactId(), p.getVersion()), p);
             }
         }
 
         final List<Artifact> artifacts = config.project().getTestArtifacts();
 
         for (final Artifact artifact : artifacts) {
-            final String key = key(artifact.getGroupId(), artifact.getArtifactId());
+            final String key = ArtifactUtils.key(artifact);
             final MavenProject p = projectMap.get(key);
             if (p != null) {
                 mappedDirs.add(new JavadocModule(key, artifact.getFile(), resolveFromProject(config, p, artifact)));
@@ -219,9 +222,9 @@ public final class ResourceResolver extends AbstractLogEnabled {
         Collection<Path> dirs = new ArrayList<>(toResolve.size());
         try {
             dirs = resolveAndUnpack(toResolve, config, RESOURCE_VALID_CLASSIFIERS, false);
-        } catch (ArtifactResolutionException | ArtifactNotFoundException e) {
-            if (getLogger().isDebugEnabled()) {
-                getLogger().debug(e.getMessage(), e);
+        } catch (ArtifactResolutionException e) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(e.getMessage(), e);
             }
         }
 
@@ -269,7 +272,7 @@ public final class ResourceResolver extends AbstractLogEnabled {
 
         Collection<Path> sourcePaths = resolveAndUnpack(toResolve, config, SOURCE_VALID_CLASSIFIERS, true);
 
-        return new JavadocModule(key(artifact.getGroupId(), artifact.getArtifactId()), artifact.getFile(), sourcePaths);
+        return new JavadocModule(ArtifactUtils.key(artifact), artifact.getFile(), sourcePaths);
     }
 
     private org.eclipse.aether.artifact.Artifact createResourceArtifact(
@@ -286,14 +289,13 @@ public final class ResourceResolver extends AbstractLogEnabled {
      * @param propagateErrors
      * @return list of <dependencyConflictId, absolutePath>
      * @throws ArtifactResolutionException if an exception occurs
-     * @throws ArtifactNotFoundException if an exception occurs
      */
     private Collection<Path> resolveAndUnpack(
             final List<org.eclipse.aether.artifact.Artifact> artifacts,
             final SourceResolverConfig config,
             final List<String> validClassifiers,
             final boolean propagateErrors)
-            throws ArtifactResolutionException, ArtifactNotFoundException {
+            throws ArtifactResolutionException {
         // NOTE: Since these are '-sources' and '-test-sources' artifacts, they won't actually
         // resolve transitively...this is just used to aggregate resolution failures into a single
         // exception.
@@ -376,9 +378,5 @@ public final class ResourceResolver extends AbstractLogEnabled {
         }
 
         return JavadocUtil.pruneDirs(reactorProject, dirs);
-    }
-
-    private static String key(final String gid, final String aid) {
-        return gid + ":" + aid;
     }
 }

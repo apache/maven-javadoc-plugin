@@ -1,0 +1,188 @@
+---
+title: Configuring Custom Taglets
+author: 
+  - Vincent Siveton
+date: 2009-08-04
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+
+# Configuring Custom Taglets
+
+You could configure any custom taglets in your Javadoc Plugin configuration via the [&lt;taglet/&gt;](../javadoc-mojo.html#taglet), [&lt;taglets/&gt;](../javadoc-mojo.html#taglets), or [&lt;tagletArtifacts/&gt;](../javadoc-mojo.html#tagletArtifacts) parameters, depending the number of taglets used.
+
+For more information about the taglet technology, please refer to [the `Taglet` interface](https://docs.oracle.com/en/java/javase/25/docs/api/jdk.javadoc/jdk/javadoc/doclet/Taglet.html).
+
+One Taglet
+----------
+
+For one known Taglet, just use the [&lt;taglet/&gt;](../javadoc-mojo.html#taglet) parameter:
+
+```xml
+<project>
+  ...
+  <reporting> (or <build>)
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${project.version}</version>
+        <configuration>
+          ...
+          <taglet>package.to.YourTagletClass</taglet>
+          <!-- <tagletpath>/path/to/taglet.jar</tagletpath> -->
+          <tagletArtifact>
+            <groupId>group-Taglet</groupId>
+            <artifactId>artifact-Taglet</artifactId>
+            <version>version-Taglet</version>
+          </tagletArtifact>
+          ...
+        </configuration>
+      </plugin>
+    </plugins>
+    ...
+  </reporting> (or </build>)
+  ...
+</project>
+```
+
+Several Taglets
+---------------
+
+For several known Taglets, just use the [&lt;taglets/&gt;](../javadoc-mojo.html#taglets) parameter:
+
+```xml
+<project>
+  ...
+  <reporting> (or <build>)
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${project.version}</version>
+        <configuration>
+          ...
+          <taglets>
+            <taglet>
+              <tagletClass>package.to.YourFirstTagletClass</tagletClass>
+              <!-- <tagletpath>/path/to/taglet.jar</tagletpath> -->
+              <tagletArtifact>
+                <groupId>group-FirstTaglet</groupId>
+                <artifactId>artifact-FirstTaglet</artifactId>
+                <version>version-FirstTaglet</version>
+              </tagletArtifact>
+            </taglet>
+
+            <taglet>
+              <tagletClass>package.to.YourSecondTagletClass</tagletClass>
+              <!-- <tagletpath>/path/to/taglet.jar</tagletpath> -->
+              <tagletArtifact>
+                <groupId>group-SecondTaglet</groupId>
+                <artifactId>artifact-SecondTaglet</artifactId>
+                <version>version-SecondTaglet</version>
+              </tagletArtifact>
+            </taglet>
+            ...
+          </taglets>
+          ...
+        </configuration>
+      </plugin>
+    </plugins>
+    ...
+  </reporting> (or </build>)
+  ...
+</project>
+```
+
+If it is several Taglets in the same Taglet artifact, you could use the [&lt;taglets/&gt;](../javadoc-mojo.html#taglets) and the [&lt;tagletArtifact/&gt;](../javadoc-mojo.html#tagletArtifact) parameters:
+
+```xml
+<project>
+  ...
+  <reporting> (or <build>)
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${project.version}</version>
+        <configuration>
+          ...
+          <taglets>
+            <taglet>
+              <tagletClass>package.to.YourFirstTagletClass</tagletClass>
+            </taglet>
+
+            <taglet>
+              <tagletClass>package.to.YourSecondTagletClass</tagletClass>
+            </taglet>
+            ...
+          </taglets>
+
+          <tagletArtifact>
+            <groupId>group-Taglet</groupId>
+            <artifactId>artifact-Taglet</artifactId>
+            <version>version-Taglet</version>
+          </tagletArtifact>
+          ...
+        </configuration>
+      </plugin>
+    </plugins>
+    ...
+  </reporting> (or </build>)
+  ...
+</project>
+```
+
+If you don't know the Taglets or if you want to auto-detect Taglet class names, you could use the [&lt;tagletArtifacts/&gt;](../javadoc-mojo.html#tagletArtifacts) parameter:
+
+```xml
+<project>
+  ...
+  <reporting> (or <build>)
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${project.version}</version>
+        <configuration>
+          ...
+          <tagletArtifacts>
+            <tagletArtifact>
+              <groupId>group-FirstTaglet</groupId>
+              <artifactId>artifact-FirstTaglet</artifactId>
+              <version>version-FirstTaglet</version>
+            </tagletArtifact>
+
+            <tagletArtifact>
+              <groupId>group-SecondTaglet</groupId>
+              <artifactId>artifact-SecondTaglet</artifactId>
+              <version>version-SecondTaglet</version>
+            </tagletArtifact>
+            ...
+          </tagletArtifacts>
+          ...
+        </configuration>
+      </plugin>
+    </plugins>
+    ...
+  </reporting> (or </build>)
+  ...
+</project>
+```

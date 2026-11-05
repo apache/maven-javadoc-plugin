@@ -32,6 +32,7 @@ for (JarEntry file in jar.entries()){
 }
 
 assert !files.contains("a/b/e/E.html")
+assert !files.contains("a/b/e/E1.html")
 assert !files.contains("a/b/c/d/D1.html")
 assert files.contains("a/b/c/d/D2.html")
 assert files.contains("a/f/F.html")

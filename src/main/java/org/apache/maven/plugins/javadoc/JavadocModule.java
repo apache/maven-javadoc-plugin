@@ -31,7 +31,7 @@ import org.codehaus.plexus.languages.java.jpms.ModuleNameSource;
  * @since 3.3.0
  */
 public class JavadocModule {
-    private final String ga;
+    private final String gav;
 
     private final File artifactFile;
 
@@ -41,25 +41,25 @@ public class JavadocModule {
 
     private final ModuleNameSource moduleNameSource;
 
-    public JavadocModule(String ga, File artifactFile, Collection<Path> sourcePaths) {
-        this(ga, artifactFile, sourcePaths, null, null);
+    public JavadocModule(String gav, File artifactFile, Collection<Path> sourcePaths) {
+        this(gav, artifactFile, sourcePaths, null, null);
     }
 
     public JavadocModule(
-            String ga,
+            String gav,
             File artifactFile,
             Collection<Path> sourcePaths,
             JavaModuleDescriptor moduleDescriptor,
             ModuleNameSource moduleNameSource) {
-        this.ga = ga;
+        this.gav = gav;
         this.artifactFile = artifactFile;
         this.sourcePaths = sourcePaths;
         this.moduleDescriptor = moduleDescriptor;
         this.moduleNameSource = moduleNameSource;
     }
 
-    public String getGa() {
-        return ga;
+    public String getGav() {
+        return gav;
     }
 
     public Collection<Path> getSourcePaths() {

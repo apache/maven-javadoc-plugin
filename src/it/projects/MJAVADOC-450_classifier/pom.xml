@@ -30,8 +30,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>@maven.compiler.source@</maven.compiler.source>
-    <maven.compiler.target>@maven.compiler.target@</maven.compiler.target>
   </properties>
 
   <build>
@@ -42,6 +40,7 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>@project.version@</version>
           <configuration>
+            <debug>true</debug>
             <stylesheetfile>custom.css</stylesheetfile>
           </configuration>
           <dependencies>

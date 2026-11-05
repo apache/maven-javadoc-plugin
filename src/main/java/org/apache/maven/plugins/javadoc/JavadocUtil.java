@@ -20,10 +20,11 @@ package org.apache.maven.plugins.javadoc;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -34,13 +35,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +61,9 @@ import java.util.jar.JarInputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -81,25 +87,20 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
+import org.apache.maven.executor.ExecutorException;
+import org.apache.maven.executor.ExecutorRequest;
+import org.apache.maven.executor.ExecutorResult;
+import org.apache.maven.executor.forked.ForkedMavenExecutor;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
-import org.apache.maven.shared.invoker.DefaultInvocationRequest;
-import org.apache.maven.shared.invoker.DefaultInvoker;
-import org.apache.maven.shared.invoker.InvocationOutputHandler;
-import org.apache.maven.shared.invoker.InvocationRequest;
-import org.apache.maven.shared.invoker.InvocationResult;
-import org.apache.maven.shared.invoker.Invoker;
-import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.apache.maven.shared.invoker.PrintStreamHandler;
 import org.apache.maven.shared.utils.cli.CommandLineException;
 import org.apache.maven.shared.utils.cli.CommandLineUtils;
 import org.apache.maven.shared.utils.cli.Commandline;
 import org.apache.maven.shared.utils.io.DirectoryScanner;
 import org.apache.maven.shared.utils.io.FileUtils;
-import org.apache.maven.wagon.proxy.ProxyInfo;
-import org.apache.maven.wagon.proxy.ProxyUtils;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
 
 /**
@@ -109,7 +110,7 @@ import org.codehaus.plexus.languages.java.version.JavaVersion;
  * @since 2.4
  */
 public class JavadocUtil {
-    /** The default timeout used when fetching url, i.e. 2000. */
+    /** The default timeout used when fetching a URL in milliseconds. The default value is 2000. */
     public static final int DEFAULT_TIMEOUT = 2000;
 
     /** Error message when VM could not be started using invoker. */
@@ -118,30 +119,45 @@ public class JavadocUtil {
                     + "environment variable using -Xms:<size> and -Xmx:<size>.";
 
     /**
-     * Method that removes the invalid directories in the specified directories. <b>Note</b>: All elements in
-     * <code>dirs</code> could be an absolute or relative against the project's base directory <code>String</code> path.
+     * Method that removes invalid classpath elements in the specified paths.
+     * <b>Note</b>: All elements in {@code paths} could be absolute or relative against the project's base directory.
+     * When pruning classpath elements, you can optionally include files in the result, otherwise only directories are
+     * permitted.
      *
      * @param project the current Maven project not null
-     * @param dirs the collection of <code>String</code> directories path that will be validated.
-     * @return a List of valid <code>String</code> directories absolute paths.
+     * @param paths the collection of paths that will be validated
+     * @param includeFiles whether to include files in the result as well
+     * @return a list of valid classpath elements as absolute paths
      */
-    public static Collection<Path> pruneDirs(MavenProject project, Collection<String> dirs) {
+    public static Collection<Path> prunePaths(MavenProject project, Collection<String> paths, boolean includeFiles) {
         final Path projectBasedir = project.getBasedir().toPath();
 
-        Set<Path> pruned = new LinkedHashSet<>(dirs.size());
-        for (String dir : dirs) {
-            if (dir == null) {
+        Set<Path> pruned = new LinkedHashSet<>(paths.size());
+        for (String path : paths) {
+            if (path == null) {
                 continue;
             }
 
-            Path directory = projectBasedir.resolve(dir);
+            Path resolvedPath = projectBasedir.resolve(path);
 
-            if (Files.isDirectory(directory)) {
-                pruned.add(directory.toAbsolutePath());
+            if (Files.isDirectory(resolvedPath) || includeFiles && Files.isRegularFile(resolvedPath)) {
+                pruned.add(resolvedPath.toAbsolutePath());
             }
         }
 
         return pruned;
+    }
+
+    /**
+     * Method that removes the invalid classpath directories in the specified directories.
+     * <b>Note</b>: All elements in {@code dirs} could be absolute or relative against the project's base directory.
+     *
+     * @param project the current Maven project not null
+     * @param dirs the collection of directories that will be validated
+     * @return a list of valid classpath elements as absolute paths
+     */
+    public static Collection<Path> pruneDirs(MavenProject project, Collection<String> dirs) {
+        return prunePaths(project, dirs, false);
     }
 
     /**
@@ -166,9 +182,9 @@ public class JavadocUtil {
      * Determine whether a file should be excluded from the provided list of paths, based on whether it exists and is
      * already present in the list.
      *
-     * @param f The files.
-     * @param pruned The list of pruned files..
-     * @return true if the file could be pruned false otherwise.
+     * @param f the files
+     * @param pruned the list of pruned files
+     * @return true if the file could be pruned, false otherwise
      */
     public static boolean shouldPruneFile(String f, List<String> pruned) {
         if (f != null) {
@@ -206,14 +222,17 @@ public class JavadocUtil {
      * @return quoted option-argument
      */
     protected static String quotedArgument(String value) {
+        if (value == null) {
+            return null;
+        }
         String arg = value;
+
+        List<String> list = Arrays.stream(arg.split("\n")).map(String::trim).collect(Collectors.toList());
+        arg = String.join("", list);
 
         if (arg != null && !arg.isEmpty()) {
             arg = arg.replace("'", "\\'");
             arg = "'" + arg + "'";
-
-            // To prevent javadoc error
-            arg = arg.replace("\n", " ");
         }
 
         return arg;
@@ -238,7 +257,7 @@ public class JavadocUtil {
 
                 for (int i = 0; i < split.length; i++) {
                     if (i != split.length - 1) {
-                        pathBuilder.append(split[i]).append("\\'");
+                        pathBuilder.append(split[i].trim()).append("\\'");
                     } else {
                         pathBuilder.append(split[i]);
                     }
@@ -254,7 +273,7 @@ public class JavadocUtil {
     }
 
     /**
-     * Convenience method that copy all <code>doc-files</code> directories from <code>javadocDir</code> to the
+     * Convenience method that copies all <code>doc-files</code> directories from <code>javadocDir</code> to the
      * <code>outputDirectory</code>.
      *
      * @param outputDirectory the output directory
@@ -276,7 +295,7 @@ public class JavadocUtil {
             String current;
             while (st.hasMoreTokens()) {
                 current = st.nextToken();
-                excludes.add("**/" + current + "/**");
+                excludes.add("**/" + current.trim() + "/**");
             }
         }
 
@@ -284,7 +303,7 @@ public class JavadocUtil {
                 javadocDir, "resources,**/doc-files", String.join(",", excludes), false, true);
         for (String docFile : docFiles) {
             File docFileOutput = new File(outputDirectory, docFile);
-            FileUtils.mkdir(docFileOutput.getAbsolutePath());
+            Files.createDirectories(Paths.get(docFileOutput.getAbsolutePath()));
             FileUtils.copyDirectoryStructure(new File(javadocDir, docFile), docFileOutput);
             List<String> files = FileUtils.getFileAndDirectoryNames(
                     docFileOutput, String.join(",", excludes), null, true, true, true, true);
@@ -344,7 +363,7 @@ public class JavadocUtil {
      *
      * @param sourceDirectory the directory where the source files are located
      * @param excludePackagenames package names to be excluded in the javadoc
-     * @return a List of the packagenames to be excluded
+     * @return the package names to be excluded
      */
     protected static Collection<String> getExcludedPackages(
             final Path sourceDirectory, Collection<String> excludePackagenames) {
@@ -355,7 +374,7 @@ public class JavadocUtil {
         try {
             Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<Path>() {
                 @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                     if (file.getFileName().toString().endsWith(".java")) {
                         fileList.add(
                                 sourceDirectory.relativize(file.getParent()).toString());
@@ -372,8 +391,8 @@ public class JavadocUtil {
             // Usage of wildcard was bad specified and bad implemented, i.e. using String.contains()
             //   without respecting surrounding context
             // Following implementation should match requirements as defined in the examples:
-            // - A wildcard at the beginning should match 1 or more folders
-            // - Any other wildcard must match exactly one folder
+            // - A wildcard at the beginning should match one or more directories
+            // - Any other wildcard must match exactly one directory
             Pattern p = Pattern.compile(excludePackagename
                     .replace(".", regexFileSeparator)
                     .replaceFirst("^\\*", ".+")
@@ -407,9 +426,9 @@ public class JavadocUtil {
         if (sourceFileIncludes == null) {
             sourceFileIncludes = Collections.singletonList("**/*.java");
         }
-        ds.setIncludes(sourceFileIncludes.toArray(new String[sourceFileIncludes.size()]));
-        if (sourceFileExcludes != null && sourceFileExcludes.size() > 0) {
-            ds.setExcludes(sourceFileExcludes.toArray(new String[sourceFileExcludes.size()]));
+        ds.setIncludes(sourceFileIncludes.toArray(new String[0]));
+        if (sourceFileExcludes != null && !sourceFileExcludes.isEmpty()) {
+            ds.setExcludes(sourceFileExcludes.toArray(new String[0]));
         }
         ds.setBasedir(sourceDirectory);
         ds.scan();
@@ -478,9 +497,9 @@ public class JavadocUtil {
             Pattern.compile("(?s).*?[^a-zA-Z](([0-9]+\\.?[0-9]*)(\\.[0-9]+)?).*");
 
     /**
-     * Parse the output for 'javadoc -J-version' and return the javadoc version recognized. <br>
-     * Here are some output for 'javadoc -J-version' depending the JDK used:
-     * <table><caption>Output for 'javadoc -J-version' per JDK</caption>
+     * Parse the output of 'javadoc -J-version' and return the javadoc version recognized. <br>
+     * Here are some output for 'javadoc -J-version' depending on the JDK used:
+     * <table><caption>Output of 'javadoc -J-version' per JDK</caption>
      * <tr>
      * <th>JDK</th>
      * <th>Output for 'javadoc -J-version'</th>
@@ -511,15 +530,20 @@ public class JavadocUtil {
      * </tr>
      * </table>
      *
-     * @param output for 'javadoc -J-version'
+     * @param output of 'javadoc -J-version'
      * @return the version of the javadoc for the output, only digits and dots
-     * @throws PatternSyntaxException if the output doesn't match with the output pattern
+     * @throws PatternSyntaxException if the output doesn't match the output pattern
      *             {@code (?s).*?[^a-zA-Z]([0-9]+\\.?[0-9]*)(\\.([0-9]+))?.*}.
-     * @throws IllegalArgumentException if the output is null
+     * @throws NullPointerException if the output is null
+     * @throws IllegalArgumentException if the output is empty
      */
-    protected static String extractJavadocVersion(String output) throws IllegalArgumentException {
-        if (output == null || output.isEmpty()) {
-            throw new IllegalArgumentException("The output could not be null.");
+    protected static String extractJavadocVersion(String output) {
+        if (output == null) {
+            throw new NullPointerException("The output cannot be null.");
+        }
+
+        if (output.isEmpty()) {
+            throw new IllegalArgumentException("The output cannot be empty.");
         }
 
         Pattern pattern = EXTRACT_JAVADOC_VERSION_PATTERN;
@@ -551,7 +575,7 @@ public class JavadocUtil {
 
     /**
      * Parse a memory string which be used in the JVM arguments <code>-Xms</code> or <code>-Xmx</code>. <br>
-     * Here are some supported memory string depending the JDK used:
+     * Here are some supported memory string depending on the JDK used:
      * <table><caption>Memory argument support per JDK</caption>
      * <tr>
      * <th>JDK</th>
@@ -572,14 +596,18 @@ public class JavadocUtil {
      * </table>
      *
      * @param memory the memory to be parsed, not null.
-     * @return the memory parsed with a supported unit. If no unit specified in the <code>memory</code> parameter, the
+     * @return the memory parsed with a supported unit. If no unit is specified in the <code>memory</code> argument, the
      *         default unit is <code>m</code>. The units <code>g | gb</code> or <code>t | tb</code> will be converted in
      *         <code>m</code>.
-     * @throws IllegalArgumentException if the <code>memory</code> parameter is null or doesn't match any pattern.
+     * @throws NullPointerException if the <code>memory</code> argument is null
+     * @throws IllegalArgumentException if the <code>memory</code> argument doesn't match any pattern.
      */
-    protected static String parseJavadocMemory(String memory) throws IllegalArgumentException {
-        if (memory == null || memory.isEmpty()) {
-            throw new IllegalArgumentException("The memory could not be null.");
+    protected static String parseJavadocMemory(String memory) {
+        if (memory == null) {
+            throw new NullPointerException("The memory cannot be null.");
+        }
+        if (memory.isEmpty()) {
+            throw new IllegalArgumentException("The memory cannot be empty.");
         }
 
         Matcher m0 = PARSE_JAVADOC_MEMORY_PATTERN_0.matcher(memory);
@@ -613,7 +641,7 @@ public class JavadocUtil {
     /**
      * Validate if a charset is supported on this platform.
      *
-     * @param charsetName the charsetName to be check.
+     * @param charsetName the charsetName to check
      * @return <code>true</code> if the given charset is supported by the JVM, <code>false</code> otherwise.
      */
     protected static boolean validateEncoding(String charsetName) {
@@ -698,7 +726,12 @@ public class JavadocUtil {
             throw new NullPointerException("The url could not be null.");
         }
 
-        FileUtils.copyURLToFile(url, file);
+        URLConnection connection = url.openConnection();
+        // Uncached, so that closing the stream closes the jar (JDK-8239054)
+        connection.setUseCaches(false);
+        try (InputStream in = connection.getInputStream()) {
+            Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 
     /**
@@ -714,7 +747,10 @@ public class JavadocUtil {
      * @param properties the properties for the goals, could be null.
      * @param invokerLog the log file where the invoker will be written, if null using <code>System.out</code>.
      * @param globalSettingsFile reference to settings file, could be null.
-     * @throws MavenInvocationException if any
+     * @param userSettingsFile reference to user settings file, could be null.
+     * @param globalToolchainsFile reference to toolchains file, could be null.
+     * @param userToolchainsFile reference to user toolchains file, could be null.
+     * @throws MojoExecutionException when the build fails or Maven cannot be started
      * @since 2.6
      */
     protected static void invokeMaven(
@@ -724,15 +760,18 @@ public class JavadocUtil {
             List<String> goals,
             Properties properties,
             File invokerLog,
-            File globalSettingsFile)
-            throws MavenInvocationException {
+            File globalSettingsFile,
+            File userSettingsFile,
+            File globalToolchainsFile,
+            File userToolchainsFile)
+            throws MojoExecutionException {
         if (projectFile == null) {
             throw new IllegalArgumentException("projectFile should be not null.");
         }
         if (!projectFile.isFile()) {
             throw new IllegalArgumentException(projectFile.getAbsolutePath() + " is not a file.");
         }
-        if (goals == null || goals.size() == 0) {
+        if (goals == null || goals.isEmpty()) {
             throw new IllegalArgumentException("goals should be not empty.");
         }
         if (localRepositoryDir == null || !localRepositoryDir.isDirectory()) {
@@ -752,87 +791,113 @@ public class JavadocUtil {
             return;
         }
 
-        Invoker invoker = new DefaultInvoker();
-        invoker.setMavenHome(new File(mavenHome));
-        invoker.setLocalRepositoryDirectory(localRepositoryDir);
-
-        InvocationRequest request = new DefaultInvocationRequest();
-        request.setBaseDirectory(projectFile.getParentFile());
-        request.setPomFile(projectFile);
-        request.setGlobalSettingsFile(globalSettingsFile);
-        request.setBatchMode(true);
-        if (log != null) {
-            request.setDebug(log.isDebugEnabled());
-        } else {
-            request.setDebug(true);
+        List<String> arguments = new ArrayList<>();
+        arguments.add("-B");
+        if (log == null || log.isDebugEnabled()) {
+            arguments.add("-X");
         }
-        request.setGoals(goals);
+        arguments.add("-f");
+        arguments.add(projectFile.getAbsolutePath());
+        arguments.add("-Dmaven.repo.local=" + localRepositoryDir.getAbsolutePath());
+        if (globalSettingsFile != null && globalSettingsFile.isFile()) {
+            arguments.add("-gs");
+            arguments.add(globalSettingsFile.getAbsolutePath());
+        }
+        if (userSettingsFile != null && userSettingsFile.isFile()) {
+            arguments.add("-s");
+            arguments.add(userSettingsFile.getAbsolutePath());
+        }
+        if (globalToolchainsFile != null && globalToolchainsFile.isFile()) {
+            arguments.add("-gt");
+            arguments.add(globalToolchainsFile.getAbsolutePath());
+        }
+        if (userToolchainsFile != null && userToolchainsFile.isFile()) {
+            arguments.add("-t");
+            arguments.add(userToolchainsFile.getAbsolutePath());
+        }
         if (properties != null) {
-            request.setProperties(properties);
+            for (String name : properties.stringPropertyNames()) {
+                arguments.add("-D" + name + "=" + properties.getProperty(name));
+            }
         }
+        arguments.addAll(goals);
+
+        ExecutorRequest.Builder request = ExecutorRequest.mavenBuilder()
+                .cwd(projectFile.getAbsoluteFile().getParentFile().toPath())
+                .arguments(arguments);
         File javaHome = getJavaHome(log);
         if (javaHome != null) {
-            request.setJavaHome(javaHome);
+            request.environmentVariable("JAVA_HOME", javaHome.getAbsolutePath());
         }
 
         if (log != null && log.isDebugEnabled()) {
             log.debug("Invoking Maven for the goals: " + goals + " with "
                     + (properties == null ? "no properties" : "properties=" + properties));
         }
-        InvocationResult result = invoke(log, invoker, request, invokerLog, goals, properties, null);
+        ExecutorResult result = invoke(log, new File(mavenHome), request, invokerLog, goals, properties, null);
 
-        if (result.getExitCode() != 0) {
-            String invokerLogContent = readFile(invokerLog, "UTF-8");
+        if (!result.success()) {
+            try {
+                String invokerLogContent = new String(Files.readAllBytes(invokerLog.toPath()), StandardCharsets.UTF_8);
 
-            // see DefaultMaven
-            if (invokerLogContent != null
-                    && (!invokerLogContent.contains("Scanning for projects...")
-                            || invokerLogContent.contains(OutOfMemoryError.class.getName()))) {
-                if (log != null) {
-                    log.error("Error occurred during initialization of VM, trying to use an empty MAVEN_OPTS...");
+                // see DefaultMaven
+                if (!invokerLogContent.contains("Scanning for projects...")
+                        || invokerLogContent.contains(OutOfMemoryError.class.getName())) {
+                    if (log != null) {
+                        log.error("Error occurred during initialization of VM, trying to use an empty MAVEN_OPTS...");
 
-                    if (log.isDebugEnabled()) {
-                        log.debug("Reinvoking Maven for the goals: " + goals + " with an empty MAVEN_OPTS...");
+                        if (log.isDebugEnabled()) {
+                            log.debug("Reinvoking Maven for the goals: " + goals + " with an empty MAVEN_OPTS...");
+                        }
                     }
                 }
-                result = invoke(log, invoker, request, invokerLog, goals, properties, "");
+            } catch (IOException e) {
+                // ignore
             }
+            result = invoke(log, new File(mavenHome), request, invokerLog, goals, properties, "");
         }
 
-        if (result.getExitCode() != 0) {
-            String invokerLogContent = readFile(invokerLog, "UTF-8");
+        if (!result.success()) {
+            try {
+                String invokerLogContent = new String(Files.readAllBytes(invokerLog.toPath()), StandardCharsets.UTF_8);
 
-            // see DefaultMaven
-            if (invokerLogContent != null
-                    && (!invokerLogContent.contains("Scanning for projects...")
-                            || invokerLogContent.contains(OutOfMemoryError.class.getName()))) {
-                throw new MavenInvocationException(ERROR_INIT_VM);
+                // see DefaultMaven
+                if (!invokerLogContent.contains("Scanning for projects...")
+                        || invokerLogContent.contains(OutOfMemoryError.class.getName())) {
+                    throw new MojoExecutionException(ERROR_INIT_VM);
+                }
+
+                throw new MojoExecutionException(
+                        "Error when invoking Maven, consult the invoker log file: " + invokerLog.getAbsolutePath());
+            } catch (IOException ex) {
+                // ignore
             }
-
-            throw new MavenInvocationException(
-                    "Error when invoking Maven, consult the invoker log file: " + invokerLog.getAbsolutePath());
+            throw new MojoExecutionException(ERROR_INIT_VM);
         }
     }
 
     /**
      * Read the given file and return the content or null if an IOException occurs.
      *
-     * @param javaFile not null
-     * @param encoding could be null
-     * @return the content with unified line separator of the given javaFile using the given encoding.
-     * @see FileUtils#fileRead(File, String)
+     * @param javaFile the file to read; not null
+     * @param encoding a character set name; not null
+     * @return the content of the given file using the given encoding; null if an IOException occurs
      * @since 2.6.1
+     * @throws java.nio.charset.UnsupportedCharsetException if the named charset is not supported
+     * @throws NullPointerException if the javaFile or encoding is null
+     * @deprecated use Files.readString(Path, Charset) in Java 11+ or new String(Files.readAllBytes(Path), Charset) in Java 8
      */
+    @Deprecated
     protected static String readFile(final File javaFile, final String encoding) {
         try {
-            return FileUtils.fileRead(javaFile, encoding);
+            return new String(Files.readAllBytes(javaFile.toPath()), Charset.forName(encoding));
         } catch (IOException e) {
             return null;
         }
     }
 
     /**
-     * Split the given path with colon and semi-colon, to support Solaris and Windows path. Examples:
+     * Split the given path with colon and semicolon, to support Unix and Windows paths. Examples:
      *
      * <pre>
      * splitPath( "/home:/tmp" )     = ["/home", "/tmp"]
@@ -841,9 +906,9 @@ public class JavadocUtil {
      * splitPath( "C:/home;C:/tmp" ) = ["C:/home", "C:/tmp"]
      * </pre>
      *
-     * @param path which can contain multiple paths separated with a colon (<code>:</code>) or a semi-colon
+     * @param path which can contain multiple paths separated with a colon (<code>:</code>) or a semicolon
      *            (<code>;</code>), platform independent. Could be null.
-     * @return the path splitted by colon or semi-colon or <code>null</code> if path was <code>null</code>.
+     * @return the path split by colon or semicolon or <code>null</code> if path was <code>null</code>.
      * @since 2.6.1
      */
     protected static String[] splitPath(final String path) {
@@ -857,7 +922,7 @@ public class JavadocUtil {
             subpaths.add(pathTokenizer.nextToken());
         }
 
-        return subpaths.toArray(new String[subpaths.size()]);
+        return subpaths.toArray(new String[0]);
     }
 
     /**
@@ -868,7 +933,7 @@ public class JavadocUtil {
      * unifyPathSeparator( "/home:/tmp" ) = "/home;/tmp" (Windows box)
      * </pre>
      *
-     * @param path which can contain multiple paths by separating them with a colon (<code>:</code>) or a semi-colon
+     * @param path which can contain multiple paths by separating them with a colon (<code>:</code>) or a semicolon
      *            (<code>;</code>), platform independent. Could be null.
      * @return the same path but separated with the current System path separator or <code>null</code> if path was
      *         <code>null</code>.
@@ -900,7 +965,7 @@ public class JavadocUtil {
 
         List<String> classes = new ArrayList<>();
         Pattern pattern = Pattern.compile("(?i)^(META-INF/versions/(?<v>[0-9]+)/)?(?<n>.+)[.]class$");
-        try (JarInputStream jarStream = new JarInputStream(new FileInputStream(jarFile))) {
+        try (JarInputStream jarStream = new JarInputStream(Files.newInputStream(jarFile.toPath()))) {
             for (JarEntry jarEntry = jarStream.getNextJarEntry();
                     jarEntry != null;
                     jarEntry = jarStream.getNextJarEntry()) {
@@ -923,25 +988,25 @@ public class JavadocUtil {
 
     /**
      * @param log could be null
-     * @param invoker not null
+     * @param mavenHome not null
      * @param request not null
      * @param invokerLog not null
      * @param goals not null
      * @param properties could be null
      * @param mavenOpts could be null
-     * @return the invocation result
-     * @throws MavenInvocationException if any
+     * @return the execution result
+     * @throws MojoExecutionException if any
      * @since 2.6
      */
-    private static InvocationResult invoke(
+    private static ExecutorResult invoke(
             Log log,
-            Invoker invoker,
-            InvocationRequest request,
+            File mavenHome,
+            ExecutorRequest.Builder request,
             File invokerLog,
             List<String> goals,
             Properties properties,
             String mavenOpts)
-            throws MavenInvocationException {
+            throws MojoExecutionException {
         PrintStream ps;
         OutputStream os = null;
         if (invokerLog != null) {
@@ -977,24 +1042,38 @@ public class JavadocUtil {
         }
 
         if (mavenOpts != null) {
-            request.setMavenOpts(mavenOpts);
+            request.environmentVariable("MAVEN_OPTS", mavenOpts);
         }
 
-        InvocationOutputHandler outputHandler = new PrintStreamHandler(ps, false);
-        request.setOutputHandler(outputHandler);
-
         try (OutputStream closeMe = os) {
-            outputHandler.consumeLine("Invoking Maven for the goals: " + goals + " with "
+            ps.println("Invoking Maven for the goals: " + goals + " with "
                     + (properties == null ? "no properties" : "properties=" + properties));
-            outputHandler.consumeLine("");
-            outputHandler.consumeLine("M2_HOME=" + getMavenHome(log));
-            outputHandler.consumeLine("MAVEN_OPTS=" + getMavenOpts(log));
-            outputHandler.consumeLine("JAVA_HOME=" + getJavaHome(log));
-            outputHandler.consumeLine("JAVA_OPTS=" + getJavaOpts(log));
-            outputHandler.consumeLine("");
-            return invoker.execute(request);
+            ps.println();
+            ps.println("M2_HOME=" + getMavenHome(log));
+            ps.println("MAVEN_OPTS=" + getMavenOpts(log));
+            ps.println("JAVA_HOME=" + getJavaHome(log));
+            ps.println("JAVA_OPTS=" + getJavaOpts(log));
+            ps.println();
+            ps.flush();
+            // the executor closes the streams it is given; this one is closed here, or is System.out
+            OutputStream output = new FilterOutputStream(ps) {
+                @Override
+                public void write(byte[] b, int off, int len) throws IOException {
+                    out.write(b, off, len);
+                }
+
+                @Override
+                public void close() throws IOException {
+                    out.flush();
+                }
+            };
+            try (ForkedMavenExecutor executor = new ForkedMavenExecutor(mavenHome.toPath())) {
+                return executor.execute(request.stdOut(output).stdErr(output).build());
+            }
         } catch (IOException ioe) {
-            throw new MavenInvocationException("IOException while consuming invocation output", ioe);
+            throw new MojoExecutionException("IOException while consuming invocation output", ioe);
+        } catch (ExecutorException e) {
+            throw new MojoExecutionException("Error when invoking Maven: " + e.getMessage(), e);
         }
     }
 
@@ -1010,7 +1089,7 @@ public class JavadocUtil {
         File m2Home = new File(mavenHome);
         if (!m2Home.exists()) {
             if (log != null && log.isErrorEnabled()) {
-                log.error("Cannot find Maven application directory. Either specify 'maven.home' system property.");
+                log.error("Cannot find Maven application directory. Specify 'maven.home' system property.");
             }
         }
 
@@ -1090,7 +1169,7 @@ public class JavadocUtil {
         private String lookahead = null;
 
         /**
-         * Flag to indicate whether or not we are running on a platform with a DOS style filesystem
+         * Flag to indicate whether we are running on a platform with a DOS style filesystem
          */
         private boolean dosStyleFilesystem;
 
@@ -1147,7 +1226,7 @@ public class JavadocUtil {
                     lookahead = nextToken;
                 }
             }
-            return token;
+            return token.trim();
         }
     }
 
@@ -1191,7 +1270,7 @@ public class JavadocUtil {
                 sb.append(elementSuffix);
             }
 
-            result.add(sb.toString());
+            result.add(sb.toString().trim());
         }
 
         return result;
@@ -1218,7 +1297,10 @@ public class JavadocUtil {
         return result;
     }
 
-    // TODO: deprecate in favor of Path.relativize
+    /**
+     * @deprecated use {@link Path#relativize(Path)} () instead
+     */
+    @Deprecated
     public static String toRelative(File basedir, String absolutePath) {
         String relative;
 
@@ -1455,9 +1537,9 @@ public class JavadocUtil {
     /**
      * Creates a new {@code HttpClient} instance.
      *
-     * @param settings The settings to use for setting up the client or {@code null}.
-     * @param url The {@code URL} to use for setting up the client or {@code null}.
-     * @return A new {@code HttpClient} instance.
+     * @param settings the settings to use for setting up the client or {@code null}
+     * @param url the {@code URL} to use for setting up the client or {@code null}
+     * @return a new {@code HttpClient} instance
      * @see #DEFAULT_TIMEOUT
      * @since 2.8
      */
@@ -1480,20 +1562,17 @@ public class JavadocUtil {
         // Some web servers don't allow the default user-agent sent by httpClient
         builder.setUserAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)");
 
-        // Some server reject requests that do not have an Accept header
-        builder.setDefaultHeaders(Arrays.asList(new BasicHeader(HttpHeaders.ACCEPT, "*/*")));
+        // Some servers reject requests that do not have an Accept header
+        builder.setDefaultHeaders(Collections.singletonList(new BasicHeader(HttpHeaders.ACCEPT, "*/*")));
 
         if (settings != null && settings.getActiveProxy() != null) {
             Proxy activeProxy = settings.getActiveProxy();
-
-            ProxyInfo proxyInfo = new ProxyInfo();
-            proxyInfo.setNonProxyHosts(activeProxy.getNonProxyHosts());
-
+            String nonProxyHosts = activeProxy.getNonProxyHosts();
             String activeProxyHost = activeProxy.getHost();
             if (activeProxyHost != null
                     && !activeProxyHost.isEmpty()
-                    && (url == null || !ProxyUtils.validateNonProxyHosts(proxyInfo, url.getHost()))) {
-                HttpHost proxy = new HttpHost(activeProxy.getHost(), activeProxy.getPort());
+                    && (url == null || !isNonProxyHost(nonProxyHosts, url.getHost()))) {
+                HttpHost proxy = new HttpHost(activeProxyHost, activeProxy.getPort());
                 builder.setProxy(proxy);
 
                 String activeProxyUsername = activeProxy.getUsername();
@@ -1512,6 +1591,24 @@ public class JavadocUtil {
         return builder.build();
     }
 
+    private static boolean isNonProxyHost(String nonProxyHosts, String targetHost) {
+        if (nonProxyHosts == null) {
+            return false;
+        }
+        if (targetHost == null) {
+            targetHost = "";
+        }
+        StringTokenizer tokenizer = new StringTokenizer(nonProxyHosts, "|");
+        while (tokenizer.hasMoreTokens()) {
+            String pattern = tokenizer.nextToken();
+            pattern = pattern.replaceAll("\\.", "\\\\.").replaceAll("\\*", ".*");
+            if (targetHost.matches(pattern)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     static boolean equalsIgnoreCase(String value, String... strings) {
         for (String s : strings) {
             if (s.equalsIgnoreCase(value)) {
@@ -1528,5 +1625,20 @@ public class JavadocUtil {
             }
         }
         return false;
+    }
+
+    /**
+     * Maps the {@code 1.x} spelling that {@code -source} accepts onto the plain feature number, the only
+     * form {@code --release} takes: {@code 1.8} becomes {@code 8}. Any other value is passed through
+     * unchanged, so the javadoc tool still reports releases it does not support.
+     *
+     * @param release the configured release version, never empty
+     * @return the value to pass to {@code --release}
+     */
+    public static String toReleaseArgument(String release) {
+        if (release.length() == 3 && release.startsWith("1.") && release.charAt(2) >= '1' && release.charAt(2) <= '9') {
+            return release.substring(2);
+        }
+        return release;
     }
 }

@@ -18,20 +18,19 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<project xmlns="http://maven.apache.org/DECORATION/1.0.0"
+<site xmlns="http://maven.apache.org/SITE/2.1.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/SITE/2.1.0 https://maven.apache.org/xsd/site-2.1.0.xsd">
   <body>
     <links>
-      <item name="Javadoc Tool" href="http://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/"/>
+      <item name="Javadoc Tool" href="https://docs.oracle.com/en/java/javase/25/javadoc/index.html"/>
     </links>
 
     <menu name="Overview">
       <item name="Introduction" href="index.html"/>
-      <item name="Goals" href="plugin-info.html"/>
+      <item name="Plugin Documentation" href="plugin-info.html"/>
       <item name="Usage" href="usage.html"/>
       <item name="FAQ" href="faq.html"/>
-      <item name="Release Notes" href="jira-report.html"/>
       <!-- According to https://issues.apache.org/jira/browse/MNGSITE-152 -->
       <item name="License" href="http://www.apache.org/licenses/"/>
       <item name="Download" href="download.html"/>
@@ -44,18 +43,16 @@ under the License.
       <item name="Using Alternate Doclets" href="/examples/alternate-doclet.html"/>
       <item name="Using Alternate Javadoc Tool" href="/examples/alternate-javadoc-tool.html"/>
       <item name="Using Javadoc Resources" href="/examples/javadoc-resources.html"/>
-      <item name="Using Alternative Output Directory" href="/examples/output-configuration.html"/>
       <item name="Configuring Stylesheets" href="/examples/stylesheet-configuration.html"/>
       <item name="Configuring Helpfile" href="/examples/help-configuration.html"/>
       <item name="Configuring Custom Tags" href="/examples/tag-configuration.html"/>
       <item name="Configuring Custom Taglets" href="/examples/taglet-configuration.html"/>
       <item name="Configuring links" href="/examples/links-configuration.html"/>
       <item name="Generating Test Javadocs" href="/examples/test-javadocs.html"/>
-      <item name="Selective Javadocs Reports" href="/examples/selective-javadocs-report.html"/>
-      <item name="Fixing Javadoc Comments" href="/examples/fix-javadocs.html"/>
+      <item name="Selective Javadocs Reports" href="/examples/selective-javadocs-report.html"/>      
       <item name="Adding additional dependencies" href="/examples/additional-dependencies.html"/>
       <item name="Generate Javadoc without duplicate execution of phase generate-sources" href="/examples/javadoc-nofork.html"/>
       <item name="Generate aggregate Javadoc without duplicate execution of phase compile" href="/examples/aggregate-nofork.html"/>
     </menu>
   </body>
-</project>
+</site>

@@ -23,12 +23,12 @@ under the License.
   <parent>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-plugins</artifactId>
-    <version>40</version>
+    <version>50</version>
     <relativePath />
   </parent>
 
   <artifactId>maven-javadoc-plugin</artifactId>
-  <version>3.6.1-SNAPSHOT</version>
+  <version>3.12.1-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Apache Maven Javadoc Plugin</name>
@@ -82,25 +82,28 @@ under the License.
     <contributor>
       <name>Julian Reschke</name>
     </contributor>
+    <contributor>
+      <name>Niels Basjes</name>
+    </contributor>
   </contributors>
 
   <prerequisites>
-    <maven>${mavenVersion}</maven>
+    <maven>3.9.0</maven>
   </prerequisites>
 
   <scm>
-    <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-javadoc-plugin.git</connection>
-    <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/maven-javadoc-plugin.git</developerConnection>
+    <connection>scm:git:https://github.com/apache/maven-javadoc-plugin.git</connection>
+    <developerConnection>scm:git:https://github.com/apache/maven-javadoc-plugin.git</developerConnection>
     <tag>HEAD</tag>
     <url>https://github.com/apache/maven-javadoc-plugin/tree/${project.scm.tag}</url>
   </scm>
   <issueManagement>
-    <system>jira</system>
-    <url>https://issues.apache.org/jira/browse/MJAVADOC</url>
+    <system>GitHub Issues</system>
+    <url>https://github.com/apache/maven-javadoc-plugin/issues</url>
   </issueManagement>
   <ciManagement>
-    <system>Jenkins</system>
-    <url>https://ci-maven.apache.org/job/Maven/job/maven-box/job/maven-javadoc-plugin/</url>
+    <system>GitHub</system>
+    <url>https://github.com/apache/maven-javadoc-plugin/actions</url>
   </ciManagement>
   <distributionManagement>
     <site>
@@ -110,60 +113,29 @@ under the License.
   </distributionManagement>
 
   <properties>
-    <javaVersion>8</javaVersion>
-    <mavenVersion>3.2.5</mavenVersion>
-    <doxiaVersion>1.11.1</doxiaVersion>
-    <doxia-sitetoolsVersion>1.11.1</doxia-sitetoolsVersion>
-    <wagonVersion>2.4</wagonVersion>
-    <aetherVersion>1.0.0.v20140518</aetherVersion>
+    <mavenVersion>3.9.16</mavenVersion>
+    <doxiaSitetoolsVersion>2.1.0</doxiaSitetoolsVersion>
+    <resolverVersion>1.9.27</resolverVersion>
     <!-- https://cwiki.apache.org/confluence/x/VIHOCg#MavenEcosystemCleanup-ResolverandMaven -->
-    <plexus-java.version>1.1.2</plexus-java.version>
-    <jetty.version>9.4.51.v20230217</jetty.version>
+    <plexus-java.version>1.6.0</plexus-java.version>
+    <jetty.version>9.4.58.v20250814</jetty.version>
     <!-- for ITs -->
-    <sitePluginVersion>3.12.1</sitePluginVersion>
-    <projectInfoReportsPluginVersion>3.4.2</projectInfoReportsPluginVersion>
-    <project.build.outputTimestamp>2023-09-12T05:45:11Z</project.build.outputTimestamp>
+    <compilerPluginVersion>${version.maven-compiler-plugin}</compilerPluginVersion>
+    <sourcePluginVersion>${version.maven-source-plugin}</sourcePluginVersion>
+    <enforcerPluginVersion>${version.maven-enforcer-plugin}</enforcerPluginVersion>
+    <pluginPluginVersion>${version.maven-plugin-tools}</pluginPluginVersion>
+    <jarPluginVersion>${version.maven-jar-plugin}</jarPluginVersion>
+    <sitePluginVersion>${version.maven-site-plugin}</sitePluginVersion>
+    <surefirePluginVersion>${version.maven-surefire-plugin}</surefirePluginVersion>
+    <toolchainPluginVersion>3.2.0</toolchainPluginVersion>
+    <projectInfoReportsPluginVersion>${version.maven-project-info-reports-plugin}</projectInfoReportsPluginVersion>
+    <!-- each IT forks its own Maven; override on the command line with -Dinvoker.parallelThreads=N -->
+    <invoker.parallelThreads>0.75C</invoker.parallelThreads>
+    <project.build.outputTimestamp>2025-09-16T08:27:46Z</project.build.outputTimestamp>
     <slf4jVersion>1.7.36</slf4jVersion>
   </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.eclipse.aether</groupId>
-        <artifactId>aether-api</artifactId>
-        <version>${aetherVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.aether</groupId>
-        <artifactId>aether-connector-basic</artifactId>
-        <version>${aetherVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.aether</groupId>
-        <artifactId>aether-transport-wagon</artifactId>
-        <version>${aetherVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.aether</groupId>
-        <artifactId>aether-impl</artifactId>
-        <version>${aetherVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.aether</groupId>
-        <artifactId>aether-util</artifactId>
-        <version>${aetherVersion}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
-    <dependency>
-      <!-- @TODO remove!! -->
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-compat</artifactId>
-      <version>${mavenVersion}</version>
-      <scope>test</scope>
-    </dependency>
     <!-- Maven -->
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -198,7 +170,25 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
       <artifactId>maven-plugin-annotations</artifactId>
+      <version>3.16.0</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.resolver</groupId>
+      <artifactId>maven-resolver-api</artifactId>
+      <version>${resolverVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.resolver</groupId>
+      <artifactId>maven-resolver-impl</artifactId>
+      <version>${resolverVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.resolver</groupId>
+      <artifactId>maven-resolver-util</artifactId>
+      <version>${resolverVersion}</version>
     </dependency>
     <dependency>
       <groupId>javax.inject</groupId>
@@ -209,66 +199,71 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-api</artifactId>
-      <version>3.1.1</version>
+      <version>4.1.0</version>
+    </dependency>
+    <!-- for Javadoc purposes -->
+    <dependency>
+      <groupId>org.apache.maven.reporting</groupId>
+      <artifactId>maven-reporting-impl</artifactId>
+      <version>4.0.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-archiver</artifactId>
-      <version>3.6.0</version>
+      <version>3.6.6</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-invoker</artifactId>
-      <version>3.2.0</version>
+      <groupId>org.apache.maven.executor</groupId>
+      <artifactId>maven-executor</artifactId>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-shared-utils</artifactId>
-      <version>3.4.2</version>
+      <version>3.5.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-common-artifact-filters</artifactId>
-      <version>3.2.0</version>
+      <!-- Do not upgrade, leads to IT failures, needs analysis -->
+      <version>3.4.0</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.sisu</groupId>
+      <artifactId>org.eclipse.sisu.plexus</artifactId>
+      <version>1.1.1</version>
+      <scope>test</scope>
+    </dependency>
+
     <!-- Doxia -->
     <dependency>
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-sink-api</artifactId>
-      <version>${doxiaVersion}</version>
+      <version>2.2.0</version>
     </dependency>
 
     <!-- Doxia-sitetools -->
     <dependency>
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-site-renderer</artifactId>
-      <version>${doxia-sitetoolsVersion}</version>
-      <exclusions>
-        <exclusion>
-          <!-- MJAVADOC-726 -->
-          <groupId>org.apache.velocity</groupId>
-          <artifactId>velocity-tools</artifactId>
-        </exclusion>
-      </exclusions>
+      <version>${doxiaSitetoolsVersion}</version>
+    </dependency>
+    <!-- Doxia-sitetools -->
+    <dependency>
+      <groupId>org.apache.maven.doxia</groupId>
+      <artifactId>doxia-integration-tools</artifactId>
+      <version>${doxiaSitetoolsVersion}</version>
     </dependency>
 
     <!-- wagon -->
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-provider-api</artifactId>
-      <version>${wagonVersion}</version>
-    </dependency>
 
     <!-- misc -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.12.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-text</artifactId>
-      <version>1.10.0</version>
+      <version>3.21.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -282,9 +277,9 @@ under the License.
     </dependency>
 
     <dependency>
-      <groupId>com.thoughtworks.qdox</groupId>
-      <artifactId>qdox</artifactId>
-      <version>2.0.3</version>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4jVersion}</version>
     </dependency>
 
     <!-- Plexus -->
@@ -296,50 +291,31 @@ under the License.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-      <version>3.5.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-xml</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-io</artifactId>
-      <version>3.4.1</version>
+      <version>3.8.1</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
-      <version>4.8.0</version>
+      <version>4.15.0</version>
     </dependency>
+    <!-- MNG-6607: needs to be overriden for commons-compress otherwise it will appear earlier in the tree -->
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.13.0</version>
+      <version>2.22.0</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-interactivity-api</artifactId>
-      <version>1.1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-utils</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <!-- test -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-core</artifactId>
-      <version>2.2</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -351,7 +327,7 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.plugin-testing</groupId>
       <artifactId>maven-plugin-testing-harness</artifactId>
-      <version>3.3.0</version>
+      <version>3.5.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -385,26 +361,27 @@ under the License.
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.aether</groupId>
-      <artifactId>aether-connector-basic</artifactId>
+      <groupId>org.apache.maven.resolver</groupId>
+      <artifactId>maven-resolver-connector-basic</artifactId>
+      <version>${resolverVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.aether</groupId>
-      <artifactId>aether-transport-wagon</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-http</artifactId>
-      <version>${wagonVersion}</version>
-      <classifier>shaded</classifier>
+      <groupId>org.apache.maven.resolver</groupId>
+      <artifactId>maven-resolver-transport-http</artifactId>
+      <version>${resolverVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>3.24.2</version>
+      <version>3.27.7</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opentest4j</groupId>
+      <artifactId>opentest4j</artifactId>
+      <version>1.3.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -422,7 +399,7 @@ under the License.
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
           <configuration>
-            <excludes combine.children="append">
+            <inputExcludes>
               <!-- Photoshop files are binary -->
               <exclude>**/*.psd</exclude>
               <!-- Checksum files cannot contain a license header -->
@@ -430,14 +407,19 @@ under the License.
               <!-- Javadoc package list files cannot contain a license header -->
               <exclude>**/*element-list*</exclude>
               <exclude>**/*package-list*</exclude>
-              <!-- This file is used to patch the generated Javadoc html files -->
-              <exclude>src/main/resources/org/apache/maven/plugins/javadoc/frame-injection-fix.txt</exclude>
               <!-- Original POM file that is used in a repository -->
               <exclude>src/test/resources/unit/test-javadoc-test/junit/junit/3.8.1/junit-3.8.1.pom</exclude>
               <!-- temporary file that sometimes stays after a failure then completely blocks build -->
               <exclude>javadoc-options-javadoc-resources.xml</exclude>
               <exclude>.github/dependabot.yml</exclude>
-            </excludes>
+            </inputExcludes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <configuration>
+            <suppressionsLocation>src/config/checkstyle-suppressions.xml</suppressionsLocation>
           </configuration>
         </plugin>
         <plugin>
@@ -479,7 +461,6 @@ under the License.
         <configuration>
           <systemPropertyVariables>
             <maven.home>${maven.home}</maven.home>
-            <https.protocols>${https.protocols}</https.protocols>
           </systemPropertyVariables>
           <environmentVariables>
             <JENKINS_MAVEN_AGENT_DISABLED>true</JENKINS_MAVEN_AGENT_DISABLED>
@@ -498,7 +479,7 @@ under the License.
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-invoker-plugin</artifactId>
-            <version>3.6.0</version>
+            <version>3.10.1</version>
             <configuration>
               <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
               <projectsDirectory>src/it/projects</projectsDirectory>
@@ -513,21 +494,20 @@ under the License.
               </pomExcludes>
               <properties combine.self="override" />
               <filterProperties>
-                <maven.compiler.source>${maven.compiler.source}</maven.compiler.source>
-                <maven.compiler.target>${maven.compiler.target}</maven.compiler.target>
                 <mrm.3rdparty.url>${mrm.3rdparty.url}</mrm.3rdparty.url>
               </filterProperties>
+              <!-- each IT is a short-lived JVM: C2 compilation and parallel GC only add startup time -->
+              <mavenOpts>-XX:TieredStopAtLevel=1 -XX:+UseSerialGC</mavenOpts>
               <environmentVariables>
-                <JENKINS_MAVEN_AGENT_DISABLED>true</JENKINS_MAVEN_AGENT_DISABLED>
-                <!-- required for MJAVADOC-538 -->
-                <_JAVA_OPTIONS>-Dabc=def</_JAVA_OPTIONS>
+                <!-- clean up the MAVEN_ARGS for the ITs -->
+                <MAVEN_ARGS />
               </environmentVariables>
             </configuration>
           </plugin>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>mrm-maven-plugin</artifactId>
-            <version>1.5.0</version>
+            <version>1.7.1</version>
             <executions>
               <execution>
                 <id>repository</id>
@@ -573,7 +553,7 @@ under the License.
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>l10n-maven-plugin</artifactId>
-            <version>1.0.0</version>
+            <version>1.2.1</version>
             <configuration>
               <excludes>
                 <exclude>**/log4j.properties</exclude>

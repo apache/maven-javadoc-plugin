@@ -17,5 +17,6 @@
  * under the License.
  */
 def log = new File( basedir, 'build.log').text
-
-assert log.count( " --module-path" ) == 2
+def count = log.count( " --module-path" )
+// depends on Maven version (<= 3.8.x, then 2; otherwise 3)
+assert count == 2 || count == 3

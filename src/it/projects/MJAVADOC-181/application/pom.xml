@@ -29,7 +29,6 @@
 
   <artifactId>application</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
   <name>Application</name>
 
   <reporting>
@@ -37,7 +36,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>@pom.version@</version>
+        <version>@project.version@</version>
         <configuration>
           <groups>
             <group>
@@ -45,7 +44,7 @@
               <packages>app</packages>
             </group>
           </groups>
-        </configuration>        
+        </configuration>
       </plugin>
     </plugins>
   </reporting>

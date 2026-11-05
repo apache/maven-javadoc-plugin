@@ -30,8 +30,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>@maven.compiler.source@</maven.compiler.source>
-    <maven.compiler.target>@maven.compiler.target@</maven.compiler.target>
     <project.build.outputTimestamp>2020-02-29T23:59:58Z</project.build.outputTimestamp>
   </properties>
 

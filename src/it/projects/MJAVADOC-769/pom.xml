@@ -93,8 +93,6 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>@project.version@</version>
           <configuration>
-            <outputDirectory>${project.build.directory}/apidocs
-            </outputDirectory>
             <release>11</release>
             <nodeprecated>false</nodeprecated>
             <author>false</author>
@@ -104,7 +102,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>@jarPluginVersion@</version>
           <executions>
             <execution>
               <id>default-jar</id>

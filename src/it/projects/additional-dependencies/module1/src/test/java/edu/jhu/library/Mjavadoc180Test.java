@@ -19,7 +19,6 @@ package edu.jhu.library;
  * under the License.
  */
 
-import junit.framework.TestCase;
 import org.dbunit.database.IDatabaseConnection;
 
 /**
@@ -30,7 +29,6 @@ import org.dbunit.database.IDatabaseConnection;
  * To change this template use File | Settings | File Templates.
  */
 public class Mjavadoc180Test
-    extends TestCase
 {
     /**
      * This is some test javadoc.  This test method has a phony dependency on DB Unit.
@@ -39,6 +37,5 @@ public class Mjavadoc180Test
     {
         IDatabaseConnection phony = null;
         final HelloWorld hw = new HelloWorld();
-        assertTrue( "Hello World".equals( hw.hello( "Hello World" ) ) );
     }
 }

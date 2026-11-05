@@ -33,12 +33,10 @@ under the License.
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>@maven.compiler.source@</maven.compiler.source>
-    <maven.compiler.target>@maven.compiler.target@</maven.compiler.target>
   </properties>
 
   <!-- <properties>
-    <javadocPluginVersion>@pom.version@</javadocPluginVersion>
+    <javadocPluginVersion>@project.version@</javadocPluginVersion>
   </properties>
   
   <build>

@@ -30,14 +30,14 @@
   </parent>
   <artifactId>mjavadoc569-module2</artifactId>
   <packaging>maven-plugin</packaging>
-  
+
   <build>
     <pluginManagement>
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>@jarPluginVersion@</version>
           <configuration>
             <archive>
               <manifestEntries>
@@ -52,7 +52,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
-        <version>3.6.0</version>
+        <version>@pluginPluginVersion@</version>
          <executions>
           <execution>
             <id>default-descriptor</id>
@@ -65,6 +65,9 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <goalPrefix>module2</goalPrefix>
+        </configuration>
       </plugin>
     </plugins>
   </build>
