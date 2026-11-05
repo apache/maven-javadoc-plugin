@@ -157,13 +157,14 @@ class AbstractJavadocMojoTest {
     }
 
     @Test
-    void resolveDependencyIncludesCoordinatesWhenResolutionFails() throws Exception {
+    void resolveDependencyIncludesCoordinatesWhenResolverRejectsMissingVersion() throws Exception {
         RepositorySystem repositorySystem = mock(RepositorySystem.class);
         RepositorySystemSession repositorySession = mock(RepositorySystemSession.class);
         ArtifactHandlerManager artifactHandlerManager = mock(ArtifactHandlerManager.class);
         when(artifactHandlerManager.getArtifactHandler(anyString())).thenReturn(mock(ArtifactHandler.class));
+        IllegalArgumentException cause = new IllegalArgumentException("version can neither be null, empty nor blank");
         when(repositorySystem.resolveArtifact(eq(repositorySession), any(ArtifactRequest.class)))
-                .thenThrow(new IllegalArgumentException("version can neither be null, empty nor blank"));
+                .thenThrow(cause);
 
         AbstractJavadocMojo failingMojo =
                 new AbstractJavadocMojo(null, null, null, repositorySystem, artifactHandlerManager, null, null) {
@@ -178,11 +179,13 @@ class AbstractJavadocMojoTest {
         Dependency dependency = new Dependency();
         dependency.setGroupId("org.example");
         dependency.setArtifactId("missing");
-        dependency.setVersion("${missing.version}");
+        // Maven leaves the version unset when its configuration property is undefined.
+        dependency.setVersion(null);
 
         assertThatThrownBy(() -> failingMojo.resolveDependency(dependency))
                 .isInstanceOf(MavenReportException.class)
-                .hasMessageContaining("org.example:missing:${missing.version}")
-                .hasMessageContaining("version can neither be null, empty nor blank");
+                .hasMessageContaining("org.example:missing:null")
+                .hasMessageContaining("version can neither be null, empty nor blank")
+                .hasCause(cause);
     }
 }
