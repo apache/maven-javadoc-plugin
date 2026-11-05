@@ -828,18 +828,18 @@ class JavadocReportTest {
         assertThat(overview).exists();
         String content = readFile(overview);
         assertThat(content)
-                .contains("Top - Copyright &#169; All rights reserved.")
-                .contains("Header - Copyright &#169; All rights reserved.");
-        assertThat(content).contains("Footer - Copyright &#169; All rights reserved.");
+                .contains("Top - Maven Javadoc Plugin test &#169;")
+                .contains("Header - Maven Javadoc Plugin test &#169;");
+        assertThat(content).contains("Footer - Maven Javadoc Plugin test &#169;");
 
         Path packageSummary = apidocs.resolve("jdk6/test/package-summary.html");
         assertThat(packageSummary).exists();
         content = readFile(packageSummary);
         assertThat(content)
-                .contains("Top - Copyright &#169; All rights reserved.")
-                .contains("Header - Copyright &#169; All rights reserved.");
+                .contains("Top - Maven Javadoc Plugin test &#169;")
+                .contains("Header - Maven Javadoc Plugin test &#169;");
 
-        assertThat(content).contains("Footer - Copyright &#169; All rights reserved.");
+        assertThat(content).contains("Footer - Maven Javadoc Plugin test &#169;");
     }
 
     /**
