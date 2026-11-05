@@ -25,5 +25,4 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>maven-MJAVADOC620-toplevel</artifactId>
-  <version>1.0-SNAPSHOT</version>
 </project>
