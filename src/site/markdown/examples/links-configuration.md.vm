@@ -1,0 +1,117 @@
+---
+title: Configuring links and offlineLinks Parameters
+author: 
+  - Vincent Siveton
+date: 2009-08-04
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+
+# Configuring `links` Parameter
+
+<!-- Using anchor links produces a Velocity error.-->
+
+You can add cross reference links to external projects using the [&lt;links/&gt;](../javadoc-mojo.html) parameter. For instance:
+
+```xml
+<project>
+  ...
+  <reporting> (or <build>)
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${project.version}</version>
+        <configuration>
+          <links>
+            <link>http://commons.apache.org/dbcp/apidocs/</link>
+            <link>http://commons.apache.org/fileupload/apidocs/</link>
+          </links>
+            ...
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting> (or </build>)
+  ...
+</project>
+```
+
+**Important Note**: according the [Javadoc specifications](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javadoc.html#option-link), all given links **should** have a fetchable `/package-list` or `/element-list` file.
+
+You can try to detect all Javadoc links for the project's dependencies. You need to use the [&lt;detectLinks/&gt;](../javadoc-mojo.html#detectLinks) parameter. Detected links are based on the default Maven conventions. For instance, if your project has a dependency on [Apache Commons Lang](https://commons.apache.org/lang/) such as:
+
+```xml
+<project>
+  ...
+  <dependencies>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <versions>2.4</version>
+    </dependency>
+  </dependencies>
+  ...
+</project>
+```
+
+The added Javadoc link will be [https://commons.apache.org/lang/apidocs](https://commons.apache.org/lang/apidocs).
+
+A Javadoc API link, depending the JDK version used by your project, will be added. The version of the Javadoc API is detected from the value of the [&lt;source/&gt;](https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#source) parameter in the [`org.apache.maven.plugins:maven-compiler-plugin`](http://maven.apache.org/plugins/maven-compiler-plugin) (defined in ${esc.d}{project.build.plugins} or in ${esc.d}{project.build.pluginManagement}), or computed via the Javadoc Tool executable. To skip this link, you need to configure [&lt;detectJavaApiLink/&gt;](../javadoc-mojo.html#detectJavaApiLink) to `false`.
+
+**Note**: if you are using an unsupported JDK like 7.0, you can add its Javadoc API URL using the [&lt;javaApiLinks/&gt;](../javadoc-mojo.html#javaApiLinks) parameter. For example:
+
+```xml
+<configuration>
+  <javaApiLinks>
+    <property>
+      <name>api_1.7</name>
+      <value>http://download.java.net/jdk7/docs/api/</value>
+    </property>
+  </javaApiLinks>
+  ...
+</configuration>
+```
+
+<!-- Using anchor links produces a Velocity error.-->
+
+Refer to [&lt;links/&gt;](../javadoc-mojo.html) parameter for more information.
+
+# Configuring `offlineLinks` Parameter
+
+If your project has modules, you can add cross reference links to your modules when your goals are not aggregator goals. For instance, if your project has two modules, for example:
+
+```xml
+<project>
+  ...
+  <modules>
+    <module>module1</module>
+    <module>module2</module>
+  </modules>
+  ...
+</project>
+```
+
+The offlineLinks for **module1** will be `/absolute/path/to/`**module2**`/target/site/apidocs` and the offlineLinks for **module2** will be `/absolute/path/to/`**module1**`/target/site/apidocs`.
+
+**Important Note**: all offlinelinks are based on the ${esc.d}{project.url} if present.
+
+You can disable the cross reference for `offlineLinks` using the [&lt;detectOfflineLinks/&gt;](../javadoc-mojo.html#detectOfflineLinks) parameter.
+
+Refer to [&lt;offlineLinks/&gt;](../javadoc-mojo.html#offlineLinks) parameter for more information.

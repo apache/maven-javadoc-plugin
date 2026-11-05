@@ -56,6 +56,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.Artifact;
@@ -100,10 +101,8 @@ import org.apache.maven.shared.artifact.filter.resolve.AndFilter;
 import org.apache.maven.shared.artifact.filter.resolve.PatternExclusionsFilter;
 import org.apache.maven.shared.artifact.filter.resolve.PatternInclusionsFilter;
 import org.apache.maven.shared.artifact.filter.resolve.TransformableFilter;
-import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.ToolchainManager;
-import org.apache.maven.wagon.PathUtils;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
@@ -1991,7 +1990,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         // ----------------------------------------------------------------------
         List<String> javadocArguments = new ArrayList<>();
 
-        if (JavaVersion.JAVA_VERSION.isAtLeast("23") && !disableNoFonts) {
+        if (javadocRuntimeVersion.isAtLeast("23") && !disableNoFonts) {
             javadocArguments.add("--no-fonts");
         }
 
@@ -2099,7 +2098,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             // or source values specified
             boolean autoExclude = legacyMode;
             if (!autoExclude) {
-                if (release != null) {
+                if (isReleaseSet()) {
                     autoExclude = JavaVersion.parse(release).isBefore("9");
                 } else if (source != null) {
                     autoExclude = JavaVersion.parse(source).isBefore("9");
@@ -2740,7 +2739,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         if (new File(stylesheetfile).exists()) {
             return Optional.of(new File(stylesheetfile));
         }
-        if (JavaVersion.JAVA_VERSION.isAtLeast("23")) {
+        if (javadocRuntimeVersion.isAtLeast("23")) {
             return getResource(
                     new File(new File(javadocOutputDirectory, "resource-files"), DEFAULT_CSS_NAME), stylesheetfile);
         }
@@ -2756,11 +2755,14 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             Optional<File> styleSheet = getAddStylesheet(getJavadocDirectory(), addStylesheet);
 
             if (styleSheet.isPresent()) {
-                addArgIfNotEmpty(
-                        arguments,
-                        "--add-stylesheet",
-                        JavadocUtil.quotedPathArgument(styleSheet.get().getAbsolutePath()),
-                        JavaVersion.parse("10"));
+                if (javadocRuntimeVersion.isAtLeast("10")) {
+                    addArgIfNotEmpty(
+                            arguments,
+                            "--add-stylesheet",
+                            JavadocUtil.quotedPathArgument(styleSheet.get().getAbsolutePath()));
+                } else if (getLog().isWarnEnabled()) {
+                    getLog().warn("--add-stylesheet option is not supported on javadoc version < 10");
+                }
             }
         }
     }
@@ -2891,7 +2893,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         if (!(docletPath == null || docletPath.isEmpty())) {
-            pathParts.add(JavadocUtil.unifyPathSeparator(docletPath));
+            for (Path path : JavadocUtil.prunePaths(project, Arrays.asList(JavadocUtil.splitPath(docletPath)), true)) {
+                pathParts.add(path.toString());
+            }
         }
 
         String path = StringUtils.join(pathParts.iterator(), File.pathSeparator);
@@ -3877,7 +3881,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         if (isAggregator()) {
             for (MavenProject subProject : getAggregatedProjects()) {
                 if (subProject != project && getJavadocDirectory() != null) {
-                    String javadocDirRelative = PathUtils.toRelative(
+                    String javadocDirRelative = toRelative(
                             project.getBasedir(), getJavadocDirectory().getAbsolutePath());
                     File javadocDir = new File(subProject.getBasedir(), javadocDirRelative);
                     JavadocUtil.copyJavadocResources(anOutputDirectory, javadocDir, excludedocfilessubdir);
@@ -4143,16 +4147,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         File optionsFile = new File(javadocOutputDirectory, OPTIONS_FILE_NAME);
 
         StringBuilder options = new StringBuilder();
-        options.append(StringUtils.join(arguments.iterator(), SystemUtils.LINE_SEPARATOR));
+        options.append(StringUtils.join(arguments.iterator(), System.lineSeparator()));
 
-        Charset outputFileEncoding;
-        if (JAVA_VERSION.isAtLeast("9") && JAVA_VERSION.isBefore("12")) {
-            outputFileEncoding = StandardCharsets.UTF_8;
-        } else {
-            outputFileEncoding = Charset.defaultCharset();
-        }
         try {
-            Files.write(optionsFile.toPath(), Collections.singleton(options), outputFileEncoding);
+            Files.write(optionsFile.toPath(), Collections.singleton(options), EncodingUtils.getExpectedEncoding());
         } catch (IOException e) {
             throw new MavenReportException(
                     "Unable to write '" + optionsFile.getName() + "' temporary file for command execution", e);
@@ -4190,16 +4188,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             quotedFiles.add(JavadocUtil.quotedPathArgument(file));
         }
 
-        Charset cs;
-        if (JavaVersion.JAVA_SPECIFICATION_VERSION.isAtLeast("9")
-                && JavaVersion.JAVA_SPECIFICATION_VERSION.isBefore("12")) {
-            cs = StandardCharsets.UTF_8;
-        } else {
-            cs = Charset.defaultCharset();
-        }
-
         try {
-            Files.write(argfileFile.toPath(), quotedFiles, cs);
+            Files.write(argfileFile.toPath(), quotedFiles, EncodingUtils.getExpectedEncoding());
         } catch (IOException e) {
             throw new MavenReportException(
                     "Unable to write '" + argfileFile.getName() + "' temporary file for command execution", e);
@@ -4226,7 +4216,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             FileUtils.fileWrite(
                     packagesFile.getAbsolutePath(),
                     null /* platform encoding */,
-                    StringUtils.join(packageNames.iterator(), SystemUtils.LINE_SEPARATOR));
+                    StringUtils.join(packageNames.iterator(), System.lineSeparator()));
         } catch (IOException e) {
             throw new MavenReportException(
                     "Unable to write '" + packagesFile.getName() + "' temporary file for command execution", e);
@@ -4342,7 +4332,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         if (supportModulePath) {
             supportModulePath &= javadocRuntimeVersion.isAtLeast("9");
-            if (release != null) {
+            if (isReleaseSet()) {
                 supportModulePath &= JavaVersion.parse(release).isAtLeast("9");
             } else if (source != null) {
                 supportModulePath &= JavaVersion.parse(source).isAtLeast("9");
@@ -4587,9 +4577,9 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         addArgIf(arguments, quiet, "-quiet");
 
-        if (javadocRuntimeVersion.isAtLeast("9") && release != null) {
+        if (javadocRuntimeVersion.isAtLeast("9") && isReleaseSet()) {
             arguments.add("--release");
-            arguments.add(release);
+            arguments.add(JavadocUtil.toReleaseArgument(release));
         } else {
             addArgIfNotEmpty(arguments, "-source", JavadocUtil.quotedArgument(source));
         }
@@ -4692,7 +4682,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         addArgIfNotEmpty(arguments, "-charset", JavadocUtil.quotedArgument(getCharset()));
 
-        addArgIfNotEmpty(arguments, "-d", JavadocUtil.quotedPathArgument(javadocOutputDirectory.toString()));
+        addArgIfNotEmpty(
+                arguments, "-d", JavadocUtil.quotedPathArgument(javadocOutputDirectory.toString()), false, false);
 
         addArgIfNotEmpty(arguments, "-docencoding", JavadocUtil.quotedArgument(getDocencoding()));
 
@@ -4828,7 +4819,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         if (javadocRuntimeVersion.isBefore("9")) {
             lineSeparator = " ";
         } else {
-            lineSeparator = " \\\\" + SystemUtils.LINE_SEPARATOR;
+            lineSeparator = " \\\\" + System.lineSeparator();
         }
 
         for (Tag tag : collectTags()) {
@@ -4994,7 +4985,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             Path cacheData = staleDataPath.toPath();
             List<String> prvdata;
             if (Files.isRegularFile(cacheData)) {
-                prvdata = Files.lines(cacheData, StandardCharsets.UTF_8).collect(Collectors.toList());
+                prvdata = Files.lines(cacheData, EncodingUtils.getExpectedEncoding())
+                        .collect(Collectors.toList());
             } else {
                 prvdata = null;
             }
@@ -5344,11 +5336,14 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         Set<String> dependencyArtifactIds = new HashSet<>();
         final Set<Artifact> dependencyArtifacts = project.getDependencyArtifacts();
         for (Artifact artifact : dependencyArtifacts) {
-            dependencyArtifactIds.add(artifact.getId());
+            // test-scoped modules can only be referenced from test Javadoc
+            if (isTest() || !Artifact.SCOPE_TEST.equals(artifact.getScope())) {
+                dependencyArtifactIds.add(artifact.getId());
+            }
         }
 
         List<OfflineLink> modulesLinks = new ArrayList<>();
-        String javadocDirRelative = PathUtils.toRelative(project.getBasedir(), getPluginReportOutputDirectory());
+        String javadocDirRelative = toRelative(project.getBasedir(), getPluginReportOutputDirectory());
         for (MavenProject p : aggregatedProjects) {
             if (!dependencyArtifactIds.contains(p.getArtifact().getId()) || (p.getUrl() == null)) {
                 continue;
@@ -5379,8 +5374,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                             session.getRequest().getUserSettingsFile(),
                             session.getRequest().getGlobalToolchainsFile(),
                             session.getRequest().getUserToolchainsFile());
-                } catch (MavenInvocationException e) {
-                    logError("MavenInvocationException: " + e.getMessage(), e);
+                } catch (MojoExecutionException e) {
+                    logError("MojoExecutionException: " + e.getMessage(), e);
 
                     try {
                         String invokerLogContent =
@@ -5404,7 +5399,8 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 }
             }
 
-            if (location.exists()) {
+            // a module without Java sources leaves an empty directory, which is no link target
+            if (new File(location, PACKAGE_LIST).exists() || new File(location, ELEMENT_LIST).exists()) {
                 String url = getJavadocLink(p);
 
                 OfflineLink ol = new OfflineLink();
@@ -5507,7 +5503,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         final JavaVersion javaApiversion;
-        if (release != null) {
+        if (isReleaseSet()) {
             javaApiversion = JavaVersion.parse(release);
         } else if (source != null && !source.isEmpty()) {
             javaApiversion = JavaVersion.parse(source);
@@ -5832,6 +5828,15 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
     }
 
     /**
+     * Whether an explicit {@code release} is configured. A blank value, which Maven injects when
+     * {@code maven.compiler.release} is declared but empty, counts as unset so that {@code source}
+     * applies instead, matching maven-compiler-plugin.
+     */
+    private boolean isReleaseSet() {
+        return release != null && !release.isEmpty();
+    }
+
+    /**
      * Construct the output file for the generated javadoc-options XML file, after creating the
      * javadocOptionsDir if necessary. This method does NOT write to the file in question.
      *
@@ -5997,5 +6002,29 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
         getLog().debug("isSkippedJavadoc " + mavenProject + " " + false);
         return false;
+    }
+
+    /**
+     * Expresses a path relative to a base directory, so that it can be reapplied to a sibling directory.
+     * A path that does not lie under the base directory is returned unchanged, and a path that is the base
+     * directory itself becomes <code>"."</code>.
+     * <p>
+     * This deliberately keeps the behaviour of the Wagon utility it replaces, rather than that of
+     * {@link java.nio.file.Path#relativize}, which would answer an unrelated path with a chain of
+     * <code>..</code> segments instead of leaving it alone.
+     */
+    static String toRelative(File basedir, String absolutePath) {
+        String path = absolutePath.replace('\\', '/');
+        String base = basedir.getAbsolutePath().replace('\\', '/');
+
+        if (!path.startsWith(base)) {
+            return path;
+        }
+
+        String relative = path.substring(base.length());
+        if (relative.startsWith("/")) {
+            relative = relative.substring(1);
+        }
+        return relative.isEmpty() ? "." : relative;
     }
 }

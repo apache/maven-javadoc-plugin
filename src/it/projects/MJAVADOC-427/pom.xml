@@ -29,13 +29,17 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <url>https://issues.apache.org/jira/browse/MJAVADOC-427</url>
-  <description>Tests that the plugin follows redirects</description>
+  <description>Tests that the plugin follows redirects against a localhost mock.
+    Trade-off vs. the prior slf4j.org-backed IT: HTTP-to-HTTPS coverage is
+    intentionally not asserted (it lives in the JDK's HttpURLConnection,
+    not in maven-javadoc-plugin); in exchange this IT is deterministic
+    across all CI cells. Full rationale and the redirect-followed hit
+    assertions live in setup.groovy / verify.groovy.</description>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <dependencies>
-    <!-- url of slf4j api is http, and javadoc is redirected to https -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -51,7 +55,18 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>@project.version@</version>
           <configuration>
-            <detectLinks>true</detectLinks>
+            <!-- Explicit link to the localhost mock. setup.groovy starts an
+                 HTTP server on a dynamically-allocated port and substitutes
+                 the '__MJAVADOC_427_PORT__' placeholder below with the
+                 chosen port number. The server 301-redirects /element-list
+                 (and /package-list) to /redirected/<same> and serves a
+                 minimal element-list containing org.slf4j. This
+                 deterministically exercises the plugin's redirect-following
+                 code path without depending on slf4j.org reachability or
+                 on a fixed port being free on the host. -->
+            <links>
+              <link>http://localhost:__MJAVADOC_427_PORT__/</link>
+            </links>
           </configuration>
         </plugin>
       </plugins>

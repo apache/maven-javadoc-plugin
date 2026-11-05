@@ -19,19 +19,10 @@ package mjavadoc414.test;
  * under the License.
  */
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import mjavadoc414.App;
 
-public class AppTest extends TestCase
+public class AppTest
 {
-
-    public AppTest( String testName )
-    {
-        super( testName );
-    }
-
     /**
      * Tests {@link mjavadoc414.App}.
      */

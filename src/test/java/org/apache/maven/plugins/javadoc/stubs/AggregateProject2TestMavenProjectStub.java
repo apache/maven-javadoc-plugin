@@ -44,7 +44,7 @@ public class AggregateProject2TestMavenProjectStub extends MavenProjectStub {
 
         Build build = new Build();
         build.setFinalName("aggregate-test-project2");
-        build.setDirectory(super.getBasedir() + "/target/test/unit/aggregate-test/target");
+        build.setDirectory(super.getBasedir() + "/target");
         setBuild(build);
 
         String basedir = getBasedir().getAbsolutePath();
@@ -56,7 +56,7 @@ public class AggregateProject2TestMavenProjectStub extends MavenProjectStub {
     /** {@inheritDoc} */
     @Override
     public File getBasedir() {
-        return new File(super.getBasedir() + "/src/test/resources/unit/aggregate-test/project2");
+        return new File(super.getBasedir() + "/aggregate-test/project2");
     }
 
     /** {@inheritDoc} */

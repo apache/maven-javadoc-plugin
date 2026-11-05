@@ -33,9 +33,9 @@ under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <project implementation="org.apache.maven.plugins.javadoc.stubs.OptionsUmlautEncodingMavenProjectStub"/>
-          <outputDirectory>${basedir}/target/test/unit/optionsumlautencoding-test/target/site</outputDirectory>
-          <javadocOptionsDir>${basedir}/target/test/unit/optionsumlautencoding-test/target/javadoc-bundle-options</javadocOptionsDir>
+          <sourcepath>${basedir}</sourcepath>
+          <outputDirectory>${basedir}/target/site</outputDirectory>
+          <javadocOptionsDir>${basedir}/target/javadoc-bundle-options</javadocOptionsDir>
           <breakiterator>false</breakiterator>
           <old>false</old>
           <show>protected</show>
@@ -65,9 +65,6 @@ under the License.
           <debug>true</debug>
           <failOnError>true</failOnError>
           <detectJavaApiLink>true</detectJavaApiLink>
-          <reactorProjects>
-            <project implementation="org.apache.maven.plugins.javadoc.stubs.OptionsUmlautEncodingMavenProjectStub"/>
-          </reactorProjects>
         </configuration>
       </plugin>
     </plugins>

@@ -19,11 +19,15 @@
 package org.apache.maven.plugins.javadoc;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import org.apache.maven.plugin.logging.Log;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.maven.plugins.javadoc.options.OfflineLink;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.setVariableValueToObject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -32,11 +36,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class AbstractJavadocMojoTest {
+class AbstractJavadocMojoTest {
     AbstractJavadocMojo mojo;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         mojo = new AbstractJavadocMojo(null, null, null, null, null, null, null) {
             @Override
             public void doExecute() {}
@@ -44,7 +48,7 @@ public class AbstractJavadocMojoTest {
     }
 
     @Test
-    public void testMJAVADOC432DetectLinksMessages() {
+    void testMJAVADOC432DetectLinksMessages() {
         Log log = mock(Log.class);
         when(log.isErrorEnabled()).thenReturn(true);
         mojo.setLog(log);
@@ -69,7 +73,7 @@ public class AbstractJavadocMojoTest {
     }
 
     @Test
-    public void testMJAVADOC527DetectLinksRecursion() {
+    void testMJAVADOC527DetectLinksRecursion() {
         Log log = mock(Log.class);
         when(log.isErrorEnabled()).thenReturn(true);
         mojo.setLog(log);
@@ -79,5 +83,64 @@ public class AbstractJavadocMojoTest {
                 .isFalse();
         assertThat(mojo.isValidJavadocLink("http://commons.apache.org/proper/commons-lang/apidocs", false))
                 .isTrue();
+    }
+
+    @Test
+    void toRelativeStripsTheBaseDirectory() {
+        File basedir = new File("/home/project").getAbsoluteFile();
+
+        assertThat(AbstractJavadocMojo.toRelative(basedir, basedir.getPath() + "/src/site"))
+                .isEqualTo("src/site");
+    }
+
+    @Test
+    void toRelativeAnswersDotForTheBaseDirectoryItself() {
+        File basedir = new File("/home/project").getAbsoluteFile();
+
+        assertThat(AbstractJavadocMojo.toRelative(basedir, basedir.getPath())).isEqualTo(".");
+    }
+
+    @Test
+    void toRelativeLeavesAPathOutsideTheBaseDirectoryAlone() {
+        File basedir = new File("/home/project").getAbsoluteFile();
+        String elsewhere = new File("/elsewhere/docs").getAbsolutePath().replace('\\', '/');
+
+        // deliberately not a chain of ".." segments, which is what Path.relativize would give
+        assertThat(AbstractJavadocMojo.toRelative(basedir, elsewhere)).isEqualTo(elsewhere);
+    }
+
+    @Test
+    void toRelativeNormalisesBackslashes() {
+        File basedir = new File("/home/project").getAbsoluteFile();
+
+        assertThat(AbstractJavadocMojo.toRelative(basedir, basedir.getPath() + "\\src\\site"))
+                .isEqualTo("src/site");
+    }
+
+    @Test
+    void emptyReleaseFallsBackToSourceForTheApiLink(@TempDir Path optionsDir) throws Exception {
+        setVariableValueToObject(mojo, "detectJavaApiLink", true);
+        setVariableValueToObject(mojo, "javadocOptionsDir", optionsDir.toFile());
+        // what Maven injects for a declared but blank maven.compiler.release
+        setVariableValueToObject(mojo, "release", "");
+        setVariableValueToObject(mojo, "source", "11");
+
+        OfflineLink link = mojo.getDefaultJavadocApiLink();
+
+        assertThat(link).isNotNull();
+        assertThat(link.getUrl()).isEqualTo("https://docs.oracle.com/en/java/javase/11/docs/api/");
+    }
+
+    @Test
+    void releaseWinsOverSourceForTheApiLink(@TempDir Path optionsDir) throws Exception {
+        setVariableValueToObject(mojo, "detectJavaApiLink", true);
+        setVariableValueToObject(mojo, "javadocOptionsDir", optionsDir.toFile());
+        setVariableValueToObject(mojo, "release", "11");
+        setVariableValueToObject(mojo, "source", "17");
+
+        OfflineLink link = mojo.getDefaultJavadocApiLink();
+
+        assertThat(link).isNotNull();
+        assertThat(link.getUrl()).isEqualTo("https://docs.oracle.com/en/java/javase/11/docs/api/");
     }
 }

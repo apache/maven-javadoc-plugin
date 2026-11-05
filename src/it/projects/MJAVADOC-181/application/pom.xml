@@ -29,7 +29,6 @@
 
   <artifactId>application</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
   <name>Application</name>
 
   <reporting>

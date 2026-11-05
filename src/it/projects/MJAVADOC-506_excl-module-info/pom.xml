@@ -51,8 +51,6 @@
           <excludes>
             <exclude>module-info.java</exclude>
           </excludes>
-          <source>@maven.compiler.source@</source>
-          <target>@maven.compiler.target@</target>
         </configuration>
       </plugin>
       <plugin>

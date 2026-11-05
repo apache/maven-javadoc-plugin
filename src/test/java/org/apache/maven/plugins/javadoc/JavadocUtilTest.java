@@ -18,6 +18,7 @@
  */
 package org.apache.maven.plugins.javadoc;
 
+import javax.net.ssl.SSLException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,6 +29,9 @@ import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -39,12 +43,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.JarOutputStream;
+import java.util.zip.ZipEntry;
 
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.plugins.javadoc.ProxyServer.AuthAsyncProxyServlet;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -52,15 +57,60 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.MovedContextHandler;
 import org.eclipse.jetty.util.ByteArrayISO8859Writer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
+import org.junit.jupiter.api.io.TempDir;
 
+import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.abort;
 
 /**
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-public class JavadocUtilTest extends PlexusTestCase {
+@ExtendWith(JavadocUtilTest.AbortWhenRemoteUnreachable.class)
+class JavadocUtilTest {
 
-    public void testParseJavadocVersionNull() {
+    @Test
+    void copyResourceReadsRewrittenJar(@TempDir Path tempDir) throws Exception {
+        Path jar = tempDir.resolve("resources.jar");
+        File target = tempDir.resolve("stylesheet.css").toFile();
+        URL url = new URL("jar:" + jar.toUri() + "!/stylesheet.css");
+
+        writeJar(jar, "first");
+        JavadocUtil.copyResource(url, target);
+        assertEquals("first", new String(Files.readAllBytes(target.toPath()), StandardCharsets.UTF_8));
+
+        // Rewritten in place, as a resources module rebuilt in the reactor is.
+        writeJar(jar, "second, and longer than the first");
+        JavadocUtil.copyResource(url, target);
+        assertEquals(
+                "second, and longer than the first",
+                new String(Files.readAllBytes(target.toPath()), StandardCharsets.UTF_8));
+
+        // Nothing keeps the jar open, so it can be deleted (fails on Windows while it is open).
+        Files.delete(jar);
+    }
+
+    private static void writeJar(Path jar, String content) throws IOException {
+        try (OutputStream out = Files.newOutputStream(jar);
+                JarOutputStream jarOut = new JarOutputStream(out)) {
+            jarOut.putNextEntry(new ZipEntry("stylesheet.css"));
+            jarOut.write(content.getBytes(StandardCharsets.UTF_8));
+            jarOut.closeEntry();
+        }
+    }
+
+    @Test
+    void testParseJavadocVersionNull() {
         try {
             JavadocUtil.extractJavadocVersion(null);
             fail("Not catch null");
@@ -69,7 +119,8 @@ public class JavadocUtilTest extends PlexusTestCase {
         }
     }
 
-    public void testParseJavadocVersionEmptyString() {
+    @Test
+    void testParseJavadocVersionEmptyString() {
         try {
             JavadocUtil.extractJavadocVersion("");
             fail("Not catch empty version");
@@ -81,7 +132,8 @@ public class JavadocUtilTest extends PlexusTestCase {
     /**
      * Test the javadoc version parsing.
      */
-    public void testParseJavadocVersion() {
+    @Test
+    void testParseJavadocVersion() {
         // Sun JDK 1.4
         String version = "java full version \"1.4.2_12-b03\"";
         assertEquals("1.4.2", JavadocUtil.extractJavadocVersion(version));
@@ -161,7 +213,8 @@ public class JavadocUtilTest extends PlexusTestCase {
         assertEquals("10.0.1", JavadocUtil.extractJavadocVersion(version));
     }
 
-    public void testParseJavadocMemoryNull() {
+    @Test
+    void testParseJavadocMemoryNull() {
         try {
             JavadocUtil.parseJavadocMemory(null);
             fail("Not catch null");
@@ -170,7 +223,8 @@ public class JavadocUtilTest extends PlexusTestCase {
         }
     }
 
-    public void testParseJavadocMemoryEmpty() {
+    @Test
+    void testParseJavadocMemoryEmpty() {
         try {
             JavadocUtil.parseJavadocMemory("");
             fail("Not catch null");
@@ -182,7 +236,8 @@ public class JavadocUtilTest extends PlexusTestCase {
     /**
      * Method to test the javadoc memory parsing.
      */
-    public void testParseJavadocMemory() {
+    @Test
+    void testParseJavadocMemory() {
         String memory = "128";
         assertEquals("128m", JavadocUtil.parseJavadocMemory(memory));
 
@@ -235,12 +290,13 @@ public class JavadocUtilTest extends PlexusTestCase {
     /**
      * Method to test the validate encoding parsing.
      */
-    public void testValidateEncoding() {
-        assertFalse("Not catch null", JavadocUtil.validateEncoding(null));
-        assertTrue("UTF-8 not supported on this platform", JavadocUtil.validateEncoding("UTF-8"));
-        assertTrue("ISO-8859-1 not supported on this platform", JavadocUtil.validateEncoding("ISO-8859-1"));
-        assertFalse("latin is supported on this platform???", JavadocUtil.validateEncoding("latin"));
-        assertFalse("WRONG is supported on this platform???", JavadocUtil.validateEncoding("WRONG"));
+    @Test
+    void testValidateEncoding() {
+        assertFalse(JavadocUtil.validateEncoding(null), "Not catch null");
+        assertTrue(JavadocUtil.validateEncoding("UTF-8"), "UTF-8 not supported on this platform");
+        assertTrue(JavadocUtil.validateEncoding("ISO-8859-1"), "ISO-8859-1 not supported on this platform");
+        assertFalse(JavadocUtil.validateEncoding("latin"), "latin is supported on this platform???");
+        assertFalse(JavadocUtil.validateEncoding("WRONG"), "WRONG is supported on this platform???");
     }
 
     /**
@@ -248,7 +304,8 @@ public class JavadocUtilTest extends PlexusTestCase {
      *
      * @throws Exception if any
      */
-    public void testIsValidPackageList() throws Exception {
+    @Test
+    void testIsValidPackageList() throws Exception {
         Settings settings = null;
         Proxy proxy;
 
@@ -388,7 +445,8 @@ public class JavadocUtilTest extends PlexusTestCase {
         }
     }
 
-    public void testGetRedirectUrlNotHttp() throws Exception {
+    @Test
+    void testGetRedirectUrlNotHttp() throws Exception {
         URL url = new URI("ftp://some.where").toURL();
         assertEquals(
                 url.toString(), JavadocUtil.getRedirectUrl(url, new Settings()).toString());
@@ -401,7 +459,8 @@ public class JavadocUtilTest extends PlexusTestCase {
     /**
      * Tests a redirect from localhost:port1 to localhost:port2
      */
-    public void testGetRedirectUrl() throws Exception {
+    @Test
+    void testGetRedirectUrl() throws Exception {
         Server server = null, redirectServer = null;
         try {
             redirectServer = new Server(0);
@@ -445,7 +504,8 @@ public class JavadocUtilTest extends PlexusTestCase {
     /**
      * Tests that getRedirectUrl returns the same URL when there are no redirects.
      */
-    public void testGetRedirectUrlWithNoRedirects() throws Exception {
+    @Test
+    void testGetRedirectUrlWithNoRedirects() throws Exception {
         Server server = null;
         try {
             server = new Server(0);
@@ -481,7 +541,8 @@ public class JavadocUtilTest extends PlexusTestCase {
      * Tests that getRedirectUrl adds an Accept header in HTTP requests. Necessary because some sites like Cloudflare
      * reject requests without an Accept header.
      */
-    public void testGetRedirectUrlVerifyHeaders() throws Exception {
+    @Test
+    void testGetRedirectUrlVerifyHeaders() throws Exception {
         Server server = null;
         try {
             server = new Server(0);
@@ -514,7 +575,8 @@ public class JavadocUtilTest extends PlexusTestCase {
      *
      * @throws Exception if any
      */
-    public void testCopyJavadocResources() throws Exception {
+    @Test
+    void testCopyJavadocResources() throws Exception {
         File input = new File(getBasedir(), "src/test/resources/unit/docfiles-test/docfiles/");
         assertThat(input).exists();
 
@@ -565,7 +627,8 @@ public class JavadocUtilTest extends PlexusTestCase {
     /**
      * Method to test pruneDirs()
      */
-    public void testPruneDirs() {
+    @Test
+    void testPruneDirs() {
         List<String> list = new ArrayList<>();
         String classesDir = getBasedir() + "/target/classes";
         list.add(classesDir);
@@ -584,7 +647,8 @@ public class JavadocUtilTest extends PlexusTestCase {
      * Method to test prunePaths()
      *
      */
-    public void testPrunePaths() {
+    @Test
+    void testPrunePaths() {
         List<String> list = new ArrayList<>();
         String classesDir = getBasedir() + "/target/classes";
         String tagletJar = getBasedir()
@@ -606,10 +670,27 @@ public class JavadocUtilTest extends PlexusTestCase {
         assertEquals(expectedWithJar, JavadocUtil.prunePaths(project, list, true));
     }
 
+    @Test
+    void testPrunePathsResolvesRelativePaths() {
+        // Regression test for MJAVADOC-812:
+        // docletPath with a relative path (e.g. "target/classes") was written verbatim to the
+        // javadoc options file. The javadoc tool runs from target/reports/testapidocs, so the
+        // relative path resolved to the wrong location, causing the wrong class to be loaded
+        // and triggering: AssertionError: ignored flag: -Xlint:-options on Java 25.
+        MavenProjectStub project = new MavenProjectStub();
+        project.setFile(new File(getBasedir(), "pom.xml"));
+
+        Collection<Path> result = JavadocUtil.prunePaths(project, Collections.singletonList("target/classes"), false);
+
+        assertFalse(result.isEmpty(), "relative docletPath should resolve to an existing directory");
+        result.forEach(p -> assertTrue(p.isAbsolute(), "resolved path must be absolute, was: " + p));
+    }
+
     /**
      * Method to test unifyPathSeparator()
      */
-    public void testUnifyPathSeparator() {
+    @Test
+    void testUnifyPathSeparator() {
         assertNull(JavadocUtil.unifyPathSeparator(null));
 
         final String ps = File.pathSeparator;
@@ -643,7 +724,8 @@ public class JavadocUtilTest extends PlexusTestCase {
                 JavadocUtil.unifyPathSeparator(path1));
     }
 
-    public void testGetIncludedFiles() {
+    @Test
+    void testGetIncludedFiles() {
         File sourceDirectory = new File("target/it").getAbsoluteFile();
         String[] fileList = new String[] {"Main.java"};
         Collection<String> excludePackages = Collections.singleton("*.it");
@@ -663,7 +745,8 @@ public class JavadocUtilTest extends PlexusTestCase {
         }
     }
 
-    public void testQuotedArgument() {
+    @Test
+    void testQuotedArgument() {
 
         String value = "      org.apache.uima.analysis_component:\n      org.apache.uima.analysis_engine\n";
 
@@ -676,9 +759,38 @@ public class JavadocUtilTest extends PlexusTestCase {
         assertEquals("'org.apache.uima.analysis_component:org.apache.uima.analysis_engine'", arg);
     }
 
-    public void testToList() {
+    @Test
+    void testToList() {
         String value = "     *.internal:org.acme.exclude1.*:\n       org.acme.exclude2\n       ";
         List<String> values = JavadocUtil.toList(value);
         assertThat(values).containsExactly("*.internal", "org.acme.exclude1.*", "org.acme.exclude2");
+    }
+
+    /**
+     * Turns a failure to reach maven.apache.org into a skipped test, so that a slow or blocked network
+     * does not make the build red. Deliberately narrow: a refused connection is not handled, because
+     * the proxy cases in this class talk to a locally started server and must keep failing loudly.
+     */
+    static final class AbortWhenRemoteUnreachable implements TestExecutionExceptionHandler {
+        @Override
+        public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
+            for (Throwable cause = throwable; cause != null; cause = cause.getCause()) {
+                if (cause instanceof SocketTimeoutException
+                        || cause instanceof UnknownHostException
+                        || cause instanceof SSLException) {
+                    abort("Remote package-list is unreachable: " + cause);
+                }
+            }
+            throw throwable;
+        }
+    }
+
+    @Test
+    void toReleaseArgumentMapsTheLegacySpelling() {
+        assertEquals("8", JavadocUtil.toReleaseArgument("1.8"));
+        assertEquals("5", JavadocUtil.toReleaseArgument("1.5"));
+        assertEquals("8", JavadocUtil.toReleaseArgument("8"));
+        assertEquals("17", JavadocUtil.toReleaseArgument("17"));
+        assertEquals("1.10", JavadocUtil.toReleaseArgument("1.10"));
     }
 }

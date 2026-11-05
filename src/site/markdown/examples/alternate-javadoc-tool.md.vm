@@ -1,0 +1,87 @@
+---
+title: Using Alternate Javadoc Tool
+author: 
+  - Vincent Siveton
+date: 2009-08-04
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+
+# Using Alternate Javadoc Tool
+
+Using Alternate Javadoc Executable
+----------------------------------
+
+By default, the Maven Javadoc Plugin tries to auto-detect the Javadoc Tool executable from the Java property _java.home_ or from the environment variable _JAVA_HOME_.
+
+You could also specify the executable of the Javadoc Tool to use with the [&lt;javadocExecutable/&gt;](../javadoc-mojo.html#javadocExecutable) parameter. For example:
+
+```xml
+<project>
+  ...
+  <reporting> (or <build>)
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${project.version}</version>
+        <configuration>
+          <javadocExecutable>C:\jdk1.6.0\bin\javadoc.exe</javadocExecutable>
+          ...
+        </configuration>
+      </plugin>
+      ...
+    </plugins>
+  </reporting> (or </build>)
+  ...
+</project>
+```
+
+**IMPORTANT NOTE**: by using [&lt;javadocExecutable/&gt;](../javadoc-mojo.html#javadocExecutable) parameter, the build will be platform dependent! A good practice is to define an environment variable (e.g. JAVA_1.6_HOME), so you could specify it: (e.g. &lt;javadocExecutable&gt;${esc.d}{env.JAVA_1.6_HOME}/bin/javadoc&lt;/javadocExecutable&gt;). An other ways is to define a POM property using &lt;project&gt;&lt;properties/&gt;&lt;/project&gt;.
+
+Using Alternate Javadoc Version
+-------------------------------
+
+In the same way, the Maven Javadoc Plugin tries to auto-detect the Javadoc Tool version by calling _javadoc -J-fullversion_.
+
+You could also specify the version of the Javadoc Tool executable. For example:
+
+```xml
+<project>
+  ...
+  <reporting> (or <build>)
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${project.version}</version>
+        <configuration>
+          <javadocVersion>1.5</javadocVersion>
+          ...
+        </configuration>
+      </plugin>
+      ...
+    </plugins>
+  </reporting> (or </build>)
+  ...
+</project>
+```
+
+**Note**: You could have a warning if the _javadocVersion_ specified is not the same that the Javadoc Tool executable.

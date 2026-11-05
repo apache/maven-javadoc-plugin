@@ -33,8 +33,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>@maven.compiler.source@</maven.compiler.source>
-    <maven.compiler.target>@maven.compiler.target@</maven.compiler.target>
   </properties>
 
   <build>
@@ -51,17 +49,6 @@
       </plugin>
     </plugins>
   </build>
-
-  <!--
-  <dependencies>
-    <dependency>
-      <groupId>geronimo-spec</groupId>
-      <artifactId>geronimo-spec-jta</artifactId>
-      <version>1.0.1B-rc4</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
-  -->
 
   <reporting>
     <plugins>
