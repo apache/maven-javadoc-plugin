@@ -885,11 +885,7 @@ class JavadocReportTest {
         assertThat(commandLine).exists();
         String readed = readFile(commandLine);
         assertThat(readed).contains("-J-Dhttp.proxyHost=127.0.0.1").contains("-J-Dhttp.proxyPort=80");
-        if (SystemUtils.IS_OS_WINDOWS) {
-            assertThat(readed).contains(" -J-Dhttp.nonProxyHosts=\"www.google.com^|*.somewhere.com\"");
-        } else {
-            assertThat(readed).contains(" \"-J-Dhttp.nonProxyHosts=\\\"www.google.com^|*.somewhere.com\\\"\"");
-        }
+        assertThat(readed).contains(" \"-J-Dhttp.nonProxyHosts=\\\"www.google.com^|*.somewhere.com\\\"\"");
 
         Path options = new File(getBasedir(), "/target/site/apidocs/options").toPath();
         assertThat(options).exists();
