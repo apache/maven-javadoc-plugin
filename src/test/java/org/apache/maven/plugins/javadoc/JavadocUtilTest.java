@@ -625,6 +625,36 @@ class JavadocUtilTest {
     }
 
     /**
+     * Excluded doc-files subdirectories must be skipped while copying, not deleted from the output afterwards:
+     * the output may already hold generated javadoc whose path matches the exclude pattern.
+     *
+     * @throws Exception if any
+     */
+    @Test
+    void testCopyJavadocResourcesKeepsExistingOutput() throws Exception {
+        File input = new File(getBasedir(), "src/test/resources/unit/resources-with-excludes-test/src/main/javadoc");
+        assertThat(input).exists();
+
+        File output = new File(getBasedir(), "target/test/unit/resources-with-excludes-test/target/output");
+        if (output.exists()) {
+            FileUtils.deleteDirectory(output);
+        }
+        // javadoc output of a previous run for the package resources.test
+        File generated = new File(output, "resources/test/App.html");
+        assertTrue(generated.getParentFile().mkdirs());
+        assertTrue(generated.createNewFile());
+
+        JavadocUtil.copyJavadocResources(output, input, "test");
+
+        assertThat(generated).exists();
+        assertThat(FileUtils.getFiles(output, null, null, false))
+                .containsExactlyInAnyOrder(
+                        Paths.get("resources", "test", "App.html").toFile(),
+                        Paths.get("resources", "test2", "doc-files", "maven-feather.png")
+                                .toFile());
+    }
+
+    /**
      * Method to test pruneDirs()
      */
     @Test

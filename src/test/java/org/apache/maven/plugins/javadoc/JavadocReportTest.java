@@ -705,8 +705,17 @@ class JavadocReportTest {
     @Basedir("/unit/resources-with-excludes-test")
     @Test
     void testJavadocResourcesWithExcludes(JavadocReport mojo) throws Exception {
+        deleteDirectory(new File(getBasedir(), "target"));
         mojo.execute();
+        assertJavadocResourcesWithExcludes();
 
+        // the second run finds the javadoc up to date and must leave the generated pages in place
+        mojo.execute();
+        assertJavadocResourcesWithExcludes();
+        verify(log).debug("Skipping javadoc generation, everything is up to date.");
+    }
+
+    private void assertJavadocResourcesWithExcludes() throws IOException {
         Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
 
         Path app = apidocs.resolve("resources/test/App.html");
