@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.reporting.MavenReportException;
-import org.codehaus.plexus.util.cli.Commandline;
+import org.apache.maven.shared.utils.cli.Commandline;
 
 /**
  * Helper class to compute and write data used to detect a
