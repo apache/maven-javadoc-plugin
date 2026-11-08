@@ -117,10 +117,10 @@ import org.codehaus.plexus.languages.java.jpms.ResolvePathsRequest;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.WriterFactory;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
+import org.codehaus.plexus.util.xml.XmlStreamWriter;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -5824,7 +5824,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         File optionsFile = getJavadocOptionsFile();
 
-        try (Writer writer = WriterFactory.newXmlWriter(optionsFile)) {
+        try (Writer writer = new XmlStreamWriter(optionsFile)) {
             new JavadocOptionsXpp3Writer().write(writer, options);
         }
 
