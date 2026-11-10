@@ -117,7 +117,6 @@ import org.codehaus.plexus.languages.java.jpms.ResolvePathsRequest;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
 import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.WriterFactory;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
@@ -5828,7 +5827,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         File optionsFile = getJavadocOptionsFile();
 
-        try (Writer writer = WriterFactory.newXmlWriter(optionsFile)) {
+        try (Writer writer = Files.newBufferedWriter(optionsFile.toPath(), StandardCharsets.UTF_8)) {
             new JavadocOptionsXpp3Writer().write(writer, options);
         }
 
