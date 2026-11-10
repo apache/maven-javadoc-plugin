@@ -3683,11 +3683,15 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 continue;
             }
             if (isValidJavadocLink(location, false)) {
+                // Use splitValue=false to prevent tokenizing on commas,
+                // since -linkoffline takes exactly one URL and one location (single path, not a list).
+                // JDK 11 misparses comma-containing paths in argument files when they are split.
                 addArgIfNotEmpty(
                         arguments,
                         "-linkoffline",
                         JavadocUtil.quotedPathArgument(url) + " " + JavadocUtil.quotedPathArgument(location),
-                        true);
+                        true,
+                        false);
             }
         }
     }
