@@ -1405,11 +1405,26 @@ public class JavadocUtil {
      */
     protected static boolean isValidPackageList(URL url, Settings settings, boolean validateContent)
             throws IOException {
+        return isValidPackageList(url, settings, validateContent, 1);
+    }
+
+    /**
+     * Validates a package list, retrying remote reads after socket timeouts.
+     *
+     * @param url The URL to validate.
+     * @param settings The user settings used to configure the connection to the URL or {@code null}.
+     * @param validateContent whether to validate the package-list contents.
+     * @param retryCount number of retries after a socket timeout.
+     * @return {@code true} if the URL contains a valid package list.
+     * @throws IOException if reading the resource fails.
+     */
+    protected static boolean isValidPackageList(URL url, Settings settings, boolean validateContent, int retryCount)
+            throws IOException {
         if (url == null) {
             throw new IllegalArgumentException("The url is null");
         }
 
-        try (BufferedReader reader = getReader(url, settings)) {
+        try (BufferedReader reader = getReader(url, settings, retryCount)) {
             if (validateContent) {
                 for (String line = reader.readLine(); line != null; line = reader.readLine()) {
                     if (!isValidPackageName(line)) {
@@ -1423,11 +1438,16 @@ public class JavadocUtil {
 
     protected static boolean isValidElementList(URL url, Settings settings, boolean validateContent)
             throws IOException {
+        return isValidElementList(url, settings, validateContent, 1);
+    }
+
+    protected static boolean isValidElementList(URL url, Settings settings, boolean validateContent, int retryCount)
+            throws IOException {
         if (url == null) {
             throw new IllegalArgumentException("The url is null");
         }
 
-        try (BufferedReader reader = getReader(url, settings)) {
+        try (BufferedReader reader = getReader(url, settings, retryCount)) {
             if (validateContent) {
                 for (String line = reader.readLine(); line != null; line = reader.readLine()) {
                     if (line.startsWith("module:")) {
@@ -1443,7 +1463,11 @@ public class JavadocUtil {
         }
     }
 
-    private static BufferedReader getReader(URL url, Settings settings) throws IOException {
+    private static BufferedReader getReader(URL url, Settings settings, int retryCount) throws IOException {
+        if (retryCount < 0) {
+            throw new IllegalArgumentException("The retry count cannot be negative");
+        }
+
         BufferedReader reader = null;
 
         if ("file".equals(url.getProtocol())) {
@@ -1453,16 +1477,23 @@ public class JavadocUtil {
             // http, https...
             final CloseableHttpClient httpClient = createHttpClient(settings, url);
 
-            final HttpGet httpMethod = new HttpGet(url.toString());
-
             HttpResponse response;
             HttpClientContext httpContext = HttpClientContext.create();
-            try {
-                response = httpClient.execute(httpMethod, httpContext);
-            } catch (SocketTimeoutException e) {
-                // could be a sporadic failure, one more retry before we give up
-                response = httpClient.execute(httpMethod, httpContext);
+            HttpGet httpMethod = null;
+            int retries = 0;
+            while (true) {
+                httpMethod = new HttpGet(url.toString());
+                try {
+                    response = httpClient.execute(httpMethod, httpContext);
+                    break;
+                } catch (SocketTimeoutException e) {
+                    httpMethod.releaseConnection();
+                    if (retries++ >= retryCount) {
+                        throw e;
+                    }
+                }
             }
+            final HttpGet request = httpMethod;
 
             int status = response.getStatusLine().getStatusCode();
             if (status != HttpStatus.SC_OK) {
@@ -1489,8 +1520,8 @@ public class JavadocUtil {
                 public void close() throws IOException {
                     super.close();
 
-                    if (httpMethod != null) {
-                        httpMethod.releaseConnection();
+                    if (request != null) {
+                        request.releaseConnection();
                     }
                     if (httpClient != null) {
                         httpClient.close();
