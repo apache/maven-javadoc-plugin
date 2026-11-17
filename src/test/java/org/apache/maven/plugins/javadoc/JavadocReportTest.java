@@ -1079,7 +1079,6 @@ class JavadocReportTest {
     @Test
     void testValidateOptionsWrongLocale(JavadocReport mojo) throws Exception {
         mojo.execute();
-        assertTrue(true, "No wrong locale catch");
     }
 
     /**
