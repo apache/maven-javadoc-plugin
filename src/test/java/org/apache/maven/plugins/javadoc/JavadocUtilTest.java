@@ -461,7 +461,8 @@ class JavadocUtilTest {
      */
     @Test
     void testGetRedirectUrl() throws Exception {
-        Server server = null, redirectServer = null;
+        Server server = null;
+        Server redirectServer = null;
         try {
             redirectServer = new Server(0);
             redirectServer.setHandler(new AbstractHandler() {

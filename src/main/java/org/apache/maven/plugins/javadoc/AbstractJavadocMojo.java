@@ -1812,23 +1812,21 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @return the charset attribute or the value of {@link #getDocencoding()} if <code>null</code>.
      */
     private String getCharset() {
-        return (charset == null || charset.isEmpty()) ? getDocencoding() : charset;
+        return charset == null || charset.isEmpty() ? getDocencoding() : charset;
     }
 
     /**
      * @return the docencoding attribute or <code>UTF-8</code> if <code>null</code>.
      */
     private String getDocencoding() {
-        return (docencoding == null || docencoding.isEmpty()) ? StandardCharsets.UTF_8.name() : docencoding;
+        return docencoding == null || docencoding.isEmpty() ? StandardCharsets.UTF_8.name() : docencoding;
     }
 
     /**
      * @return the encoding attribute or the value of <code>file.encoding</code> system property if <code>null</code>.
      */
     private String getEncoding() {
-        return (encoding == null || encoding.isEmpty())
-                ? Charset.defaultCharset().name()
-                : encoding;
+        return encoding == null || encoding.isEmpty() ? Charset.defaultCharset().name() : encoding;
     }
 
     @Override
@@ -1995,7 +1993,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         arguments.addAll(javadocArguments);
         arguments.addAll(standardDocletArguments);
 
-        if (arguments.size() > 0) {
+        if (!arguments.isEmpty()) {
             addCommandLineOptions(cmd, arguments, javadocOutputDirectory);
         }
 
@@ -4623,7 +4621,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         addArgIf(arguments, docfilessubdirs, "-docfilessubdirs");
 
-        addArgIf(arguments, (doclint != null && !doclint.isEmpty()), "-Xdoclint:" + getDoclint());
+        addArgIf(arguments, doclint != null && !doclint.isEmpty(), "-Xdoclint:" + getDoclint());
 
         addArgIfNotEmpty(arguments, "-doctitle", JavadocUtil.quotedArgument(getDoctitle()), false, false);
 
@@ -5911,7 +5909,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                     .map(String::trim)
                     // we are expecting something such [groupdId:]artifactId so if no groupId we want to match any
                     // groupId
-                    .map(s -> !s.contains(":") ? ".*:" + s : s)
+                    .map(s -> s.contains(":") ? s : ".*:" + s)
                     .map(Pattern::compile)
                     .collect(Collectors.toList());
         }
