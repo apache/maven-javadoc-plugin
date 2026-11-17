@@ -2956,7 +2956,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                     && (StringUtils.isNotEmpty(taglet.getTagletArtifact().getArtifactId()))
                     && (StringUtils.isNotEmpty(taglet.getTagletArtifact().getVersion()))) {
                 pathParts.addAll(JavadocUtil.pruneFiles(getArtifactsAbsolutePath(taglet.getTagletArtifact())));
-            } else if (taglet.getTagletpath() != null && !taglet.getTagletpath().isEmpty()) {
+            } else if (StringUtils.isNotEmpty(taglet.getTagletpath())) {
                 for (Path path :
                         JavadocUtil.prunePaths(project, Collections.singletonList(taglet.getTagletpath()), true)) {
                     pathParts.add(path.toString());
@@ -2964,7 +2964,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
             }
         }
 
-        if (tagletpath != null && !tagletpath.isEmpty()) {
+        if (StringUtils.isNotEmpty(tagletpath)) {
             pathParts.addAll(Arrays.asList(JavadocUtil.splitPath(tagletpath)));
         }
 
@@ -3346,12 +3346,11 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         if (activeProxies.containsKey("https")) {
             Proxy httpsProxy = activeProxies.get("https");
-            if (httpsProxy.getHost() != null && !httpsProxy.getHost().isEmpty()) {
+            if (StringUtils.isNotEmpty(httpsProxy.getHost())) {
                 cmd.createArg().setValue("-J-Dhttps.proxyHost=" + httpsProxy.getHost());
                 cmd.createArg().setValue("-J-Dhttps.proxyPort=" + httpsProxy.getPort());
 
-                if ((httpsProxy.getNonProxyHosts() != null
-                                && !httpsProxy.getNonProxyHosts().isEmpty())
+                if (StringUtils.isNotEmpty(httpsProxy.getNonProxyHosts())
                         && (!activeProxies.containsKey("http")
                                 || StringUtils.isEmpty(activeProxies.get("http").getNonProxyHosts()))) {
                     cmd.createArg()
@@ -3363,7 +3362,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         if (activeProxies.containsKey("http")) {
             Proxy httpProxy = activeProxies.get("http");
-            if (httpProxy.getHost() != null && !httpProxy.getHost().isEmpty()) {
+            if (StringUtils.isNotEmpty(httpProxy.getHost())) {
                 cmd.createArg().setValue("-J-Dhttp.proxyHost=" + httpProxy.getHost());
                 cmd.createArg().setValue("-J-Dhttp.proxyPort=" + httpProxy.getPort());
 
@@ -4183,7 +4182,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         // locale
-        if (this.locale != null && !this.locale.isEmpty()) {
+        if (StringUtils.isNotEmpty(this.locale)) {
             this.locale = siteTool.getSiteLocales(locale).get(0).toString();
         }
     }
@@ -4739,9 +4738,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         for (Group group : groups) {
-            if (group == null
-                    || (group.getTitle() == null || group.getTitle().isEmpty())
-                    || (group.getPackages() == null || group.getPackages().isEmpty())) {
+            if (group == null || StringUtils.isEmpty(group.getTitle()) || StringUtils.isEmpty(group.getPackages())) {
                 if (getLog().isWarnEnabled()) {
                     getLog().warn("A group option is empty. Ignore this option.");
                 }
@@ -4771,15 +4768,15 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         }
 
         for (Tag tag : collectTags()) {
-            if (tag.getName() == null || tag.getName().isEmpty()) {
+            if (StringUtils.isEmpty(tag.getName())) {
                 if (getLog().isWarnEnabled()) {
                     getLog().warn("A tag name is empty. Ignore this option.");
                 }
             } else {
                 String value = "\"" + tag.getName();
-                if (tag.getPlacement() != null && !tag.getPlacement().isEmpty()) {
+                if (StringUtils.isNotEmpty(tag.getPlacement())) {
                     value += ":" + tag.getPlacement().replaceAll("\\R", lineSeparator);
-                    if (tag.getHead() != null && !tag.getHead().isEmpty()) {
+                    if (StringUtils.isNotEmpty(tag.getHead())) {
                         value += ":" + tag.getHead().replaceAll("\\R", lineSeparator);
                     }
                 }
@@ -5003,7 +5000,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         try {
             int exitCode = CommandLineUtils.executeCommandLine(cmd, out, err);
 
-            String output = out.getOutput() == null || out.getOutput().isEmpty()
+            String output = StringUtils.isEmpty(out.getOutput())
                     ? null
                     : '\n' + out.getOutput().trim();
 
@@ -5014,7 +5011,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 writeDebugJavadocScript(cmdLine, javadocOutputDirectory);
 
                 if ((output != null && !output.isEmpty())
-                        && (err.getOutput() == null || err.getOutput().isEmpty())
+                        && StringUtils.isEmpty(err.getOutput())
                         && isJavadocVMInitError(output)) {
                     throw new MavenReportException(output + '\n' + '\n' + JavadocUtil.ERROR_INIT_VM + '\n'
                             + "Or, try to reduce the Java heap size for the Javadoc goal using "
@@ -5030,7 +5027,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
                 StringBuilder msg = new StringBuilder("\nExit code: ");
                 msg.append(exitCode);
-                if (err.getOutput() != null && !err.getOutput().isEmpty()) {
+                if (StringUtils.isNotEmpty(err.getOutput())) {
                     // parse stderr, log informational output, add all other to exception message
                     List<String> nonInfoLines = new ArrayList<>();
                     for (String str : err.getOutput().split("\\R")) {
