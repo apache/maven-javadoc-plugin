@@ -60,7 +60,7 @@ Preparing Dependencies for Aggregation
 
 Dependency-driven javadoc aggregation works by resolving the sources for included dependencies, then including these sources in the javadoc production process for your project. As is common practice with Maven, dependency sources will be resolved from other modules in the current reactor if they are available there. Otherwise, the plugin will attempt to resolve the appropriate sources artifact for the dependency: `sources` for main javadocs, `test-sources` for test javadocs. **NOTE: If your configuration includes a dependency but that dependency's source artifact is unavailable, the javadoc plugin will fail.**
 
-The recommended method for producing these source artifacts is the [maven-source-plugin](http://maven.apache.org/plugins/maven-source-plugin/). The following simple example shows how to produce source artifacts:
+The recommended method for producing these source artifacts is the [maven-source-plugin](https://maven.apache.org/plugins/maven-source-plugin/). The following simple example shows how to produce source artifacts:
 
 ```xml
 <project>
@@ -73,7 +73,7 @@ The recommended method for producing these source artifacts is the [maven-source
       [...]
       <plugin>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.1.1</version>
+        <version>3.4.0</version>
         <executions>
           <execution>
             <id>bundle-sources</id>

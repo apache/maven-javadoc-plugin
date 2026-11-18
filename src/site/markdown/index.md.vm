@@ -27,21 +27,61 @@ under the License.
 -->
 
 # Apache Maven Javadoc Plugin
-The Javadoc Plugin uses the Javadoc tool to generate javadocs for the specified project. For more information about the standard Javadoc tool, please refer to [Reference Guide](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javadoc.html).
 
-The Javadoc Plugin gets the parameter values that will be used from the plugin configuration specified in the pom. To hold all javadoc arguments, packages or files, the Javadoc Plugin generates [argument files](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html#command-line-argument-files) and calls the Javadoc tool as follows:
+The Javadoc Plugin runs the [Javadoc tool](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javadoc.html) of
+your JDK to generate API documentation for a Maven project, packages that documentation as a `javadoc` jar for
+deployment, and adds it to the project site as a report.
 
-```text
-javadoc.exe(or .sh) @options @packages | @argfile
-```
+The plugin requires Maven 3.9.0 or later and Java 8 or later. It uses the `javadoc` executable of the JDK that runs
+Maven, unless you select another JDK with a [toolchain](./examples/alternate-javadoc-tool.html).
 
-When no configuration values are set, the plugin sets default values instead and then executes the Javadoc tool.
+${esc.h}${esc.h} Common Tasks
 
-You can also use the plugin to package the generated javadocs into a jar file for distribution.
+- Generate the API documentation of a module into `target/reports/apidocs`:
 
-## Goals Overview
+    ```shell
+    mvn javadoc:javadoc
+    ```
 
-The Javadoc Plugin has 16 goals:
+- Attach a `-javadoc.jar` to every build, as Maven Central requires for a release. Bind the `jar` goal in the
+  &lt;build/&gt; section of your POM and run `mvn verify` (or `mvn deploy`):
+
+    ```xml
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-javadoc-plugin</artifactId>
+      <version>${project.version}</version>
+      <executions>
+        <execution>
+          <id>attach-javadocs</id>
+          <goals>
+            <goal>jar</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+    ```
+
+- Generate one set of API documentation for all modules of a multi-module project, from the parent directory:
+
+    ```shell
+    mvn javadoc:aggregate
+    ```
+
+    See [Aggregating Javadocs for Multi-Projects](./examples/aggregate.html).
+
+- Add the API documentation to the project site: declare the plugin in the &lt;reporting/&gt; section and run
+  `mvn site`. The documentation is written to `target/site/apidocs`. See the [usage page](./usage.html).
+
+The plugin passes its configuration to the Javadoc tool in [argument
+files](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html#command-line-argument-files) and calls it as
+`javadoc @options @packages`, adding an `@argfile` for source files that it passes one by one. To keep these files and
+a `javadoc.sh` (or `javadoc.bat`) script that repeats the call, run with `-Ddebug=true`; see the
+[FAQ](./faq.html${esc.hash}How_to_know_exactly_the_Javadoc_command_line).
+
+${esc.h}${esc.h} Goals Overview
+
+The Javadoc Plugin has 15 goals:
 
 - [javadoc:javadoc](./javadoc-mojo.html) generates the Javadoc files for the project. It executes the standard Javadoc tool and supports the parameters used by the tool.
 - [javadoc:test-javadoc](./test-javadoc-mojo.html) generates the test Javadoc files for the project. It executes the standard Javadoc tool and supports the parameters used by the tool.
@@ -49,7 +89,7 @@ The Javadoc Plugin has 16 goals:
 - [javadoc:test-javadoc-no-fork](./test-javadoc-no-fork-mojo.html) generates the test Javadoc files for the project. It executes the standard Javadoc tool and supports the parameters used by the tool without forking the `generate-test-sources` phase again. Note that this goal does require generation of test sources before site generation, e.g. by invoking `mvn clean deploy site`.
 - [javadoc:aggregate](./aggregate-mojo.html) generates the Javadoc files for an aggregator project. It executes the standard Javadoc tool and supports the parameters used by the tool.
 - [javadoc:test-aggregate](./test-aggregate-mojo.html) generates the test Javadoc files for an aggregator project. It executes the standard Javadoc tool and supports the parameters used by the tool.
-- [javadoc:aggregate-no-fork](./aggregate-no-fork-mojo.html) generates the Javadoc files for an aggregator project. It executes the standard Javadoc tool and supports the parameters used by the tool without forking the **compile**&gt; phase again. Note that this goal does require generation of class files before site generation, e.g. by invoking `mvn compile` or `mvn install`.
+- [javadoc:aggregate-no-fork](./aggregate-no-fork-mojo.html) generates the Javadoc files for an aggregator project. It executes the standard Javadoc tool and supports the parameters used by the tool without forking the `compile` phase again. Note that this goal does require generation of class files before site generation, e.g. by invoking `mvn compile` or `mvn install`.
 - [javadoc:test-aggregate-no-fork](./test-aggregate-no-fork-mojo.html) generates the test Javadoc files for an aggregator project. It executes the standard Javadoc tool and supports the parameters used by the tool without forking the `compile` phase again. Note that this goal does require generation of test class files before site generation, e.g. by invoking `mvn test-compile` or `mvn install`.
 - [javadoc:jar](./jar-mojo.html) creates an archive file of the generated Javadocs. It is used during the release process to create the Javadoc artifact for the project's release. This artifact is uploaded to the remote repository along with the project's compiled binary and source archive.
 - [javadoc:test-jar](./test-jar-mojo.html) creates an archive file of the generated Test Javadocs.
@@ -57,15 +97,17 @@ The Javadoc Plugin has 16 goals:
 - [javadoc:test-aggregate-jar](./test-aggregate-jar-mojo.html) creates an archive file of the generated Test Javadocs for an aggregator project.
 - [javadoc:resource-bundle](./resource-bundle-mojo.html) bundles the `javadocDirectory` along with Javadoc configuration options such as taglet, doclet, and link information into a deployable artifact.
 - [javadoc:test-resource-bundle](./test-resource-bundle-mojo.html) bundles the `testJavadocDirectory` along with Javadoc configuration options such as taglet, doclet, and link information into a deployable artifact.
-## Usage
+- [javadoc:help](./help-mojo.html) displays help information on the plugin. Run `mvn javadoc:help -Ddetail=true -Dgoal=<goal-name>` to display the parameters of a goal.
+
+${esc.h}${esc.h} Usage
 
 General instructions on how to use the Javadoc Plugin can be found on the [usage page](./usage.html). Some more specific use cases are described in the examples given below.
 
 In case you still have questions regarding the plugin's usage, please have a look at the [FAQ](./faq.html) and feel free to contact the [user mailing list](./mailing-lists.html). The posts to the mailing list are archived and could already contain the answer to your question as part of an older thread. Hence, it is also worth browsing/searching the [mail archive](./mailing-lists.html).
 
-If you feel like the plugin is missing a feature or has a defect, you can fill a feature request or bug report in our [issue tracker](./issue-management.html). When creating a new issue, please provide a comprehensive description of your concern. Especially for fixing bugs it is crucial that the developers can reproduce your problem. For this reason, entire debug logs, POMs or most preferably little demo projects attached to the issue are very much appreciated. Of course, patches are welcome, too. Contributors can check out the project from our [source repository](./scm.html) and will find supplementary information in the [guide to helping with Maven](http://maven.apache.org/guides/development/guide-helping.html).
+If you feel like the plugin is missing a feature or has a defect, you can fill a feature request or bug report in our [issue tracker](./issue-management.html). When creating a new issue, please provide a comprehensive description of your concern. Especially for fixing bugs it is crucial that the developers can reproduce your problem. For this reason, entire debug logs, POMs or most preferably little demo projects attached to the issue are very much appreciated. Of course, patches are welcome, too. Contributors can check out the project from our [source repository](./scm.html) and will find supplementary information in the [guide to helping with Maven](https://maven.apache.org/guides/development/guide-helping.html).
 
-## Examples
+${esc.h}${esc.h} Examples
 
 The following examples show how to use the Javadoc Plugin in more advanced use cases:
 
@@ -83,5 +125,6 @@ The following examples show how to use the Javadoc Plugin in more advanced use c
 - [Configuring Links](./examples/links-configuration.html)
 - [Generating test Javadocs](./examples/test-javadocs.html)
 - [Selective Javadocs Reports](./examples/selective-javadocs-report.html)
+- [Adding Additional Dependencies](./examples/additional-dependencies.html)
 - [Generate Javadoc without duplicate execution of phase generate-sources](./examples/javadoc-nofork.html)
 - [Generate aggregate Javadocs without execution of phase compile](./examples/aggregate-nofork.html)
