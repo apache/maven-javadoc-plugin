@@ -82,7 +82,7 @@ Since 3.1.0 the `aggregate` has changed a little bit. It'll generate aggregated 
 Using The `aggregate` Goals
 ---------------------------
 
-The [&lt;aggregate/&gt;](../javadoc-mojo.html#aggregate) parameter doesn't include generate source directories defined using the [build-helper:add-source](http://mojo.codehaus.org/build-helper-maven-plugin/add-source-mojo.html). In this case, you need to use the `aggregate` goal and `test-aggregate` goals. You could define these goals in the &lt;build/&gt; element (using the &lt;execution/&gt; tag) or &lt;reporting/&gt; element (using the &lt;reportSet/&gt; tag) as shown below. For more information, refer to the [Selective Javadocs Reports page](./selective-javadocs-report.html).
+To aggregate the Javadoc of all modules, including source directories added with [build-helper:add-source](https://www.mojohaus.org/build-helper-maven-plugin/add-source-mojo.html), use the `aggregate` and `test-aggregate` goals. You could define these goals in the &lt;build/&gt; element (using the &lt;execution/&gt; tag) or &lt;reporting/&gt; element (using the &lt;reportSet/&gt; tag) as shown below. For more information, refer to the [Selective Javadocs Reports page](./selective-javadocs-report.html).
 
 ```xml
 <project>
