@@ -274,7 +274,8 @@ public class JavadocUtil {
 
     /**
      * Convenience method that copies all <code>doc-files</code> directories from <code>javadocDir</code> to the
-     * <code>outputDirectory</code>.
+     * <code>outputDirectory</code>, skipping the excluded subdirectories. Existing entries of the
+     * <code>outputDirectory</code> that match an exclusion are not removed.
      *
      * @param outputDirectory the output directory
      * @param javadocDir the javadoc directory
@@ -299,22 +300,20 @@ public class JavadocUtil {
             }
         }
 
-        List<String> docFiles = FileUtils.getDirectoryNames(
-                javadocDir, "resources,**/doc-files", String.join(",", excludes), false, true);
+        String excludesPattern = String.join(",", excludes);
+        List<String> docFiles =
+                FileUtils.getDirectoryNames(javadocDir, "resources,**/doc-files", excludesPattern, false, true);
         for (String docFile : docFiles) {
+            File docFileSource = new File(javadocDir, docFile);
             File docFileOutput = new File(outputDirectory, docFile);
-            Files.createDirectories(Paths.get(docFileOutput.getAbsolutePath()));
-            FileUtils.copyDirectoryStructure(new File(javadocDir, docFile), docFileOutput);
-            List<String> files = FileUtils.getFileAndDirectoryNames(
-                    docFileOutput, String.join(",", excludes), null, true, true, true, true);
-            for (String filename : files) {
-                File file = new File(filename);
-
-                if (file.isDirectory()) {
-                    FileUtils.deleteDirectory(file);
-                } else {
-                    file.delete();
-                }
+            Files.createDirectories(docFileOutput.toPath());
+            // Skip excluded entries while copying rather than deleting them from the output afterwards:
+            // the output directory may already hold generated javadoc that matches an exclude pattern.
+            for (String dirName : FileUtils.getDirectoryNames(docFileSource, null, excludesPattern, false, true)) {
+                Files.createDirectories(new File(docFileOutput, dirName).toPath());
+            }
+            for (String fileName : FileUtils.getFileNames(docFileSource, null, excludesPattern, false)) {
+                FileUtils.copyFile(new File(docFileSource, fileName), new File(docFileOutput, fileName));
             }
         }
     }
