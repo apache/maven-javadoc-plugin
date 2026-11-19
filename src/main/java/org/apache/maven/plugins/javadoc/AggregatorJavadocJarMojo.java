@@ -47,7 +47,8 @@ import org.eclipse.aether.RepositorySystem;
         name = "aggregate-jar",
         defaultPhase = LifecyclePhase.PACKAGE,
         aggregator = true,
-        requiresDependencyResolution = ResolutionScope.COMPILE)
+        requiresDependencyResolution = ResolutionScope.COMPILE,
+        threadSafe = true)
 @Execute(phase = LifecyclePhase.COMPILE)
 public class AggregatorJavadocJarMojo extends JavadocJarMojo {
 

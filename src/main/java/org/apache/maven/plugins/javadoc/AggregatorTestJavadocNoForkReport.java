@@ -39,7 +39,7 @@ import org.eclipse.aether.RepositorySystem;
  * @version $Id$
  * @since 3.0.1
  */
-@Mojo(name = "test-aggregate-no-fork", requiresDependencyResolution = ResolutionScope.TEST)
+@Mojo(name = "test-aggregate-no-fork", requiresDependencyResolution = ResolutionScope.TEST, threadSafe = true)
 @Execute(phase = LifecyclePhase.NONE)
 public class AggregatorTestJavadocNoForkReport extends AggregatorTestJavadocReport {
 
