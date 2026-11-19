@@ -263,16 +263,16 @@ public class TestJavadocReport extends JavadocReport {
     }
 
     /**
-     * Add the <code>../apidocs</code> to the links parameter so Test report could be linked to the Main report.
+     * Add the <code>../${destDir}</code> to the links parameter so Test report could be linked to the Main report.
      */
     private void addMainJavadocLink() {
         if (links == null) {
             links = new ArrayList<>();
         }
 
-        File apidocs = new File(getReportOutputDirectory(), "apidocs");
-        if (apidocs.isDirectory() && !links.contains("../apidocs")) {
-            links.add("../apidocs");
+        File apidocs = new File(getReportOutputDirectory(), destDir);
+        if (apidocs.isDirectory() && !links.contains("../" + destDir)) {
+            links.add("../" + destDir);
         }
     }
 
