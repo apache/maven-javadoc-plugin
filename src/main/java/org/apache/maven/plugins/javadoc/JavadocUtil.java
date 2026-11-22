@@ -977,7 +977,10 @@ public class JavadocUtil {
                     if ((version == null || version.isEmpty()) || JavaVersion.JAVA_VERSION.isAtLeast(version)) {
                         String name = matcher.group("n");
 
-                        classes.add(name.replaceAll("/", "\\."));
+                        // module-info is a compiler-generated descriptor, not a loadable class
+                        if (!"module-info".equals(name)) {
+                            classes.add(name.replaceAll("/", "\\."));
+                        }
                     }
                 }
 

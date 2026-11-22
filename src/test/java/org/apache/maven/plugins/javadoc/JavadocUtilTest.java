@@ -768,6 +768,25 @@ class JavadocUtilTest {
     }
 
     /**
+     * MJAVADOC-624: a Java 9+ module jar used as a taglet artifact carries a module-info.class entry.
+     * Loading it as a class throws NoClassDefFoundError ("module-info is not a class because access_flag
+     * ACC_MODULE is set"), which must not abort taglet auto-detection for the jar's real classes.
+     */
+    @Test
+    void getTagletClassNamesSkipsModuleInfo(@TempDir Path tempDir) throws Exception {
+        Path jar = tempDir.resolve("taglet-module.jar");
+        try (OutputStream out = Files.newOutputStream(jar);
+                JarOutputStream jarOut = new JarOutputStream(out)) {
+            jarOut.putNextEntry(new ZipEntry("module-info.class"));
+            jarOut.closeEntry();
+        }
+
+        List<String> tagletClasses = JavadocUtil.getTagletClassNames(jar.toFile());
+
+        assertTrue(tagletClasses.isEmpty());
+    }
+
+    /**
      * Turns a failure to reach maven.apache.org into a skipped test, so that a slow or blocked network
      * does not make the build red. Deliberately narrow: a refused connection is not handled, because
      * the proxy cases in this class talk to a locally started server and must keep failing loudly.
