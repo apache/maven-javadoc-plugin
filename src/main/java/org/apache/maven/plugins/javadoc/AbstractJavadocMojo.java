@@ -2488,7 +2488,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @return all classpath elements
      * @throws MavenReportException if any.
      */
-    private Collection<File> getPathElements() throws MavenReportException {
+    private Collection<File> getPathElements(Collection<JavadocModule> allSourcePaths) throws MavenReportException {
         Set<File> classpathElements = new LinkedHashSet<>();
         Map<String, Artifact> compileArtifactMap = new LinkedHashMap<>();
 
@@ -2499,7 +2499,29 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
         populateCompileArtifactMap(compileArtifactMap, project.getArtifacts());
 
         if (isAggregator()) {
-            Collection<MavenProject> aggregatorProjects = getAggregatedProjects();
+            Collection<MavenProject> aggregatorProjects = new LinkedHashSet<>(getAggregatedProjects());
+
+            // includeDependencySources can pull a reactor project's sources into the aggregate
+            // (via dependencySourceIncludes) even when it isn't one of this project's own <modules>;
+            // its own provided/optional dependencies still need to be resolved onto the path, the
+            // same way a real aggregated submodule's are below.
+            if (reactorProjects != null) {
+                Map<String, MavenProject> reactorProjectsByGav = new HashMap<>();
+                for (MavenProject reactorProject : reactorProjects) {
+                    reactorProjectsByGav.put(
+                            ArtifactUtils.key(
+                                    reactorProject.getGroupId(),
+                                    reactorProject.getArtifactId(),
+                                    reactorProject.getVersion()),
+                            reactorProject);
+                }
+                for (JavadocModule javadocModule : allSourcePaths) {
+                    MavenProject sourceProject = reactorProjectsByGav.get(javadocModule.getGav());
+                    if (sourceProject != null) {
+                        aggregatorProjects.add(sourceProject);
+                    }
+                }
+            }
 
             List<String> reactorArtifacts = new ArrayList<>();
             for (MavenProject p : aggregatorProjects) {
@@ -4416,7 +4438,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 && (isAggregator()
                         || ModuleNameSource.MODULEDESCRIPTOR.equals(mainModuleNameSource)
                         || ModuleNameSource.MANIFEST.equals(mainModuleNameSource))) {
-            List<File> pathElements = new ArrayList<>(getPathElements());
+            List<File> pathElements = new ArrayList<>(getPathElements(allSourcePaths));
             File artifactFile = getClassesFile(project);
             if (artifactFile != null) {
                 pathElements.add(0, artifactFile);
@@ -4480,10 +4502,10 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 throw new MavenReportException(e.getMessage(), e);
             }
         } else if (supportModulePath && moduleDescriptorSource && !isTest()) {
-            String modulepath = StringUtils.join(getPathElements().iterator(), File.pathSeparator);
+            String modulepath = StringUtils.join(getPathElements(allSourcePaths).iterator(), File.pathSeparator);
             addArgIfNotEmpty(arguments, "--module-path", JavadocUtil.quotedPathArgument(modulepath), false, false);
         } else {
-            String classpath = StringUtils.join(getPathElements().iterator(), File.pathSeparator);
+            String classpath = StringUtils.join(getPathElements(allSourcePaths).iterator(), File.pathSeparator);
             addArgIfNotEmpty(arguments, "-classpath", JavadocUtil.quotedPathArgument(classpath), false, false);
         }
 
