@@ -4320,10 +4320,11 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                 MavenProject aggregatedProject = reactorKeys.get(javadocModule.getGav());
                 if (aggregatedProject != null && !"pom".equals(aggregatedProject.getPackaging())) {
                     ResolvePathResult result = null;
+                    Path moduleDescriptorSource = null;
 
                     // Prefer jar over outputDirectory, since it may contain an automatic module name
                     File artifactFile = getClassesFile(aggregatedProject);
-                    if (artifactFile != null) {
+                    if (artifactFile != null && artifactFile.exists()) {
                         ResolvePathRequest<File> request = ResolvePathRequest.ofFile(artifactFile);
                         try {
                             result = locationManager.resolvePath(request);
@@ -4336,12 +4337,16 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                         } catch (IOException e) {
                             throw new MavenReportException(e.getMessage(), e);
                         }
-                    } else {
-                        Path moduleDescriptor = findMainDescriptor(javadocModule.getSourcePaths());
+                    }
 
-                        if (moduleDescriptor != null) {
+                    // Fall back to the module-info.java source file, e.g. when outputDirectory
+                    // doesn't exist yet because a clean ran after this project's build started
+                    if (result == null || result.getModuleDescriptor() == null) {
+                        moduleDescriptorSource = findMainDescriptor(javadocModule.getSourcePaths());
+
+                        if (moduleDescriptorSource != null) {
                             try {
-                                result = locationManager.parseModuleDescriptor(moduleDescriptor);
+                                result = locationManager.parseModuleDescriptor(moduleDescriptorSource);
                             } catch (IOException e) {
                                 throw new MavenReportException(e.getMessage(), e);
                             }
@@ -4361,6 +4366,16 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
                                     result.getModuleDescriptor().name());
                             if (!Files.isDirectory(modulePath)) {
                                 Files.createDirectory(modulePath);
+                            }
+
+                            // No compiled module-info.class to anchor --module-path on, so the
+                            // module-source-path scan needs to see a module-info.java of its own
+                            // here; the rest of the sources are supplied via --patch-module above.
+                            if (moduleDescriptorSource != null) {
+                                Path stubDescriptor = modulePath.resolve("module-info.java");
+                                if (!Files.exists(stubDescriptor)) {
+                                    Files.copy(moduleDescriptorSource, stubDescriptor);
+                                }
                             }
                         } catch (IOException e) {
                             throw new MavenReportException(e.getMessage(), e);
