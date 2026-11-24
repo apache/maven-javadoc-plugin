@@ -102,7 +102,7 @@ Package Comment File: _package.html_
 
 These contain package comments. The _package.html_ is a brief summary of each packages in the list of all packages.
 
-For more information, see [Documentation Comment Specification](https://docs.oracle.com/en/java/javase/25/docs/specs/javadoc/doc-comment-spec.html#documentation-comments) and [ How to Write Doc Comments for the Javadoc Tool, Package-Level Comments](http://www.oracle.com/technetwork/java/javase/documentation/index-137868.html#packagecomments).
+For more information, see [Documentation Comment Specification](https://docs.oracle.com/en/java/javase/25/docs/specs/javadoc/doc-comment-spec.html#documentation-comments).
 
 Here is an example of a _package.html_ file, located in _${esc.d}{basedir}/src/main/javadoc/org/apache/myapp/package.html_:
 
@@ -119,7 +119,7 @@ Here is an example of a _package.html_ file, located in _${esc.d}{basedir}/src/m
 </HTML>
 ```
 
-**Note**: With Javadoc 5.0, this file becomes _package-info.java_ and is preferred over _package.html_.
+**Note**: Since Java 5, a _package-info.java_ file is preferred over _package.html_.
 
 For more information, see [Documentation Comment Specification](https://docs.oracle.com/en/java/javase/25/docs/specs/javadoc/doc-comment-spec.html#documentation-comments).
 
@@ -136,11 +136,11 @@ package org.apache.myapp;
 Miscellaneous Unprocessed Files: _doc-files_
 --------------------------------------------
 
-These include images, sample source code, class files, applets, HTML files...
+These include images, sample source code, class files, HTML files...
 
-For more information, see [Documentation Comment Specification](https://docs.oracle.com/en/java/javase/25/docs/specs/javadoc/doc-comment-spec.html#documentation-comments) and [How to Write Doc Comments for the Javadoc Tool, Including Images ](http://www.oracle.com/technetwork/java/javase/documentation/index-137868.html#images).
+For more information, see [Documentation Comment Specification](https://docs.oracle.com/en/java/javase/25/docs/specs/javadoc/doc-comment-spec.html#documentation-comments).
 
-In addition to _doc-files_ directories, since 2.6.1, the specific _src/main/javadoc/resources_ directory will be copied to the generated Javadoc resources directory (i.e. _apidocs/resources_). This is usefull when you want to overwite default Javadoc tool resources, like the default _inherit.gif_ to one with a transparent background (See [GIF](../images/inherit.gif) or [PSD](../images/inherit.psd)).
+In addition to _doc-files_ directories, since 2.6.1, the specific _src/main/javadoc/resources_ directory will be copied to the generated Javadoc resources directory (i.e. _apidocs/resources_). Use it to add files to the resources of the generated documentation or to replace them.
 
 Here is a sample javadoc comment to use _app.png_ image, located in _${esc.d}{basedir}/src/main/javadoc/org/apache/myapp/doc-files_ directory:
 

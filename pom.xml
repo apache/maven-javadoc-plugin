@@ -117,7 +117,7 @@ under the License.
     <doxiaSitetoolsVersion>2.1.0</doxiaSitetoolsVersion>
     <resolverVersion>1.9.27</resolverVersion>
     <!-- https://cwiki.apache.org/confluence/x/VIHOCg#MavenEcosystemCleanup-ResolverandMaven -->
-    <plexus-java.version>1.6.0</plexus-java.version>
+    <plexus-java.version>1.7.0</plexus-java.version>
     <jetty.version>9.4.58.v20250814</jetty.version>
     <!-- for ITs -->
     <compilerPluginVersion>${version.maven-compiler-plugin}</compilerPluginVersion>
@@ -129,6 +129,8 @@ under the License.
     <surefirePluginVersion>${version.maven-surefire-plugin}</surefirePluginVersion>
     <toolchainPluginVersion>3.2.0</toolchainPluginVersion>
     <projectInfoReportsPluginVersion>${version.maven-project-info-reports-plugin}</projectInfoReportsPluginVersion>
+    <!-- each IT forks its own Maven; override on the command line with -Dinvoker.parallelThreads=N -->
+    <invoker.parallelThreads>0.75C</invoker.parallelThreads>
     <project.build.outputTimestamp>2025-09-16T08:27:46Z</project.build.outputTimestamp>
     <slf4jVersion>1.7.36</slf4jVersion>
   </properties>
@@ -218,11 +220,6 @@ under the License.
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-shared-utils</artifactId>
-      <version>3.5.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-common-artifact-filters</artifactId>
       <!-- Do not upgrade, leads to IT failures, needs analysis -->
       <version>3.4.0</version>
@@ -231,7 +228,7 @@ under the License.
     <dependency>
       <groupId>org.eclipse.sisu</groupId>
       <artifactId>org.eclipse.sisu.plexus</artifactId>
-      <version>1.1.1</version>
+      <version>1.1.2</version>
       <scope>test</scope>
     </dependency>
 
@@ -261,17 +258,17 @@ under the License.
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.21.0</version>
+      <version>3.22.0</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.5.14</version>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
+      <version>5.6.5</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore</artifactId>
-      <version>4.4.16</version>
+      <groupId>org.apache.httpcomponents.core5</groupId>
+      <artifactId>httpcore5</artifactId>
+      <version>5.5</version>
     </dependency>
 
     <dependency>
@@ -302,7 +299,7 @@ under the License.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
-      <version>4.15.0</version>
+      <version>4.16.0</version>
     </dependency>
     <!-- MNG-6607: needs to be overriden for commons-compress otherwise it will appear earlier in the tree -->
     <dependency>
@@ -494,10 +491,10 @@ under the License.
               <filterProperties>
                 <mrm.3rdparty.url>${mrm.3rdparty.url}</mrm.3rdparty.url>
               </filterProperties>
+              <!-- each IT is a short-lived JVM: C2 compilation and parallel GC only add startup time -->
+              <mavenOpts>-XX:TieredStopAtLevel=1 -XX:+UseSerialGC</mavenOpts>
               <environmentVariables>
-                <!-- required for MJAVADOC-538 -->
-                <_JAVA_OPTIONS>-Dabc=def</_JAVA_OPTIONS>
-                <!-- clen up the MAVEN_ARGS for the ITs -->
+                <!-- clean up the MAVEN_ARGS for the ITs -->
                 <MAVEN_ARGS />
               </environmentVariables>
             </configuration>
@@ -505,7 +502,7 @@ under the License.
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>mrm-maven-plugin</artifactId>
-            <version>1.7.1</version>
+            <version>1.8.0</version>
             <executions>
               <execution>
                 <id>repository</id>
@@ -551,7 +548,7 @@ under the License.
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>l10n-maven-plugin</artifactId>
-            <version>1.2.1</version>
+            <version>1.3.0</version>
             <configuration>
               <excludes>
                 <exclude>**/log4j.properties</exclude>

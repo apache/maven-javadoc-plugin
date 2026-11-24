@@ -64,6 +64,7 @@ import static org.apache.commons.io.FileUtils.copyDirectory;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.apache.maven.api.plugin.testing.MojoExtension.getTestFile;
+import static org.apache.maven.api.plugin.testing.MojoExtension.getVariableValueFromObject;
 import static org.apache.maven.api.plugin.testing.MojoExtension.setVariableValueToObject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
@@ -393,8 +394,7 @@ class JavadocReportTest {
         assertTrue(str.toUpperCase(Locale.ENGLISH).contains("MAVEN JAVADOC PLUGIN TEST"));
 
         // footer
-        if (JavaVersion.JAVA_VERSION.isBefore("16-ea")
-                && !System.getProperty("java.vm.name").contains("OpenJ9")) {
+        if (JavaVersion.JAVA_VERSION.isBefore("16-ea")) {
             assertTrue(str.toUpperCase(Locale.ENGLISH).contains("MAVEN JAVADOC PLUGIN TEST FOOTER"));
         }
 
@@ -512,6 +512,27 @@ class JavadocReportTest {
         } else {
             assertThat(apidocs.resolve("element-list")).exists();
         }
+    }
+
+    /**
+     * Method to test when the path to the project sources has a comma (,)
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "commapath-test-plugin-config.xml")
+    @Basedir("/unit/commapath,test")
+    @Test
+    void testCommaPath(JavadocReport mojo) throws Exception {
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
+
+        // package level generated javadoc files
+        assertThat(apidocs.resolve("commapath/test/App.html")).exists();
+
+        // project level generated javadoc files
+        assertThat(apidocs.resolve("index-all.html")).exists();
+        assertThat(apidocs.resolve("index.html")).exists();
     }
 
     /**
@@ -808,24 +829,18 @@ class JavadocReportTest {
         assertThat(overview).exists();
         String content = readFile(overview);
         assertThat(content)
-                .contains("Top - Copyright &#169; All rights reserved.")
-                .contains("Header - Copyright &#169; All rights reserved.");
-        // IBM dist of adopt-openj9 does not support the footer param
-        if (!System.getProperty("java.vm.name").contains("OpenJ9")) {
-            assertThat(content).contains("Footer - Copyright &#169; All rights reserved.");
-        }
+                .contains("Top - Maven Javadoc Plugin test &#169;")
+                .contains("Header - Maven Javadoc Plugin test &#169;");
+        assertThat(content).contains("Footer - Maven Javadoc Plugin test &#169;");
 
         Path packageSummary = apidocs.resolve("jdk6/test/package-summary.html");
         assertThat(packageSummary).exists();
         content = readFile(packageSummary);
         assertThat(content)
-                .contains("Top - Copyright &#169; All rights reserved.")
-                .contains("Header - Copyright &#169; All rights reserved.");
+                .contains("Top - Maven Javadoc Plugin test &#169;")
+                .contains("Header - Maven Javadoc Plugin test &#169;");
 
-        // IBM dist of adopt-openj9 does not support the footer param
-        if (!System.getProperty("java.vm.name").contains("OpenJ9")) {
-            assertThat(content).contains("Footer - Copyright &#169; All rights reserved.");
-        }
+        assertThat(content).contains("Footer - Maven Javadoc Plugin test &#169;");
     }
 
     /**
@@ -1064,7 +1079,6 @@ class JavadocReportTest {
     @Test
     void testValidateOptionsWrongLocale(JavadocReport mojo) throws Exception {
         mojo.execute();
-        assertTrue(true, "No wrong locale catch");
     }
 
     /**
@@ -1302,5 +1316,180 @@ class JavadocReportTest {
         optionsContent = readFile(options);
         assertTrue(optionsContent.contains("-helpfile"));
         assertTrue(optionsContent.contains("'" + help.toFile().getAbsolutePath().replaceAll("\\\\", "/") + "'"));
+    }
+
+    /**
+     * Package names in <code>excludePackageNames</code> may use a leading wildcard, span several lines
+     * and end with a separator (MJAVADOC-384).
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "exclude-package-names-test-plugin-config.xml")
+    @Basedir("/unit/exclude-package-names-test")
+    @Test
+    void testExcludePackageNamesWildcard(JavadocReport mojo) throws Exception {
+        deleteDirectory(new File(getBasedir(), "target"));
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
+
+        assertThat(apidocs.resolve("com/foo/bar/Api.html")).exists();
+        assertThat(apidocs.resolve("com/foo/bar/internal/Api.html")).exists();
+
+        assertThat(apidocs.resolve("com/foo/bar/impl/NotApi.html")).doesNotExist();
+        assertThat(apidocs.resolve("com/foo/bar/internal/NotApi.html")).doesNotExist();
+        assertThat(apidocs.resolve("com/foo/bar/internal/other/NotApi.html")).doesNotExist();
+    }
+
+    /**
+     * <code>nooverview</code> only conflicts with an <code>overview</code> file that exists; the default
+     * value of <code>overview</code> must not trigger the conflict (MJAVADOC-590).
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "nooverview-test-plugin-config.xml")
+    @Basedir("/unit/nooverview-test")
+    @Test
+    void testNoOverview(JavadocReport mojo) throws Exception {
+        deleteDirectory(new File(getBasedir(), "target"));
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
+        assertThat(apidocs.resolve("com/example/MJavaDoc590.html")).exists();
+        assertThat(apidocs.resolve("overview.html")).doesNotExist();
+        assertThat(readFile(apidocs.resolve("options"))).contains("-nooverview");
+    }
+
+    /**
+     * The year in the default <code>bottom</code> text comes from <code>project.build.outputTimestamp</code>
+     * when it is set, so that the generated javadoc is reproducible (MJAVADOC-619).
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "copyright-year-test-plugin-config.xml")
+    @Basedir("/unit/copyright-year-test")
+    @Test
+    void testBottomYearFromOutputTimestamp(JavadocReport mojo) throws Exception {
+        deleteDirectory(new File(getBasedir(), "target"));
+        mojo.execute();
+
+        Path options = new File(getBasedir(), "/target/site/apidocs/options").toPath();
+        assertThat(readFile(options)).contains("'Copyright &#169; 2020. All rights reserved.'");
+    }
+
+    /**
+     * A tag head or placement spanning several lines is passed to javadoc as one quoted argument
+     * (MJAVADOC-672).
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "tag-multiline-test-plugin-config.xml")
+    @Basedir("/unit/tag-multiline-test")
+    @Test
+    void testTagMultiline(JavadocReport mojo) throws Exception {
+        deleteDirectory(new File(getBasedir(), "target"));
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
+        assertThat(apidocs.resolve("foo/Bar.html")).exists();
+
+        String options = readFile(apidocs.resolve("options"));
+        JavaVersion javadocVersion = getVariableValueFromObject(mojo, "javadocRuntimeVersion");
+        if (javadocVersion.isBefore("9")) {
+            // the line break and the indentation of the second line collapse into whitespace
+            assertThat(options.replaceAll("\\s+", " "))
+                    .contains("what is to be done in the present code fragment; jopas only");
+        } else {
+            assertThat(options)
+                    .contains("what is to be done in the present code fragment; \\" + LINE_SEPARATOR
+                            + "                jopas only");
+        }
+    }
+
+    /**
+     * Every <code>addStylesheets</code> entry is referenced once from the generated pages (MJAVADOC-625).
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "addstylesheets-test-plugin-config.xml")
+    @Basedir("/unit/addstylesheets-test")
+    @Test
+    void testAddStylesheets(JavadocReport mojo) throws Exception {
+        deleteDirectory(new File(getBasedir(), "target"));
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
+        Path html = apidocs.resolve("com/example/MJavaDoc625.html");
+        assertThat(html).exists();
+
+        JavaVersion javadocVersion = getVariableValueFromObject(mojo, "javadocRuntimeVersion");
+        if (javadocVersion.isBefore("10")) {
+            // the option is skipped (with a warning) on javadoc tools that do not know it
+            assertThat(readFile(apidocs.resolve("options"))).doesNotContain("--add-stylesheet");
+        } else {
+            assertThat(readFile(html))
+                    .containsOnlyOnce("addstylesheet.css")
+                    .containsOnlyOnce("addstylesheets1.css")
+                    .containsOnlyOnce("addstylesheets2.css");
+        }
+    }
+
+    /**
+     * <code>--add-stylesheet</code> follows the javadoc tool version, not the JVM running Maven.
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "addstylesheets-test-plugin-config.xml")
+    @Basedir("/unit/addstylesheets-test")
+    @Test
+    void testAddStylesheetsOnJavadoc9(JavadocReport mojo) throws Exception {
+        deleteDirectory(new File(getBasedir(), "target"));
+        setVariableValueToObject(mojo, "javadocVersion", "9");
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
+        assertThat(readFile(apidocs.resolve("options"))).doesNotContain("--add-stylesheet");
+    }
+
+    /**
+     * <code>sourcepath</code> accepts the path separator of the other platform (MJAVADOC-262).
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "wrong-path-separator-test-plugin-config.xml")
+    @Basedir("/unit/wrong-path-separator-test")
+    @Test
+    void testSourcepathWithWrongPathSeparator(JavadocReport mojo) throws Exception {
+        deleteDirectory(new File(getBasedir(), "target"));
+        String wrongPathSeparator = File.pathSeparatorChar == ';' ? ":" : ";";
+        setVariableValueToObject(
+                mojo,
+                "sourcepath",
+                new File(getBasedir(), "src/main/java").getAbsolutePath()
+                        + wrongPathSeparator
+                        + new File(getBasedir(), "src/test/java").getAbsolutePath());
+
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
+        assertThat(apidocs.resolve("com/mycompany/myapp/App.html")).exists();
+        assertThat(apidocs.resolve("com/mycompany/myapp/AppTest.html")).exists();
+    }
+
+    /**
+     * Resources are copied from a <code>javadocDirectory</code> other than the default (MJAVADOC-278).
+     *
+     * @throws Exception if any
+     */
+    @InjectMojo(goal = "javadoc", pom = "javadoc-directory-test-plugin-config.xml")
+    @Basedir("/unit/javadoc-directory-test")
+    @Test
+    void testJavadocDirectoryResources(JavadocReport mojo) throws Exception {
+        deleteDirectory(new File(getBasedir(), "target"));
+        mojo.execute();
+
+        Path apidocs = new File(getBasedir(), "/target/site/apidocs").toPath();
+        assertThat(apidocs.resolve("com/mycompany/myapp/App.html")).exists();
+        assertThat(apidocs.resolve("resources/extra.css")).exists();
     }
 }
