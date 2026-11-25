@@ -18,8 +18,6 @@
  * under the License.
  */
 
-import java.io.*
-
 // Generated files checks
 File apidocs1 = new File(basedir, "module1/target/reports/apidocs")
 assert apidocs1.exists() && apidocs1.isDirectory() : apidocs1.getAbsolutePath() + " dir is missing or a directory."

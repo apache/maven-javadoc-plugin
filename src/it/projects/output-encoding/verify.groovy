@@ -17,7 +17,6 @@
  * under the License.
  */
 
-import java.io.*
 import org.codehaus.plexus.util.*
 
 boolean result = true
