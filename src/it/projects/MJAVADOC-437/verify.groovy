@@ -31,39 +31,7 @@ import java.io.*;
 // If the package prefix is missing, we know that maven-javadoc-plugin
 // failed to resolve the classpath dependencies.
 
-boolean result = true;
+File javadoc = new File( basedir, "target/reports/apidocs/com/example/bar/Bar.html" );
+assert javadoc.exists() : javadoc + " is missing"
 
-try
-{
-    File javadoc = new File( basedir, "target/reports/apidocs/com/example/bar/Bar.html" );
-    if ( !javadoc.exists() )
-    {
-        System.err.println( javadoc + " is missing" );
-        return false;
-    }
-
-    FileReader fr = new FileReader( javadoc );
-    BufferedReader br = new BufferedReader( fr );
-    String line;
-    while ( ( line = br.readLine() ) != null )
-    {
-        if ( line.contains( "org.apache.commons.io" ) )
-        {
-            result = true;
-            break;
-        }
-    }
-    br.close();
-    if ( !result )
-    {
-        System.err.println( "package name org.apache.commons.io not found" );
-    }
-    return result;
-}
-catch ( Exception e )
-{
-    e.printStackTrace();
-    return false;
-}
-
-return result;
+assert javadoc.readLines( 'UTF-8' ).any { it.contains( "org.apache.commons.io" ) } : "package name org.apache.commons.io not found"

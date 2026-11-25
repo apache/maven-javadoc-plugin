@@ -20,63 +20,23 @@
 
 import java.io.*;
 
-boolean result = true;
+File target = new File( basedir, "target" );
+assert target.exists() && target.isDirectory() : "target file is missing or a directory."
 
-try
-{
-    File target = new File( basedir, "target" );
-    if ( !target.exists() || !target.isDirectory() )
-    {
-        System.err.println( "target file is missing or a directory." );
-        return false;
-    }
+File apidocs = new File( basedir, "target/reports/apidocs" );
+assert apidocs.exists() && apidocs.isDirectory() : "target/reports/apidocs file is missing or a directory."
 
-    File apidocs = new File( basedir, "target/reports/apidocs" );
-    if ( !apidocs.exists() || !apidocs.isDirectory() )
-    {
-        System.err.println( "target/reports/apidocs file is missing or a directory." );
-        return false;
-    }
+File index = new File( apidocs, "index.html" );
+assert index.exists() && index.isFile() : "target/reports/apidocs/index.html file is missing or not a file."
 
-    File index = new File( apidocs, "index.html" );
-    if ( !index.exists() || !index.isFile() )
-    {
-        System.err.println( "target/reports/apidocs/index.html file is missing or not a file." );
-        return false;
-    }
+File test1 = new File( apidocs, "test/Test1.html" );
+assert test1.exists() && test1.isFile() : "target/reports/apidocs/test/Test1.html file is missing or not a file."
 
-    File test1 = new File( apidocs, "test/Test1.html" );
-    if ( !test1.exists() || !test1.isFile() )
-    {
-        System.err.println( "target/reports/apidocs/test/Test1.html file is missing or not a file." );
-        return false;
-    }
+File test2 = new File( apidocs, "test/Test2.html" );
+assert test2.exists() && test2.isFile() : "target/reports/apidocs/test/Test2.html file is missing or not a file."
 
-    File test2 = new File( apidocs, "test/Test2.html" );
-    if ( !test2.exists() || !test2.isFile() )
-    {
-        System.err.println( "target/reports/apidocs/test/Test2.html file is missing or not a file." );
-        return false;
-    }
+File generatedTest1 = new File( apidocs, "test/GeneratedTest1.html" );
+assert generatedTest1.exists() && generatedTest1.isFile() : "target/reports/apidocs/test/GeneratedTest1.html file is missing or not a file."
 
-    File generatedTest1 = new File( apidocs, "test/GeneratedTest1.html" );
-    if ( !generatedTest1.exists() || !generatedTest1.isFile() )
-    {
-        System.err.println( "target/reports/apidocs/test/GeneratedTest1.html file is missing or not a file." );
-        return false;
-    }
-
-    File generatedTest2 = new File( apidocs, "test/GeneratedTest2.html" );
-    if ( !generatedTest2.exists() || !generatedTest2.isFile() )
-    {
-        System.err.println( "target/reports/apidocs/test/GeneratedTest2.html file is missing or not a file." );
-        return false;
-    }
-}
-catch( IOException e )
-{
-    e.printStackTrace();
-    result = false;
-}
-
-return result;
+File generatedTest2 = new File( apidocs, "test/GeneratedTest2.html" );
+assert generatedTest2.exists() && generatedTest2.isFile() : "target/reports/apidocs/test/GeneratedTest2.html file is missing or not a file."

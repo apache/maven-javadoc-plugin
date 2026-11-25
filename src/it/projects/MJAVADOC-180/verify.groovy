@@ -20,42 +20,14 @@
 
 import java.io.*;
 
-boolean result = true;
+File target = new File( basedir, "target" );
+assert target.exists() && target.isDirectory() : "target file is missing or a directory."
 
-try
-{
-    File target = new File( basedir, "target" );
-    if ( !target.exists() || !target.isDirectory() )
-    {
-        System.err.println( "target file is missing or a directory." );
-        return false;
-    }
+File testapidocs = new File( basedir, "target/reports/testapidocs" );
+assert testapidocs.exists() && testapidocs.isDirectory() : "target/reports/testapidocs file is missing or a directory."
 
-    File testapidocs = new File( basedir, "target/reports/testapidocs" );
-    if ( !testapidocs.exists() || !testapidocs.isDirectory() )
-    {
-        System.err.println( "target/reports/testapidocs file is missing or a directory." );
-        return false;
-    }
+File options = new File( testapidocs, "options" );
+assert options.exists() && options.isFile() : "target/reports/testapidocs/options file is missing or not a file."
 
-    File options = new File( testapidocs, "options" );
-    if ( !options.exists() || !options.isFile() )
-    {
-        System.err.println( "target/reports/testapidocs/options file is missing or not a file." );
-        return false;
-    }
-
-    File index = new File( testapidocs, "index.html" );
-    if ( !index.exists() || !index.isFile() )
-    {
-        System.err.println( "target/reports/testapidocs/index.html file is missing or not a file." );
-        return false;
-    }
-}
-catch( IOException e )
-{
-    e.printStackTrace();
-    result = false;
-}
-
-return result;
+File index = new File( testapidocs, "index.html" );
+assert index.exists() && index.isFile() : "target/reports/testapidocs/index.html file is missing or not a file."

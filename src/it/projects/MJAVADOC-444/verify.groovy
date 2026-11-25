@@ -19,22 +19,12 @@
  */
 
 import java.io.*;
-import org.codehaus.plexus.util.*;
 
 File indexFile = new File( basedir, "target/site/apidocs/index.html" );
 
-if ( !indexFile.exists() )
-{
-    System.err.println( indexFile.getAbsolutePath() + " is missing." );
-    return false;
-}
+assert indexFile.exists() : indexFile.getAbsolutePath() + " is missing."
 
 File buildLog = new File( basedir, "build.log" );
-String content = IOUtil.toString( new FileInputStream( buildLog ) );
+String content = buildLog.getText( 'UTF-8' );
 String needle = ">>> maven-javadoc-plugin";
-if ( content.contains( needle ) )
-{
-    System.err.println( "build.log contains '" + needle + "'" );
-    return false;
-}
-return true;
+assert !content.contains( needle ) : "build.log contains '" + needle + "'"

@@ -20,55 +20,19 @@
 
 import java.io.*;
 
-boolean result = true;
+// Generated files checks
+File apidocs = new File( basedir, "target/site/apidocs" );
+assert apidocs.isDirectory() : apidocs.getAbsolutePath() + " dir is missing or a directory."
 
-try
-{
-    // Generated files checks
-    File apidocs = new File( basedir, "target/site/apidocs" );
-    if ( !apidocs.isDirectory() )
-    {
-        System.err.println( apidocs.getAbsolutePath() + " dir is missing or a directory." );
-        return false;
-    }
+File resourcesDir = new File( apidocs, "resources" );
+assert resourcesDir.isDirectory() : resourcesDir.getAbsolutePath() + " dir is missing or a directory."
 
-    File resourcesDir = new File( apidocs, "resources" );
-    if ( !resourcesDir.isDirectory() )
-    {
-        System.err.println( resourcesDir.getAbsolutePath() + " dir is missing or a directory." );
-        return false;
-    }
+File inheritSrc = new File( basedir, "src/main/javadoc/resources/inherit.gif" );
+File inheritTarget = new File( resourcesDir, "inherit.gif" );
+assert inheritTarget.isFile() : inheritTarget.getAbsolutePath() + " file is missing or a file."
+assert inheritSrc.length() == inheritTarget.length() : "inherit.gif seems not copied."
 
-    File inheritSrc = new File( basedir, "src/main/javadoc/resources/inherit.gif" );
-    File inheritTarget = new File( resourcesDir, "inherit.gif" );
-    if ( !inheritTarget.isFile() )
-    {
-        System.err.println( inheritTarget.getAbsolutePath() + " file is missing or a file." );
-        return false;
-    }
-    if ( inheritSrc.length() != inheritTarget.length() )
-    {
-        System.err.println( "inherit.gif seems not copied." );
-        return false;
-    }
-
-    File docFiles = new File( apidocs, "com/mycompany/myapp/doc-files" );
-    if ( !docFiles.isDirectory() )
-    {
-        System.err.println( docFiles.getAbsolutePath() + " dir is missing or a directory." );
-        return false;
-    }
-    resourcesDir = new File( apidocs, "com/mycompany/myapp/resources" );
-    if ( resourcesDir.isDirectory() )
-    {
-        System.err.println( resourcesDir.getAbsolutePath() + " dir exists." );
-        return false;
-    }
-}
-catch( RuntimeException e )
-{
-    e.printStackTrace();
-    return false;
-}
-
-return result;
+File docFiles = new File( apidocs, "com/mycompany/myapp/doc-files" );
+assert docFiles.isDirectory() : docFiles.getAbsolutePath() + " dir is missing or a directory."
+resourcesDir = new File( apidocs, "com/mycompany/myapp/resources" );
+assert !resourcesDir.isDirectory() : resourcesDir.getAbsolutePath() + " dir exists."
