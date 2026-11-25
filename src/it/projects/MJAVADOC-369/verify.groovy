@@ -18,13 +18,13 @@
  * under the License.
  */
 
-import java.io.*;
+import java.io.*
 
-File indexFile = new File( basedir, "target/site/apidocs/index.html" );
+File indexFile = new File(basedir, "target/site/apidocs/index.html")
 
 assert indexFile.exists() : indexFile.getAbsolutePath() + " is missing."
 
-File buildLog = new File( basedir, "build.log" );
-String content = buildLog.getText( 'UTF-8' );
-String needle = ">>> maven-javadoc-plugin";
+File buildLog = new File( basedir, "build.log" )
+String content = buildLog.getText( 'UTF-8' )
+String needle = ">>> maven-javadoc-plugin"
 assert !content.contains( needle ) : "build.log contains '" + needle + "'"

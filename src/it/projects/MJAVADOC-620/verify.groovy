@@ -18,11 +18,11 @@
  * under the License.
  */
 
-def options = new File( basedir, 'app/target/reports/apidocs/options' )
+def options = new File(basedir, 'app/target/reports/apidocs/options')
 assert options.isFile()
 
 def str = options.text
 // dependency whose version has no dot
-assert str.contains( 'maven-MJAVADOC620-jar-1-SNAPSHOT.jar' ) : 'Javadoc does not use the artifact with a dot-less version'
+assert str.contains('maven-MJAVADOC620-jar-1-SNAPSHOT.jar') : 'Javadoc does not use the artifact with a dot-less version'
 // dependency whose class lives in the top-level package
 assert str.contains( 'maven-MJAVADOC620-toplevel-1.0-SNAPSHOT.jar' ) : 'Javadoc does not use the artifact with a top-level class'

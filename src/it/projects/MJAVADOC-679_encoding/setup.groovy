@@ -16,5 +16,5 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- 
-new File(basedir, 'module1').renameTo(new File(basedir, 'môdülé')) 
+
+new File(basedir, 'module1').renameTo(new File(basedir, 'môdülé'))

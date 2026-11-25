@@ -18,16 +18,16 @@
  * under the License.
  */
 
-import java.io.*;
+import java.io.*
 
-File indexFile = new File( basedir, "target/reports/testapidocs/mjavadoc414/test/AppTest.html" );
+File indexFile = new File(basedir, "target/reports/testapidocs/mjavadoc414/test/AppTest.html")
 
 assert indexFile.exists() : indexFile.getAbsolutePath() + " is missing."
 
-File buildLog = new File( basedir, "build.log" );
-String content = buildLog.getText( 'UTF-8' );
-String importError = "error: cannot find symbol";
+File buildLog = new File( basedir, "build.log" )
+String content = buildLog.getText( 'UTF-8' )
+String importError = "error: cannot find symbol"
 assert !content.contains( importError ) : "build.log contains '" + importError + "'"
 
-String referenceWarning = "Tag @link: reference not found: mjavadoc414.App";
+String referenceWarning = "Tag @link: reference not found: mjavadoc414.App"
 assert !content.contains( referenceWarning ) : "build.log contains '" + referenceWarning + "'"

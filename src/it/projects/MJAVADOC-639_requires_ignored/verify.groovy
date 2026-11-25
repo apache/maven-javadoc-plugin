@@ -20,34 +20,34 @@ import java.util.jar.JarFile
  * under the License.
  */
 
-int javaVersion = System.getProperty( "java.specification.version" ) as Integer
-if ( javaVersion >= 11 ) {
-    def index = new File( basedir, 'target/reports/apidocs/index.html')
+int javaVersion = System.getProperty("java.specification.version") as Integer
+if (javaVersion >= 11) {
+    def index = new File(basedir, 'target/reports/apidocs/index.html')
 
-	assert index.text =~ /<a href="modulea\/module-summary\.html">modulea<\/a>/
-	assert index.text =~ /<a href="moduleb\/module-summary\.html">moduleb<\/a>/
+    assert index.text =~ /<a href="modulea\/module-summary\.html">modulea<\/a>/
+    assert index.text =~ /<a href="moduleb\/module-summary\.html">moduleb<\/a>/
 
-	assert new File( basedir, 'target/reports/apidocs/modulea/module-summary.html').exists()
-	assert new File( basedir, 'target/reports/apidocs/moduleb/module-summary.html').exists()
+    assert new File(basedir, 'target/reports/apidocs/modulea/module-summary.html').exists()
+    assert new File(basedir, 'target/reports/apidocs/moduleb/module-summary.html').exists()
 }
 else {
-    def overview = new File( basedir, 'target/reports/apidocs/overview-summary.html')
+    def overview = new File(basedir, 'target/reports/apidocs/overview-summary.html')
 
-	assert overview.text =~ /<a href="modulea-summary.html">modulea<\/a>/
-	assert overview.text =~ /<a href="moduleb-summary.html">moduleb<\/a>/
+    assert overview.text =~ /<a href="modulea-summary.html">modulea<\/a>/
+    assert overview.text =~ /<a href="moduleb-summary.html">moduleb<\/a>/
 
-	assert new File( basedir, 'target/site/site/apidocs/modulea-summary.html').exists()
-	assert new File( basedir, 'target/site/site/apidocs/moduleb-summary.html').exists()
+    assert new File(basedir, 'target/site/site/apidocs/modulea-summary.html').exists()
+    assert new File(basedir, 'target/site/site/apidocs/moduleb-summary.html').exists()
 }
 
 def aggregate = new File(basedir, 'target/MJAVADOC-639-1.0.0-SNAPSHOT-javadoc.jar')
 assert aggregate.exists()
 
-def jar = new JarFile( aggregate )
+def jar = new JarFile(aggregate)
 def files = new ArrayList()
 
-for ( JarEntry file in jar.entries() ) {
-	files.add(file.getName())
+for (JarEntry file in jar.entries()) {
+    files.add(file.getName())
 }
 
 assert files.contains("modulea/com/javamodularity/modulea/SimpleLogging.html")

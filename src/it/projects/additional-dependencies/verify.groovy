@@ -18,51 +18,44 @@
  * under the License.
  */
 
-import java.io.*;
+import java.io.*
 
-boolean result = true;
+boolean result = true
 
-try
-{
-    File target = new File( basedir, "target" );
-    if ( !target.exists() || !target.isDirectory() )
-    {
-        System.err.println( "target file is missing or a directory." );
-        return false;
+try {
+    File target = new File(basedir, "target")
+    if (!target.exists() || !target.isDirectory()) {
+        System.err.println("target file is missing or a directory.")
+        return false
     }
 
-    File apidocs = new File( basedir, "target/site/apidocs" );
-    if ( !apidocs.exists() || !apidocs.isDirectory() )
-    {
-        System.err.println( "target/site/apidocs file is missing or a directory." );
-        return false;
+    File apidocs = new File(basedir, "target/site/apidocs")
+    if (!apidocs.exists() || !apidocs.isDirectory()) {
+        System.err.println("target/site/apidocs file is missing or a directory.")
+        return false
     }
 
-    File options = new File( apidocs, "options" );
-    if ( !options.exists() || !options.isFile() )
-    {
-        System.err.println( "target/site/apidocs/options file is missing or not a file." );
-        return false;
+    File options = new File(apidocs, "options")
+    if (!options.exists() || !options.isFile()) {
+        System.err.println("target/site/apidocs/options file is missing or not a file.")
+        return false
     }
 
-    File index = new File( apidocs, "index.html" );
-    if ( !index.exists() || !index.isFile() )
-    {
-        System.err.println( "target/site/apidocs/index.html file is missing or not a file." );
-        return false;
+    File index = new File(apidocs, "index.html")
+    if (!index.exists() || !index.isFile()) {
+        System.err.println("target/site/apidocs/index.html file is missing or not a file.")
+        return false
     }
-    
-    File reference = new File( apidocs, "reference" );
-    if ( !reference.exists() || reference.isFile() )
-    {
-        System.err.println( "target/site/apidocs/reference file is missing or a file." );
-        return false;
-    }    
+
+    File reference = new File(apidocs, "reference")
+    if (!reference.exists() || reference.isFile()) {
+        System.err.println("target/site/apidocs/reference file is missing or a file.")
+        return false
+    }
 }
-catch( IOException e )
-{
-    e.printStackTrace();
-    result = false;
+catch(IOException e) {
+    e.printStackTrace()
+    result = false
 }
 
-return result;
+return result

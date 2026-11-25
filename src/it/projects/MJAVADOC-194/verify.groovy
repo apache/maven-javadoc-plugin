@@ -18,25 +18,25 @@
  * under the License.
  */
 
-import java.io.*;
+import java.io.*
 
-File target = new File( basedir, "target" );
+File target = new File(basedir, "target")
 assert target.exists() && target.isDirectory() : "target file is missing or a directory."
 
-File apidocs = new File( basedir, "target/reports/apidocs" );
+File apidocs = new File( basedir, "target/reports/apidocs" )
 assert apidocs.exists() && apidocs.isDirectory() : "target/reports/apidocs file is missing or a directory."
 
-File index = new File( apidocs, "index.html" );
+File index = new File( apidocs, "index.html" )
 assert index.exists() && index.isFile() : "target/reports/apidocs/index.html file is missing or not a file."
 
-File test1 = new File( apidocs, "test/Test1.html" );
+File test1 = new File( apidocs, "test/Test1.html" )
 assert test1.exists() && test1.isFile() : "target/reports/apidocs/test/Test1.html file is missing or not a file."
 
-File test2 = new File( apidocs, "test/Test2.html" );
+File test2 = new File( apidocs, "test/Test2.html" )
 assert test2.exists() && test2.isFile() : "target/reports/apidocs/test/Test2.html file is missing or not a file."
 
-File generatedTest1 = new File( apidocs, "test/GeneratedTest1.html" );
+File generatedTest1 = new File( apidocs, "test/GeneratedTest1.html" )
 assert generatedTest1.exists() && generatedTest1.isFile() : "target/reports/apidocs/test/GeneratedTest1.html file is missing or not a file."
 
-File generatedTest2 = new File( apidocs, "test/GeneratedTest2.html" );
+File generatedTest2 = new File( apidocs, "test/GeneratedTest2.html" )
 assert generatedTest2.exists() && generatedTest2.isFile() : "target/reports/apidocs/test/GeneratedTest2.html file is missing or not a file."

@@ -18,8 +18,8 @@
  * under the License.
  */
 
-import java.io.*;
+import java.io.*
 
-File javadocFile = new File( basedir, "target/reports/apidocs/foo/Bar.html" );
+File javadocFile = new File(basedir, "target/reports/apidocs/foo/Bar.html")
 
 assert javadocFile.exists() : javadocFile.getAbsolutePath() + " is missing."

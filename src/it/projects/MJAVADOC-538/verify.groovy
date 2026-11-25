@@ -17,10 +17,10 @@
  * under the License.
  */
 
-def log = new File( basedir, 'build.log' ).text
+def log = new File(basedir, 'build.log').text
 
 // the forked javadoc JVM did see the option, so the filter in JavadocOutputStreamConsumer was exercised
-assert log.contains( 'Picked up JAVA_TOOL_OPTIONS: -Dabc=def' ) : 'JAVA_TOOL_OPTIONS did not reach the forked JVM'
+assert log.contains('Picked up JAVA_TOOL_OPTIONS: -Dabc=def') : 'JAVA_TOOL_OPTIONS did not reach the forked JVM'
 // and its announcement was neither reported as a javadoc warning nor failed the build (failOnWarnings=true)
 assert !log.contains( '[WARNING] Picked up JAVA_TOOL_OPTIONS' ) : 'JVM announcement was logged as a javadoc warning'
 assert !log.contains( 'Javadoc Warnings' )

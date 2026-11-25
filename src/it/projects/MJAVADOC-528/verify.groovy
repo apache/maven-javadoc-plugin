@@ -17,5 +17,5 @@
  * under the License.
  */
 
-File log = new File( basedir, 'build.log' )
-assert !( log.text =~ /.*Invalid cookie header:[^\r\n]+\. Invalid 'expires' attribute:.*/ )
+File log = new File(basedir, 'build.log')
+assert !(log.text =~ /.*Invalid cookie header:[^\r\n]+\. Invalid 'expires' attribute:.*/)

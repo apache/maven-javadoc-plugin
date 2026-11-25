@@ -17,44 +17,44 @@
  * under the License.
  */
 
-// A 
-assert new File( basedir, 'target/site/apidocs/a/b/c/d/D1.html').exists()
-assert new File( basedir, 'target/site/apidocs/a/b/c/d/D2.html').exists()
-assert new File( basedir, 'target/site/apidocs/a/b/e/E.html').exists()
-assert new File( basedir, 'target/site/apidocs/a/f/F.html').exists()
+// A
+assert new File(basedir, 'target/site/apidocs/a/b/c/d/D1.html').exists()
+assert new File(basedir, 'target/site/apidocs/a/b/c/d/D2.html').exists()
+assert new File(basedir, 'target/site/apidocs/a/b/e/E.html').exists()
+assert new File(basedir, 'target/site/apidocs/a/f/F.html').exists()
 
 // B
-assert new File( basedir, 'b/target/site/apidocs/a/b/c/d/D1.html').exists()
-assert new File( basedir, 'b/target/site/apidocs/a/b/c/d/D2.html').exists()
-assert new File( basedir, 'b/target/site/apidocs/a/b/e/E.html').exists()
-assert !(new File( basedir, 'b/target/site/apidocs/a/f/F.html').exists())
+assert new File(basedir, 'b/target/site/apidocs/a/b/c/d/D1.html').exists()
+assert new File(basedir, 'b/target/site/apidocs/a/b/c/d/D2.html').exists()
+assert new File(basedir, 'b/target/site/apidocs/a/b/e/E.html').exists()
+assert !(new File(basedir, 'b/target/site/apidocs/a/f/F.html').exists())
 
 // C
-assert new File( basedir, 'b/c/target/site/apidocs/a/b/c/d/D1.html').exists()
-assert new File( basedir, 'b/c/target/site/apidocs/a/b/c/d/D2.html').exists()
-assert !(new File( basedir, 'b/c/target/site/apidocs/a/b/e/E.html').exists())
-assert !(new File( basedir, 'b/c/target/site/apidocs/a/f/F.html').exists())
+assert new File(basedir, 'b/c/target/site/apidocs/a/b/c/d/D1.html').exists()
+assert new File(basedir, 'b/c/target/site/apidocs/a/b/c/d/D2.html').exists()
+assert !(new File(basedir, 'b/c/target/site/apidocs/a/b/e/E.html').exists())
+assert !(new File(basedir, 'b/c/target/site/apidocs/a/f/F.html').exists())
 
 // D1
-assert new File( basedir, 'b/c/d1/target/site/apidocs/a/b/c/d/D1.html').exists()
-assert !(new File( basedir, 'b/c/d1/target/site/apidocs/a/b/c/d/D2.html').exists())
-assert !(new File( basedir, 'b/c/d1/target/site/apidocs/a/b/e/E.html').exists())
-assert !(new File( basedir, 'b/c/d1/target/site/apidocs/a/f/F.html').exists())
+assert new File(basedir, 'b/c/d1/target/site/apidocs/a/b/c/d/D1.html').exists()
+assert !(new File(basedir, 'b/c/d1/target/site/apidocs/a/b/c/d/D2.html').exists())
+assert !(new File(basedir, 'b/c/d1/target/site/apidocs/a/b/e/E.html').exists())
+assert !(new File(basedir, 'b/c/d1/target/site/apidocs/a/f/F.html').exists())
 
 // D2
-assert !(new File( basedir, 'b/c/d2/target/site/apidocs/a/b/c/d/D1.html').exists())
-assert new File( basedir, 'b/c/d2/target/site/apidocs/a/b/c/d/D2.html').exists()
-assert !(new File( basedir, 'b/c/d2/target/site/apidocs/a/b/e/E.html').exists())
-assert !(new File( basedir, 'b/c/d2/target/site/apidocs/a/f/F.html').exists())
+assert !(new File(basedir, 'b/c/d2/target/site/apidocs/a/b/c/d/D1.html').exists())
+assert new File(basedir, 'b/c/d2/target/site/apidocs/a/b/c/d/D2.html').exists()
+assert !(new File(basedir, 'b/c/d2/target/site/apidocs/a/b/e/E.html').exists())
+assert !(new File(basedir, 'b/c/d2/target/site/apidocs/a/f/F.html').exists())
 
 // E
-assert !(new File( basedir, 'b/e/target/site/apidocs/a/b/c/d/D1.html').exists())
-assert !(new File( basedir, 'b/e/target/site/apidocs/a/b/c/d/D2.html').exists())
-assert new File( basedir, 'b/e/target/site/apidocs/a/b/e/E.html').exists()
-assert !(new File( basedir, 'b/e/target/site/apidocs/a/f/F.html').exists())
+assert !(new File(basedir, 'b/e/target/site/apidocs/a/b/c/d/D1.html').exists())
+assert !(new File(basedir, 'b/e/target/site/apidocs/a/b/c/d/D2.html').exists())
+assert new File(basedir, 'b/e/target/site/apidocs/a/b/e/E.html').exists()
+assert !(new File(basedir, 'b/e/target/site/apidocs/a/f/F.html').exists())
 
 // F
-assert !(new File( basedir, 'f/target/site/apidocs/a/b/c/d/D1.html').exists())
-assert !(new File( basedir, 'f/target/site/apidocs/a/b/c/d/D2.html').exists())
-assert !(new File( basedir, 'f/target/site/apidocs/a/b/e/E.html').exists())
-assert new File( basedir, 'f/target/site/apidocs/a/f/F.html').exists()
+assert !(new File(basedir, 'f/target/site/apidocs/a/b/c/d/D1.html').exists())
+assert !(new File(basedir, 'f/target/site/apidocs/a/b/c/d/D2.html').exists())
+assert !(new File(basedir, 'f/target/site/apidocs/a/b/e/E.html').exists())
+assert new File(basedir, 'f/target/site/apidocs/a/f/F.html').exists()

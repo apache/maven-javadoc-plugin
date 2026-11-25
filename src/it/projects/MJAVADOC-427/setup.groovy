@@ -67,12 +67,12 @@ if (!pomContent.contains('__MJAVADOC_427_PORT__')) {
 HttpServer server = HttpServer.create(new InetSocketAddress(0), 0)
 int port = server.address.port
 server.executor = Executors.newFixedThreadPool(2, new ThreadFactory() {
-    Thread newThread(Runnable r) {
-        Thread t = new Thread(r, "mjavadoc-427-mock-" + System.identityHashCode(r))
-        t.daemon = true
-        t
-    }
-})
+            Thread newThread(Runnable r) {
+                Thread t = new Thread(r, "mjavadoc-427-mock-" + System.identityHashCode(r))
+                t.daemon = true
+                t
+            }
+        })
 
 // Hit log: each handler appends one line per request so verify.groovy can
 // directly assert that both the base URL and the redirected URL were

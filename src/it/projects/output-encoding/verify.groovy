@@ -17,47 +17,43 @@
  * under the License.
  */
 
-import java.io.*;
-import org.codehaus.plexus.util.*;
+import java.io.*
+import org.codehaus.plexus.util.*
 
-boolean result = true;
+boolean result = true
 
-boolean checkEncoding( String module, String sourceEncoding, String reportingEncoding )
-{
-    print( "module " + module + ", source encoding " + sourceEncoding
-           + ", expected reporting encoding " + reportingEncoding );
+boolean checkEncoding(String module, String sourceEncoding, String reportingEncoding) {
+    print("module " + module + ", source encoding " + sourceEncoding
+            + ", expected reporting encoding " + reportingEncoding)
 
-    File source = new File( basedir, module + "/src/main/java/Test.java" );
-    File javadoc = new File( basedir, module + "/target/reports/apidocs/Test.html" );
+    File source = new File(basedir, module + "/src/main/java/Test.java")
+    File javadoc = new File(basedir, module + "/target/reports/apidocs/Test.html")
 
-    String java = FileUtils.fileRead( source, sourceEncoding );
-    String html = FileUtils.fileRead( javadoc, reportingEncoding );
+    String java = FileUtils.fileRead(source, sourceEncoding)
+    String html = FileUtils.fileRead(javadoc, reportingEncoding)
 
-    if ( html.indexOf( "text/html; charset=" + reportingEncoding ) < 0 )
-    {
-        System.err.println( "charset not specified in content-type of " + javadoc );
-        return false;
+    if (html.indexOf("text/html; charset=" + reportingEncoding) < 0) {
+        System.err.println("charset not specified in content-type of " + javadoc)
+        return false
     }
 
-    String javaChars = StringUtils.getNestedString( java, "{non-ascii chars delimiter}" );
-    String htmlChars = StringUtils.getNestedString( html, "{non-ascii chars delimiter}" );
+    String javaChars = StringUtils.getNestedString(java, "{non-ascii chars delimiter}")
+    String htmlChars = StringUtils.getNestedString(html, "{non-ascii chars delimiter}")
 
-    print( "javaChars = " + javaChars );
-    print( "htmlChars = " + htmlChars );
+    print("javaChars = " + javaChars)
+    print("htmlChars = " + htmlChars)
 
-    return javaChars.equals( htmlChars );
+    return javaChars.equals(htmlChars)
 }
 
-try
-{
-    result = checkEncoding( "default", "ISO-8859-15", "UTF-8")
-             && checkEncoding( "encoding", "UTF-8", "UTF-16" )
-             && checkEncoding( "docencoding", "UTF-8", "UTF-16" );
+try {
+    result = checkEncoding("default", "ISO-8859-15", "UTF-8")
+            && checkEncoding("encoding", "UTF-8", "UTF-16")
+            && checkEncoding("docencoding", "UTF-8", "UTF-16")
 }
-catch( IOException e )
-{
-    e.printStackTrace();
-    result = false;
+catch(IOException e) {
+    e.printStackTrace()
+    result = false
 }
 
-return result;
+return result
