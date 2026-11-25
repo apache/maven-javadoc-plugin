@@ -17,14 +17,14 @@
  * under the License.
  */
 
-import java.io.File;
+import java.io.File
 
-File distroTarget = new File( basedir, "MJAVADOC-280-1-distro/target/reports" );
-File apidocs = new File( distroTarget, "apidocs" );
-File testApidocs = new File( distroTarget, "testapidocs" );
+File distroTarget = new File(basedir, "MJAVADOC-280-1-distro/target/reports")
+File apidocs = new File(distroTarget, "apidocs")
+File testApidocs = new File(distroTarget, "testapidocs")
 
-File f;
-assert ( f = new File( apidocs, "org/apache/maven/plugins/mjavadoc/it/moda/App.html" ) ).exists() : f + " does not exist!"
+File f
+assert (f = new File(apidocs, "org/apache/maven/plugins/mjavadoc/it/moda/App.html")).exists() : f + " does not exist!"
 
 assert ( f = new File( apidocs, "org/apache/maven/plugins/mjavadoc/it/modb/App.html" ) ).exists() : f + " does not exist!"
 

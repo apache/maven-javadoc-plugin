@@ -18,21 +18,21 @@
  * under the License.
  */
 
-import java.io.*;
+import java.io.*
 
 // Generated files checks
-File apidocs = new File( basedir, "target/site/apidocs" );
+File apidocs = new File(basedir, "target/site/apidocs")
 assert apidocs.isDirectory() : apidocs.getAbsolutePath() + " dir is missing or a directory."
 
-File resourcesDir = new File( apidocs, "resources" );
+File resourcesDir = new File( apidocs, "resources" )
 assert resourcesDir.isDirectory() : resourcesDir.getAbsolutePath() + " dir is missing or a directory."
 
-File inheritSrc = new File( basedir, "src/main/javadoc/resources/inherit.gif" );
-File inheritTarget = new File( resourcesDir, "inherit.gif" );
+File inheritSrc = new File( basedir, "src/main/javadoc/resources/inherit.gif" )
+File inheritTarget = new File( resourcesDir, "inherit.gif" )
 assert inheritTarget.isFile() : inheritTarget.getAbsolutePath() + " file is missing or a file."
 assert inheritSrc.length() == inheritTarget.length() : "inherit.gif seems not copied."
 
-File docFiles = new File( apidocs, "com/mycompany/myapp/doc-files" );
+File docFiles = new File( apidocs, "com/mycompany/myapp/doc-files" )
 assert docFiles.isDirectory() : docFiles.getAbsolutePath() + " dir is missing or a directory."
-resourcesDir = new File( apidocs, "com/mycompany/myapp/resources" );
+resourcesDir = new File( apidocs, "com/mycompany/myapp/resources" )
 assert !resourcesDir.isDirectory() : resourcesDir.getAbsolutePath() + " dir exists."

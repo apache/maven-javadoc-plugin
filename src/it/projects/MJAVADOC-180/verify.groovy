@@ -18,16 +18,16 @@
  * under the License.
  */
 
-import java.io.*;
+import java.io.*
 
-File target = new File( basedir, "target" );
+File target = new File(basedir, "target")
 assert target.exists() && target.isDirectory() : "target file is missing or a directory."
 
-File testapidocs = new File( basedir, "target/reports/testapidocs" );
+File testapidocs = new File( basedir, "target/reports/testapidocs" )
 assert testapidocs.exists() && testapidocs.isDirectory() : "target/reports/testapidocs file is missing or a directory."
 
-File options = new File( testapidocs, "options" );
+File options = new File( testapidocs, "options" )
 assert options.exists() && options.isFile() : "target/reports/testapidocs/options file is missing or not a file."
 
-File index = new File( testapidocs, "index.html" );
+File index = new File( testapidocs, "index.html" )
 assert index.exists() && index.isFile() : "target/reports/testapidocs/index.html file is missing or not a file."

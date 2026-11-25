@@ -17,7 +17,7 @@
  * under the License.
  */
 
-def file = new File( basedir, 'target/reports/apidocs/mjavadoc427/App.html' );
+def file = new File(basedir, 'target/reports/apidocs/mjavadoc427/App.html')
 
 assert file.exists()
 
@@ -34,18 +34,20 @@ assert file.text =~ /public.*?<a href="http:\/\/localhost:[0-9]+\/[^"]*".*?>Logg
 //     URL must have been requested. This is a stronger signal than the
 //     original IT, which only inferred redirect-following from the
 //     absence of a broken link.
-def hitsFile = new File( basedir, 'redirect-hits.log' );
+def hitsFile = new File(basedir, 'redirect-hits.log')
 assert hitsFile.exists(), "redirect-hits.log not found — setup.groovy did not start the mock server"
 def hits = hitsFile.readLines()
-assert hits.any { it.startsWith('base ') }, \
-    "javadoc never probed the base URL (no 'base ...' line in redirect-hits.log)"
-assert hits.any { it.startsWith('redirected ') }, \
-    "javadoc did not follow the 301 to /redirected/ (no 'redirected ...' line in redirect-hits.log)"
+assert hits.any {
+    it.startsWith('base ')
+}, "javadoc never probed the base URL (no 'base ...' line in redirect-hits.log)"
+assert hits.any {
+    it.startsWith('redirected ')
+}, "javadoc did not follow the 301 to /redirected/ (no 'redirected ...' line in redirect-hits.log)"
 
 // (3) Defensive: no 'Error fetching link' warning. That string was the
 //     canonical flake signature on CI when the plugin tried (and failed)
 //     to reach slf4j.org. It must not reappear via a stray external URL.
-def buildLog = new File( basedir, 'build.log' );
-if ( buildLog.exists() ) {
-    assert ! ( buildLog.text =~ /Error fetching link/ ), "Unexpected 'Error fetching link' warning in build.log"
+def buildLog = new File(basedir, 'build.log')
+if (buildLog.exists()) {
+    assert ! (buildLog.text =~ /Error fetching link/), "Unexpected 'Error fetching link' warning in build.log"
 }

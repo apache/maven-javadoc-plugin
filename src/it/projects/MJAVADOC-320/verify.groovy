@@ -18,31 +18,31 @@
  * under the License.
  */
 
-File target = new File( basedir, "module2/target" );
+File target = new File(basedir, "module2/target")
 assert target.exists()
 assert target.isDirectory()
 
-File apidocs = new File( target, "reports/apidocs" );
+File apidocs = new File(target, "reports/apidocs")
 assert apidocs.exists()
 assert apidocs.isDirectory()
 
 // module3 must be included
-File module3File = new File( apidocs, "org/apache/maven/plugin/javadoc/it/Module3Class.html" );
+File module3File = new File(apidocs, "org/apache/maven/plugin/javadoc/it/Module3Class.html")
 assert module3File.exists()
 assert module3File.isFile()
 
 // el-api must be included
-File elApiFile = new File( apidocs, "javax/el/ValueExpression.html" );
+File elApiFile = new File(apidocs, "javax/el/ValueExpression.html")
 assert elApiFile.exists()
 assert elApiFile.isFile()
 
 // module1 must NOT be included
-File module1File = new File( apidocs, "org/apache/maven/plugin/javadoc/it/Module1Class.html" );
+File module1File = new File(apidocs, "org/apache/maven/plugin/javadoc/it/Module1Class.html")
 assert !module1File.exists()
 assert !module1File.isFile()
 
 // servlet-api must NOT be included
-File servletSpecFile = new File( apidocs, "javax/servlet/ServletContext.html" );
+File servletSpecFile = new File(apidocs, "javax/servlet/ServletContext.html")
 assert !servletSpecFile.exists()
 assert !servletSpecFile.isFile()
 

@@ -17,18 +17,16 @@
  * under the License.
  */
 
-import java.io.*;
+import java.io.*
 
-File list;
+File list
 
-String javaVersion = System.getProperty( "java.specification.version" );
-if ( javaVersion.startsWith( "1." ) || javaVersion.equals( "9" ) )
-{
-    list = new File( basedir, "target/reports/apidocs/package-list" );
+String javaVersion = System.getProperty("java.specification.version")
+if (javaVersion.startsWith("1.") || javaVersion.equals("9")) {
+    list = new File(basedir, "target/reports/apidocs/package-list")
 }
-else
-{
-    list = new File( basedir, "target/reports/apidocs/element-list" );
+else {
+    list = new File(basedir, "target/reports/apidocs/element-list")
 }
 
 assert list.exists() : list + " is missing"

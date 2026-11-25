@@ -17,8 +17,8 @@
  * under the License.
  */
 
-def file = new File( basedir, 'target/mjavadoc610-1.0-SNAPSHOT-javadoc.jar' )
+def file = new File(basedir, 'target/mjavadoc610-1.0-SNAPSHOT-javadoc.jar')
 assert file.exists()
 
-assert new File( basedir, 'target/reports/apidocs/com.foo/com/foo/MyClass.html').exists()
-assert new File( basedir, 'target/reports/apidocs/com.foo/com/foo/OtherClass.html').exists()
+assert new File(basedir, 'target/reports/apidocs/com.foo/com/foo/MyClass.html').exists()
+assert new File(basedir, 'target/reports/apidocs/com.foo/com/foo/OtherClass.html').exists()

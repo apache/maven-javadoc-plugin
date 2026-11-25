@@ -18,17 +18,17 @@
  * under the License.
  */
 
-import java.io.*;
+import java.io.*
 
-File target = new File( basedir, "target" );
+File target = new File(basedir, "target")
 assert target.exists() && target.isDirectory() : "target file is missing or a directory."
 
-File apidocs = new File( basedir, "target/reports/apidocs" );
+File apidocs = new File( basedir, "target/reports/apidocs" )
 assert apidocs.exists() && apidocs.isDirectory() : "target/reports/apidocs file is missing or a directory."
 
-File options = new File( apidocs, "options" );
+File options = new File( apidocs, "options" )
 assert options.exists() && options.isFile() : "target/reports/apidocs/options file is missing or not a file."
 
-String str = options.getText( 'UTF-8' );
+String str = options.getText( 'UTF-8' )
 
 assert str.contains( "junit-4.13.1.jar" ) : "Javadoc doesn't used correct artifacts."

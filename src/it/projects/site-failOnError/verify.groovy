@@ -17,11 +17,11 @@
  * under the License.
  */
 
-def log = new File( basedir, 'build.log' ).text
+def log = new File(basedir, 'build.log').text
 
 // javadoc fails on this project (no public class), the report logs the error ...
-assert log.contains( 'No public or protected classes found to document.' )
-assert log.contains( '[ERROR] Error while creating javadoc report: ' )
+assert log.contains('No public or protected classes found to document.')
+assert log.contains('[ERROR] Error while creating javadoc report: ')
 // ... and with failOnError=false the site build still succeeds
-assert log.contains( 'BUILD SUCCESS' )
-assert new File( basedir, 'target/site/index.html' ).isFile()
+assert log.contains('BUILD SUCCESS')
+assert new File(basedir, 'target/site/index.html').isFile()

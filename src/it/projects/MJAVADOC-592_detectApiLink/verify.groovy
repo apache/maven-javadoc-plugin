@@ -18,4 +18,6 @@
  */
 
 def options = new File(basedir,'target/reports/apidocs/options')
-assert options.readLines().dropWhile{it!='-linkoffline'}.get(1).startsWith("'https://docs.oracle.com/javase/8/docs/api")
+assert options.readLines().dropWhile{
+    it != '-linkoffline'
+}.get(1).startsWith("'https://docs.oracle.com/javase/8/docs/api")

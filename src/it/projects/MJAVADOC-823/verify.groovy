@@ -18,8 +18,8 @@
  */
 
 // Aggregate
-assert new File( basedir, 'target/reports/apidocs/a/b/c/d/D1.html').exists()
-assert new File( basedir, 'target/reports/apidocs/a/b/c/d/D2.html').exists()
-assert new File( basedir, 'target/reports/apidocs/a/b/e/E.html').exists()
-assert new File( basedir, 'target/reports/apidocs/a/f/F.html').exists()
+assert new File(basedir, 'target/reports/apidocs/a/b/c/d/D1.html').exists()
+assert new File(basedir, 'target/reports/apidocs/a/b/c/d/D2.html').exists()
+assert new File(basedir, 'target/reports/apidocs/a/b/e/E.html').exists()
+assert new File(basedir, 'target/reports/apidocs/a/f/F.html').exists()
 

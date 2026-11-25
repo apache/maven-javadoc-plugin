@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- 
-def log = new File( basedir, 'build.log').text
 
-assert log.count( "[INFO] Toolchain in maven-compiler-plugin: JDK" ) == 2
-assert log.count( "[INFO] Toolchain in maven-javadoc-plugin: JDK" ) == 1
+def log = new File(basedir, 'build.log').text
+
+assert log.count("[INFO] Toolchain in maven-compiler-plugin: JDK") == 2
+assert log.count("[INFO] Toolchain in maven-javadoc-plugin: JDK") == 1

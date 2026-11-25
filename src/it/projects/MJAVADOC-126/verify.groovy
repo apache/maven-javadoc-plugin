@@ -18,19 +18,19 @@
  * under the License.
  */
 
-import java.io.*;
+import java.io.*
 
-File target = new File( basedir, "test/target" );
+File target = new File(basedir, "test/target")
 assert target.isDirectory() : "target is missing or not a directory."
 
-File apidocs = new File( basedir, "test/target/reports/apidocs" );
+File apidocs = new File( basedir, "test/target/reports/apidocs" )
 assert apidocs.isDirectory() : apidocs.getAbsolutePath() + " is missing or not a directory."
 
-File file1 = new File( apidocs, "file1.txt" );
+File file1 = new File( apidocs, "file1.txt" )
 assert file1.isFile() : file1.getAbsolutePath() + " is missing or a directory."
 
-File file2 = new File( apidocs, "file2.txt" );
+File file2 = new File( apidocs, "file2.txt" )
 assert file2.isFile() : file2.getAbsolutePath() + " is missing or a directory."
 
-File metainf = new File( apidocs, "META-INF" );
+File metainf = new File( apidocs, "META-INF" )
 assert !metainf.isDirectory() : metainf.getAbsolutePath() + " exists."

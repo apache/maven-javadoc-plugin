@@ -17,7 +17,7 @@
  * under the License.
  */
 
-def log = new File( basedir, 'build.log').text
+def log = new File(basedir, 'build.log').text
 
 assert log.count("[DEBUG]   (f) offline = false") == 0
 // both invocations append to the same build.log: once from the offline-in-pom profile, once from -Dmaven.javadoc.offline=true

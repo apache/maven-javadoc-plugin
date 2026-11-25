@@ -18,24 +18,21 @@
  * under the License.
  */
 
-import java.io.*;
+import java.io.*
 
-boolean result = true;
+boolean result = true
 
-try
-{
+try {
     // Generated files checks
-    File apidocs = new File( basedir, "target/site/apidocs" );
-    if ( !apidocs.exists() || !apidocs.isDirectory() )
-    {
-        System.err.println( apidocs.getAbsolutePath() + " dir is missing or a directory." );
-        return false;
+    File apidocs = new File(basedir, "target/site/apidocs")
+    if (!apidocs.exists() || !apidocs.isDirectory()) {
+        System.err.println(apidocs.getAbsolutePath() + " dir is missing or a directory.")
+        return false
     }
 }
-catch( RuntimeException e )
-{
-    e.printStackTrace();
-    return false;
+catch(RuntimeException e) {
+    e.printStackTrace()
+    return false
 }
 
-return result;
+return result
