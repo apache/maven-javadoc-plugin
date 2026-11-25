@@ -18,8 +18,6 @@
  * under the License.
  */
 
-import java.io.*
-
 File indexFile = new File(basedir, "target/reports/testapidocs/mjavadoc414/test/AppTest.html")
 
 assert indexFile.exists() : indexFile.getAbsolutePath() + " is missing."

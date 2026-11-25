@@ -18,8 +18,6 @@
  * under the License.
  */
 
-import java.io.*
-
 File target = new File(basedir, "target")
 assert target.exists() && target.isDirectory() : "target file is missing or a directory."
 

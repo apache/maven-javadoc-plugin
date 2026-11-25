@@ -18,8 +18,6 @@
  * under the License.
  */
 
-import java.io.*
-
 // Generated files checks
 File apidocs = new File(basedir, "target/site/apidocs")
 assert apidocs.isDirectory() : apidocs.getAbsolutePath() + " dir is missing or a directory."

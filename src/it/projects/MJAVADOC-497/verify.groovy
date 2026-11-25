@@ -17,8 +17,6 @@
  * under the License.
  */
 
-import java.io.*
-
 File list
 
 String javaVersion = System.getProperty("java.specification.version")

@@ -18,8 +18,6 @@
  * under the License.
  */
 
-import java.io.*
-
 File target = new File(basedir, "test/target")
 assert target.isDirectory() : "target is missing or not a directory."
 
