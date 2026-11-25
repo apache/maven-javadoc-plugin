@@ -19,45 +19,16 @@
  */
 
 import java.io.*;
-import org.codehaus.plexus.util.*;
 
-boolean result = true;
+File target = new File( basedir, "target" );
+assert target.exists() && target.isDirectory() : "target file is missing or a directory."
 
-try
-{
-    File target = new File( basedir, "target" );
-    if ( !target.exists() || !target.isDirectory() )
-    {
-        System.err.println( "target file is missing or a directory." );
-        return false;
-    }
+File apidocs = new File( basedir, "target/reports/apidocs" );
+assert apidocs.exists() && apidocs.isDirectory() : "target/reports/apidocs file is missing or a directory."
 
-    File apidocs = new File( basedir, "target/reports/apidocs" );
-    if ( !apidocs.exists() || !apidocs.isDirectory() )
-    {
-        System.err.println( "target/reports/apidocs file is missing or a directory." );
-        return false;
-    }
+File options = new File( apidocs, "options" );
+assert options.exists() && options.isFile() : "target/reports/apidocs/options file is missing or not a file."
 
-    File options = new File( apidocs, "options" );
-    if ( !options.exists() || !options.isFile() )
-    {
-        System.err.println( "target/reports/apidocs/options file is missing or not a file." );
-        return false;
-    }
+String str = options.getText( 'UTF-8' );
 
-    String str = FileUtils.fileRead( options );
-
-    if ( !str.contains( "junit-4.13.1.jar" ) )
-    {
-        System.err.println( "Javadoc doesn't used correct artifacts." );
-        return false;
-    }
-}
-catch( IOException e )
-{
-    e.printStackTrace();
-    result = false;
-}
-
-return result;
+assert str.contains( "junit-4.13.1.jar" ) : "Javadoc doesn't used correct artifacts."

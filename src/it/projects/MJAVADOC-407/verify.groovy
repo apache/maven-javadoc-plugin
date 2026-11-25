@@ -19,14 +19,7 @@
  */
 
 import java.io.*;
-import org.codehaus.plexus.util.*;
 
 File javadocFile = new File( basedir, "target/reports/apidocs/foo/Bar.html" );
 
-if ( !javadocFile.exists() ) 
-{
-    System.err.println( javadocFile.getAbsolutePath() + " is missing." );
-    return false;
-}
-
-return true;
+assert javadocFile.exists() : javadocFile.getAbsolutePath() + " is missing."
