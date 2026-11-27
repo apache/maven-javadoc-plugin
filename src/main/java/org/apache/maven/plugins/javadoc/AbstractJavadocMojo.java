@@ -5970,7 +5970,15 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @return <code>true</code> if the pom configuration skips javadoc generation for the project
      */
     protected boolean isSkippedJavadoc(MavenProject mavenProject) {
-        String property = mavenProject.getProperties().getProperty("maven.javadoc.skip");
+        // a command-line -Dmaven.javadoc.skip=... overrides every reactor project's own property, the same
+        // way Maven resolves this plugin's own @Parameter(property = "maven.javadoc.skip") for each module
+        String property = session.getUserProperties().getProperty("maven.javadoc.skip");
+        if (property != null) {
+            boolean skip = BooleanUtils.toBoolean(property);
+            getLog().debug("isSkippedJavadoc " + mavenProject + " " + skip);
+            return skip;
+        }
+        property = mavenProject.getProperties().getProperty("maven.javadoc.skip");
         if (property != null) {
             boolean skip = BooleanUtils.toBoolean(property);
             getLog().debug("isSkippedJavadoc " + mavenProject + " " + skip);
