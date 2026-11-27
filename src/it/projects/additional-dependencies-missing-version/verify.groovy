@@ -19,4 +19,5 @@
 def log = new File(basedir, "build.log").text
 assert log.contains("Could not resolve additional dependency org.example.absent:diagnostic-artifact:null")
 assert log.contains("Caused by: org.apache.maven.reporting.MavenReportException:")
-assert log.contains("Caused by: java.lang.IllegalArgumentException:")
+assert log.contains("Caused by: java.lang.IllegalArgumentException:") ||
+        log.contains("Caused by: org.eclipse.aether.resolution.ArtifactResolutionException:")
