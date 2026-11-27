@@ -5384,7 +5384,7 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * Using Maven, a Javadoc link is given by <code>${project.url}/apidocs</code>.
      *
      * @return the detected Javadoc links using the Maven conventions for all dependencies defined in the current
-     *         project or an empty list.
+     *         project, or in every reactor project when aggregating, or an empty list.
      * @see #detectLinks
      * @see #isValidJavadocLink(String, boolean)
      * @since 2.6
@@ -5398,7 +5398,16 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
 
         List<String> dependenciesLinks = new ArrayList<>();
 
-        final Set<Artifact> dependencies = project.getDependencyArtifacts();
+        // An aggregator only resolves the execution root project's own dependencies, so a dependency
+        // declared solely in a non-root reactor module would otherwise never get a link.
+        final Set<Artifact> dependencies = new LinkedHashSet<>();
+        if (isAggregator()) {
+            for (MavenProject reactorProject : reactorProjects) {
+                dependencies.addAll(reactorProject.getDependencyArtifacts());
+            }
+        } else {
+            dependencies.addAll(project.getDependencyArtifacts());
+        }
         for (Artifact artifact : dependencies) {
             if (artifact.getFile() == null || !artifact.getFile().exists()) {
                 continue;
