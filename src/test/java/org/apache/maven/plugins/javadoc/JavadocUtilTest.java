@@ -461,7 +461,8 @@ class JavadocUtilTest {
      */
     @Test
     void testGetRedirectUrl() throws Exception {
-        Server server = null, redirectServer = null;
+        Server server = null;
+        Server redirectServer = null;
         try {
             redirectServer = new Server(0);
             redirectServer.setHandler(new AbstractHandler() {
@@ -764,6 +765,25 @@ class JavadocUtilTest {
         String value = "     *.internal:org.acme.exclude1.*:\n       org.acme.exclude2\n       ";
         List<String> values = JavadocUtil.toList(value);
         assertThat(values).containsExactly("*.internal", "org.acme.exclude1.*", "org.acme.exclude2");
+    }
+
+    /**
+     * MJAVADOC-624: a Java 9+ module jar used as a taglet artifact carries a module-info.class entry.
+     * Loading it as a class throws NoClassDefFoundError ("module-info is not a class because access_flag
+     * ACC_MODULE is set"), which must not abort taglet auto-detection for the jar's real classes.
+     */
+    @Test
+    void getTagletClassNamesSkipsModuleInfo(@TempDir Path tempDir) throws Exception {
+        Path jar = tempDir.resolve("taglet-module.jar");
+        try (OutputStream out = Files.newOutputStream(jar);
+                JarOutputStream jarOut = new JarOutputStream(out)) {
+            jarOut.putNextEntry(new ZipEntry("module-info.class"));
+            jarOut.closeEntry();
+        }
+
+        List<String> tagletClasses = JavadocUtil.getTagletClassNames(jar.toFile());
+
+        assertTrue(tagletClasses.isEmpty());
     }
 
     /**

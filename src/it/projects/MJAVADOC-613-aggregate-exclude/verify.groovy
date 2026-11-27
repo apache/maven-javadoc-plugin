@@ -19,24 +19,24 @@
 
 import java.util.jar.*
 
-def aggregatedJavadoc = new File( basedir, 'target/mjavadoc613-1.0-SNAPSHOT-javadoc.jar');
+def aggregatedJavadoc = new File(basedir, 'target/mjavadoc613-1.0-SNAPSHOT-javadoc.jar')
 
 assert aggregatedJavadoc.exists()
-assert new File( basedir, 'b/c/d1/target/mjavadoc613d1-1.0-SNAPSHOT.jar').exists()
-assert !(new File( basedir, 'b/c/d1/target/mjavadoc613d1-1.0-SNAPSHOT-javadoc.jar').exists())
-assert new File( basedir, 'b/c/d2/target/mjavadoc613d2-1.0-SNAPSHOT.jar').exists()
-assert !(new File( basedir, 'b/c/d2/target/mjavadoc613d2-1.0-SNAPSHOT-javadoc.jar').exists())
-assert new File( basedir, 'b/e/target/mjavadoc613e-1.0-SNAPSHOT.jar').exists()
-assert new File( basedir, 'b/e/target/mjavadoc613e-1.0-SNAPSHOT-javadoc.jar').exists()
-assert new File( basedir, 'f/target/mjavadoc613f-1.0-SNAPSHOT.jar').exists()
-assert !(new File( basedir, 'f/target/mjavadoc613f-1.0-SNAPSHOT-javadoc.jar').exists())
+assert new File(basedir, 'b/c/d1/target/mjavadoc613d1-1.0-SNAPSHOT.jar').exists()
+assert !(new File(basedir, 'b/c/d1/target/mjavadoc613d1-1.0-SNAPSHOT-javadoc.jar').exists())
+assert new File(basedir, 'b/c/d2/target/mjavadoc613d2-1.0-SNAPSHOT.jar').exists()
+assert !(new File(basedir, 'b/c/d2/target/mjavadoc613d2-1.0-SNAPSHOT-javadoc.jar').exists())
+assert new File(basedir, 'b/e/target/mjavadoc613e-1.0-SNAPSHOT.jar').exists()
+assert new File(basedir, 'b/e/target/mjavadoc613e-1.0-SNAPSHOT-javadoc.jar').exists()
+assert new File(basedir, 'f/target/mjavadoc613f-1.0-SNAPSHOT.jar').exists()
+assert !(new File(basedir, 'f/target/mjavadoc613f-1.0-SNAPSHOT-javadoc.jar').exists())
 
 def jar = new JarFile(aggregatedJavadoc)
 
 def files = new ArrayList()
 
 for (JarEntry file in jar.entries()){
-  files.add(file.getName())
+    files.add(file.getName())
 }
 
 assert files.contains("a/b/e/E.html")

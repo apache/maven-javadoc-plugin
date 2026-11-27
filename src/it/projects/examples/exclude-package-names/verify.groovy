@@ -17,14 +17,16 @@
  * under the License.
  */
 
-File packages = new File( basedir, 'target/reports/apidocs/packages' )
+File packages = new File(basedir, 'target/reports/apidocs/packages')
 
-def expectedPackages = ['com.mycompany.myapp',
-						'com.mycompany.myapp.package1',
-						'com.mycompany.myapp.package3',
-						'com.mycompany.myapp.package3.subpackage6',
-						'com.mycompany.myapp.package3.subpackage6.subsubpackage1',
-						'com.mycompany.myapp.package3.subpackage6.subsubpackage2',
-						'com.mycompany.myapp.package3.subpackage7'] as Set
+def expectedPackages = [
+    'com.mycompany.myapp',
+    'com.mycompany.myapp.package1',
+    'com.mycompany.myapp.package3',
+    'com.mycompany.myapp.package3.subpackage6',
+    'com.mycompany.myapp.package3.subpackage6.subsubpackage1',
+    'com.mycompany.myapp.package3.subpackage6.subsubpackage2',
+    'com.mycompany.myapp.package3.subpackage7'
+] as Set
 
 assert expectedPackages == packages.readLines() as Set

@@ -29,71 +29,85 @@ under the License.
 
 To generate output from an alternate doclet, add configuration similar to the following to your POM.
 
-In this example, the doclet is UmlGraph ([https://www.spinellis.gr/umlgraph/](https://www.spinellis.gr/umlgraph/)). UmlGraph allows the declarative specification and drawing of UML class and sequence diagrams.
-
-**Note about UmlGraph**: You must have the Graphviz binary in your PATH, or the images will not be generated. For more information about Graphviz, please refer to [http://www.graphviz.org/](http://www.graphviz.org/).
-
-<!-- MACRO{snippet|id=umlgraph|file=target/it/examples/alternate-doclet/pom.xml} -->
-
-**Note**:
-
-- [&lt;additionalOptions/&gt;](../javadoc-mojo.html#additionalOptions) parameter could be used to set additional parameters on the command line, specifically for doclet options.
-- [&lt;useStandardDocletOptions/&gt;](../javadoc-mojo.html#useStandardDocletOptions) parameter could be used to specify that the given doclet should use the [options provided by the Standard Doclet](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javadoc.html#standard-options-for-the-standard-doclet).
-- If you need more artifacts in the docletpath, you could use the [&lt;docletArtifacts/&gt;](../javadoc-mojo.html#docletArtifacts) parameter.
-
-After executing `mvn site`, you will see that a UML graph (.dot file) will be generated in the destination directory.
-
-# Using Alternate Doclet In Addition To The Javadoc Doclet
-
-To generate output from an alternate doclet in addition to the normal HTML Javadoc doclet, add configuration similar to the following to your POM.
-
-In this example, the doclet is Sun DocCheck ([http://www.oracle.com/technetwork/java/javase/documentation/index-jsp-135444.html/](http://www.oracle.com/technetwork/java/javase/documentation/index-jsp-135444.html/)). The Sun Doc Check Doclet is an extension to the Javadoc tool. It runs on source code and reviews documentation comments, generating an HTML report that identifies empty comments and other omissions and irregularities in the documentation comments.
+In this example, the doclet is [UMLDoclet](https://github.com/talsma-ict/umldoclet). It runs the Standard Doclet
+and adds UML class and package diagrams, as SVG images, to the generated pages.
 
 ```xml
 <project>
   ...
-  <reporting>
+  <reporting> (or <build>)
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>${project.version}</version>
-        <reportSets>
-          <reportSet>
-            <id>html</id>
-            <reports>
-              <report>javadoc</report>
-            </reports>
-          </reportSet>
-          <reportSet>
-            <id>doccheck</id>
-            <configuration>
-              <doclet>com.sun.tools.doclets.doccheck.DocCheck</doclet>
-
-              <!-- <docletPath>/path/to/doccheck.jar</docletPath> -->
-              <docletArtifact>
-                <groupId>com.sun.tools.doclets</groupId>
-                <artifactId>doccheck</artifactId>
-                <version>1.2b2</version>
-              </docletArtifact>
-              <additionalOptions>
-                <additionalOption>-d</additionalOption>
-                <additionalOption>${esc.d}{project.build.directory}/site/doccheck</additionalOption>
-              </additionalOptions>
-
-              <!-- For the project-reports page-->
-              <name>DocCheck</name>
-              <description>DocCheck documentation.</description>
-            </configuration>
-            <reports>
-              <report>javadoc</report>
-            </reports>
-          </reportSet>
-        </reportSets>
+        <configuration>
+          <doclet>nl.talsmasoftware.umldoclet.UMLDoclet</doclet>
+          <docletArtifact>
+            <groupId>nl.talsmasoftware</groupId>
+            <artifactId>umldoclet</artifactId>
+            <version>2.2.1</version>
+          </docletArtifact>
+        </configuration>
       </plugin>
       ...
     </plugins>
-  </reporting>
+  </reporting> (or </build>)
   ...
 </project>
 ```
+
+After executing `mvn site`, the class pages in `target/site/apidocs` show the diagrams, and each class and package
+has an `.svg` file next to its HTML page.
+
+**Note**:
+
+- [&lt;additionalOptions/&gt;](../javadoc-mojo.html${esc.hash}additionalOptions) parameter could be used to set additional parameters on the command line, specifically for doclet options.
+- [&lt;useStandardDocletOptions/&gt;](../javadoc-mojo.html${esc.hash}useStandardDocletOptions) parameter could be used to specify that the given doclet should use the [options provided by the Standard Doclet](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javadoc.html#standard-options-for-the-standard-doclet).
+- If you need more artifacts in the docletpath, you could use the [&lt;docletArtifacts/&gt;](../javadoc-mojo.html${esc.hash}docletArtifacts) parameter.
+- A doclet must implement the `jdk.javadoc.doclet` API. Doclets written for the old `com.sun.javadoc` API, such as
+  UmlGraph 5.x and DocCheck, do not run with current JDKs: that API was removed in JDK 13.
+
+# Using Alternate Doclet In Addition To The Javadoc Doclet
+
+To generate output from an alternate doclet in addition to the normal HTML Javadoc, keep the default configuration
+and add an execution of the `javadoc` goal that runs the other doclet and writes to its own
+[&lt;outputDirectory/&gt;](../javadoc-mojo.html${esc.hash}outputDirectory):
+
+```xml
+<project>
+  ...
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${project.version}</version>
+        <executions>
+          <execution>
+            <id>uml</id>
+            <goals>
+              <goal>javadoc</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <doclet>nl.talsmasoftware.umldoclet.UMLDoclet</doclet>
+              <docletArtifact>
+                <groupId>nl.talsmasoftware</groupId>
+                <artifactId>umldoclet</artifactId>
+                <version>2.2.1</version>
+              </docletArtifact>
+              <outputDirectory>${esc.d}{project.build.directory}/uml</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      ...
+    </plugins>
+  </build>
+  ...
+</project>
+```
+
+`mvn package javadoc:javadoc` then writes the alternate output to `target/uml/apidocs` and the normal Javadoc to
+`target/reports/apidocs`.

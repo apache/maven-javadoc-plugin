@@ -18,30 +18,14 @@
  * under the License.
  */
 
-import java.io.*;
-import org.codehaus.plexus.util.*;
+File indexFile = new File(basedir, "target/reports/testapidocs/mjavadoc414/test/AppTest.html")
 
-File indexFile = new File( basedir, "target/reports/testapidocs/mjavadoc414/test/AppTest.html" );
+assert indexFile.exists() : indexFile.getAbsolutePath() + " is missing."
 
-if ( !indexFile.exists() )
-{
-    System.err.println( indexFile.getAbsolutePath() + " is missing." );
-    return false;
-}
+File buildLog = new File( basedir, "build.log" )
+String content = buildLog.getText( 'UTF-8' )
+String importError = "error: cannot find symbol"
+assert !content.contains( importError ) : "build.log contains '" + importError + "'"
 
-File buildLog = new File( basedir, "build.log" );
-String content = IOUtil.toString( new FileInputStream( buildLog ) );
-String importError = "error: cannot find symbol";
-if ( content.contains( importError ) )
-{
-    System.err.println( "build.log contains '" + importError + "'" );
-    return false;
-}
-
-String referenceWarning = "Tag @link: reference not found: mjavadoc414.App";
-if ( content.contains( referenceWarning ) )
-{
-    System.err.println( "build.log contains '" + referenceWarning + "'" );
-    return false;
-}
-return true;
+String referenceWarning = "Tag @link: reference not found: mjavadoc414.App"
+assert !content.contains( referenceWarning ) : "build.log contains '" + referenceWarning + "'"

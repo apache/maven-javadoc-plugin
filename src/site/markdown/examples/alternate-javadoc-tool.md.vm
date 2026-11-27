@@ -26,12 +26,32 @@ under the License.
 
 # Using Alternate Javadoc Tool
 
-Using Alternate Javadoc Executable
-----------------------------------
+By default, the Maven Javadoc Plugin runs the Javadoc tool of the JDK that runs Maven: it looks for the `javadoc`
+executable under the Java property _java.home_, then under the environment variable _JAVA_HOME_. To build the
+documentation with another JDK, select it with a toolchain or give the path of its `javadoc` executable.
 
-By default, the Maven Javadoc Plugin tries to auto-detect the Javadoc Tool executable from the Java property _java.home_ or from the environment variable _JAVA_HOME_.
+Using a Toolchain
+-----------------
 
-You could also specify the executable of the Javadoc Tool to use with the [&lt;javadocExecutable/&gt;](../javadoc-mojo.html#javadocExecutable) parameter. For example:
+The [&lt;jdkToolchain/&gt;](../javadoc-mojo.html${esc.hash}jdkToolchain) parameter selects a JDK from your
+`~/.m2/toolchains.xml`, so the POM stays the same on every machine. It overrides a toolchain selected by the
+maven-toolchains-plugin. For example, with this toolchain:
+
+```xml
+<toolchains>
+  <toolchain>
+    <type>jdk</type>
+    <provides>
+      <version>17</version>
+    </provides>
+    <configuration>
+      <jdkHome>/usr/lib/jvm/java-17-openjdk</jdkHome>
+    </configuration>
+  </toolchain>
+</toolchains>
+```
+
+and this configuration:
 
 ```xml
 <project>
@@ -43,7 +63,9 @@ You could also specify the executable of the Javadoc Tool to use with the [&lt;j
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>${project.version}</version>
         <configuration>
-          <javadocExecutable>C:\jdk1.6.0\bin\javadoc.exe</javadocExecutable>
+          <jdkToolchain>
+            <version>17</version>
+          </jdkToolchain>
           ...
         </configuration>
       </plugin>
@@ -54,14 +76,53 @@ You could also specify the executable of the Javadoc Tool to use with the [&lt;j
 </project>
 ```
 
-**IMPORTANT NOTE**: by using [&lt;javadocExecutable/&gt;](../javadoc-mojo.html#javadocExecutable) parameter, the build will be platform dependent! A good practice is to define an environment variable (e.g. JAVA_1.6_HOME), so you could specify it: (e.g. &lt;javadocExecutable&gt;${esc.d}{env.JAVA_1.6_HOME}/bin/javadoc&lt;/javadocExecutable&gt;). An other ways is to define a POM property using &lt;project&gt;&lt;properties/&gt;&lt;/project&gt;.
+the plugin logs the JDK it uses:
+
+```text
+[INFO] Toolchain in maven-javadoc-plugin: JDK[/usr/lib/jvm/java-17-openjdk]
+```
+
+See the [Guide to Using Toolchains](https://maven.apache.org/guides/mini/guide-using-toolchains.html) for more
+information.
+
+Using Alternate Javadoc Executable
+----------------------------------
+
+You can also specify the executable of the Javadoc Tool to use with the
+[&lt;javadocExecutable/&gt;](../javadoc-mojo.html${esc.hash}javadocExecutable) parameter. The path of the JDK `bin`
+directory is enough. For example:
+
+```xml
+<project>
+  ...
+  <reporting> (or <build>)
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${project.version}</version>
+        <configuration>
+          <javadocExecutable>${esc.d}{env.JAVA_17_HOME}/bin/javadoc</javadocExecutable>
+          ...
+        </configuration>
+      </plugin>
+      ...
+    </plugins>
+  </reporting> (or </build>)
+  ...
+</project>
+```
+
+**IMPORTANT NOTE**: a literal path in [&lt;javadocExecutable/&gt;](../javadoc-mojo.html${esc.hash}javadocExecutable)
+makes the build depend on one machine. Use an environment variable, as above, or a POM property, or use a
+toolchain instead.
 
 Using Alternate Javadoc Version
 -------------------------------
 
-In the same way, the Maven Javadoc Plugin tries to auto-detect the Javadoc Tool version by calling _javadoc -J-fullversion_.
+The Maven Javadoc Plugin detects the version of the Javadoc Tool by calling _javadoc -J-version_.
 
-You could also specify the version of the Javadoc Tool executable. For example:
+You can also specify the version of the Javadoc Tool executable. For example:
 
 ```xml
 <project>
@@ -73,7 +134,7 @@ You could also specify the version of the Javadoc Tool executable. For example:
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>${project.version}</version>
         <configuration>
-          <javadocVersion>1.5</javadocVersion>
+          <javadocVersion>17</javadocVersion>
           ...
         </configuration>
       </plugin>
@@ -84,4 +145,9 @@ You could also specify the version of the Javadoc Tool executable. For example:
 </project>
 ```
 
-**Note**: You could have a warning if the _javadocVersion_ specified is not the same that the Javadoc Tool executable.
+**Note**: If the _javadocVersion_ you specify differs from the version of the Javadoc Tool executable, the plugin
+logs a warning such as:
+
+```text
+[WARNING] Are you sure about the <javadocVersion/> parameter? It seems to be 21.0.13
+```

@@ -20,27 +20,24 @@
 
 import java.util.jar.*
 
-File target1 = new File( basedir, 'test1/target/test1-1.0-SNAPSHOT-javadoc.jar' )
+File target1 = new File(basedir, 'test1/target/test1-1.0-SNAPSHOT-javadoc.jar')
 assert target1.exists()
 
-File target2 = new File( basedir, 'test2/target/test2-1.0-SNAPSHOT-javadoc.jar' )
+File target2 = new File(basedir, 'test2/target/test2-1.0-SNAPSHOT-javadoc.jar')
 assert target2.exists()
 
-JarFile jar = new JarFile( target1 )
+JarFile jar = new JarFile(target1)
 Enumeration jarEntries = jar.entries()
 long timestamp = -1
-while ( jarEntries.hasMoreElements() )
-{
+while (jarEntries.hasMoreElements()) {
     JarEntry entry = (JarEntry) jarEntries.nextElement()
-    if ( timestamp == -1 )
-    {
-        timestamp = entry.getTime(); // reproducible timestamp in jar file cause local timestamp depending on timezone
+    if (timestamp == -1) {
+        timestamp = entry.getTime() // reproducible timestamp in jar file cause local timestamp depending on timezone
     }
     assert entry.getTime() == timestamp
 }
-jarEntries = new JarFile( target1 ).entries()
-while ( jarEntries.hasMoreElements() )
-{
+jarEntries = new JarFile(target1).entries()
+while (jarEntries.hasMoreElements()) {
     JarEntry entry = (JarEntry) jarEntries.nextElement()
-	assert entry.getTime() == timestamp
+    assert entry.getTime() == timestamp
 }

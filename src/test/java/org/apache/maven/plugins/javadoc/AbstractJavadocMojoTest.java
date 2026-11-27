@@ -21,9 +21,11 @@ package org.apache.maven.plugins.javadoc;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.Properties;
 
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.javadoc.options.OfflineLink;
@@ -186,5 +188,37 @@ class AbstractJavadocMojoTest {
                 .hasMessageContaining("org.example:missing:null")
                 .hasMessageContaining("version can neither be null, empty nor blank")
                 .hasCause(cause);
+    }
+
+    /**
+     * MJAVADOC-649: a command-line {@code -Dmaven.javadoc.skip=...} must override a reactor project's own
+     * {@code maven.javadoc.skip} property the same way it overrides the current project's own mojo execution,
+     * so {@code javadoc:aggregate} doesn't treat every module as skipped when the profile sets the property
+     * but the command line turns it back off.
+     */
+    @Test
+    void mjavadoc649CommandLineSkipOverrideWinsOverReactorProjectProperty() throws Exception {
+        MavenProject reactorProject = new MavenProject();
+        reactorProject.getProperties().setProperty("maven.javadoc.skip", "true");
+
+        MavenSession session = mock(MavenSession.class);
+        Properties userProperties = new Properties();
+        userProperties.setProperty("maven.javadoc.skip", "false");
+        when(session.getUserProperties()).thenReturn(userProperties);
+        setVariableValueToObject(mojo, "session", session);
+
+        assertThat(mojo.isSkippedJavadoc(reactorProject)).isFalse();
+    }
+
+    @Test
+    void mjavadoc649ReactorProjectPropertyStillAppliesWithoutCommandLineOverride() throws Exception {
+        MavenProject reactorProject = new MavenProject();
+        reactorProject.getProperties().setProperty("maven.javadoc.skip", "true");
+
+        MavenSession session = mock(MavenSession.class);
+        when(session.getUserProperties()).thenReturn(new Properties());
+        setVariableValueToObject(mojo, "session", session);
+
+        assertThat(mojo.isSkippedJavadoc(reactorProject)).isTrue();
     }
 }

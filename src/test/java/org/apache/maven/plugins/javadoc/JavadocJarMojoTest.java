@@ -38,8 +38,8 @@ import org.codehaus.plexus.languages.java.version.JavaVersion;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
-import static org.apache.maven.api.plugin.testing.MojoExtension.getVariableValueFromObject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -96,15 +96,7 @@ class JavadocJarMojoTest {
         } else {
             assertTrue(set.contains("stylesheet.css"));
         }
-        JavaVersion javadocVersion = getVariableValueFromObject(mojo, "javadocRuntimeVersion");
-        if (javadocVersion.isBefore("1.7")) {
-            assertTrue(set.contains("resources/inherit.gif"));
-        } else if (javadocVersion.isBefore("1.8")) {
-            assertTrue(set.contains("resources/background.gif") /* JDK7 */);
-        } else {
-            // JDK8 has no resources anymore
-            assertFalse(set.contains("resources"));
-        }
+        assertFalse(set.contains("resources"));
 
         assertTrue(set.contains("javadocjar/def/package-use.html"));
         assertTrue(set.contains("javadocjar/def/package-tree.html"));
@@ -190,5 +182,22 @@ class JavadocJarMojoTest {
 
         mojo.execute();
         verify(log).debug("Skipping javadoc generation, everything is up to date.");
+    }
+
+    /**
+     * A project without sources yields no javadoc and therefore no (empty) jar (MJAVADOC-812).
+     *
+     * @throws Exception if any
+     */
+    @Test
+    @InjectMojo(goal = "jar", pom = "javadocjar-no-sources-plugin-config.xml")
+    @Basedir("/unit/javadocjar-no-sources")
+    void testNoJarWithoutSources(JavadocJarMojo mojo) throws Exception {
+        deleteDirectory(new File(getBasedir(), "target"));
+        mojo.execute();
+
+        verify(log).info("No Javadoc in project. Archive not created.");
+        assertThat(new File(getBasedir(), "/target/javadocjar-no-sources-javadoc.jar"))
+                .doesNotExist();
     }
 }

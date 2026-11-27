@@ -18,23 +18,11 @@
  * under the License.
  */
 
-import java.io.*;
-import org.codehaus.plexus.util.*;
+File indexFile = new File(basedir, "target/site/apidocs/index.html")
 
-File indexFile = new File( basedir, "target/site/apidocs/index.html" );
+assert indexFile.exists() : indexFile.getAbsolutePath() + " is missing."
 
-if ( !indexFile.exists() ) 
-{
-    System.err.println( indexFile.getAbsolutePath() + " is missing." );
-    return false;
-}
-
-File buildLog = new File( basedir, "build.log" );
-String content = IOUtil.toString( new FileInputStream( buildLog ) );
-String needle = ">>> maven-javadoc-plugin";
-if ( content.contains( needle ) )
-{
-    System.err.println( "build.log contains '" + needle + "'" );
-    return false;
-}
-return true;
+File buildLog = new File( basedir, "build.log" )
+String content = buildLog.getText( 'UTF-8' )
+String needle = ">>> maven-javadoc-plugin"
+assert !content.contains( needle ) : "build.log contains '" + needle + "'"

@@ -16,10 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- 
-assert new File( basedir, 'target/reports/apidocs/options').readLines()
-                                                        .dropWhile{ it != '-link'}
-                                                        .drop(1)
-                                                        .first()
-                                                        .startsWith( "'file:/" )
+
+assert new File(basedir, 'target/reports/apidocs/options').readLines()
+.dropWhile{
+    it != '-link'
+}
+.drop(1)
+.first()
+.startsWith("'file:/")
 

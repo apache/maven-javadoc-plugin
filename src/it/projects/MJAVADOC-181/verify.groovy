@@ -18,50 +18,41 @@
  * under the License.
  */
 
-import java.io.*;
+boolean result = true
 
-boolean result = true;
-
-try
-{
+try {
     // Generated files checks
-    File apidocs = new File( basedir, "application/target/reports/apidocs" );
-    if ( !apidocs.isDirectory() )
-    {
-        System.err.println( apidocs.getAbsolutePath() + " dir is missing or a directory." );
-        return false;
+    File apidocs = new File(basedir, "application/target/reports/apidocs")
+    if (!apidocs.isDirectory()) {
+        System.err.println(apidocs.getAbsolutePath() + " dir is missing or a directory.")
+        return false
     }
-    apidocs = new File( basedir, "library/module-a/target/reports/apidocs" );
-    if ( !apidocs.isDirectory() )
-    {
-        System.err.println( apidocs.getAbsolutePath() + " dir is missing or a directory." );
-        return false;
+    apidocs = new File(basedir, "library/module-a/target/reports/apidocs")
+    if (!apidocs.isDirectory()) {
+        System.err.println(apidocs.getAbsolutePath() + " dir is missing or a directory.")
+        return false
     }
-    apidocs = new File( basedir, "library/module-b/target/reports/apidocs" );
-    if ( !apidocs.isDirectory() )
-    {
-        System.err.println( apidocs.getAbsolutePath() + " dir is missing or a directory." );
-        return false;
+    apidocs = new File(basedir, "library/module-b/target/reports/apidocs")
+    if (!apidocs.isDirectory()) {
+        System.err.println(apidocs.getAbsolutePath() + " dir is missing or a directory.")
+        return false
     }
 
     // Not existing files
-    apidocs = new File( basedir, "target/reports/apidocs" );
-    if ( apidocs.exists() )
-    {
-        System.err.println( apidocs.getAbsolutePath() + " has been generated." );
-        return false;
+    apidocs = new File(basedir, "target/reports/apidocs")
+    if (apidocs.exists()) {
+        System.err.println(apidocs.getAbsolutePath() + " has been generated.")
+        return false
     }
-    apidocs = new File( basedir, "library/target/reports/apidocs" );
-    if ( apidocs.exists() )
-    {
-        System.err.println( apidocs.getAbsolutePath() + " has been generated." );
-        return false;
+    apidocs = new File(basedir, "library/target/reports/apidocs")
+    if (apidocs.exists()) {
+        System.err.println(apidocs.getAbsolutePath() + " has been generated.")
+        return false
     }
 }
-catch( RuntimeException e )
-{
-    e.printStackTrace();
-    return false;
+catch(RuntimeException e) {
+    e.printStackTrace()
+    return false
 }
 
-return result;
+return result

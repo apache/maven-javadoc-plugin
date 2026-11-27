@@ -17,35 +17,17 @@
  * under the License.
  */
 
-import java.io.File;
+import java.io.File
 
-File distroTarget = new File( basedir, "MJAVADOC-280-4-distro/target/reports" );
-File apidocs = new File( distroTarget, "apidocs" );
-File testApidocs = new File( distroTarget, "testapidocs" );
+File distroTarget = new File(basedir, "MJAVADOC-280-4-distro/target/reports")
+File apidocs = new File(distroTarget, "apidocs")
+File testApidocs = new File(distroTarget, "testapidocs")
 
-File f;
-if ( !( f = new File( apidocs, "org/apache/maven/plugins/mjavadoc/it/moda/App.html" ) ).exists() )
-{
-	  System.out.println( f + " does not exist!" );
-	  return false;
-}
+File f
+assert (f = new File(apidocs, "org/apache/maven/plugins/mjavadoc/it/moda/App.html")).exists() : f + " does not exist!"
 
-if ( !( f = new File( apidocs, "org/apache/maven/plugins/mjavadoc/it/modb/App.html" ) ).exists() )
-{
-	  System.out.println( f + " does not exist!" );
-	  return false;
-}
+assert ( f = new File( apidocs, "org/apache/maven/plugins/mjavadoc/it/modb/App.html" ) ).exists() : f + " does not exist!"
 
-if ( !( f = new File( testApidocs, "org/apache/maven/plugins/mjavadoc/it/moda/AppTest.html" ) ).exists() )
-{
-	  System.out.println( f + " does not exist!" );
-	  return false;
-}
+assert ( f = new File( testApidocs, "org/apache/maven/plugins/mjavadoc/it/moda/AppTest.html" ) ).exists() : f + " does not exist!"
 
-if ( !( f = new File( testApidocs, "org/apache/maven/plugins/mjavadoc/it/modb/AppTest.html" ) ).exists() )
-{
-	  System.out.println( f + " does not exist!" );
-	  return false;
-}
-
-return true;
+assert ( f = new File( testApidocs, "org/apache/maven/plugins/mjavadoc/it/modb/AppTest.html" ) ).exists() : f + " does not exist!"

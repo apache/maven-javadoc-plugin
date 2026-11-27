@@ -17,4 +17,4 @@
  * under the License.
  */
 
-assert new File( basedir, 'target/reports/apidocs/com/foo/MyClass.html').exists()
+assert new File(basedir, 'target/reports/apidocs/com/foo/MyClass.html').exists()
