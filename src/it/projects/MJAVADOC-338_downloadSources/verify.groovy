@@ -16,21 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- // NOOO never from central
+// NOOO never from central
 
 def buildLog = new File(basedir,'build.log')
 
-if ( mavenVersion ==~ /3\.[0-3]\..*/ )
-{
-  assert 1 == buildLog.readLines().count{it ==~ /\[INFO\] Downloading\: .+\/mjavadoc338-direct-1\.0-sources\.jar/} 
-  assert 1 == buildLog.readLines().count{it ==~ /\[INFO\] Downloading\: .+\/mjavadoc338-direct-1\.0-javadoc-resources\.jar/} 
+if (mavenVersion ==~ /3\.[0-3]\..*/) {
+    assert 1 == buildLog.readLines().count{
+        it ==~ /\[INFO\] Downloading\: .+\/mjavadoc338-direct-1\.0-sources\.jar/
+    }
+    assert 1 == buildLog.readLines().count{
+        it ==~ /\[INFO\] Downloading\: .+\/mjavadoc338-direct-1\.0-javadoc-resources\.jar/
+    }
 }
-else
-{
-  assert 1 == buildLog.readLines().count{it ==~ /\[INFO\] Downloading from mrm-maven-plugin\: .+\/mjavadoc338-direct-1\.0-sources\.jar/} 
-  assert 1 == buildLog.readLines().count{it ==~ /\[INFO\] Downloading from mrm-maven-plugin\: .+\/mjavadoc338-direct-1\.0-javadoc-resources\.jar/} 
+else {
+    assert 1 == buildLog.readLines().count{
+        it ==~ /\[INFO\] Downloading from mrm-maven-plugin\: .+\/mjavadoc338-direct-1\.0-sources\.jar/
+    }
+    assert 1 == buildLog.readLines().count{
+        it ==~ /\[INFO\] Downloading from mrm-maven-plugin\: .+\/mjavadoc338-direct-1\.0-javadoc-resources\.jar/
+    }
 }
 
 
-assert !buildLog.readLines().any{it ==~ /\[INFO\] Downloading from .+\/mjavadoc338-transitive-1\.0-sources\.jar/} 
-assert !buildLog.readLines().any{it ==~ /\[INFO\] Downloading from .+\/mjavadoc338-transitive-1\.0-javadoc-resources\.jar/} 
+assert !buildLog.readLines().any{
+    it ==~ /\[INFO\] Downloading from .+\/mjavadoc338-transitive-1\.0-sources\.jar/
+}
+assert !buildLog.readLines().any{
+    it ==~ /\[INFO\] Downloading from .+\/mjavadoc338-transitive-1\.0-javadoc-resources\.jar/
+}

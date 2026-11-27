@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Properties;
 
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.logging.Log;
@@ -229,5 +231,37 @@ class AbstractJavadocMojoTest {
 
         assertThat(link).isNotNull();
         assertThat(link.getUrl()).isEqualTo("https://docs.oracle.com/en/java/javase/11/docs/api/");
+    }
+
+    /**
+     * MJAVADOC-649: a command-line {@code -Dmaven.javadoc.skip=...} must override a reactor project's own
+     * {@code maven.javadoc.skip} property the same way it overrides the current project's own mojo execution,
+     * so {@code javadoc:aggregate} doesn't treat every module as skipped when the profile sets the property
+     * but the command line turns it back off.
+     */
+    @Test
+    void mjavadoc649CommandLineSkipOverrideWinsOverReactorProjectProperty() throws Exception {
+        MavenProject reactorProject = new MavenProject();
+        reactorProject.getProperties().setProperty("maven.javadoc.skip", "true");
+
+        MavenSession session = mock(MavenSession.class);
+        Properties userProperties = new Properties();
+        userProperties.setProperty("maven.javadoc.skip", "false");
+        when(session.getUserProperties()).thenReturn(userProperties);
+        setVariableValueToObject(mojo, "session", session);
+
+        assertThat(mojo.isSkippedJavadoc(reactorProject)).isFalse();
+    }
+
+    @Test
+    void mjavadoc649ReactorProjectPropertyStillAppliesWithoutCommandLineOverride() throws Exception {
+        MavenProject reactorProject = new MavenProject();
+        reactorProject.getProperties().setProperty("maven.javadoc.skip", "true");
+
+        MavenSession session = mock(MavenSession.class);
+        when(session.getUserProperties()).thenReturn(new Properties());
+        setVariableValueToObject(mojo, "session", session);
+
+        assertThat(mojo.isSkippedJavadoc(reactorProject)).isTrue();
     }
 }

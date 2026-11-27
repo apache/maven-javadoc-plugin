@@ -17,42 +17,16 @@
  * under the License.
  */
 
-import java.io.*;
+File list
 
-try
-{
-	File list;
-	 
-	String javaVersion = System.getProperty( "java.specification.version" );
-	if ( javaVersion.startsWith( "1." ) || javaVersion.equals( "9" ) )
-	{
-	    list = new File( basedir, "target/reports/apidocs/package-list" );
-	}
-	else
-	{
-		list = new File( basedir, "target/reports/apidocs/element-list" );
-	}
-	
-    if ( !list.exists() )
-    {
-        System.err.println( packageList + " is missing" );
-        return false;
-    }
-
-    FileReader fr = new FileReader( list );
-    BufferedReader br = new BufferedReader( fr );
-    String line = br.readLine();
-    if ( !"com.example.foo".equals( line ) || br.readLine() != null )
-    {
-        System.err.println( "package com.example.foo is not the only entry in the package-list" );
-        return false;
-    }
-    br.close();
+String javaVersion = System.getProperty("java.specification.version")
+if (javaVersion.startsWith("1.") || javaVersion.equals("9")) {
+    list = new File(basedir, "target/reports/apidocs/package-list")
 }
-catch ( Exception e )
-{
-    e.printStackTrace();
-    return false;
+else {
+    list = new File(basedir, "target/reports/apidocs/element-list")
 }
 
-return true;
+assert list.exists() : list + " is missing"
+
+assert list.readLines( 'UTF-8' ) == ["com.example.foo"] : "package com.example.foo is not the only entry in the package-list"

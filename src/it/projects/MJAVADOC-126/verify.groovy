@@ -18,41 +18,17 @@
  * under the License.
  */
 
-import java.io.*;
+File target = new File(basedir, "test/target")
+assert target.isDirectory() : "target is missing or not a directory."
 
-File target = new File( basedir, "test/target" );
-if ( !target.isDirectory() )
-{
-    System.err.println( "target is missing or not a directory." );
-    return false;
-}
+File apidocs = new File( basedir, "test/target/reports/apidocs" )
+assert apidocs.isDirectory() : apidocs.getAbsolutePath() + " is missing or not a directory."
 
-File apidocs = new File( basedir, "test/target/reports/apidocs" );
-if ( !apidocs.isDirectory() )
-{
-    System.err.println( apidocs.getAbsolutePath() + " is missing or not a directory." );
-    return false;
-}
+File file1 = new File( apidocs, "file1.txt" )
+assert file1.isFile() : file1.getAbsolutePath() + " is missing or a directory."
 
-File file1 = new File( apidocs, "file1.txt" );
-if ( !file1.isFile() )
-{
-    System.err.println( file1.getAbsolutePath() + " is missing or a directory." );
-    return false;
-}
+File file2 = new File( apidocs, "file2.txt" )
+assert file2.isFile() : file2.getAbsolutePath() + " is missing or a directory."
 
-File file2 = new File( apidocs, "file2.txt" );
-if ( !file2.isFile() )
-{
-    System.err.println( file2.getAbsolutePath() + " is missing or a directory." );
-    return false;
-}
-
-File metainf = new File( apidocs, "META-INF" );
-if ( metainf.isDirectory() )
-{
-    System.err.println( metainf.getAbsolutePath() + " exists." );
-    return false;
-}
-
-return true;
+File metainf = new File( apidocs, "META-INF" )
+assert !metainf.isDirectory() : metainf.getAbsolutePath() + " exists."

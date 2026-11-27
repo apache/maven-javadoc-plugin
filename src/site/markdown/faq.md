@@ -46,10 +46,10 @@ under the License.
 
 ### What are the Javadoc options supported by the Maven Javadoc Plugin?
 
-All options provided by Oracle on the Javadoc homepages are wrapped in the Maven Javadoc Plugin. This plugin
-supports Javadoc 1.4, 1.5 and 6.0 options. Refer to the
-[Javadoc Package Summary](./apidocs/org/apache/maven/plugins/javadoc/package-summary.html) for more
-information and to the [Javadoc Plugin Documentation](./javadoc-mojo.html).
+Most options of the [Javadoc tool](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javadoc.html) and
+its Standard Doclet have a plugin parameter of the same name; the
+[Javadoc Plugin Documentation](./javadoc-mojo.html) lists them. Pass any other option with the
+[*&lt;additionalOptions/&gt;*](./javadoc-mojo.html#additionalOptions) parameter.
 
 <a id="Where_in_the_pom.xml_do_I_configure_the_Javadoc_Plugin"></a>
 
@@ -62,7 +62,7 @@ You could also configure it in the *&lt;plugins/&gt;* or *&lt;pluginsManagement/
 of your pom.xml. In this case, you will need to call `mvn javadoc:javadoc` to run the main report.
 
 **IMPORTANT NOTE**: using *&lt;reporting/&gt;* or *&lt;build/&gt;* elements have not the same behavior, refer
-to [Using the &lt;reporting/&gt; Tag VS &lt;build/&gt; Tag](http://maven.apache.org/guides/mini/guide-configuring-plugins.html#Using_the_reporting_Tag_VS_build_Tag)
+to [Using the &lt;reporting/&gt; Tag VS &lt;build/&gt; Tag](https://maven.apache.org/guides/mini/guide-configuring-plugins.html#Using_the_reporting_Tag_VS_build_Tag)
 part for more information.
 
 <a id="Where_do_I_put_javadoc_resources_like_HTML_files_or_images"></a>
@@ -79,18 +79,19 @@ See [Using Javadoc Resources](examples/javadoc-resources.html) for more informat
 
 The Javadoc Plugin calls the Javadoc tool with
 [argument files](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html#command-line-argument-files),
-i.e. files called 'options', 'packages' and 'argfile' (or 'files' with Jdk &lt; 1.4):
+i.e. files called 'options', 'packages' and 'argfile':
 
 ```
-javadoc.exe(or .sh) @options @packages | @argfile
+javadoc @options @packages | @argfile
 ```
 
 These argument files are generated at runtime depending the Javadoc Plugin configuration and are deleted when
 the Javadoc Plugin ended.
 
-To preserve them, just add &lt;debug&gt;true&lt;/debug&gt; in your Javadoc Plugin configuration or just call
-`mvn javadoc:javadoc -Ddebug=true` or `mvn javadoc:javadoc -X`. In this case, an additional script file
-(javadoc.bat (or .sh) will be created in the `apidocs` directory.
+To preserve them, add &lt;debug&gt;true&lt;/debug&gt; to your Javadoc Plugin configuration or call
+`mvn javadoc:javadoc -Ddebug=true`. The plugin then also writes a `javadoc.sh` (`javadoc.bat` on Windows) script
+with the complete command line to the output directory, `target/reports/apidocs` for `javadoc:javadoc`.
+`mvn javadoc:javadoc -X` logs the command line but deletes the files.
 
 <a id="How_to_add_additional_Javadoc_parameters"></a>
 
@@ -111,7 +112,7 @@ Javadoc Plugin configuration.
 The Javadoc Plugin calls the Javadoc tool with J options, e.g.:
 
 ```
-${project.reporting.outputDirectory}/apidocs/javadoc.exe(or .sh) \
+javadoc \
     -J-Xss128m \
     @options \
     @packages | @argfile
@@ -167,7 +168,7 @@ To specify a proxy in the Javadoc tool, you need to configure an active proxy in
       <port>3128</port>
       <username>foo</username>
       <password>bar</password>
-      <nonProxyHosts>java.sun.com|*.somewhere.com</nonProxyHosts>
+      <nonProxyHosts>localhost|*.somewhere.com</nonProxyHosts>
     </proxy>
   </proxies>
   ...
@@ -177,16 +178,17 @@ To specify a proxy in the Javadoc tool, you need to configure an active proxy in
 With this, the Javadoc tool will be called with networking J options, e.g.:
 
 ```
-${project.reporting.outputDirectory}/apidocs/javadoc.exe(or .sh) \
-    -J-Dhttp.proxySet=true \
+javadoc \
     -J-Dhttp.proxyHost=proxy.somewhere.com \
     -J-Dhttp.proxyPort=3128 \
-    -J-Dhttp.nonProxyHosts="java.sun.com|*.somewhere.com" \
-    -J-Dhttp.proxyUser="foo" \
-    -J-Dhttp.proxyPassword="bar" \
+    -J-Dhttps.proxyHost=proxy.somewhere.com \
+    -J-Dhttps.proxyPort=3128 \
+    "-J-Dhttp.nonProxyHosts=\"localhost^|*.somewhere.com\"" \
     @options \
     @packages | @argfile
 ```
+
+The proxy user name and password are not passed to the Javadoc tool.
 
 **Note**: If your proxy needs more JVM
 [networking properties](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/doc-files/net-properties.html) (like
@@ -259,7 +261,7 @@ mvn deploy:deploy-file \
     -Dfile=<path-to-file> \
     -Dpackaging=jar \
     -DrepositoryId=<repository-id> \
-    -Durl=dav:http://www.myrepository.com/m2 \
+    -Durl=https://repository.example.com/releases \
     -Dclassifier=javadoc
 ```
 
@@ -267,10 +269,10 @@ mvn deploy:deploy-file \
 
 ### How to include additional source code directories in aggregate mode?
 
-If you use the Javadoc report in the aggregate mode, i.e. using the `aggregate` parameter, and if the Javadoc
-report does not include additional source code directories defined using the
-[build-helper:add-source](https://www.mojohaus.org/build-helper-maven-plugin/add-source-mojo.html) goal, you
-need to use the `javadoc:aggregate` goal instead of `javadoc:javadoc` goal. Read the
+Use the `javadoc:aggregate` goal. It forks the `compile` phase of every module, so it includes source
+directories added with the
+[build-helper:add-source](https://www.mojohaus.org/build-helper-maven-plugin/add-source-mojo.html) goal. The
+`javadoc:javadoc` goal has no `aggregate` parameter any more. Read the
 [Aggregating Javadocs for Multi-Projects](examples/aggregate.html) part for more information.
 
 <a id="How_to_use_links_option_in_Standard_Doclet"></a>
@@ -309,5 +311,5 @@ By default, these parameters have the following values:
 
 ### Why do I get errors when using links under Java 8?
 
-Due to [a bug in JDK 8](https://bugs.openjdk.java.net/browse/JDK-8040771) you need at least Java 8u20 for this
+Due to [a bug in JDK 8](https://bugs.openjdk.org/browse/JDK-8040771) you need at least Java 8u20 for this
 to work. See [MJAVADOC-393](https://issues.apache.org/jira/browse/MJAVADOC-393) for more info.

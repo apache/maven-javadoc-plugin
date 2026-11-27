@@ -41,8 +41,8 @@ You can add cross reference links to external projects using the [&lt;links/&gt;
         <version>${project.version}</version>
         <configuration>
           <links>
-            <link>http://commons.apache.org/dbcp/apidocs/</link>
-            <link>http://commons.apache.org/fileupload/apidocs/</link>
+            <link>https://commons.apache.org/proper/commons-dbcp/apidocs/</link>
+            <link>https://commons.apache.org/proper/commons-lang/apidocs/</link>
           </links>
             ...
         </configuration>
@@ -55,7 +55,7 @@ You can add cross reference links to external projects using the [&lt;links/&gt;
 
 **Important Note**: according the [Javadoc specifications](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javadoc.html#option-link), all given links **should** have a fetchable `/package-list` or `/element-list` file.
 
-You can try to detect all Javadoc links for the project's dependencies. You need to use the [&lt;detectLinks/&gt;](../javadoc-mojo.html#detectLinks) parameter. Detected links are based on the default Maven conventions. For instance, if your project has a dependency on [Apache Commons Lang](https://commons.apache.org/lang/) such as:
+You can try to detect all Javadoc links for the project's dependencies. You need to use the [&lt;detectLinks/&gt;](../javadoc-mojo.html#detectLinks) parameter. Detected links are based on the default Maven conventions. For instance, if your project has a dependency on [Apache Commons Lang](https://commons.apache.org/proper/commons-lang/) such as:
 
 ```xml
 <project>
@@ -64,25 +64,25 @@ You can try to detect all Javadoc links for the project's dependencies. You need
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-      <versions>2.4</version>
+      <version>2.6</version>
     </dependency>
   </dependencies>
   ...
 </project>
 ```
 
-The added Javadoc link will be [https://commons.apache.org/lang/apidocs](https://commons.apache.org/lang/apidocs).
+The added Javadoc link is the `<url/>` of the dependency's POM followed by `/apidocs`, here `http://commons.apache.org/lang/apidocs`.
 
-A Javadoc API link, depending the JDK version used by your project, will be added. The version of the Javadoc API is detected from the value of the [&lt;source/&gt;](https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#source) parameter in the [`org.apache.maven.plugins:maven-compiler-plugin`](http://maven.apache.org/plugins/maven-compiler-plugin) (defined in ${esc.d}{project.build.plugins} or in ${esc.d}{project.build.pluginManagement}), or computed via the Javadoc Tool executable. To skip this link, you need to configure [&lt;detectJavaApiLink/&gt;](../javadoc-mojo.html#detectJavaApiLink) to `false`.
+A link to the Java SE API documentation is added for the Java version of your project. The plugin takes that version from its [&lt;release/&gt;](../javadoc-mojo.html#release) parameter (the `maven.compiler.release` property), then from its [&lt;source/&gt;](../javadoc-mojo.html#source) parameter (the `maven.compiler.source` property), then from the [&lt;source/&gt;](https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#source) parameter of the [`org.apache.maven.plugins:maven-compiler-plugin`](https://maven.apache.org/plugins/maven-compiler-plugin/) (defined in ${esc.d}{project.build.plugins} or in ${esc.d}{project.build.pluginManagement}), and finally from the version of the Javadoc Tool executable. For Java 16 and later the plugin adds no link, because the Javadoc tool links to the Java SE API documentation itself. To skip this link, you need to configure [&lt;detectJavaApiLink/&gt;](../javadoc-mojo.html#detectJavaApiLink) to `false`.
 
-**Note**: if you are using an unsupported JDK like 7.0, you can add its Javadoc API URL using the [&lt;javaApiLinks/&gt;](../javadoc-mojo.html#javaApiLinks) parameter. For example:
+**Note**: to link to another copy of the Java SE API documentation, for example an internal mirror, set its URL with the [&lt;javaApiLinks/&gt;](../javadoc-mojo.html#javaApiLinks) parameter. The key is `api_` followed by the Java version (`api_11`; `api_1.8` for Java 8). For example:
 
 ```xml
 <configuration>
   <javaApiLinks>
     <property>
-      <name>api_1.7</name>
-      <value>http://download.java.net/jdk7/docs/api/</value>
+      <name>api_11</name>
+      <value>https://docs.example.com/jdk11/api/</value>
     </property>
   </javaApiLinks>
   ...

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-def log = new File( basedir, 'build.log').text
-def count = log.count( " --module-path" )
+def log = new File(basedir, 'build.log').text
+def count = log.count(" --module-path")
 // depends on Maven version (<= 3.8.x, then 2; otherwise 3)
 assert count == 2 || count == 3

@@ -63,7 +63,6 @@ under the License.
           <!--commas in following elements are to test MJAVADOC-93-->
           <doctitle>doc,title</doctitle>
           <bottom>bottom,comma test</bottom>
-          <footer>my footer, and something</footer>
           <header>my header, and something else</header>
           <windowtitle>Maven Javadoc Plugin, Javadoc Jar Default Config Test 1.0-SNAPSHOT API</windowtitle>
           <groups/>

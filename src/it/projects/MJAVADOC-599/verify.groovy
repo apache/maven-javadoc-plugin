@@ -17,6 +17,6 @@
  * under the License.
  */
 
-def file = new File( basedir, 'target/mjavadoc-599-1.0-SNAPSHOT-javadoc.jar' );
+def file = new File(basedir, 'target/mjavadoc-599-1.0-SNAPSHOT-javadoc.jar')
 
 assert file.exists()

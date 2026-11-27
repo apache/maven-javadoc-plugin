@@ -18,37 +18,11 @@
  * under the License.
  */
 
-import java.io.*;
+File target = new File(basedir, "target")
+assert target.exists() && target.isDirectory() : "target file is missing or a directory."
 
-boolean result = true;
+File apidocs = new File( target, "reports/apidocs" )
+assert apidocs.exists() && apidocs.isDirectory() : "target/reports/apidocs file is missing or a directory."
 
-try
-{
-    File target = new File( basedir, "target" );
-    if ( !target.exists() || !target.isDirectory() )
-    {
-        System.err.println( "target file is missing or a directory." );
-        return false;
-    }
-
-    File apidocs = new File( target, "reports/apidocs" );
-    if ( !apidocs.exists() || !apidocs.isDirectory() )
-    {
-        System.err.println( "target/reports/apidocs file is missing or a directory." );
-        return false;
-    }
-
-    File htmlFile = new File( apidocs, "Test.html" );
-    if ( !htmlFile.isFile() )
-    {
-        System.err.println( "target/reports/apidocs/Test.html file is missing or a a file." );
-        return false;
-    }
-}
-catch( IOException e )
-{
-    e.printStackTrace();
-    result = false;
-}
-
-return result;
+File htmlFile = new File( apidocs, "Test.html" )
+assert htmlFile.isFile() : "target/reports/apidocs/Test.html file is missing or a a file."
