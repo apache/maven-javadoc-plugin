@@ -2584,16 +2584,22 @@ public abstract class AbstractJavadocMojo extends AbstractMojo {
      * @throws MavenReportException when artifact could not be resolved
      */
     public Artifact resolveDependency(Dependency dependency) throws MavenReportException {
-        ArtifactTypeRegistry registry = RepositoryUtils.newArtifactTypeRegistry(artifactHandlerManager);
-        ArtifactRequest req = new ArtifactRequest(
-                RepositoryUtils.toDependency(dependency, registry).getArtifact(),
-                project.getRemoteProjectRepositories(),
-                null);
         try {
+            ArtifactTypeRegistry registry = RepositoryUtils.newArtifactTypeRegistry(artifactHandlerManager);
+            ArtifactRequest req = new ArtifactRequest(
+                    RepositoryUtils.toDependency(dependency, registry).getArtifact(),
+                    project.getRemoteProjectRepositories(),
+                    null);
             ArtifactResult resolutionResult = repoSystem.resolveArtifact(repoSession, req);
             return RepositoryUtils.toArtifact(resolutionResult.getArtifact());
-        } catch (ArtifactResolutionException e) {
-            throw new MavenReportException("artifact resolver problem - " + e.getMessage(), e);
+        } catch (ArtifactResolutionException | IllegalArgumentException e) {
+            // An undefined version property can leave a null version. During resolution,
+            // Maven's ReactorReader rejects it via ArtifactUtils.key before Resolver can wrap it
+            // in an ArtifactResolutionException.
+            throw new MavenReportException(
+                    "Could not resolve additional dependency " + dependency.getGroupId() + ":"
+                            + dependency.getArtifactId() + ":" + dependency.getVersion() + " - " + e.getMessage(),
+                    e);
         }
     }
 
