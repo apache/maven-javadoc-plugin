@@ -165,7 +165,6 @@ class AbstractJavadocMojoTest {
         IllegalArgumentException cause = new IllegalArgumentException("version can neither be null, empty nor blank");
         when(repositorySystem.resolveArtifact(eq(repositorySession), any(ArtifactRequest.class)))
                 .thenThrow(cause);
-
         AbstractJavadocMojo failingMojo =
                 new AbstractJavadocMojo(null, null, null, repositorySystem, artifactHandlerManager, null, null) {
                     @Override
